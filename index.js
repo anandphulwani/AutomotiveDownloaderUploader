@@ -2,10 +2,6 @@ import chalk from 'chalk';
 import { NtpTimeSync } from "ntp-time-sync";
 import { getChromeBookmark } from "chrome-bookmark-reader";
 import puppeteer from "puppeteer";
-//import puppeteer from "puppeteer-core";
-//import { executablePath } from 'puppeteer';
-//import puppeteer from 'puppeteer-extra';
-
 
 if (Intl.DateTimeFormat().resolvedOptions().timeZone != "Asia/Calcutta") {
     console.log("System timezone is not set to India: Asia/Calcutta UTC+5.30 Hours")
