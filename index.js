@@ -3,29 +3,42 @@ import { NtpTimeSync } from "ntp-time-sync";
 import { getChromeBookmark } from "chrome-bookmark-reader";
 import puppeteer from "puppeteer";
 
+/**
+ * Check if timezone matches of Asia/Calcutta
+ */
+console.log(chalk.cyan("Check if timezone matches of Asia/Calcutta: Executing."));
 if (Intl.DateTimeFormat().resolvedOptions().timeZone != "Asia/Calcutta") {
-    console.log("System timezone is not set to India: Asia/Calcutta UTC+5.30 Hours")
+    console.log(chalk.white.bgRed.bold("System timezone is not set to India: Asia/Calcutta UTC+5.30 Hours"));
     process.exit(1);
+} else {
+    console.log(chalk.green.bold("System timezone matches to India: Asia/Calcutta UTC+5.30 Hours"));
 }
+console.log(chalk.cyan("Check if timezone matches of Asia/Calcutta: Done."));
+printSectionSeperator();
 
-//const NtpTimeSync = require("ntp-time-sync").NtpTimeSync;
+
+/**
+ * Check if time is in sync with online NTP servers.
+ */
+console.log(chalk.cyan("Check if time is in sync with online NTP servers.: Executing."));
 const timeSync = NtpTimeSync.getInstance();
-
-timeSync.getTime().then(function (result) {
-  // console.log("current system time", new Date());
-  // console.log("real time", result.now);
+await timeSync.getTime().then(function (result) {
+  console.log(chalk.cyan("Current System time: "+ new Date() +",\nReal time (NTP Servers): "+result.now));
   const offsetInSeconds = Math.abs( Math.round( result.offset / 1000 ) );
   if ( offsetInSeconds > (2 * 60 ) ) {
-    console.log("System time not set accurately, time is off by "+offsetInSeconds+" seconds,\nPlease re sync time with NTP server.")
+    console.log(chalk.white.bgRed.bold("System time not set accurately, time is off by "+ offsetInSeconds +" seconds ("+result.offset+"ms), \nPlease re sync time with NTP server."));
     process.exit(1);
+  } else {
+    console.log(chalk.green.bold("System time shows accurate data i.e. (within 2 mins differnce), current offset is "+ offsetInSeconds +" seconds ("+result.offset+"ms)."));
   }
-  //console.log("offset in milliseconds", offsetInSeconds);
-  //console.log("offset in milliseconds", result.offset);
 })
+console.log(chalk.cyan("Check if time is in sync with online NTP servers.: Done."));
+printSectionSeperator();
 
-
-
-const chromeBookmarkReader = getChromeBookmark;
+/**
+ * Read chrome bookmarks from chrome browser
+ */
+// const chromeBookmarkReader = getChromeBookmark;
 // const path = '/path/to/Chrome/Bookmark' //TODO: Change path to default and pick from ini
 //const path = '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks'
 const path = 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks'
@@ -33,13 +46,14 @@ const option = {
     shouldIncludeFolders: true,
   }
 //const result = getChromeBookmark(path, option)
-const bookmarks = chromeBookmarkReader(path, option)
-//console.log(bookmarks)
+// getChromeBookmark
+const bookmarks = getChromeBookmark(path, option)
+// const bookmarks = chromeBookmarkReader(path, option)
 
 
 
 
-(async () => {
+/*(async () => {
 
     const browser = await puppeteer.launch({
         headless: false,
@@ -63,30 +77,30 @@ const bookmarks = chromeBookmarkReader(path, option)
     await waitForSeconds(10, true);
     await browser.close();
     process.exit(0);
-})();
+})();*/
 
 for(const topLevelBookmark of bookmarks) {
     //console.log(topLevelBookmark + "\n--------------------------------------------")
     if ( topLevelBookmark.name == "Bookmarks bar" ) {
-        console.log("Reading Bookmarks bar from the bookmarks data.")
+        console.log(chalk.cyan("Reading Bookmarks bar from the bookmarks data."));
         var usernameLevelBookmarks = topLevelBookmark.children
         for(const usernameLevelBookmark of usernameLevelBookmarks) {
-            console.log("Reading Bookmarks for the Username: "+chalk.cyan.bold(usernameLevelBookmark.name))
-            await page.goto('https://signin.coxautoinc.com/logout?bridge_solution=HME');
+            console.log(chalk.cyan("Reading Bookmarks for the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
+            //await page.goto('https://signin.coxautoinc.com/logout?bridge_solution=HME');
             var dealerLevelBookmarks = usernameLevelBookmark.children
             for(const dealerLevelBookmark of dealerLevelBookmarks) {
-                console.log("Reading Bookmarks for the Dealer: "+chalk.cyan.bold(dealerLevelBookmark.name)+" from the Username: "+chalk.cyan.bold(usernameLevelBookmark.name))
+                console.log(chalk.cyan("Reading Bookmarks for the Dealer: "+chalk.cyan.bold(dealerLevelBookmark.name)+" from the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
                 var vehicleBookmarks = dealerLevelBookmark.children
                 for(const vehicleBookmark of vehicleBookmarks) {
                     //console.log(vehicleBookmark);
-                    console.log("\t"+vehicleBookmark.name+" : "+vehicleBookmark.url);
+                    console.log(chalk.cyan("\t"+vehicleBookmark.name+" : "+vehicleBookmark.url));
                     //(async () => {
 
                         //const browser = await puppeteer.launch({headless: false});
                         //const page = await browser.newPage();
                         
                         //await page.goto(vehicleBookmark.url);
-                        sleep(30); 
+                        //sleep(30); 
                         //await browser.close();
                     //})();
                 }
@@ -118,6 +132,9 @@ function sleep(n) {
     msleep(n*1000);
 }
 
+function printSectionSeperator() {
+    console.log(chalk.black.bgWhiteBright("-".repeat(80)));
+}
 
 async function fillInTextbox (page, selector, textToFill, debug = false) {
     debug ? console.log("Waiting for the "+selector+" to load: Executing.") : "";
