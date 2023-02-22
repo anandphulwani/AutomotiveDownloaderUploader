@@ -1,7 +1,4 @@
 import puppeteer from "puppeteer";
-//import puppeteer from "puppeteer-core";
-import { executablePath } from 'puppeteer';
-//import puppeteer from 'puppeteer-extra';
 
 (async () => {
 
