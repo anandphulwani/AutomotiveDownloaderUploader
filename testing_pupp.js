@@ -28,9 +28,6 @@ import { executablePath } from 'puppeteer';
     console.log("Clicked Signed In");
     var text = '← dinesharora80@gmail.com';
     await page.waitForFunction(text => document.querySelector('#returnLink').innerText.includes(text),{},text);
-    //await page.waitForSelector('button[id="returnLink"][class="btn btn-link"][value="← dinesharora80@gmail.com"]');
-    //await page.waitForSelector('button[id="returnLink"][type="button"][class="btn btn-link"][text="← dinesharora80@gmail.com"]');
-    //await page.waitForSelector('#returnLink')
     console.log("Found returnLink");
     await page.type('#password', "");
     await page.type('#password', "kunsh123");
