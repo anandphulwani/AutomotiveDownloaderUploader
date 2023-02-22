@@ -14,7 +14,6 @@ import puppeteer from "puppeteer";
     const [page] = await browser.pages();   
     
     await page.goto('https://signin.coxautoinc.com/logout?bridge_solution=HME');
-    //await page.waitForFunction("window.location.pathname == '/Welcome.aspx'")
     await page.waitForFunction("window.location.href.startsWith('https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=')");
     await page.type('#username', "");
     await page.type('#username', "dinesharora80@gmail.com");
