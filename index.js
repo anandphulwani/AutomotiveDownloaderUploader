@@ -43,11 +43,9 @@ const path = 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Dat
 const option = {
     shouldIncludeFolders: true,
   }
-const bookmarks = getChromeBookmark(path, option)
+const bookmarks = getChromeBookmark(path, option);
 
-
-/*(async () => {
-
+(async () => {
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: null,
@@ -56,42 +54,41 @@ const bookmarks = getChromeBookmark(path, option)
             '--user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data'
         ],
     });
+    const [page] = await browser.pages();
 
-    const [page] = await browser.pages();   
-    
-    await gotoPageAndCheckIfCurrentURLStartsWith(page, "https://signin.coxautoinc.com/logout?bridge_solution=HME", "https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=", true) // use  (..., undefined, true) as params
-    await fillInTextbox (page, "#username", "dinesharora80@gmail.com");
-    await clickOnButton (page, "#signIn", "Next");
-    await waitForElementContainsText(page, "#returnLink", "← dinesharora80@gmail.com")
-    await fillInTextbox (page, "#password", "kunsh123");
-    await clickOnButton (page, "#signIn", "Sign in");
-    await checkIfCurrentURLStartsWith(page, "https://www.homenetiol.com/dashboard")
-    await waitForElementContainsHTML(page, "dt.bb-userdatum__value", "dinesharora80@gmail.com", true)
-    await waitForSeconds(10, true);
-    await browser.close();
-    process.exit(0);
-})();*/
+    for(const topLevelBookmark of bookmarks) {
+        if ( topLevelBookmark.name == "Bookmarks bar" ) {
+            console.log(chalk.cyan("Reading Bookmarks bar from the bookmarks data."));
+            var usernameLevelBookmarks = topLevelBookmark.children
+            for(const usernameLevelBookmark of usernameLevelBookmarks) {
+                console.log(chalk.cyan("Reading Bookmarks for the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
+                await gotoPageAndCheckIfCurrentURLStartsWith(page, "https://signin.coxautoinc.com/logout?bridge_solution=HME", "https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=", true) // use  (..., undefined, true) as params
+                await fillInTextbox (page, "#username", "dinesharora80@gmail.com");
+                await clickOnButton (page, "#signIn", "Next");
+                await waitForElementContainsText(page, "#returnLink", "← dinesharora80@gmail.com")
+                await fillInTextbox (page, "#password", "kunsh123");
+                await clickOnButton (page, "#signIn", "Sign in");
+                await checkIfCurrentURLStartsWith(page, "https://www.homenetiol.com/dashboard")
+                await waitForElementContainsHTML(page, "dt.bb-userdatum__value", "dinesharora80@gmail.com")
+                await waitForSeconds(10, true);
 
-for(const topLevelBookmark of bookmarks) {
-    if ( topLevelBookmark.name == "Bookmarks bar" ) {
-        console.log(chalk.cyan("Reading Bookmarks bar from the bookmarks data."));
-        var usernameLevelBookmarks = topLevelBookmark.children
-        for(const usernameLevelBookmark of usernameLevelBookmarks) {
-            console.log(chalk.cyan("Reading Bookmarks for the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
-            //await page.goto('https://signin.coxautoinc.com/logout?bridge_solution=HME');
-            var dealerLevelBookmarks = usernameLevelBookmark.children
-            for(const dealerLevelBookmark of dealerLevelBookmarks) {
-                console.log(chalk.cyan("Reading Bookmarks for the Dealer: "+chalk.cyan.bold(dealerLevelBookmark.name)+" from the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
-                var vehicleBookmarks = dealerLevelBookmark.children
-                for(const vehicleBookmark of vehicleBookmarks) {
-                    console.log(chalk.cyan("\t"+vehicleBookmark.name+" : "+vehicleBookmark.url));
-                }
-            }    
+                var dealerLevelBookmarks = usernameLevelBookmark.children
+                for(const dealerLevelBookmark of dealerLevelBookmarks) {
+                    console.log(chalk.cyan("Reading Bookmarks for the Dealer: "+chalk.cyan.bold(dealerLevelBookmark.name)+" from the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
+                    var vehicleBookmarks = dealerLevelBookmark.children
+                    for(const vehicleBookmark of vehicleBookmarks) {
+                        console.log(chalk.cyan("\t"+vehicleBookmark.name+" : "+vehicleBookmark.url));
+                        await gotoPageAndCheckIfCurrentURLStartsWith(page, vehicleBookmark.url, undefined, true);
+                        await waitForSeconds(180, true);
+                    }
+                }  
+            }
         }
     }
-}
+    await browser.close();
+})(); 
 //await sleep(10000); 
-process.exit(0);
+//process.exit(0);
 
 
 
@@ -203,7 +200,13 @@ async function gotoPageAndCheckIfCurrentURLStartsWith(page, URL, partialURL = UR
 }
 
 async function waitForSeconds(seconds, debug = false) {
-    console.log("Waiting start for "+seconds+" seconds: Executing.");
-    await new Promise(r => setTimeout(r, ( seconds * 1000 )));
-    console.log("Waiting start for "+seconds+" seconds: Done.");
+    process.stdout.write("Waiting start for "+seconds+" seconds: Executing.  ");
+    // console.log("Waiting start for "+seconds+" seconds: Executing.");
+    // process.stdout.write(`${index},`);
+    for (let cnt = 0; cnt < seconds; cnt++) {
+        process.stdout.write('.');
+        await new Promise(r => setTimeout(r, ( 1 * 1000 )));
+    }
+    //await new Promise(r => setTimeout(r, ( seconds * 1000 )));
+    console.log("\nWaiting start for "+seconds+" seconds: Done.");
 }
