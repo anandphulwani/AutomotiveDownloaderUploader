@@ -14,19 +14,7 @@ import { executablePath } from 'puppeteer';
         ],
     });
 
-    const [page] = await browser.pages();
-    //await page.setRequestInterception(true)
-    /*page.on('request', request => {
-        // Capture any request that is a navigation requests that attempts to load a new document
-        // This will capture HTTP Status 301, 302, 303, 307, 308, HTML, and Javascript redirects    
-        if (request.isNavigationRequest() && request.resourceType() === 'document') {
-        console.log(request.url())
-        }
-        // console.log(request.url())
-        request.continue()
-    });*/
-
-    
+    const [page] = await browser.pages();   
     
     await page.goto('https://signin.coxautoinc.com/logout?bridge_solution=HME');
     //await page.waitForNavigation(waitOptions),
