@@ -24,7 +24,6 @@ import puppeteer from "puppeteer";
     console.log("Found returnLink");
     await page.type('#password', "");
     await page.type('#password', "kunsh123");
-    //<button id="signIn" type="submit" class="btn btn-primary ">Sign in</button>
     console.log("Filled password");
     text = 'Sign in';
     await page.waitForFunction(text => document.querySelector('#signIn').innerText.includes(text),{},text);
