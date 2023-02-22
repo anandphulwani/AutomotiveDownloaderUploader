@@ -13,8 +13,7 @@ import puppeteer from "puppeteer";
 
     const [page] = await browser.pages();   
     
-    await gotoPageAndCheckIfCurrentURLStartsWith(page, "https://signin.coxautoinc.com/logout?bridge_solution=HME", "https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=", true)
-    //await gotoPageAndCheckIfCurrentURLStartsWith(page, "https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=efb6cb5b4f2a401a8225c9f2e8c6313c", undefined, true)
+    await gotoPageAndCheckIfCurrentURLStartsWith(page, "https://signin.coxautoinc.com/logout?bridge_solution=HME", "https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=", true) // use  (..., undefined, true) as params
     await fillInTextbox (page, "#username", "dinesharora80@gmail.com");
     await clickOnButton (page, "#signIn", "Next");
     await waitForElementContainsText(page, "#returnLink", "← dinesharora80@gmail.com")
