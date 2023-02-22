@@ -1,0 +1,24 @@
+{
+  "name": "automotivedownloaderuploader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dumm_type": "commonjs",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "cheerio": "^1.0.0-rc.12",
+    "chrome-bookmark-reader": "^0.4.0",
+    "npm-time": "^1.0.0",
+    "ntp-time-sync": "^0.3.0",
+    "puppeteer": "^19.6.3",
+    "puppeteer-core": "^19.6.3",
+    "puppeteer-extra": "^3.3.4",
+    "sleep": "^6.3.0"
+  }
+}
