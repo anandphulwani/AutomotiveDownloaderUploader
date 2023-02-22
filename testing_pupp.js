@@ -15,8 +15,6 @@ import { executablePath } from 'puppeteer';
     });
 
     const [page] = await browser.pages();
-    //const page = await browser.newPage();
-    //await page.setViewport({width: 1080, height: 1024}); // Set screen size
     //await page.setRequestInterception(true)
     /*page.on('request', request => {
         // Capture any request that is a navigation requests that attempts to load a new document
