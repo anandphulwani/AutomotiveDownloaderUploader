@@ -39,8 +39,6 @@ import puppeteer from "puppeteer";
     await new Promise(r => setTimeout(r, 5000));
     console.log("Found");
     await browser.close();
-    //await new Promise(r => setTimeout(r, 60000));
-    //await page.waitForTimeout(60000);
     //process.exit(0);
 })();
 
