@@ -40,7 +40,6 @@ import puppeteer from "puppeteer";
     text = 'dinesharora80@gmail.com';
     await page.waitForFunction(text => document.querySelector('.bb-userdatum__value').innerText.includes(text),{},text);
     await new Promise(r => setTimeout(r, 5000));
-    //await page.click('[name="commit"]');
     console.log("Found");
     await browser.close();
     //await new Promise(r => setTimeout(r, 60000));
