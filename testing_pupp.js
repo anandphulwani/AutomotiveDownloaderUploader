@@ -32,7 +32,6 @@ import puppeteer from "puppeteer";
     console.log("Filled password");
     text = 'Sign in';
     await page.waitForFunction(text => document.querySelector('#signIn').innerText.includes(text),{},text);
-    //await page.waitForSelector('button[text="Sign in"]')
     console.log("Found Sign In button");
     await page.click('#signIn');
     console.log("Clicked on sign in button");
