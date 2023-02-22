@@ -73,7 +73,6 @@ const bookmarks = getChromeBookmark(path, option)
 })();*/
 
 for(const topLevelBookmark of bookmarks) {
-    //console.log(topLevelBookmark + "\n--------------------------------------------")
     if ( topLevelBookmark.name == "Bookmarks bar" ) {
         console.log(chalk.cyan("Reading Bookmarks bar from the bookmarks data."));
         var usernameLevelBookmarks = topLevelBookmark.children
@@ -85,17 +84,7 @@ for(const topLevelBookmark of bookmarks) {
                 console.log(chalk.cyan("Reading Bookmarks for the Dealer: "+chalk.cyan.bold(dealerLevelBookmark.name)+" from the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
                 var vehicleBookmarks = dealerLevelBookmark.children
                 for(const vehicleBookmark of vehicleBookmarks) {
-                    //console.log(vehicleBookmark);
                     console.log(chalk.cyan("\t"+vehicleBookmark.name+" : "+vehicleBookmark.url));
-                    //(async () => {
-
-                        //const browser = await puppeteer.launch({headless: false});
-                        //const page = await browser.newPage();
-                        
-                        //await page.goto(vehicleBookmark.url);
-                        //sleep(30); 
-                        //await browser.close();
-                    //})();
                 }
             }    
         }
