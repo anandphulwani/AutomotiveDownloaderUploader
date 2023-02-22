@@ -38,19 +38,12 @@ printSectionSeperator();
 /**
  * Read chrome bookmarks from chrome browser
  */
-// const chromeBookmarkReader = getChromeBookmark;
-// const path = '/path/to/Chrome/Bookmark' //TODO: Change path to default and pick from ini
-//const path = '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks'
+// const path = '/path/to/Chrome/Bookmark' OR '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks' //TODO: Change path to default and pick from ini
 const path = 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks'
 const option = {
     shouldIncludeFolders: true,
   }
-//const result = getChromeBookmark(path, option)
-// getChromeBookmark
 const bookmarks = getChromeBookmark(path, option)
-// const bookmarks = chromeBookmarkReader(path, option)
-
-
 
 
 /*(async () => {
