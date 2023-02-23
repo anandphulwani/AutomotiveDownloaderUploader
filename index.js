@@ -3,28 +3,6 @@ import { NtpTimeSync } from "ntp-time-sync";
 import { getChromeBookmark } from "chrome-bookmark-reader";
 import puppeteer from "puppeteer";
 
-
-
-
-// console.log("Reading Bookmarks bar from the bookmarks data.");
-// console.log("Reading Bookmarks for the Username: dinesharora13@gmail.com");
-// console.log("Reading Bookmarks for the Dealer: Client 08 from the Username: dinesharora13@gmail.com");
-// console.log("\tDelillo Chevrolet - Inventory Online 01 : https://www.homenetiol.com/inventory/photo-manager?i=1&r=2253717 : Gallery URL ...... (Ignoring)");
-// var pos = await getCursorPosOnTerminal();
-// // process.stdout.write("\n");
-// console.log(pos.rows);
-// process.stdout.write(chalk.cyan("\tDelillo Chevrolet - Inventory Online 02 : https://www.homenetiol.com/inventory/vehicle/2253717/1077546515?i=1&r=2253717#general\n"));
-// ;
-// // pos = await getCursorPos();
-// // process.stdout.write("\n");
-// // console.log(pos.rows);
-// process.stdout.write(chalk.red.bold("\tDelillo Chevrolet - Inventory Online 02 : https://www.homenetiol.com/inventory/vehicle/2253717/1077546515?i=1&r=2253717#general : Supplied URL doesn't exist ...... (Ignoring)"));
-// process.stdout.write('HELLO');
-// pos = await getCursorPos();
-// process.stdout.write("\n");
-// console.log({ pos });
-
-
 if (false) {
 /**
  * Check if timezone matches of Asia/Calcutta
