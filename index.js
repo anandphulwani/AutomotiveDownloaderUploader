@@ -120,6 +120,11 @@ function sleep(n) {
     msleep(n*1000);
 }
 
+function zeroPad(num, places) {
+    var zero = places - num.toString().length + 1;
+    return Array(+(zero > 0 && zero)).join("0") + num;
+}
+
 function printSectionSeperator() {
     console.log(chalk.black.bgWhiteBright("-".repeat(80)));
 }
@@ -275,32 +280,24 @@ async function handleBookmarkURL(page, name, URL, debug = false) {
 }
 
 async function getImagesFromContent(page, debug = false) {
-    // const inner_html = await page.$eval('.container.tn-list.sortable.deletable.ui-sortable', element => element.innerHTML);
     const image_div_container = await page.$('.tn-list-container');
     const image_ul_container = await image_div_container.$('.container.tn-list.sortable.deletable.ui-sortable');
     const image_largesrc_urls = await image_ul_container.$$eval('img.tn-car', el => el.map(x => x.getAttribute("largesrc")));
-    
-    //const tweetURLSpanValue = tweetURLElementHandle[0];
-    /* for(let image_li of image_ul_container){
-        const trText = await page.evaluate(el => el.innerHTML, tr);
-        console.log(trText)
-    } */
-    // const second_value = await page.$$eval('table tr td', el => el[1].innerHTML);
-    // console.log(await (await image_ul_container.getProperty('innerHTML')).jsonValue());
-    // console.log(tweetURLElementHandle.length);
-    //for(let image_largesrc_url of image_largesrc_urls){
     for (let index = 0; index < image_largesrc_urls.length; index++) { 
-        // const trText = await page.evaluate(el => el.innerHTML, tr);
-        // console.log(trText)
         console.log(image_largesrc_urls[index]);      
-        const file = fs.createWriteStream((index+1)+".jpg");
-        https.get(image_largesrc_urls[index], function(response) {
-            response.pipe(file);
-            // after download completed close filestream
-            file.on("finish", () => {
-                file.close();
-                console.log("Download Completed");
-                });
+        const file = fs.createWriteStream("./Downloads/"+zeroPad((index+1), 3)+".jpg");
+        await new Promise((resolve, reject) => {
+            https.get(image_largesrc_urls[index], (response) => {
+                response.pipe(file);
+                // after download completed close filestream
+                file.on("finish", () => {
+                    file.close();
+                    console.log("Download Completed");
+                    resolve();
+                })
+                response.on('end', () => { /* resolve(""); */ });
+                response.on('error', (error) => { reject(error); });
+            });
         });
     }
 }
