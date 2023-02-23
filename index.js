@@ -2,6 +2,12 @@ import chalk from 'chalk';
 import { NtpTimeSync } from "ntp-time-sync";
 import { getChromeBookmark } from "chrome-bookmark-reader";
 import puppeteer from "puppeteer";
+import https from "https";
+import fs from "fs";
+
+// const http = require('http'); // or 'https' for https:// URLs
+// const fs = require('fs');
+
 
 if (false) {
 /**
@@ -64,6 +70,7 @@ const bookmarks = getChromeBookmark(path, option);
             var usernameLevelBookmarks = topLevelBookmark.children
             for(const usernameLevelBookmark of usernameLevelBookmarks) {
                 console.log(chalk.cyan("Reading Bookmarks for the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
+                /** */
                 await gotoPageAndWaitTillCurrentURLStartsWith(page, "https://signin.coxautoinc.com/logout?bridge_solution=HME", "https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=") // use  (..., undefined, true) as params
                 await fillInTextbox (page, "#username", "dinesharora80@gmail.com");
                 await clickOnButton (page, "#signIn", "Next");
@@ -73,6 +80,7 @@ const bookmarks = getChromeBookmark(path, option);
                 await waitTillCurrentURLStartsWith(page, "https://www.homenetiol.com/dashboard")
                 await waitForElementContainsHTML(page, "dt.bb-userdatum__value", "dinesharora80@gmail.com")
                 await waitForSeconds(10);
+                
 
                 var dealerLevelBookmarks = usernameLevelBookmark.children
                 for(const dealerLevelBookmark of dealerLevelBookmarks) {
@@ -219,7 +227,8 @@ async function waitTillCurrentURLStartsWith(page, partialURL, debug = false) {
 
 async function gotoURL(page, URL, debug = false) {
     debug ? console.log("Navigating to the URL: "+URL+": Executing.") : "";
-    await page.goto(URL, { waitUntil: "networkidle2" });
+    await page.goto(URL, { timeout: ( 180 * 1000 ) }); //waitUntil: 'load', 
+    // await page.goto(URL, { waitUntil: "networkidle2" }); //TODO: Add networkidle0, networkidle2 and other multiple modes
     debug ? console.log("Navigating to the URL: "+URL+": Done.") : "";
 }
 
@@ -254,6 +263,44 @@ async function handleBookmarkURL(page, name, URL, debug = false) {
             debug ? "" : process.stdout.clearLine(diffInRows); // from cursor to end
             debug ? "" : process.stdout.cursorTo(0);
             process.stdout.write(chalk.red.bold("\t"+name+" : "+URL+" : Supplied URL doesn't exist ...... (Ignoring)"+"\n"));
+            await waitForSeconds(5);
+        } else {
+            // document.querySelector
+            // const pageContent = await page.content();
+            await getImagesFromContent(page);
+            await waitForSeconds(10, true);
+
         }
+    }
+}
+
+async function getImagesFromContent(page, debug = false) {
+    // const inner_html = await page.$eval('.container.tn-list.sortable.deletable.ui-sortable', element => element.innerHTML);
+    const image_div_container = await page.$('.tn-list-container');
+    const image_ul_container = await image_div_container.$('.container.tn-list.sortable.deletable.ui-sortable');
+    const image_largesrc_urls = await image_ul_container.$$eval('img.tn-car', el => el.map(x => x.getAttribute("largesrc")));
+    
+    //const tweetURLSpanValue = tweetURLElementHandle[0];
+    /* for(let image_li of image_ul_container){
+        const trText = await page.evaluate(el => el.innerHTML, tr);
+        console.log(trText)
+    } */
+    // const second_value = await page.$$eval('table tr td', el => el[1].innerHTML);
+    // console.log(await (await image_ul_container.getProperty('innerHTML')).jsonValue());
+    // console.log(tweetURLElementHandle.length);
+    //for(let image_largesrc_url of image_largesrc_urls){
+    for (let index = 0; index < image_largesrc_urls.length; index++) { 
+        // const trText = await page.evaluate(el => el.innerHTML, tr);
+        // console.log(trText)
+        console.log(image_largesrc_urls[index]);      
+        const file = fs.createWriteStream((index+1)+".jpg");
+        https.get(image_largesrc_urls[index], function(response) {
+            response.pipe(file);
+            // after download completed close filestream
+            file.on("finish", () => {
+                file.close();
+                console.log("Download Completed");
+                });
+        });
     }
 }
