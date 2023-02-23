@@ -3,6 +3,29 @@ import { NtpTimeSync } from "ntp-time-sync";
 import { getChromeBookmark } from "chrome-bookmark-reader";
 import puppeteer from "puppeteer";
 
+
+
+
+// console.log("Reading Bookmarks bar from the bookmarks data.");
+// console.log("Reading Bookmarks for the Username: dinesharora13@gmail.com");
+// console.log("Reading Bookmarks for the Dealer: Client 08 from the Username: dinesharora13@gmail.com");
+// console.log("\tDelillo Chevrolet - Inventory Online 01 : https://www.homenetiol.com/inventory/photo-manager?i=1&r=2253717 : Gallery URL ...... (Ignoring)");
+// var pos = await getCursorPosOnTerminal();
+// // process.stdout.write("\n");
+// console.log(pos.rows);
+// process.stdout.write(chalk.cyan("\tDelillo Chevrolet - Inventory Online 02 : https://www.homenetiol.com/inventory/vehicle/2253717/1077546515?i=1&r=2253717#general\n"));
+// ;
+// // pos = await getCursorPos();
+// // process.stdout.write("\n");
+// // console.log(pos.rows);
+// process.stdout.write(chalk.red.bold("\tDelillo Chevrolet - Inventory Online 02 : https://www.homenetiol.com/inventory/vehicle/2253717/1077546515?i=1&r=2253717#general : Supplied URL doesn't exist ...... (Ignoring)"));
+// process.stdout.write('HELLO');
+// pos = await getCursorPos();
+// process.stdout.write("\n");
+// console.log({ pos });
+
+
+if (false) {
 /**
  * Check if timezone matches of Asia/Calcutta
  */
@@ -34,6 +57,7 @@ await timeSync.getTime().then(function (result) {
 })
 console.log(chalk.cyan("Check if time is in sync with online NTP servers.: Done."));
 printSectionSeperator();
+}
 
 /**
  * Read chrome bookmarks from chrome browser
@@ -62,24 +86,23 @@ const bookmarks = getChromeBookmark(path, option);
             var usernameLevelBookmarks = topLevelBookmark.children
             for(const usernameLevelBookmark of usernameLevelBookmarks) {
                 console.log(chalk.cyan("Reading Bookmarks for the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
-                await gotoPageAndCheckIfCurrentURLStartsWith(page, "https://signin.coxautoinc.com/logout?bridge_solution=HME", "https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=", true) // use  (..., undefined, true) as params
+                await gotoPageAndWaitTillCurrentURLStartsWith(page, "https://signin.coxautoinc.com/logout?bridge_solution=HME", "https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=") // use  (..., undefined, true) as params
                 await fillInTextbox (page, "#username", "dinesharora80@gmail.com");
                 await clickOnButton (page, "#signIn", "Next");
                 await waitForElementContainsText(page, "#returnLink", "← dinesharora80@gmail.com")
                 await fillInTextbox (page, "#password", "kunsh123");
                 await clickOnButton (page, "#signIn", "Sign in");
-                await checkIfCurrentURLStartsWith(page, "https://www.homenetiol.com/dashboard")
+                await waitTillCurrentURLStartsWith(page, "https://www.homenetiol.com/dashboard")
                 await waitForElementContainsHTML(page, "dt.bb-userdatum__value", "dinesharora80@gmail.com")
-                await waitForSeconds(10, true);
+                await waitForSeconds(10);
 
                 var dealerLevelBookmarks = usernameLevelBookmark.children
                 for(const dealerLevelBookmark of dealerLevelBookmarks) {
                     console.log(chalk.cyan("Reading Bookmarks for the Dealer: "+chalk.cyan.bold(dealerLevelBookmark.name)+" from the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
                     var vehicleBookmarks = dealerLevelBookmark.children
                     for(const vehicleBookmark of vehicleBookmarks) {
-                        console.log(chalk.cyan("\t"+vehicleBookmark.name+" : "+vehicleBookmark.url));
-                        await gotoPageAndCheckIfCurrentURLStartsWith(page, vehicleBookmark.url, undefined, true);
-                        await waitForSeconds(180, true);
+                        await handleBookmarkURL(page, vehicleBookmark.name, vehicleBookmark.url)
+                        await waitForSeconds(0);
                     }
                 }  
             }
@@ -113,6 +136,30 @@ function sleep(n) {
 
 function printSectionSeperator() {
     console.log(chalk.black.bgWhiteBright("-".repeat(80)));
+}
+
+async function getCursorPosOnTerminal() {
+    return new Promise((resolve) => {
+        const termcodes = { cursorGetPosition: '\u001b[6n' };
+        process.stdin.setEncoding('utf8');
+        process.stdin.setRawMode(true);
+        const readfx = function () {
+            const buf = process.stdin.read();
+            const str = JSON.stringify(buf); // "\u001b[9;1R"
+            const regex = /\[(.*)/g;
+            const xy = regex.exec(str)[0].replace(/\[|R"/g, '').split(';');
+            const pos = { rows: xy[0], cols: xy[1] };
+            process.stdin.setRawMode(false);
+            resolve(pos);
+        }
+        process.stdin.once('readable', readfx);
+        process.stdout.write(termcodes.cursorGetPosition);
+    });
+}
+
+async function getRowPosOnTerminal() {
+    const pos = await getCursorPosOnTerminal();
+    return pos.rows;
 }
 
 async function fillInTextbox (page, selector, textToFill, debug = false) {
@@ -186,27 +233,49 @@ async function waitForElementContainsHTML(page, selector, elementHTML, debug = f
     debug ? console.log("Waiting for "+elementHTML+" ("+selector+") text to show up: Found.") : "";
 }
 
-async function checkIfCurrentURLStartsWith(page, partialURL, debug = false) {
+async function waitTillCurrentURLStartsWith(page, partialURL, debug = false) {
     debug ? console.log("Waiting for the current URL to match to: "+partialURL+": Executing.") : "";
     await page.waitForFunction("window.location.href.startsWith('"+partialURL+"')");
     debug ? console.log("Waiting for the current URL to match to: "+partialURL+": Matched.") : "";
 }
 
-async function gotoPageAndCheckIfCurrentURLStartsWith(page, URL, partialURL = URL , debug = false) {
+async function gotoURL(page, URL, debug = false) {
     debug ? console.log("Navigating to the URL: "+URL+": Executing.") : "";
-    await page.goto(URL);
+    await page.goto(URL, { waitUntil: "networkidle2" });
     debug ? console.log("Navigating to the URL: "+URL+": Done.") : "";
-    await checkIfCurrentURLStartsWith(page, partialURL, debug);
+}
+
+async function gotoPageAndWaitTillCurrentURLStartsWith(page, URL, partialURL = URL , debug = false) {
+    await gotoURL(page, URL, debug);
+    await waitTillCurrentURLStartsWith(page, partialURL, debug);
 }
 
 async function waitForSeconds(seconds, debug = false) {
-    process.stdout.write("Waiting start for "+seconds+" seconds: Executing.  ");
+    debug ? process.stdout.write("Waiting start for "+seconds+" seconds: Executing.  ") : "";
     // console.log("Waiting start for "+seconds+" seconds: Executing.");
     // process.stdout.write(`${index},`);
     for (let cnt = 0; cnt < seconds; cnt++) {
-        process.stdout.write('.');
+        debug ? process.stdout.write('.') : "";
         await new Promise(r => setTimeout(r, ( 1 * 1000 )));
     }
     //await new Promise(r => setTimeout(r, ( seconds * 1000 )));
-    console.log("\nWaiting start for "+seconds+" seconds: Done.");
+    debug ? console.log("\nWaiting start for "+seconds+" seconds: Done.") : "";
+}
+
+async function handleBookmarkURL(page, name, URL, debug = false) {
+    if (URL.startsWith("https://www.homenetiol.com/inventory/photo-manager?")) {
+        console.log(chalk.magenta("\t"+name+" : "+URL+" : Gallery URL ...... (Ignoring)"));
+    } else {
+        const startingRow = await getRowPosOnTerminal();
+        process.stdout.write(chalk.cyan("\t"+name+" : "+URL+"\n"));
+        const endingRow = await getRowPosOnTerminal();
+        const diffInRows = endingRow - startingRow;
+        await gotoURL(page, URL, debug);
+        if (page.url().startsWith("https://www.homenetiol.com/dashboard?")) {
+            debug ? "" : process.stdout.moveCursor(0, -(diffInRows)); // up one line
+            debug ? "" : process.stdout.clearLine(diffInRows); // from cursor to end
+            debug ? "" : process.stdout.cursorTo(0);
+            process.stdout.write(chalk.red.bold("\t"+name+" : "+URL+" : Supplied URL doesn't exist ...... (Ignoring)"+"\n"));
+        }
+    }
 }
