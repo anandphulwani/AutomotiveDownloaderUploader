@@ -225,6 +225,27 @@ async function getRowPosOnTerminal() {
     return pos.rows;
 }
 
+async function getChecksumFromURL(url, hashAlgo, debug = false) {
+    return await new Promise((resolve, reject) => {
+        let body = [];
+        https.get(url, (response) => {
+            response.on('data', chunk => body.push(chunk));
+            response.on('end', () => {
+                if (response.statusCode == 200) {
+                    let hashSum = crypto.createHash(hashAlgo);
+                    hashSum.update(Buffer.concat(body));
+                    const checksumOfFile = hashSum.digest('hex');
+                    resolve(checksumOfFile);
+                } else {
+                    console.log(chalk.white.bgRed.bold("Unable to calculate checksum of the file: "+url));
+                    process.exit(1);
+                }
+            });
+            response.on('error', (error) => { reject(error); });
+        });
+    });
+}
+
 async function fillInTextbox (page, selector, textToFill, debug = false) {
     debug ? console.log("Waiting for the "+selector+" to load: Executing.") : "";
     await page.waitForSelector(selector);
@@ -360,25 +381,27 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
 
     var checksumOfFile;
     debug ? "" : process.stdout.write("\t");
-    for (let index = 0; index < image_largesrc_urls.length; index++) { 
-    // for (let index = 0; index < 2; index++) { 
+    // for (let index = 0; index < image_largesrc_urls.length; index++) { 
+    for (let index = 0; index < 2; index++) { 
         debug ? console.log("Downloading image: "+image_largesrc_urls[index]) : process.stdout.write("»");
         const file = fs.createWriteStream(tempPath+"/"+zeroPad((index+1), 3)+".jpg");
-        await new Promise((resolve, reject) => {
-            let body = [];
-            https.get(image_largesrc_urls[index], (response) => {
-                response.on('data', chunk => body.push(chunk));
-                response.on('end', () => {
-                    if (response.statusCode == 200) {
-                        let hashSum = crypto.createHash(hashAlgo);
-                        hashSum.update(Buffer.concat(body));
-                        checksumOfFile = hashSum.digest('hex');
-                    }
-                    resolve();
-                });
-                response.on('error', (error) => { reject(error); });
-            });
-        });
+        // await new Promise((resolve, reject) => {
+        //     let body = [];
+        //     https.get(image_largesrc_urls[index], (response) => {
+        //         response.on('data', chunk => body.push(chunk));
+        //         response.on('end', () => {
+        //             if (response.statusCode == 200) {
+        //                 let hashSum = crypto.createHash(hashAlgo);
+        //                 hashSum.update(Buffer.concat(body));
+        //                 checksumOfFile = hashSum.digest('hex');
+        //             }
+        //             resolve();
+        //         });
+        //         response.on('error', (error) => { reject(error); });
+        //     });
+        // });
+        console.log(await getChecksumFromURL(image_largesrc_urls[index], hashAlgo, debug));
+        process.exit(1);
         await new Promise((resolve, reject) => {
             https.get(image_largesrc_urls[index], (response) => {
                 response.pipe(file);
