@@ -1,12 +1,13 @@
+import os from "os";
+import fs from "fs";
 import chalk from 'chalk';
-import { NtpTimeSync } from "ntp-time-sync";
-import { getChromeBookmark } from "chrome-bookmark-reader";
 import puppeteer from "puppeteer";
 import https from "https";
-import fs from "fs";
-
-// const http = require('http'); // or 'https' for https:// URLs
-// const fs = require('fs');
+import crypto from "crypto";
+import randomstring from 'randomstring';
+import path from 'path';
+import { NtpTimeSync } from "ntp-time-sync";
+import { getChromeBookmark } from "chrome-bookmark-reader";
 
 
 if (false) {
@@ -46,12 +47,12 @@ printSectionSeperator();
 /**
  * Read chrome bookmarks from chrome browser
  */
-// const path = '/path/to/Chrome/Bookmark' OR '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks' //TODO: Change path to default and pick from ini
-const path = 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks'
+// const bookmarkPath = '/path/to/Chrome/Bookmark' OR '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks' //TODO: Change path to default and pick from ini
+const bookmarkPath = 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks'
 const option = {
     shouldIncludeFolders: true,
   }
-const bookmarks = getChromeBookmark(path, option);
+const bookmarks = getChromeBookmark(bookmarkPath, option);
 
 (async () => {
     const browser = await puppeteer.launch({
@@ -87,7 +88,7 @@ const bookmarks = getChromeBookmark(path, option);
                     console.log(chalk.cyan("Reading Bookmarks for the Dealer: "+chalk.cyan.bold(dealerLevelBookmark.name)+" from the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
                     var vehicleBookmarks = dealerLevelBookmark.children
                     for(const vehicleBookmark of vehicleBookmarks) {
-                        await handleBookmarkURL(page, vehicleBookmark.name, vehicleBookmark.url)
+                        await handleBookmarkURL(page, dealerLevelBookmark.name, vehicleBookmark.name, vehicleBookmark.url)
                         await waitForSeconds(0);
                     }
                 }  
@@ -123,6 +124,77 @@ function sleep(n) {
 function zeroPad(num, places) {
     var zero = places - num.toString().length + 1;
     return Array(+(zero > 0 && zero)).join("0") + num;
+}
+
+function generateTempFolderWithRandomText(debug = false) {
+    const randomFolder = randomstring.generate({ length: 8, charset: 'alphabetic', capitalization : 'lowercase' });
+    debug ? console.log("Generated random folder name : "+randomFolder) : "";
+    const tempPathWithRandomFolder = os.tmpdir()+"/"+randomFolder;
+    debug ? console.log("Temporary path with suffixed random folder : "+tempPathWithRandomFolder) : "";
+    return tempPathWithRandomFolder;
+}
+
+async function makeDir(dirPath, debug = false) {
+    await new Promise((resolve, reject) => {
+        fs.mkdir(dirPath, { recursive: true }, (error) => {
+            if (error) {
+                console.log(chalk.white.bgRed.bold("Unable to create a directory : "+dirPath));
+                process.exit(1);
+            } else {
+                debug ? console.log("Folder path created successfully : "+dirPath) : ""; 
+                resolve();
+            }
+        });
+    });
+}
+
+async function moveFile(fromPath, toPath, debug = false) {
+    if (! fs.existsSync(path.dirname(toPath)) ) {
+        console.log("moveFile function : making directory: "+path.dirname(toPath)+" : Executing.");
+        await makeDir(path.dirname(toPath)+"/", debug); 
+        console.log("moveFile function : making directory: "+path.dirname(toPath)+" : Done.");
+    }
+    await new Promise((resolve, reject) => {
+        fs.rename(fromPath, toPath, function (error) {
+            if (error) {
+                console.log(chalk.white.bgRed.bold("Unable to move file from the "+
+                "\n\tSource Directory: "+fromPath+
+                "\n\t\t\tTo "+
+                "\n\tDestination Directory: "+toPath));
+                process.exit(1);
+            } else {
+                debug ? console.log("File moved successfully from the  "+
+                "\n\tSource Directory: "+fromPath+
+                "\n\t\t\tTo "+
+                "\n\tDestination Directory: "+toPath) : ""; 
+                resolve();
+            }
+        });
+    });
+}
+
+async function removeDir(dirPath, debug = false) {
+    await new Promise((resolve, reject) => {
+        fs.rm(dirPath, {
+            recursive: true,
+            maxRetries: 120,
+            retryDelay: 500,
+        }, (error) => {
+            if (error) {
+                console.log(chalk.white.bgRed.bold("Unable to remove a directory : " + dirPath));
+                process.exit(1);
+            } else {
+                debug ? console.log("Folder path removed successfully : "+dirPath) : ""; 
+                resolve();
+            }
+        });
+    });
+}
+
+async function moveFileFromTempDirToDestination(filePath, tempPath, destinationPath, debug = false) {
+        debug ? console.log("Moving file from TempDir to Destination : Executing.") : "";
+        await moveFile(filePath, filePath.replace(tempPath, destinationPath), debug);
+        debug ? console.log("Moving file from TempDir to Destination : Done.") : "";
 }
 
 function printSectionSeperator() {
@@ -244,17 +316,14 @@ async function gotoPageAndWaitTillCurrentURLStartsWith(page, URL, partialURL = U
 
 async function waitForSeconds(seconds, debug = false) {
     debug ? process.stdout.write("Waiting start for "+seconds+" seconds: Executing.  ") : "";
-    // console.log("Waiting start for "+seconds+" seconds: Executing.");
-    // process.stdout.write(`${index},`);
     for (let cnt = 0; cnt < seconds; cnt++) {
         debug ? process.stdout.write('.') : "";
         await new Promise(r => setTimeout(r, ( 1 * 1000 )));
     }
-    //await new Promise(r => setTimeout(r, ( seconds * 1000 )));
     debug ? console.log("\nWaiting start for "+seconds+" seconds: Done.") : "";
 }
 
-async function handleBookmarkURL(page, name, URL, debug = false) {
+async function handleBookmarkURL(page, dealerFolder, name, URL, debug = false) {
     if (URL.startsWith("https://www.homenetiol.com/inventory/photo-manager?")) {
         console.log(chalk.magenta("\t"+name+" : "+URL+" : Gallery URL ...... (Ignoring)"));
     } else {
@@ -268,36 +337,67 @@ async function handleBookmarkURL(page, name, URL, debug = false) {
             debug ? "" : process.stdout.clearLine(diffInRows); // from cursor to end
             debug ? "" : process.stdout.cursorTo(0);
             process.stdout.write(chalk.red.bold("\t"+name+" : "+URL+" : Supplied URL doesn't exist ...... (Ignoring)"+"\n"));
-            await waitForSeconds(5);
+            // await waitForSeconds(5);
         } else {
-            // document.querySelector
-            // const pageContent = await page.content();
-            await getImagesFromContent(page);
+            await getImagesFromContent(page, dealerFolder);
             await waitForSeconds(10, true);
-
         }
     }
 }
 
-async function getImagesFromContent(page, debug = false) {
+
+
+async function getImagesFromContent(page, dealerFolder, debug = false) {
+    const hashAlgo = "sha1";
+    const stock_number = await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_StockNumber', el => el.map(x => x.getAttribute("value")));
+
     const image_div_container = await page.$('.tn-list-container');
     const image_ul_container = await image_div_container.$('.container.tn-list.sortable.deletable.ui-sortable');
     const image_largesrc_urls = await image_ul_container.$$eval('img.tn-car', el => el.map(x => x.getAttribute("largesrc")));
+    
+    const tempPath = generateTempFolderWithRandomText();
+    await makeDir(tempPath, debug);
+
+    var checksumOfFile;
+    debug ? "" : process.stdout.write("\t");
     for (let index = 0; index < image_largesrc_urls.length; index++) { 
-        console.log(image_largesrc_urls[index]);      
-        const file = fs.createWriteStream("./Downloads/"+zeroPad((index+1), 3)+".jpg");
+    // for (let index = 0; index < 2; index++) { 
+        debug ? console.log("Downloading image: "+image_largesrc_urls[index]) : process.stdout.write("»");
+        const file = fs.createWriteStream(tempPath+"/"+zeroPad((index+1), 3)+".jpg");
+        await new Promise((resolve, reject) => {
+            let body = [];
+            https.get(image_largesrc_urls[index], (response) => {
+                response.on('data', chunk => body.push(chunk));
+                response.on('end', () => {
+                    if (response.statusCode == 200) {
+                        let hashSum = crypto.createHash(hashAlgo);
+                        hashSum.update(Buffer.concat(body));
+                        checksumOfFile = hashSum.digest('hex');
+                    }
+                    resolve();
+                });
+                response.on('error', (error) => { reject(error); });
+            });
+        });
         await new Promise((resolve, reject) => {
             https.get(image_largesrc_urls[index], (response) => {
                 response.pipe(file);
-                // after download completed close filestream
-                file.on("finish", () => {
+                file.on("finish", async () => { // after download completed close filestream
                     file.close();
-                    console.log("Download Completed");
+
+                    const fileBuffer = fs.readFileSync(file.path);
+                    let hashSum = crypto.createHash(hashAlgo);
+                    hashSum.update(fileBuffer);
+                    if ( checksumOfFile == hashSum.digest('hex')) {
+                        await moveFileFromTempDirToDestination(file.path, tempPath+"/", "./Downloads/"+dealerFolder+"/"+stock_number+"/", debug);
+                        debug ? console.log("Download Completed, File saved as : "+"./Downloads/"+dealerFolder+"/"+stock_number+"/"+path.basename(file.path)) : process.stdout.write("•");
+                    }
                     resolve();
                 })
-                response.on('end', () => { /* resolve(""); */ });
                 response.on('error', (error) => { reject(error); });
             });
         });
     }
+    debug ? "" : process.stdout.write("\n");
+    await removeDir(tempPath, debug);
 }
