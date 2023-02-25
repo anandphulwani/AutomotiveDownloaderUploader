@@ -71,7 +71,7 @@ const bookmarks = getChromeBookmark(bookmarkPath, option);
             var usernameLevelBookmarks = topLevelBookmark.children
             for(const usernameLevelBookmark of usernameLevelBookmarks) {
                 console.log(chalk.cyan("Reading Bookmarks for the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
-                /** */
+                /**
                 await gotoPageAndWaitTillCurrentURLStartsWith(page, "https://signin.coxautoinc.com/logout?bridge_solution=HME", "https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=") // use  (..., undefined, true) as params
                 await fillInTextbox (page, "#username", "dinesharora80@gmail.com");
                 await clickOnButton (page, "#signIn", "Next");
@@ -81,7 +81,7 @@ const bookmarks = getChromeBookmark(bookmarkPath, option);
                 await waitTillCurrentURLStartsWith(page, "https://www.homenetiol.com/dashboard")
                 await waitForElementContainsHTML(page, "dt.bb-userdatum__value", "dinesharora80@gmail.com")
                 await waitForSeconds(10);
-                
+                 */
 
                 var dealerLevelBookmarks = usernameLevelBookmark.children
                 for(const dealerLevelBookmark of dealerLevelBookmarks) {
@@ -226,11 +226,11 @@ async function getRowPosOnTerminal() {
 }
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         let body = [];
         https.get(url, (response) => {
             response.on('data', chunk => body.push(chunk));
-            response.on('end', () => {
+            response.on('end', async () => {
                 if (response.statusCode == 200) {
                     let hashSum = crypto.createHash(hashAlgo);
                     hashSum.update(Buffer.concat(body));
@@ -244,6 +244,28 @@ async function getChecksumFromURL(url, hashAlgo, debug = false) {
             response.on('error', (error) => { reject(error); });
         });
     });
+}
+
+async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinationPath, hashAlgo, checksumOfFile, debug = false) {
+    return new Promise((resolve, reject) => {
+        https.get(url, (response) => {
+            response.pipe(file);
+            file.on("finish", async () => { // after download completed close filestream
+                file.close();
+
+                const fileBuffer = fs.readFileSync(file.path);
+                let hashSum = crypto.createHash(hashAlgo);
+                hashSum.update(fileBuffer);
+                if ( checksumOfFile == hashSum.digest('hex')) {
+                    await moveFileFromTempDirToDestination(file.path, tempPath+"/", destinationPath, debug);
+                    debug ? console.log("Download Completed, File saved as : "+destinationPath+path.basename(file.path)) : process.stdout.write("•");
+                }
+                resolve();
+            })
+            response.on('error', (error) => { reject(error); });
+        });
+    });
+
 }
 
 async function fillInTextbox (page, selector, textToFill, debug = false) {
@@ -385,41 +407,11 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
     for (let index = 0; index < 2; index++) { 
         debug ? console.log("Downloading image: "+image_largesrc_urls[index]) : process.stdout.write("»");
         const file = fs.createWriteStream(tempPath+"/"+zeroPad((index+1), 3)+".jpg");
-        // await new Promise((resolve, reject) => {
-        //     let body = [];
-        //     https.get(image_largesrc_urls[index], (response) => {
-        //         response.on('data', chunk => body.push(chunk));
-        //         response.on('end', () => {
-        //             if (response.statusCode == 200) {
-        //                 let hashSum = crypto.createHash(hashAlgo);
-        //                 hashSum.update(Buffer.concat(body));
-        //                 checksumOfFile = hashSum.digest('hex');
-        //             }
-        //             resolve();
-        //         });
-        //         response.on('error', (error) => { reject(error); });
-        //     });
-        // });
-        console.log(await getChecksumFromURL(image_largesrc_urls[index], hashAlgo, debug));
-        process.exit(1);
-        await new Promise((resolve, reject) => {
-            https.get(image_largesrc_urls[index], (response) => {
-                response.pipe(file);
-                file.on("finish", async () => { // after download completed close filestream
-                    file.close();
 
-                    const fileBuffer = fs.readFileSync(file.path);
-                    let hashSum = crypto.createHash(hashAlgo);
-                    hashSum.update(fileBuffer);
-                    if ( checksumOfFile == hashSum.digest('hex')) {
-                        await moveFileFromTempDirToDestination(file.path, tempPath+"/", "./Downloads/"+dealerFolder+"/"+stock_number+"/", debug);
-                        debug ? console.log("Download Completed, File saved as : "+"./Downloads/"+dealerFolder+"/"+stock_number+"/"+path.basename(file.path)) : process.stdout.write("•");
-                    }
-                    resolve();
-                })
-                response.on('error', (error) => { reject(error); });
-            });
-        });
+        const checksumOfFile = await getChecksumFromURL(image_largesrc_urls[index], hashAlgo, debug);
+        await downloadFileAndCompareWithChecksum(image_largesrc_urls[index], file, 
+            tempPath, "./Downloads/"+dealerFolder+"/"+stock_number+"/", 
+            hashAlgo, checksumOfFile, debug);
     }
     debug ? "" : process.stdout.write("\n");
     await removeDir(tempPath, debug);
