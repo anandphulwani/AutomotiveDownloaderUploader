@@ -71,7 +71,7 @@ const bookmarks = getChromeBookmark(bookmarkPath, option);
             var usernameLevelBookmarks = topLevelBookmark.children
             for(const usernameLevelBookmark of usernameLevelBookmarks) {
                 console.log(chalk.cyan("Reading Bookmarks for the Username: "+chalk.cyan.bold(usernameLevelBookmark.name)));
-                /**
+                
                 await gotoPageAndWaitTillCurrentURLStartsWith(page, "https://signin.coxautoinc.com/logout?bridge_solution=HME", "https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId=") // use  (..., undefined, true) as params
                 await fillInTextbox (page, "#username", "dinesharora80@gmail.com");
                 await clickOnButton (page, "#signIn", "Next");
@@ -81,7 +81,6 @@ const bookmarks = getChromeBookmark(bookmarkPath, option);
                 await waitTillCurrentURLStartsWith(page, "https://www.homenetiol.com/dashboard")
                 await waitForElementContainsHTML(page, "dt.bb-userdatum__value", "dinesharora80@gmail.com")
                 await waitForSeconds(10);
-                 */
 
                 var dealerLevelBookmarks = usernameLevelBookmark.children
                 for(const dealerLevelBookmark of dealerLevelBookmarks) {
@@ -150,9 +149,9 @@ async function makeDir(dirPath, debug = false) {
 
 async function moveFile(fromPath, toPath, debug = false) {
     if (! fs.existsSync(path.dirname(toPath)) ) {
-        console.log("moveFile function : making directory: "+path.dirname(toPath)+" : Executing.");
+        debug ? console.log("moveFile function : making directory: "+path.dirname(toPath)+" : Executing.") : ""; 
         await makeDir(path.dirname(toPath)+"/", debug); 
-        console.log("moveFile function : making directory: "+path.dirname(toPath)+" : Done.");
+        debug ? console.log("moveFile function : making directory: "+path.dirname(toPath)+" : Done.") : ""; 
     }
     await new Promise((resolve, reject) => {
         fs.rename(fromPath, toPath, function (error) {
@@ -258,7 +257,7 @@ async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinati
                 hashSum.update(fileBuffer);
                 if ( checksumOfFile == hashSum.digest('hex')) {
                     await moveFileFromTempDirToDestination(file.path, tempPath+"/", destinationPath, debug);
-                    debug ? console.log("Download Completed, File saved as : "+destinationPath+path.basename(file.path)) : process.stdout.write("•");
+                    debug ? console.log(chalk.green.bold("Download Completed, File saved as : "+destinationPath+path.basename(file.path))) : process.stdout.write(chalk.green.bold("• "));
                 }
                 resolve();
             })
@@ -371,19 +370,20 @@ async function handleBookmarkURL(page, dealerFolder, name, URL, debug = false) {
         console.log(chalk.magenta("\t"+name+" : "+URL+" : Gallery URL ...... (Ignoring)"));
     } else {
         const startingRow = await getRowPosOnTerminal();
-        process.stdout.write(chalk.cyan("\t"+name+" : "+URL+"\n"));
+        process.stdout.write(chalk.cyan("\t"+name+" : "+URL+" : "+startingRow+"\n"));
         const endingRow = await getRowPosOnTerminal();
-        const diffInRows = endingRow - startingRow;
+        const diffInRows = 2; //endingRow - startingRow;
+        // process.stdout.write(chalk.cyan("\t"+name+" : "+URL+" : "+endingRow+" - "+startingRow+" = "+diffInRows+"\n"));
         await gotoURL(page, URL, debug);
         if (page.url().startsWith("https://www.homenetiol.com/dashboard?")) {
             debug ? "" : process.stdout.moveCursor(0, -(diffInRows)); // up one line
             debug ? "" : process.stdout.clearLine(diffInRows); // from cursor to end
             debug ? "" : process.stdout.cursorTo(0);
-            process.stdout.write(chalk.red.bold("\t"+name+" : "+URL+" : Supplied URL doesn't exist ...... (Ignoring)"+"\n"));
+            process.stdout.write(chalk.red.bold("\t"+name+" : "+URL+" : Supplied URL doesn't exist ...... (Ignoring)"+endingRow+" - "+startingRow+" = "+diffInRows+"\n"));
             // await waitForSeconds(5);
         } else {
             await getImagesFromContent(page, dealerFolder);
-            await waitForSeconds(10, true);
+            // await waitForSeconds(10, true);
         }
     }
 }
@@ -396,7 +396,7 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
 
     const image_div_container = await page.$('.tn-list-container');
     const image_ul_container = await image_div_container.$('.container.tn-list.sortable.deletable.ui-sortable');
-    const image_largesrc_urls = await image_ul_container.$$eval('img.tn-car', el => el.map(x => x.getAttribute("largesrc")));
+    const image_largesrc_urls = await image_ul_container.$$eval('img.tn-car', el => el.map(x => x.getAttribute("originalUrl")));
     
     const tempPath = generateTempFolderWithRandomText();
     await makeDir(tempPath, debug);
@@ -404,7 +404,7 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
     var checksumOfFile;
     debug ? "" : process.stdout.write("\t");
     // for (let index = 0; index < image_largesrc_urls.length; index++) { 
-    for (let index = 0; index < 2; index++) { 
+    for (let index = 0; index < 1; index++) { 
         debug ? console.log("Downloading image: "+image_largesrc_urls[index]) : process.stdout.write("»");
         const file = fs.createWriteStream(tempPath+"/"+zeroPad((index+1), 3)+".jpg");
 
