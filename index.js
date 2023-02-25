@@ -8,7 +8,7 @@ import randomstring from 'randomstring';
 import path from 'path';
 import { NtpTimeSync } from "ntp-time-sync";
 import { getChromeBookmark } from "chrome-bookmark-reader";
-
+import pos from "get-cursor-position";
 
 if (false) {
 /**
@@ -200,28 +200,8 @@ function printSectionSeperator() {
     console.log(chalk.black.bgWhiteBright("-".repeat(80)));
 }
 
-async function getCursorPosOnTerminal() {
-    return new Promise((resolve) => {
-        const termcodes = { cursorGetPosition: '\u001b[6n' };
-        process.stdin.setEncoding('utf8');
-        process.stdin.setRawMode(true);
-        const readfx = function () {
-            const buf = process.stdin.read();
-            const str = JSON.stringify(buf); // "\u001b[9;1R"
-            const regex = /\[(.*)/g;
-            const xy = regex.exec(str)[0].replace(/\[|R"/g, '').split(';');
-            const pos = { rows: xy[0], cols: xy[1] };
-            process.stdin.setRawMode(false);
-            resolve(pos);
-        }
-        process.stdin.once('readable', readfx);
-        process.stdout.write(termcodes.cursorGetPosition);
-    });
-}
-
 async function getRowPosOnTerminal() {
-    const pos = await getCursorPosOnTerminal();
-    return pos.rows;
+    return pos.sync().row;
 }
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
@@ -370,17 +350,16 @@ async function handleBookmarkURL(page, dealerFolder, name, URL, debug = false) {
         console.log(chalk.magenta("\t"+name+" : "+URL+" : Gallery URL ...... (Ignoring)"));
     } else {
         const startingRow = await getRowPosOnTerminal();
-        process.stdout.write(chalk.cyan("\t"+name+" : "+URL+" : "+startingRow+"\n"));
+        process.stdout.write(chalk.cyan("\t"+name+" : "+URL+"\n"));
         const endingRow = await getRowPosOnTerminal();
-        const diffInRows = 2; //endingRow - startingRow;
-        // process.stdout.write(chalk.cyan("\t"+name+" : "+URL+" : "+endingRow+" - "+startingRow+" = "+diffInRows+"\n"));
+        const diffInRows = endingRow - startingRow;
         await gotoURL(page, URL, debug);
         if (page.url().startsWith("https://www.homenetiol.com/dashboard?")) {
             debug ? "" : process.stdout.moveCursor(0, -(diffInRows)); // up one line
             debug ? "" : process.stdout.clearLine(diffInRows); // from cursor to end
             debug ? "" : process.stdout.cursorTo(0);
-            process.stdout.write(chalk.red.bold("\t"+name+" : "+URL+" : Supplied URL doesn't exist ...... (Ignoring)"+endingRow+" - "+startingRow+" = "+diffInRows+"\n"));
-            // await waitForSeconds(5);
+            process.stdout.write(chalk.red.bold("\t"+name+" : "+URL+" : Supplied URL doesn't exist ...... (Ignoring)\n"));
+            await waitForSeconds(5);
         } else {
             await getImagesFromContent(page, dealerFolder);
             // await waitForSeconds(10, true);
@@ -401,7 +380,6 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
     const tempPath = generateTempFolderWithRandomText();
     await makeDir(tempPath, debug);
 
-    var checksumOfFile;
     debug ? "" : process.stdout.write("\t");
     // for (let index = 0; index < image_largesrc_urls.length; index++) { 
     for (let index = 0; index < 1; index++) { 
