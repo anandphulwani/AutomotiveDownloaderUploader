@@ -9,6 +9,9 @@ import path from 'path';
 import { NtpTimeSync } from "ntp-time-sync";
 import { getChromeBookmark } from "chrome-bookmark-reader";
 import pos from "get-cursor-position";
+import date from "date-and-time";
+import xlsx from "xlsx";
+
 
 if (false) {
 /**
@@ -43,6 +46,9 @@ await timeSync.getTime().then(function (result) {
 console.log(chalk.cyan("Check if time is in sync with online NTP servers.: Done."));
 printSectionSeperator();
 }
+
+const todays_date = date.format(new Date(),'YYYY-MM-DD');
+const dealerConfiguration = readDealerConfiguration();
 
 /**
  * Read chrome bookmarks from chrome browser
@@ -148,12 +154,7 @@ async function makeDir(dirPath, debug = false) {
 }
 
 async function moveFile(fromPath, toPath, debug = false) {
-    if (! fs.existsSync(path.dirname(toPath)) ) {
-        debug ? console.log("moveFile function : making directory: "+path.dirname(toPath)+" : Executing.") : ""; 
-        await makeDir(path.dirname(toPath)+"/", debug); 
-        debug ? console.log("moveFile function : making directory: "+path.dirname(toPath)+" : Done.") : ""; 
-    }
-    await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         fs.rename(fromPath, toPath, function (error) {
             if (error) {
                 console.log(chalk.white.bgRed.bold("Unable to move file from the "+
@@ -170,6 +171,15 @@ async function moveFile(fromPath, toPath, debug = false) {
             }
         });
     });
+}
+
+async function createDirAndMoveFile(fromPath, toPath, debug = false) {
+    if (! fs.existsSync(path.dirname(toPath)) ) {
+        debug ? console.log("createDirAndMoveFile function : making directory: "+path.dirname(toPath)+" : Executing.") : ""; 
+        await makeDir(path.dirname(toPath)+"/", debug); 
+        debug ? console.log("createDirAndMoveFile function : making directory: "+path.dirname(toPath)+" : Done.") : ""; 
+    }
+    await moveFile(fromPath, toPath, debug);
 }
 
 async function removeDir(dirPath, debug = false) {
@@ -190,9 +200,9 @@ async function removeDir(dirPath, debug = false) {
     });
 }
 
-async function moveFileFromTempDirToDestination(filePath, tempPath, destinationPath, debug = false) {
+async function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, destinationPath, debug = false) {
         debug ? console.log("Moving file from TempDir to Destination : Executing.") : "";
-        await moveFile(filePath, filePath.replace(tempPath, destinationPath), debug);
+        await createDirAndMoveFile(filePath, filePath.replace(tempPath, destinationPath), debug);
         debug ? console.log("Moving file from TempDir to Destination : Done.") : "";
 }
 
@@ -225,7 +235,7 @@ async function getChecksumFromURL(url, hashAlgo, debug = false) {
     });
 }
 
-async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinationPath, hashAlgo, checksumOfFile, debug = false) {
+async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinationPath, isSingleImage, hashAlgo, checksumOfFile, debug = false) {
     return new Promise((resolve, reject) => {
         https.get(url, (response) => {
             response.pipe(file);
@@ -236,8 +246,25 @@ async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinati
                 let hashSum = crypto.createHash(hashAlgo);
                 hashSum.update(fileBuffer);
                 if ( checksumOfFile == hashSum.digest('hex')) {
-                    await moveFileFromTempDirToDestination(file.path, tempPath+"/", destinationPath, debug);
-                    debug ? console.log(chalk.green.bold("Download Completed, File saved as : "+destinationPath+path.basename(file.path))) : process.stdout.write(chalk.green.bold("• "));
+                    let filePath = file.path;
+                    // console.log("Original filePath: "+filePath);
+                    // console.log("Original destinationPath: "+destinationPath);
+                    if (isSingleImage) {
+                        const newFilePath = path.dirname(filePath) + "/" +
+                            path.basename(destinationPath) +
+                            path.extname(path.basename(filePath));
+                        destinationPath = path.dirname(destinationPath)+"/";
+                        // console.log("New destinationPath: "+destinationPath);
+                        // console.log("NewFilePath: "+newFilePath);
+                        await moveFile(filePath, newFilePath, debug);
+                        filePath = newFilePath;
+                    }
+                    console.log("filePath: "+filePath);
+                    console.log("tempPath: "+tempPath+"/");
+                    console.log("destinationPath: "+destinationPath);
+                    // process.exit(0);
+                    await createDirAndMoveFileFromTempDirToDestination(filePath, tempPath+"/", destinationPath, debug);
+                    debug ? console.log(chalk.green.bold("Download Completed, File saved as : "+destinationPath+path.basename(filePath))) : process.stdout.write(chalk.green.bold("• "));
                 }
                 resolve();
             })
@@ -367,8 +394,6 @@ async function handleBookmarkURL(page, dealerFolder, name, URL, debug = false) {
     }
 }
 
-
-
 async function getImagesFromContent(page, dealerFolder, debug = false) {
     const hashAlgo = "sha1";
     const stock_number = await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_StockNumber', el => el.map(x => x.getAttribute("value")));
@@ -381,16 +406,51 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
     await makeDir(tempPath, debug);
 
     debug ? "" : process.stdout.write("\t");
+    const imageNumbersToDownload = getImageNumbersToDownload_FromDC(dealerFolder, "Image numbers to download")
+    for (let index = 0; index < imageNumbersToDownload.length; index++) { 
     // for (let index = 0; index < image_largesrc_urls.length; index++) { 
-    for (let index = 0; index < 1; index++) { 
-        debug ? console.log("Downloading image: "+image_largesrc_urls[index]) : process.stdout.write("»");
+        const imageNumberToDownload = parseInt(imageNumbersToDownload[index]);
+        if (imageNumberToDownload >= image_largesrc_urls.length ) {
+            //  TODO: Continue prompt here.
+            process.exit(1);
+        }
+        debug ? console.log("Downloading image: "+image_largesrc_urls[imageNumberToDownload]) : process.stdout.write("»");
         const file = fs.createWriteStream(tempPath+"/"+zeroPad((index+1), 3)+".jpg");
 
-        const checksumOfFile = await getChecksumFromURL(image_largesrc_urls[index], hashAlgo, debug);
-        await downloadFileAndCompareWithChecksum(image_largesrc_urls[index], file, 
-            tempPath, "./Downloads/"+dealerFolder+"/"+stock_number+"/", 
+        const checksumOfFile = await getChecksumFromURL(image_largesrc_urls[imageNumberToDownload], hashAlgo, debug);
+        await downloadFileAndCompareWithChecksum(image_largesrc_urls[imageNumberToDownload], file, 
+            tempPath, 
+            "./Downloads/"+
+            todays_date+"/"+
+            dealerFolder+"/"+
+            stock_number+"/", 
+            ( imageNumbersToDownload.length == 1 ? true: false ),
             hashAlgo, checksumOfFile, debug);
     }
     debug ? "" : process.stdout.write("\n");
     await removeDir(tempPath, debug);
+}
+
+function readDealerConfiguration() {
+    const file = xlsx.readFile('./configs/DealerConfiguration.xlsx')
+    let data = []
+    const sheets = file.SheetNames
+    for (let i = 0; i < sheets.length; i++) {
+        const temp = xlsx.utils.sheet_to_json(
+            file.Sheets[file.SheetNames[i]],
+            {
+                //range: "",
+                raw: false,
+                //header: 1,
+            })
+        temp.forEach((res) => { data.push(res) });
+    }
+    // console.log(data); // Printing data
+    return data;
+}
+
+function getImageNumbersToDownload_FromDC(dealerNumber, settingName) {
+    const singleelement = dealerConfiguration.filter(a => a["Dealer Number"] == dealerNumber)[0];
+    const imageNumbersToDownload = (singleelement[settingName]).trim();
+    return imageNumbersToDownload.split(",");
 }
