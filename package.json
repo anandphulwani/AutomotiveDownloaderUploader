@@ -14,6 +14,7 @@
     "chalk": "^5.2.0",
     "cheerio": "^1.0.0-rc.12",
     "chrome-bookmark-reader": "^0.4.0",
+    "date-and-time": "^2.4.2",
     "get-cursor-position": "^2.0.0",
     "npm-time": "^1.0.0",
     "ntp-time-sync": "^0.3.0",
@@ -21,6 +22,7 @@
     "puppeteer-core": "^19.6.3",
     "puppeteer-extra": "^3.3.4",
     "randomstring": "^1.2.3",
-    "sleep": "^6.3.0"
+    "sleep": "^6.3.0",
+    "xlsx": "^0.18.5"
   }
 }
