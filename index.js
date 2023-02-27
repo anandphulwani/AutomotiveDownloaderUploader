@@ -65,13 +65,15 @@ const bookmarks = getChromeBookmark(bookmarkPath, option);
     });
     const [page] = await browser.pages();
 
-    bookmarks.forEach(async (topLevelBookmark) => {
-        // for (const topLevelBookmark of bookmarks) {
+    // bookmarks.forEach(async (topLevelBookmark) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const topLevelBookmark of bookmarks) {
         if (topLevelBookmark.name === 'Bookmarks bar') {
             console.log(chalk.cyan('Reading Bookmarks bar from the bookmarks data.'));
             const usernameLevelBookmarks = topLevelBookmark.children;
-            usernameLevelBookmarks.forEach(async (usernameLevelBookmark) => {
-                // for (const usernameLevelBookmark of usernameLevelBookmarks) {
+            // usernameLevelBookmarks.forEach(async (usernameLevelBookmark) => {
+            // eslint-disable-next-line no-restricted-syntax
+            for (const usernameLevelBookmark of usernameLevelBookmarks) {
                 console.log(chalk.cyan(`Reading Bookmarks for the Username: ${chalk.cyan.bold(usernameLevelBookmark.name)}`));
 
                 await gotoPageAndWaitTillCurrentURLStartsWith(
@@ -89,8 +91,9 @@ const bookmarks = getChromeBookmark(bookmarkPath, option);
                 await waitForSeconds(10);
 
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
-                dealerLevelBookmarks.forEach(async (dealerLevelBookmark) => {
-                    // for (const dealerLevelBookmark of dealerLevelBookmarks) {
+                // dealerLevelBookmarks.forEach(async (dealerLevelBookmark) => {
+                // eslint-disable-next-line no-restricted-syntax
+                for (const dealerLevelBookmark of dealerLevelBookmarks) {
                     console.log(
                         chalk.cyan('Reading Bookmarks for the Dealer: ') +
                             chalk.cyan.bold(dealerLevelBookmark.name) +
@@ -98,16 +101,16 @@ const bookmarks = getChromeBookmark(bookmarkPath, option);
                             chalk.cyan.bold(usernameLevelBookmark.name)
                     );
                     const vehicleBookmarks = dealerLevelBookmark.children;
-                    vehicleBookmarks.forEach(async (vehicleBookmark) => {
-                        // for (const vehicleBookmark of vehicleBookmarks) {
+                    // vehicleBookmarks.forEach(async (vehicleBookmark) => {
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const vehicleBookmark of vehicleBookmarks) {
                         await handleBookmarkURL(page, dealerLevelBookmark.name, vehicleBookmark.name, vehicleBookmark.url);
                         await waitForSeconds(0);
-                    });
-                });
-            });
+                    } // });
+                } // });
+            } // });
         }
-        // }
-    });
+    } // });
     await browser.close();
 })();
 // await sleep(10000);
@@ -255,20 +258,12 @@ async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinati
                 hashSum.update(fileBuffer);
                 if (checksumOfFile === hashSum.digest('hex')) {
                     let filePath = file.path;
-                    // console.log("Original filePath: "+filePath);
-                    // console.log("Original destinationPath: "+destinationPath);
                     if (isSingleImage) {
                         const newFilePath = `${path.dirname(filePath)}/${path.basename(destinationPath)}${path.extname(path.basename(filePath))}`;
                         destinationPath = `${path.dirname(destinationPath)}/`;
-                        // console.log("New destinationPath: "+destinationPath);
-                        // console.log("NewFilePath: "+newFilePath);
                         await moveFile(filePath, newFilePath, debug);
                         filePath = newFilePath;
                     }
-                    console.log(`filePath: ${filePath}`);
-                    console.log(`tempPath: ${tempPath}/`);
-                    console.log(`destinationPath: ${destinationPath}`);
-                    // process.exit(0);
                     await createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, debug);
                     debug
                         ? console.log(chalk.green.bold(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`))
