@@ -385,7 +385,9 @@ async function waitForSeconds(seconds, debug = false) {
 
 async function handleBookmarkURL(page, dealerFolder, name, URL, debug = false) {
     if (URL.startsWith('https://www.homenetiol.com/inventory/photo-manager?')) {
-        console.log(chalk.magenta(`\t${name} : ${URL} : Gallery URL ...... (Ignoring)`));
+        console.log(chalk.magenta(`\t${name} : ${URL} : Photo Manager URL ...... (Ignoring)`));
+    } else if (URL.startsWith('https://www.homenetiol.com/reporting/photo-upload?')) {
+        console.log(chalk.magenta(`\t${name} : ${URL} : Photo Upload URL ...... (Ignoring)`));
     } else {
         const startingRow = await getRowPosOnTerminal();
         process.stdout.write(chalk.cyan(`\t${name} : ${URL}\n`));
