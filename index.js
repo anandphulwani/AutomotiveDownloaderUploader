@@ -81,13 +81,20 @@ const bookmarks = getChromeBookmark(bookmarkPath, option);
                     'https://signin.coxautoinc.com/logout?bridge_solution=HME',
                     'https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId='
                 ); // use  (..., undefined, true) as params
-                await fillInTextbox(page, '#username', 'dinesharora80@gmail.com');
+                const username = 'dinesharora80@gmail.com';
+                const password = 'kunsh123';
+                await fillInTextbox(page, '#username', username);
                 await clickOnButton(page, '#signIn', 'Next');
-                await waitForElementContainsText(page, '#returnLink', '← dinesharora80@gmail.com');
-                await fillInTextbox(page, '#password', 'kunsh123');
+                await waitForElementContainsText(page, '#returnLink', `← ${username}`);
+                await fillInTextbox(page, '#password', password);
                 await clickOnButton(page, '#signIn', 'Sign in');
                 await waitTillCurrentURLStartsWith(page, 'https://www.homenetiol.com/dashboard');
-                await waitForElementContainsHTML(page, 'dt.bb-userdatum__value', 'dinesharora80@gmail.com');
+                await waitForElementContainsText(page, '.bb-logout', 'Sign out');
+                // eslint-disable-next-line no-undef, no-loop-func
+                await page.waitForFunction((args) => document.querySelector(args[0]).value.toLowerCase() === args[1].toLowerCase(), {}, [
+                    'dt.bb-userdatum__value',
+                    username,
+                ]);
                 await waitForSeconds(10);
 
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
