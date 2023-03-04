@@ -19,5 +19,9 @@
         "no-use-before-define": "off",
         "no-plusplus": "off",
         "no-await-in-loop": "off"
+    },
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
     }
 }
