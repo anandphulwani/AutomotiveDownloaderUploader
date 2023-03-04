@@ -3,7 +3,8 @@ import crypto from 'crypto';
 import fs from 'fs';
 import chalk from 'chalk';
 import path from 'path';
-import { makeDir, moveFile, createDirAndMoveFile, removeDir, createDirAndMoveFileFromTempDirToDestination } from './filesystem';
+// eslint-disable-next-line import/extensions
+import { makeDir, moveFile, createDirAndMoveFile, removeDir, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
     return new Promise((resolve, reject) => {

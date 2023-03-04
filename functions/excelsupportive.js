@@ -1,4 +1,5 @@
-import { readDealerConfiguration } from './excel';
+// eslint-disable-next-line import/extensions
+import { readDealerConfiguration } from './excel.js';
 
 const dealerConfiguration = readDealerConfiguration();
 

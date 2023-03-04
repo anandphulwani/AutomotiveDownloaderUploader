@@ -1,4 +1,5 @@
-import { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith } from './waiting';
+// eslint-disable-next-line import/extensions
+import { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith } from './waiting.js';
 
 async function gotoURL(page, URL, debug = false) {
     debug ? console.log(`Navigating to the URL: ${URL}: Executing.`) : '';
