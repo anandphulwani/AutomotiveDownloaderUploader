@@ -1,7 +1,9 @@
 import xlsx from 'xlsx';
+// eslint-disable-next-line import/extensions
+import { config } from '../configs/config.js';
 
 function readDealerConfiguration() {
-    const file = xlsx.readFile('./configs/DealerConfiguration.xlsx');
+    const file = xlsx.readFile(config.dealerConfiguration);
     const data = [];
     const sheets = file.SheetNames;
     for (let i = 0; i < sheets.length; i++) {
