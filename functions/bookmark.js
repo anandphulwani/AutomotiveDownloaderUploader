@@ -1,12 +1,11 @@
 import chalk from 'chalk';
-// eslint-disable-next-line import/extensions
+
+/* eslint-disable import/extensions */
 import { waitForSeconds } from './sleep.js';
-// eslint-disable-next-line import/extensions
 import { getRowPosOnTerminal } from './terminal.js';
-// eslint-disable-next-line import/extensions
 import { gotoURL } from './goto.js';
-// eslint-disable-next-line import/extensions
 import { getImagesFromContent } from './pageextraction.js';
+/* eslint-enable import/extensions */
 
 async function handleBookmarkURL(page, dealerFolder, name, URL, debug = false) {
     if (URL.startsWith('https://www.homenetiol.com/inventory/photo-manager?')) {
