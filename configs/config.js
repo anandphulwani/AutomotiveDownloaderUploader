@@ -7,6 +7,8 @@ import { configUser } from './config-user.js';
 
 const configBasic = {
     environment: 'production', // development Or production
+    timezone: 'Asia/Calcutta',
+    timeOffsetInMinutesToAvoid: 2,
     app: {
         port: 3000,
         name: 'myapp',
@@ -27,6 +29,7 @@ const configBasic = {
     bookmarkOptions: {
         shouldIncludeFolders: true,
     },
+    dealerConfiguration: './configs/DealerConfiguration.xlsx',
 };
 
 /**
