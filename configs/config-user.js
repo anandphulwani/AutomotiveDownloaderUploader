@@ -13,12 +13,20 @@ const configUser = {
             password: 'kunsh123',
             credentialsblockSHA1: '',
         },
-        // {
-        //     username: 'dinesharora80@gmail.com',
-        //     password: '',
-        //     credentialsblockSHA1: '',
-        // },
+        {
+            username: 'cute996@gmail.com',
+            password: 'kunsh123',
+            credentialsblockSHA1: '',
+        },
     ],
+    // conractorsRatioToMaintain: {
+    //     ram: 20,
+    //     karan: 20,
+    //     pavan: 20,
+    //     arjun: 20,
+    //     om: 10,
+    //     rohan: 10,
+    // },
 };
 
 // eslint-disable-next-line import/prefer-default-export

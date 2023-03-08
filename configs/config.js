@@ -32,6 +32,14 @@ const configBasic = {
     dealerConfiguration: './configs/DealerConfiguration.xlsx',
     downloadPath: './Downloads',
     initialFolderBunchToDownload: 2,
+    conractorsCurrentRatio: {
+        ram: 1,
+        karan: 1,
+        pavan: 1,
+        arjun: 1,
+        om: 1,
+        rohan: 1,
+    },
 };
 
 /**
