@@ -1,80 +1,61 @@
+import chalk from 'chalk';
 import puppeteer from 'puppeteer';
-import https from 'https';
-import crypto from 'crypto';
-import { NtpTimeSync } from 'ntp-time-sync';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
-import pos from 'get-cursor-position';
 
-import { printSectionSeperator } from './functions/others';
-import { msleep, sleep, waitForSeconds } from './functions/sleep';
-import { zeroPad } from './functions/padding';
-import {
-    makeDir,
-    moveFile,
-    createDirAndMoveFile,
-    removeDir,
-    createDirAndMoveFileFromTempDirToDestination,
-    generateTempFolderWithRandomText,
-} from './functions/filesystem';
-import { getRowPosOnTerminal } from './functions/terminal';
-import { fillInTextbox, clickOnButton } from './functions/actionOnElements';
-import { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith } from './functions/waiting';
-import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto';
-import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './functions/download';
-import { handleBookmarkURL } from './functions/bookmark';
-import { getImagesFromContent } from './functions/pageextraction';
-import { readDealerConfiguration } from './functions/excel';
-import { getImageNumbersToDownloadFromDC } from './functions/excelsupportive';
+/* eslint-disable import/extensions */
+import { config } from './configs/config.js';
+import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
+import { printSectionSeperator } from './functions/others.js';
+import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
+import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
+import { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
+import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto.js';
+import { handleBookmarkURL } from './functions/bookmark.js';
+import { validateExcelFile } from './functions/excelvalidation.js';
+import { readDealerConfigurationFormatted, readDealerConfigurationExcel } from './functions/excel.js';
+/* eslint-enable import/extensions */
 
-// /**
-//  * Check if timezone matches of Asia/Calcutta
-//  */
-// console.log(chalk.cyan("Check if timezone matches of Asia/Calcutta: Executing."));
-// if (Intl.DateTimeFormat().resolvedOptions().timeZone != "Asia/Calcutta") {
-//     console.log(chalk.white.bgRed.bold("System timezone is not set to India: Asia/Calcutta UTC+5.30 Hours"));
-//     process.exit(1);
-// } else {
-//     console.log(chalk.green.bold("System timezone matches to India: Asia/Calcutta UTC+5.30 Hours"));
-// }
-// console.log(chalk.cyan("Check if timezone matches of Asia/Calcutta: Done."));
+// const {
+//     db: { host, port, name },
+// } = config;
+// console.log(`${host}:${port}/${name}`);
+// console.log(config);
+// console.log(config.environment);
+// console.log(config.browserArgs.headless);
+
+// checkTimezone();
 // printSectionSeperator();
 
-// /**
-//  * Check if time is in sync with online NTP servers.
-//  */
-// console.log(chalk.cyan("Check if time is in sync with online NTP servers.: Executing."));
-// const timeSync = NtpTimeSync.getInstance();
-// await timeSync.getTime().then(function (result) {
-//   console.log(chalk.cyan("Current System time: "+ new Date() +",\nReal time (NTP Servers): "+result.now));
-//   const offsetInSeconds = Math.abs( Math.round( result.offset / 1000 ) );
-//   if ( offsetInSeconds > (2 * 60 ) ) {
-//     console.log(chalk.white.bgRed.bold("System time not set accurately, time is off by "+ offsetInSeconds +" seconds ("+result.offset+"ms), \nPlease re sync time with NTP server."));
-//     process.exit(1);
-//   } else {
-//     console.log(chalk.green.bold("System time shows accurate data i.e. (within 2 mins differnce), current offset is "+ offsetInSeconds +" seconds ("+result.offset+"ms)."));
-//   }
-// })
-// console.log(chalk.cyan("Check if time is in sync with online NTP servers.: Done."));
+// await checkTimeWithNTP();
 // printSectionSeperator();
 
+validateExcelFile();
+// readDealerConfigurationFormatted();
+// console.log(readDealerConfigurationExcel());
+process.exit(0);
 /**
  * Read chrome bookmarks from chrome browser
  */
-// const bookmarkPath = '/path/to/Chrome/Bookmark' OR '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks' //TODO: Change path to default and pick from ini
-const bookmarkPath = 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks';
-const option = {
-    shouldIncludeFolders: true,
-};
-const bookmarks = getChromeBookmark(bookmarkPath, option);
+
+const { bookmarkPath, bookmarkOptions } = config;
+const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
 
 (async () => {
-    const browser = await puppeteer.launch({
-        headless: false,
-        defaultViewport: null,
-        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-        args: ['--user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data'],
-    });
+    const browser = await puppeteer.launch(config.browserArgs);
+    const numberOfOpenPages = (await browser.pages()).length;
+    if (numberOfOpenPages > 1) {
+        console.log(chalk.white.bgRed.bold(`\nGoogle Chrome has older multiple tabs opened, Change google chrome settings:`));
+        console.log(chalk.white.bgRed.bold(`        01. Open "chrome://settings/" URL in Google Chrome.`));
+        console.log(chalk.white.bgRed.bold(`        02. Search "On startup" in the search bar.`));
+        console.log(chalk.white.bgRed.bold(`        03. Select "Open the New Tab page" in the options.`));
+        console.log(chalk.white.bgRed.bold(`        04. Close the browser.`));
+        process.exit(1);
+    }
     const [page] = await browser.pages();
+    // Create raw protocol session.
+    const session = await page.target().createCDPSession();
+    const { windowId } = await session.send('Browser.getWindowForTarget');
+    await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
 
     // bookmarks.forEach(async (topLevelBookmark) => {
     // eslint-disable-next-line no-restricted-syntax
