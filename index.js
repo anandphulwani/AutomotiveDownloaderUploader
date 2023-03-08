@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import killChrome from 'kill-chrome';
 import puppeteer from 'puppeteer';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
 
@@ -11,7 +12,7 @@ import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
 import { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
 import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto.js';
 import { handleBookmarkURL } from './functions/bookmark.js';
-import { validateExcelFile } from './functions/excelvalidation.js';
+import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { readDealerConfigurationFormatted, readDealerConfigurationExcel } from './functions/excel.js';
 /* eslint-enable import/extensions */
 
@@ -23,16 +24,23 @@ import { readDealerConfigurationFormatted, readDealerConfigurationExcel } from '
 // console.log(config.environment);
 // console.log(config.browserArgs.headless);
 
-// checkTimezone();
-// printSectionSeperator();
+if (config.environment === 'production') {
+    checkTimezone();
+    printSectionSeperator();
 
-// await checkTimeWithNTP();
-// printSectionSeperator();
+    await checkTimeWithNTP();
+    printSectionSeperator();
+}
 
-validateExcelFile();
+if (validateDealerConfigurationExcelFile() === 'error') {
+    process.exit(0);
+}
 // readDealerConfigurationFormatted();
-// console.log(readDealerConfigurationExcel());
-process.exit(0);
+
+await killChrome({
+    includingMainProcess: true,
+});
+
 /**
  * Read chrome bookmarks from chrome browser
  */
@@ -53,9 +61,9 @@ const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
     }
     const [page] = await browser.pages();
     // Create raw protocol session.
-    const session = await page.target().createCDPSession();
-    const { windowId } = await session.send('Browser.getWindowForTarget');
-    await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
+    // const session = await page.target().createCDPSession();
+    // const { windowId } = await session.send('Browser.getWindowForTarget');
+    // await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
 
     // bookmarks.forEach(async (topLevelBookmark) => {
     // eslint-disable-next-line no-restricted-syntax
@@ -77,17 +85,26 @@ const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
                 const password = 'kunsh123';
                 await fillInTextbox(page, '#username', username);
                 await clickOnButton(page, '#signIn', 'Next');
-                await waitForElementContainsText(page, '#returnLink', `← ${username}`);
+                console.log('001');
+                await waitForElementContainsText(page, '#returnLink', `← ${username}`, true);
+                console.log('002');
                 await fillInTextbox(page, '#password', password);
                 await clickOnButton(page, '#signIn', 'Sign in');
+                console.log('003');
                 await waitTillCurrentURLStartsWith(page, 'https://www.homenetiol.com/dashboard');
-                await waitForElementContainsText(page, '.bb-logout', 'Sign out');
+                console.log('004');
+                await page.waitForSelector('#bridge-bar-user-menu');
+                console.log('005');
+                await page.waitForSelector('.bb-logout');
+                console.log('006');
+
                 // eslint-disable-next-line no-undef, no-loop-func
-                await page.waitForFunction((args) => document.querySelector(args[0]).value.toLowerCase() === args[1].toLowerCase(), {}, [
-                    'dt.bb-userdatum__value',
-                    username,
-                ]);
-                await waitForSeconds(10);
+                // await page.waitForFunction((args) => document.querySelector(args[0]).innerHTML.toLowerCase() === args[1].toLowerCase(), {}, [
+                //     'dt.bb-userdatum__value',
+                //     username,
+                // ]);
+                console.log('007');
+                await waitForSeconds(5, true);
 
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
                 // dealerLevelBookmarks.forEach(async (dealerLevelBookmark) => {
