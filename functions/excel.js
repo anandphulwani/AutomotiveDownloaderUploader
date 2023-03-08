@@ -28,11 +28,10 @@ function readDealerConfigurationExcel() {
 
 function readDealerConfigurationFormatted() {
     let data = readDealerConfigurationExcel();
-    // console.log(data);
     data = allTrimStringArrayOfObjects(data);
-    // console.log(data);
     data = trimMultipleSpacesInMiddleIntoOneArrayOfObjects(data);
     // console.log(data);
+    return data;
 }
 
 export { readDealerConfigurationExcel, readDealerConfigurationFormatted };

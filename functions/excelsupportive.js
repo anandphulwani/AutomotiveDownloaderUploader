@@ -3,11 +3,19 @@ import { readDealerConfigurationFormatted } from './excel.js';
 
 const dealerConfiguration = readDealerConfigurationFormatted();
 
-function getImageNumbersToDownloadFromDC(dealerNumber, settingName) {
-    const singleelement = dealerConfiguration.filter((a) => a['Dealer Number'] === dealerNumber)[0];
-    const imageNumbersToDownload = singleelement[settingName].trim();
-    return imageNumbersToDownload.split(',');
+function getSettingValueFromDC(filterBySettingName, filterBySettingValue, settingToExtract) {
+    const singleelement = dealerConfiguration.filter((a) => a[filterBySettingName] === filterBySettingValue)[0];
+    const settingValues = singleelement[settingToExtract].trim();
+    return settingValues;
+}
+
+function getImageNumbersToDownloadFromDC(dealerNumber) {
+    let imageNumbersToDownload = getSettingValueFromDC('Dealer Number', dealerNumber, 'Image numbers to download');
+    imageNumbersToDownload = imageNumbersToDownload.split(',');
+    return imageNumbersToDownload;
 }
 
 // eslint-disable-next-line import/prefer-default-export
 export { getImageNumbersToDownloadFromDC };
+
+// const imageNumbersToDownload = getImageNumbersToDownloadFromDC(dealerFolder, );

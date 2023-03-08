@@ -11,7 +11,7 @@ import {
 /* eslint-enable import/extensions */
 
 let resultStatus;
-function validateExcelFile(seconds, debug = false) {
+function validateDealerConfigurationExcelFile(seconds, debug = false) {
     debug ? console.log(`Validating excel file: Executing.`) : '';
     const data = readDealerConfigurationExcel();
 
@@ -29,27 +29,28 @@ function validateExcelFile(seconds, debug = false) {
     resultStatus = 'success';
 
     const dealerNumberArray = data.map((item) => item['Dealer Number']);
-    validateExcelFileColumnDealerNumber(dealerNumberArray, 'Dealer Number');
+    validateDealerConfigurationExcelFileColumnDealerNumber(dealerNumberArray, 'Dealer Number');
     const dealerNameArray = data.map((item) => item['Dealer Name']);
-    validateExcelFileColumnDealerName(dealerNameArray, 'Dealer Name');
+    validateDealerConfigurationExcelFileColumnDealerName(dealerNameArray, 'Dealer Name');
     const imageNumbersToDownloadArray = data.map((item) => item['Image numbers to download']);
-    validateExcelFileColumnImageNumbersToDownload(imageNumbersToDownloadArray, 'Image numbers to download');
+    validateDealerConfigurationExcelFileColumnImageNumbersToDownload(imageNumbersToDownloadArray, 'Image numbers to download');
     const addTextToFolderNameArray = data.map((item) => item['Add text to folder name']);
-    validateExcelFileColumnAddTextToFolderName(addTextToFolderNameArray, 'Add text to folder name');
+    validateDealerConfigurationExcelFileColumnAddTextToFolderName(addTextToFolderNameArray, 'Add text to folder name');
     const deleteOriginalArray = data.map((item) => item['Delete original']);
-    validateExcelFileColumnBooleanOnly(deleteOriginalArray, 'Delete original');
+    validateDealerConfigurationExcelFileColumnBooleanOnly(deleteOriginalArray, 'Delete original');
     const shiftOriginalArray = data.map((item) => item['Shift original 1st position to last position']);
-    validateExcelFileColumnBooleanOnly(shiftOriginalArray, 'Shift original 1st position to last position');
+    validateDealerConfigurationExcelFileColumnBooleanOnly(shiftOriginalArray, 'Shift original 1st position to last position');
     const putFirstArray = data.map((item) => item['Put 1st edited images in the last position also']);
-    validateExcelFileColumnBooleanOnly(putFirstArray, 'Put 1st edited images in the last position also');
+    validateDealerConfigurationExcelFileColumnBooleanOnly(putFirstArray, 'Put 1st edited images in the last position also');
     const lockTheImageArray = data.map((item) => item['Lock the image (check mark)']);
-    validateExcelFileColumnBooleanOnly(lockTheImageArray, 'Lock the image (check mark)');
-    console.log(`resultStatus: ${resultStatus}`);
+    validateDealerConfigurationExcelFileColumnBooleanOnly(lockTheImageArray, 'Lock the image (check mark)');
+    debug ? console.log(`resultStatus: ${resultStatus}`) : '';
 
     debug ? console.log(`Validating excel file: Done.`) : '';
+    return resultStatus;
 }
 
-function validateExcelFileColumnDealerNumber(columnData, columnName) {
+function validateDealerConfigurationExcelFileColumnDealerNumber(columnData, columnName) {
     checkForEmptyCells(columnData, columnName);
     checkForSpaceInBeginOrEnd(columnData, columnName);
     columnData = allTrimStringArray(columnData);
@@ -58,7 +59,7 @@ function validateExcelFileColumnDealerNumber(columnData, columnName) {
     checkForDuplicates(columnData, columnName);
 }
 
-function validateExcelFileColumnDealerName(columnData, columnName) {
+function validateDealerConfigurationExcelFileColumnDealerName(columnData, columnName) {
     checkForEmptyCells(columnData, columnName);
     checkForSpaceInBeginOrEnd(columnData, columnName);
     columnData = allTrimStringArray(columnData);
@@ -66,24 +67,23 @@ function validateExcelFileColumnDealerName(columnData, columnName) {
     // columnData = trimMultipleSpacesInMiddleIntoOneArray(columnData);
 }
 
-function validateExcelFileColumnImageNumbersToDownload(columnData, columnName) {
+function validateDealerConfigurationExcelFileColumnImageNumbersToDownload(columnData, columnName) {
     checkForEmptyCells(columnData, columnName);
     checkForSpaceInBeginOrEnd(columnData, columnName);
     columnData = allTrimStringArray(columnData);
     checkForSingleSpaceInMiddle(columnData, columnName);
     columnData = trimSingleSpaceInMiddleArray(columnData);
     checkForNumbersAndCommaOnly(columnData, columnName);
-    // TODO: Check whether it contains numbers and only comma
 }
 
-function validateExcelFileColumnAddTextToFolderName(columnData, columnName) {
+function validateDealerConfigurationExcelFileColumnAddTextToFolderName(columnData, columnName) {
     checkForSpaceInBeginOrEnd(columnData, columnName);
     columnData = allTrimStringArray(columnData);
     checkForMultipleSpacesInMiddle(columnData, columnName);
     // columnData = trimMultipleSpacesInMiddleIntoOneArray(columnData);
 }
 
-function validateExcelFileColumnBooleanOnly(columnData, columnName) {
+function validateDealerConfigurationExcelFileColumnBooleanOnly(columnData, columnName) {
     checkForEmptyCells(columnData, columnName);
     checkForSpaceInBeginOrEnd(columnData, columnName);
     columnData = allTrimStringArray(columnData);
@@ -264,4 +264,4 @@ function setResultStatus(statusToSet) {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { validateExcelFile };
+export { validateDealerConfigurationExcelFile };
