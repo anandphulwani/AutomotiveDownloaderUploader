@@ -1,13 +1,11 @@
 import fs from 'fs';
 import date from 'date-and-time';
-// eslint-disable-next-line import/extensions
-import { zeroPad } from './padding.js';
-// eslint-disable-next-line import/extensions
+/* eslint-disable import/extensions */
+import { zeroPad } from './stringformatting.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
-// eslint-disable-next-line import/extensions
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
-// eslint-disable-next-line import/extensions
 import { getImageNumbersToDownloadFromDC } from './excelsupportive.js';
+/* eslint-enable import/extensions */
 
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 

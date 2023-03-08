@@ -1,8 +1,15 @@
 import xlsx from 'xlsx';
-// eslint-disable-next-line import/extensions
+/* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
+import {
+    allTrimStringArrayOfObjects,
+    trimMultipleSpacesInMiddleIntoOneArrayOfObjects,
+    trimSingleSpaceInMiddleArrayOfObjects,
+    trimSingleSpaceInMiddleArray,
+} from './stringformatting.js';
+/* eslint-enable import/extensions */
 
-function readDealerConfiguration() {
+function readDealerConfigurationExcel() {
     const file = xlsx.readFile(config.dealerConfiguration);
     const data = [];
     const sheets = file.SheetNames;
@@ -19,5 +26,13 @@ function readDealerConfiguration() {
     return data; // console.log(data); // Printing data
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export { readDealerConfiguration };
+function readDealerConfigurationFormatted() {
+    let data = readDealerConfigurationExcel();
+    // console.log(data);
+    data = allTrimStringArrayOfObjects(data);
+    // console.log(data);
+    data = trimMultipleSpacesInMiddleIntoOneArrayOfObjects(data);
+    // console.log(data);
+}
+
+export { readDealerConfigurationExcel, readDealerConfigurationFormatted };

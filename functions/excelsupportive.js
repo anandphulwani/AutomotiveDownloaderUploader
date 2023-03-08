@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/extensions
-import { readDealerConfiguration } from './excel.js';
+import { readDealerConfigurationFormatted } from './excel.js';
 
-const dealerConfiguration = readDealerConfiguration();
+const dealerConfiguration = readDealerConfigurationFormatted();
 
 function getImageNumbersToDownloadFromDC(dealerNumber, settingName) {
     const singleelement = dealerConfiguration.filter((a) => a['Dealer Number'] === dealerNumber)[0];
