@@ -17,5 +17,3 @@ function getImageNumbersToDownloadFromDC(dealerNumber) {
 
 // eslint-disable-next-line import/prefer-default-export
 export { getImageNumbersToDownloadFromDC };
-
-// const imageNumbersToDownload = getImageNumbersToDownloadFromDC(dealerFolder, );
