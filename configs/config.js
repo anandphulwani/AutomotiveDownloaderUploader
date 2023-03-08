@@ -6,7 +6,7 @@ import { configUser } from './config-user.js';
 /* eslint-enable import/extensions */
 
 const configBasic = {
-    environment: 'production', // development Or production
+    environment: 'development', // development Or production
     timezone: 'Asia/Calcutta',
     timeOffsetInMinutesToAvoid: 2,
     app: {
@@ -30,6 +30,8 @@ const configBasic = {
         shouldIncludeFolders: true,
     },
     dealerConfiguration: './configs/DealerConfiguration.xlsx',
+    downloadPath: './Downloads',
+    initialFolderBunchToDownload: 2,
 };
 
 /**

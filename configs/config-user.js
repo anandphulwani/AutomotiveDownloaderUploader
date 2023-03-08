@@ -5,6 +5,8 @@ const configUser = {
     // browserArgs: { headless: true },
     // bookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
     // dealerConfiguration: './configs/DealerConfiguration.xlsx',
+    // downloadPath: './Downloads',
+    // initialFolderBunchToDownload: 2,
     credentials: [
         {
             username: 'dinesharora80@gmail.com',
