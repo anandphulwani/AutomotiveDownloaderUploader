@@ -15,5 +15,10 @@ function getImageNumbersToDownloadFromDC(dealerNumber) {
     return imageNumbersToDownload;
 }
 
+function getDealerNameFromDC(dealerNumber) {
+    const dealerName = getSettingValueFromDC('Dealer Number', dealerNumber, 'Dealer Name');
+    return dealerName;
+}
+
 // eslint-disable-next-line import/prefer-default-export
-export { getImageNumbersToDownloadFromDC };
+export { getImageNumbersToDownloadFromDC, getDealerNameFromDC };

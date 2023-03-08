@@ -7,13 +7,34 @@ import { config } from '../configs/config.js';
 import { zeroPad } from './stringformatting.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
-import { getImageNumbersToDownloadFromDC } from './excelsupportive.js';
+import { getImageNumbersToDownloadFromDC, getDealerNameFromDC } from './excelsupportive.js';
 /* eslint-enable import/extensions */
 
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 
 async function getImagesFromContent(page, dealerFolder, debug = false) {
     const hashAlgo = 'sha1';
+    /**
+     * Get dealer name from excel and compare it with dealer name in the page: Begin
+     */
+    const dealerNameFromDC = getDealerNameFromDC(dealerFolder);
+    let dealerNameFromPage = await page.$$eval(
+        'a#ctl00_ctl00_ContentPlaceHolder_ctl00_BrandingBar_VirtualRooftopSelector_DropdownActionButton > span > span > span > span',
+        (el) => el.map((x) => x.innerHTML)
+    );
+    dealerNameFromPage = String(dealerNameFromPage);
+
+    if (dealerNameFromDC !== dealerNameFromPage) {
+        console.log(
+            chalk.white.bgYellow.bold(
+                `\nWARNING: Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDC}'.`
+            )
+        );
+        return;
+    }
+    /**
+     * Get dealer name from excel and compare it with dealer name in the page: End
+     */
     const stockNumber = await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_StockNumber', (el) =>
         el.map((x) => x.getAttribute('value'))
     );
