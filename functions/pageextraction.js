@@ -1,6 +1,9 @@
+import chalk from 'chalk';
 import fs from 'fs';
+import path from 'path';
 import date from 'date-and-time';
 /* eslint-disable import/extensions */
+import { config } from '../configs/config.js';
 import { zeroPad } from './stringformatting.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
@@ -23,23 +26,34 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
     await makeDir(tempPath, debug);
 
     debug ? '' : process.stdout.write('\t');
-    const imageNumbersToDownload = getImageNumbersToDownloadFromDC(dealerFolder, 'Image numbers to download');
+    const imageNumbersToDownload = getImageNumbersToDownloadFromDC(dealerFolder);
     for (let index = 0; index < imageNumbersToDownload.length; index++) {
-        // for (let index = 0; index < imageOriginalURLS.length; index++) {
         const imageNumberToDownload = parseInt(imageNumbersToDownload[index], 10);
-        if (imageNumberToDownload >= imageOriginalURLS.length) {
-            //  TODO: Continue prompt here.
-            process.exit(1);
+        if (imageNumberToDownload > imageOriginalURLS.length) {
+            process.stdout.write(
+                chalk.white.bgYellow.bold(
+                    `\nWARNING: Under ${dealerFolder}/${stockNumber}, Unable to find image number: ${imageNumberToDownload}, Total images under page: ${imageOriginalURLS.length}.`
+                )
+            );
+            // eslint-disable-next-line no-continue
+            continue;
         }
-        debug ? console.log(`Downloading image: ${imageOriginalURLS[imageNumberToDownload - 1]}`) : process.stdout.write('»');
+
+        debug ? console.log(`Downloading image: ${imageOriginalURLS[imageNumberToDownload - 1]}`) : '';
         const file = fs.createWriteStream(`${tempPath}/${zeroPad(imageNumberToDownload, 3)}.jpg`);
+
+        if (imageNumbersToDownload.length === 1) {
+            debug ? '' : process.stdout.write(chalk.cyan(`${dealerFolder}/${stockNumber}${path.extname(path.basename(file.path))} »`));
+        } else {
+            debug ? '' : process.stdout.write(chalk.cyan(`${dealerFolder}/${stockNumber}/${path.basename(file.path)} »`));
+        }
 
         const checksumOfFile = await getChecksumFromURL(imageOriginalURLS[imageNumberToDownload - 1], hashAlgo, debug);
         await downloadFileAndCompareWithChecksum(
             imageOriginalURLS[imageNumberToDownload - 1],
             file,
             tempPath,
-            `./Downloads/${todaysDate}/${dealerFolder}/${stockNumber}/`,
+            `${config.downloadPath}/${todaysDate}/${dealerFolder}/${stockNumber}/`,
             imageNumbersToDownload.length === 1,
             hashAlgo,
             checksumOfFile,

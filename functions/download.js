@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import chalk from 'chalk';
 import path from 'path';
+import logSymbols from 'log-symbols';
 // eslint-disable-next-line import/extensions
 import { makeDir, moveFile, createDirAndMoveFile, removeDir, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
 
@@ -51,7 +52,7 @@ async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinati
                     await createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, debug);
                     debug
                         ? console.log(chalk.green.bold(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`))
-                        : process.stdout.write(chalk.green.bold('• '));
+                        : process.stdout.write(chalk.green.bold(` ${logSymbols.success}          `));
                 }
                 resolve();
             });
