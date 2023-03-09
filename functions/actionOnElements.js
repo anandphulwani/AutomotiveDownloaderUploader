@@ -1,6 +1,6 @@
 async function fillInTextbox(page, selector, textToFill, debug = false) {
     debug ? console.log(`Waiting for the ${selector} to load: Executing.`) : '';
-    await page.waitForSelector(selector);
+    await page.waitForSelector(selector, { timeout: 90000 });
     debug ? console.log(`Waiting for the ${selector} to load: Found.`) : '';
 
     debug ? console.log(`Filling the ${selector} with empty value: Executing.`) : '';
@@ -14,7 +14,7 @@ async function fillInTextbox(page, selector, textToFill, debug = false) {
     debug ? console.log(`Filling the ${selector} with empty value: Done.`) : '';
     debug ? console.log(`Checking if ${selector} is empty: Executing.`) : '';
     // eslint-disable-next-line no-undef, no-shadow
-    await page.waitForFunction((selector) => document.querySelector(selector).value === '', {}, selector);
+    await page.waitForFunction((selector) => document.querySelector(selector).value === '', { timeout: 90000 }, selector);
     debug ? console.log(`Checking if ${selector} is empty: Done.`) : '';
 
     debug ? console.log('Waiting for 10 seconds.') : '';
@@ -27,18 +27,18 @@ async function fillInTextbox(page, selector, textToFill, debug = false) {
     debug ? console.log(`Filling the ${selector} now: Done.`) : '';
     debug ? console.log(`Checking if ${selector} value matches filled: Executing.`) : '';
     // eslint-disable-next-line no-undef
-    await page.waitForFunction((args) => document.querySelector(args[0]).value === args[1], {}, [selector, textToFill]);
+    await page.waitForFunction((args) => document.querySelector(args[0]).value === args[1], { timeout: 90000 }, [selector, textToFill]);
     debug ? console.log(`Checking if ${selector} value matches filled: Done.`) : '';
 }
 
 async function clickOnButton(page, selector, buttonText, debug = false) {
     debug ? console.log(`Waiting for the ${selector} to load: Executing.`) : '';
-    await page.waitForSelector(selector);
+    await page.waitForSelector(selector, { timeout: 90000 });
     debug ? console.log(`Waiting for the ${selector} to load: Found.`) : '';
 
     debug ? console.log(`Check if the ${selector} contains text: ${buttonText}: Executing.`) : '';
     // eslint-disable-next-line no-undef
-    await page.waitForFunction((args) => document.querySelector(args[0]).innerText.includes(args[1]), {}, [selector, buttonText]);
+    await page.waitForFunction((args) => document.querySelector(args[0]).innerText.includes(args[1]), { timeout: 90000 }, [selector, buttonText]);
     debug ? console.log(`Check if the ${selector} contains text: ${buttonText}: Found.`) : '';
 
     debug ? console.log(`Clicking the ${selector} button: Executing.`) : '';

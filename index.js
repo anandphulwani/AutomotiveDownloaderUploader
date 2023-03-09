@@ -111,14 +111,14 @@ const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
                 // console.log('003');
                 await waitTillCurrentURLStartsWith(page, 'https://www.homenetiol.com/dashboard');
                 // console.log('004');
-                await page.waitForSelector('#bridge-bar-user-menu');
+                await page.waitForSelector('#bridge-bar-user-menu', { timeout: 90000 });
                 // console.log('005');
-                await page.waitForSelector('.bb-logout');
+                await page.waitForSelector('.bb-logout', { timeout: 90000 });
                 // console.log('006');
 
                 // TODO: Enable the below block
                 // eslint-disable-next-line no-undef, no-loop-func
-                // await page.waitForFunction((args) => document.querySelector(args[0]).innerHTML.toLowerCase() === args[1].toLowerCase(), {}, [
+                // await page.waitForFunction((args) => document.querySelector(args[0]).innerHTML.toLowerCase() === args[1].toLowerCase(), { timeout: 90000 }, [
                 //     'dt.bb-userdatum__value',
                 //     credentials.username,
                 // ]);
