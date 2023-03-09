@@ -15,6 +15,7 @@ import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/go
 import { handleBookmarkURL } from './functions/bookmark.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { readDealerConfigurationFormatted, readDealerConfigurationExcel } from './functions/excel.js';
+import { validateBookmarksAndCheckCredentialsPresent } from './functions/bookmarkvalidation.js';
 /* eslint-enable import/extensions */
 
 // const {
@@ -40,9 +41,10 @@ if (validateDealerConfigurationExcelFile() === 'error') {
 // if (validateConfigFile() === 'error') {
 //     process.exit(0);
 // }
-// if (validateBookmarks() === 'error') {
-//     process.exit(0);
-// }
+
+if (validateBookmarksAndCheckCredentialsPresent() === 'error') {
+    process.exit(0);
+}
 // readDealerConfigurationFormatted();
 
 await killChrome({
@@ -84,8 +86,6 @@ const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
             for (const usernameLevelBookmark of usernameLevelBookmarks) {
                 console.log(chalk.cyan(`Reading Bookmarks for the Username: ${chalk.cyan.bold(usernameLevelBookmark.name)}`));
                 const credentials = getCredentialsForUsername(usernameLevelBookmark.name);
-                // console.log(credentials.username);
-                // console.log(credentials.password);
                 if (credentials === undefined) {
                     console.log(
                         chalk.white.bgYellow.bold(
