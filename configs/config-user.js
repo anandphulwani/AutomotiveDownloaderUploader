@@ -7,6 +7,7 @@ const configUser = {
     // dealerConfiguration: './configs/DealerConfiguration.xlsx',
     // downloadPath: './Downloads',
     // initialFolderBunchToDownload: 2,
+    environment: 'productions',
     credentials: [
         {
             username: 'dinesharora80@gmail.com',
@@ -15,7 +16,12 @@ const configUser = {
         },
         {
             username: 'cute996@gmail.com',
-            password: 'kunsh123',
+            password: 'hello*123',
+            credentialsblockSHA1: '',
+        },
+        {
+            username: 'vambackground',
+            password: 'hello*123',
             credentialsblockSHA1: '',
         },
     ],
