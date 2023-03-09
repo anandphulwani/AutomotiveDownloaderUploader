@@ -11,7 +11,7 @@ import {
 /* eslint-enable import/extensions */
 
 let resultStatus;
-function validateDealerConfigurationExcelFile(seconds, debug = false) {
+function validateDealerConfigurationExcelFile(debug = false) {
     debug ? console.log(`Validating excel file: Executing.`) : '';
     const data = readDealerConfigurationExcel();
 
