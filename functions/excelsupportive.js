@@ -20,5 +20,26 @@ function getDealerNameFromDC(dealerNumber) {
     return dealerName;
 }
 
+function getAllDealerNames() {
+    // const allDealerNames = dealerConfiguration.filter((a) => a[filterBySettingName] === filterBySettingValue)[0];
+    const allDealerNames = dealerConfiguration.map((item) => item['Dealer Number']);
+    return allDealerNames;
+}
+
 // eslint-disable-next-line import/prefer-default-export
-export { getImageNumbersToDownloadFromDC, getDealerNameFromDC };
+export { getImageNumbersToDownloadFromDC, getDealerNameFromDC, getAllDealerNames };
+//
+//
+/**
+ * Array of values of the specified column name
+ * console.log(data.map((item) => item['Dealer Number']));
+ *
+ * Array of objects, with row number as key, column name and column value as object
+ * const test = Object.fromEntries(data.map((entry, index) => [index + 1, { 'Dealer Number': entry['Dealer Number'] }]));
+ * console.log(test);
+ *
+ * Array of bjects, without any key, column name and column value as object
+ * const redux1 = (list) => list.map((o) => Object.fromEntries(['Dealer Number'].map((k) => [k, o[k]])));
+ * console.log(redux1(data));
+ *
+ */
