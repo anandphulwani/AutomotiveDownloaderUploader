@@ -14,7 +14,7 @@ import { configUser } from './config-user.js';
 
 const configBasic = {
     environment: 'development', // development Or production
-    appDomain: 'https://www.homenetiol.com/',
+    appDomain: 'https://www.homenetiol.com',
     timezone: 'Asia/Calcutta',
     timeOffsetInMinutesToAvoid: 2,
     app: {
