@@ -14,6 +14,7 @@ import { configUser } from './config-user.js';
 
 const configBasic = {
     environment: 'development', // development Or production
+    appDomain: 'https://www.homenetiol.com/',
     timezone: 'Asia/Calcutta',
     timeOffsetInMinutesToAvoid: 2,
     app: {
@@ -36,6 +37,13 @@ const configBasic = {
     bookmarkOptions: {
         shouldIncludeFolders: true,
     },
+    ignoreBookmarkURLS: [
+        {
+            URLStartsWith: '',
+            ignoreMesgInConsole: '',
+            ignoreMesgInBookmark: '',
+        },
+    ],
     dealerConfiguration: './configs/DealerConfiguration.xlsx',
     downloadPath: './Downloads',
     contractors: {
