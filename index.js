@@ -86,14 +86,11 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
     // const { windowId } = await session.send('Browser.getWindowForTarget');
     // await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
 
-    // TODO: Check for each present here and 3 loops under
-    // bookmarks.forEach(async (topLevelBookmark) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const topLevelBookmark of bookmarks) {
         if (topLevelBookmark.name === 'Bookmarks bar') {
             console.log(chalk.cyan('Reading Bookmarks bar from the bookmarks data.'));
             const usernameLevelBookmarks = topLevelBookmark.children;
-            // usernameLevelBookmarks.forEach(async (usernameLevelBookmark) => {
             // eslint-disable-next-line no-restricted-syntax
             for (const usernameLevelBookmark of usernameLevelBookmarks) {
                 console.log(chalk.cyan(`Reading Bookmarks for the Username: ${chalk.cyan.bold(usernameLevelBookmark.name)}`));
@@ -138,7 +135,6 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                 // await waitForSeconds(5, true);
 
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
-                // dealerLevelBookmarks.forEach(async (dealerLevelBookmark) => {
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {
                     console.log(
@@ -148,7 +144,6 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                             chalk.cyan.bold(usernameLevelBookmark.name)
                     );
                     const vehicleBookmarks = dealerLevelBookmark.children;
-                    // vehicleBookmarks.forEach(async (vehicleBookmark) => {
                     // eslint-disable-next-line no-restricted-syntax
                     for (const vehicleBookmark of vehicleBookmarks) {
                         if (vehicleBookmark.name.includes('|#|')) {
@@ -172,11 +167,11 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                             );
                         }
                         await waitForSeconds(0);
-                    } // });
-                } // });
-            } // });
+                    }
+                }
+            }
         }
-    } // });
+    }
     await browser.close();
 })();
 // await sleep(10000);
