@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import fs from 'fs';
 import killChrome from 'kill-chrome';
 import puppeteer from 'puppeteer';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
@@ -12,10 +13,11 @@ import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
 import { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
 import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto.js';
-import { handleBookmarkURL } from './functions/bookmark.js';
+import { handleBookmarkURL, removeChecksumFromBookmarksObj, replaceBookmarksNameOnGUIDAndWriteToBookmarksFile } from './functions/bookmark.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { readDealerConfigurationFormatted, readDealerConfigurationExcel } from './functions/excel.js';
 import { validateBookmarksAndCheckCredentialsPresent } from './functions/bookmarkvalidation.js';
+import { validateConfigFile } from './functions/configvalidation.js';
 /* eslint-enable import/extensions */
 
 // const {
@@ -34,22 +36,23 @@ if (config.environment === 'production') {
     printSectionSeperator();
 }
 
-if (validateDealerConfigurationExcelFile() === 'error') {
-    process.exit(0);
-}
-
-// if (validateConfigFile() === 'error') {
+// TODO: Edit the bookmarks to add the stock number in the end, so as to mark it as done
+// TODO: resultCheck is declared outside, work out how to bring it inside the function
+// TODO: Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
+// const resultOfValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
+// const resultOfValidateBookmarksAndCheckCredentialsPresent = validateBookmarksAndCheckCredentialsPresent();
+// const resultOfValidateConfigFile = validateConfigFile();
+// if (
+//     resultOfValidateDealerConfigurationExcelFile === 'error' ||
+//     resultOfValidateBookmarksAndCheckCredentialsPresent === 'error' ||
+//     resultOfValidateConfigFile === 'error'
+// ) {
 //     process.exit(0);
 // }
 
-if (validateBookmarksAndCheckCredentialsPresent() === 'error') {
-    process.exit(0);
-}
-// readDealerConfigurationFormatted();
-
-await killChrome({
-    includingMainProcess: true,
-});
+// await killChrome({
+//     includingMainProcess: true,
+// });
 
 /**
  * Read chrome bookmarks from chrome browser
@@ -57,6 +60,14 @@ await killChrome({
 
 const { bookmarkPath, bookmarkOptions } = config;
 const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
+const bookmarksText = fs.readFileSync(bookmarkPath);
+let bookmarksJSONObj = JSON.parse(bookmarksText);
+bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
+
+// const match = JSON.stringify(bookmarksJSONObj).match(/\{(?:(?!\{).)*?"guid":"cc439794-d261-4dd4-b255-e6099e30737b".*?\}/);
+// console.log(match[0]);
+
+// await waitForSeconds(5);
 
 (async () => {
     const browser = await puppeteer.launch(config.browserArgs);
@@ -75,6 +86,7 @@ const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
     // const { windowId } = await session.send('Browser.getWindowForTarget');
     // await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
 
+    // TODO: Check for each present here and 3 loops under
     // bookmarks.forEach(async (topLevelBookmark) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const topLevelBookmark of bookmarks) {
@@ -139,7 +151,26 @@ const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
                     // vehicleBookmarks.forEach(async (vehicleBookmark) => {
                     // eslint-disable-next-line no-restricted-syntax
                     for (const vehicleBookmark of vehicleBookmarks) {
-                        await handleBookmarkURL(page, dealerLevelBookmark.name, vehicleBookmark.name, vehicleBookmark.url);
+                        if (vehicleBookmark.name.includes('|#|')) {
+                            // eslint-disable-next-line no-continue
+                            continue;
+                        }
+                        const returnValueOrStockNumber = await handleBookmarkURL(
+                            page,
+                            dealerLevelBookmark.name,
+                            vehicleBookmark.name,
+                            vehicleBookmark.url
+                        );
+                        // console.log(typeof returnValueOrStockNumber);
+                        // console.log(returnValueOrStockNumber);
+                        if (typeof returnValueOrStockNumber === 'string') {
+                            bookmarksJSONObj = replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
+                                bookmarkPath,
+                                bookmarksJSONObj,
+                                vehicleBookmark.guid,
+                                returnValueOrStockNumber
+                            );
+                        }
                         await waitForSeconds(0);
                     } // });
                 } // });
