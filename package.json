@@ -18,6 +18,7 @@
     "chrome-bookmark-reader": "^0.4.0",
     "date-and-time": "^2.4.2",
     "get-cursor-position": "^2.0.0",
+    "html-entities": "^2.3.3",
     "kill-chrome": "^2.2.0",
     "lodash": "^4.17.21",
     "log-symbols": "^5.1.0",
