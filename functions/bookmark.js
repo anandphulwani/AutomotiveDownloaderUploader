@@ -7,7 +7,7 @@ import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
-import { getignoreBookmarkURLObjects } from './configsupportive.js';
+import { getignoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getignoreBookmarkURLObjects();
@@ -29,7 +29,7 @@ async function handleBookmarkURL(page, dealerFolder, name, URL, debug = false) {
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
     await gotoURL(page, URL, debug);
-    if (page.url().startsWith('https://www.homenetiol.com/dashboard?')) {
+    if (page.url().startsWith(`${getAppDomain()}/dashboard?`)) {
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);

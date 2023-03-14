@@ -6,7 +6,7 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
-import { getCredentialsForUsername } from './functions/configsupportive.js';
+import { getCredentialsForUsername, getAppDomain } from './functions/configsupportive.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
@@ -121,7 +121,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                 await fillInTextbox(page, '#password', credentials.password);
                 await clickOnButton(page, '#signIn', 'Sign in');
                 // console.log('003');
-                await waitTillCurrentURLStartsWith(page, 'https://www.homenetiol.com/dashboard');
+                await waitTillCurrentURLStartsWith(page, `${getAppDomain()}/dashboard`);
                 // console.log('004');
                 await page.waitForSelector('#bridge-bar-user-menu', { timeout: 90000 });
                 // console.log('005');
