@@ -62,8 +62,6 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(bookmarkPath, bookmar
     fs.writeFileSync(bookmarkPath, JSON.stringify(bookmarksObj, null, 3), (err) => {
         if (err) {
             console.log(err);
-        } else {
-            console.log(`JSON saved to ${bookmarkPath}`);
         }
     });
     return bookmarksObj;
