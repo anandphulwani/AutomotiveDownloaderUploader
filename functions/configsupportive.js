@@ -9,5 +9,16 @@ function getCredentialsForUsername(username) {
     // return password;
 }
 
+function getignoreBookmarkURLObjects() {
+    const ignoreBookmarkURLObjects = config.ignoreBookmarkURLS;
+    let ignoreBookmarkURLText = JSON.stringify(ignoreBookmarkURLObjects);
+    ignoreBookmarkURLText = ignoreBookmarkURLText.replaceAll('{config.appDomain}', config.appDomain);
+    return JSON.parse(ignoreBookmarkURLText);
+}
+
+function getAppDomain() {
+    return config.appDomain;
+}
+
 // eslint-disable-next-line import/prefer-default-export
-export { getCredentialsForUsername };
+export { getCredentialsForUsername, getignoreBookmarkURLObjects, getAppDomain };
