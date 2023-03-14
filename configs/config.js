@@ -38,15 +38,26 @@ const configBasic = {
     },
     dealerConfiguration: './configs/DealerConfiguration.xlsx',
     downloadPath: './Downloads',
-    initialFolderBunchToDownload: 2,
-    conractorsCurrentRatio: {
-        ram: 1,
-        karan: 1,
-        pavan: 1,
-        arjun: 1,
-        om: 1,
-        rohan: 1,
+    contractors: {
+        // ram: {
+        //     normalThreshold: 500,
+        //     higherThreshold: 500,
+        // },
+        // karan: {
+        //     normalThreshold: 500,
+        //     higherThreshold: 500,
+        // },
     },
+    lot: [
+        // {
+        //     quantity: 2,
+        //     isImagesOrDealerFolders: 'dealerfolders',
+        // },
+        // {
+        //     quantity: 600,
+        //     isImagesOrDealerFolders: 'images',
+        // },
+    ],
 };
 
 /**

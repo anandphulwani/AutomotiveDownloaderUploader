@@ -25,14 +25,42 @@ const configUser = {
             credentialsblockSHA1: '',
         },
     ],
-    // conractorsRatioToMaintain: {
-    //     ram: 20,
-    //     karan: 20,
-    //     pavan: 20,
-    //     arjun: 20,
-    //     om: 10,
-    //     rohan: 10,
-    // },
+    contractors: {
+        ram: {
+            normalThreshold: 500,
+            higherThreshold: 500,
+        },
+        karan: {
+            normalThreshold: 500,
+            higherThreshold: 500,
+        },
+        pavan: {
+            normalThreshold: 500,
+            higherThreshold: 500,
+        },
+        arjun: {
+            normalThreshold: 500,
+            higherThreshold: 500,
+        },
+        om: {
+            normalThreshold: 500,
+            higherThreshold: 500,
+        },
+        rohan: {
+            normalThreshold: 500,
+            higherThreshold: 500,
+        },
+    },
+    lot: [
+        {
+            quantity: 2,
+            isImagesOrDealerFolders: 'dealerfolders',
+        },
+        {
+            quantity: 600,
+            isImagesOrDealerFolders: 'images',
+        },
+    ],
 };
 
 // eslint-disable-next-line import/prefer-default-export
