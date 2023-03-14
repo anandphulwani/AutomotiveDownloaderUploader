@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import logSymbols from 'log-symbols';
 import date from 'date-and-time';
+import { decode } from 'html-entities';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { zeroPad } from './stringformatting.js';
@@ -20,13 +21,16 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
      * Get dealer name from excel and compare it with dealer name in the page: Begin
      */
     const dealerNameFromDC = getDealerNameFromDC(dealerFolder);
-    let dealerNameFromPage = await page.$$eval(
-        'a#ctl00_ctl00_ContentPlaceHolder_ctl00_BrandingBar_VirtualRooftopSelector_DropdownActionButton > span > span > span > span',
-        (el) => el.map((x) => x.innerHTML)
+    const dealerNameFromPage = decode(
+        String(
+            await page.$$eval(
+                'a#ctl00_ctl00_ContentPlaceHolder_ctl00_BrandingBar_VirtualRooftopSelector_DropdownActionButton > span > span > span > span',
+                (el) => el.map((x) => x.innerHTML)
+            )
+        )
     );
-    dealerNameFromPage = String(dealerNameFromPage);
 
-    if (dealerNameFromDC !== dealerNameFromPage) {
+    if (dealerNameFromDC.toLowerCase() !== dealerNameFromPage.toLowerCase()) {
         console.log(
             chalk.white.bgYellow.bold(
                 `\nWARNING: Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDC}'.`
