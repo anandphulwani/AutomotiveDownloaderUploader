@@ -64,11 +64,6 @@ const bookmarksText = fs.readFileSync(bookmarkPath);
 let bookmarksJSONObj = JSON.parse(bookmarksText);
 bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
 
-// const match = JSON.stringify(bookmarksJSONObj).match(/\{(?:(?!\{).)*?"guid":"cc439794-d261-4dd4-b255-e6099e30737b".*?\}/);
-// console.log(match[0]);
-
-// await waitForSeconds(5);
-
 (async () => {
     const browser = await puppeteer.launch(config.browserArgs);
     const numberOfOpenPages = (await browser.pages()).length;
