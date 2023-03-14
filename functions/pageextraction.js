@@ -32,13 +32,15 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
                 `\nWARNING: Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDC}'.`
             )
         );
-        return;
+        return false;
     }
     /**
      * Get dealer name from excel and compare it with dealer name in the page: End
      */
-    const stockNumber = await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_StockNumber', (el) =>
-        el.map((x) => x.getAttribute('value'))
+    const stockNumber = String(
+        await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_StockNumber', (el) =>
+            el.map((x) => x.getAttribute('value'))
+        )
     );
 
     const imageDIVContainer = await page.$('.tn-list-container');
@@ -72,7 +74,7 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
         } else {
             shortFilename = `${dealerFolder}/${stockNumber}/${path.basename(file.path)}`;
         }
-        debug ? '' : process.stdout.write(chalk.cyan(`${shortFilename} »`));
+        debug ? '' : process.stdout.write(chalk.white(`${shortFilename} »`));
 
         const checksumOfFile = await getChecksumFromURL(imageOriginalURLS[imageNumberToDownload - 1], hashAlgo, debug);
         for (let downloadCnt = 0; downloadCnt < 5; downloadCnt++) {
@@ -119,6 +121,7 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
     );
     debug ? '' : process.stdout.write('\n');
     await removeDir(tempPath, debug);
+    return stockNumber;
 }
 
 // eslint-disable-next-line import/prefer-default-export
