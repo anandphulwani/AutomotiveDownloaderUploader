@@ -32,7 +32,7 @@ async function getChecksumFromURL(url, hashAlgo, debug = false) {
 
 async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinationPath, isSingleImage, hashAlgo, checksumOfFile, debug = false) {
     return new Promise((resolve, reject) => {
-        https.get(url, (response) => {
+        const getOperation = https.get(url, (response) => {
             response.pipe(file);
             file.on('finish', async () => {
                 // after download completed close filestream
@@ -59,6 +59,13 @@ async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinati
             response.on('error', (error) => {
                 reject(error);
             });
+        });
+        getOperation.on('error', (err) => {
+            reject(err);
+        });
+        // getOperation.setTimeout(Math.floor(Math.random() * (60 - 50)) + 50, () => {
+        getOperation.setTimeout(15000, () => {
+            getOperation.destroy();
         });
     });
 }
