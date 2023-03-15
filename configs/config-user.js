@@ -5,6 +5,7 @@ const configUser = {
     // timeOffsetInMinutesToAvoid: 2,
     // browserArgs: { headless: true },
     // bookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
+    // updateBookmarksOnceDone: true,
     ignoreBookmarkURLS: [
         {
             URLStartsWith: '{config.appDomain}/inventory/photo-manager?',

@@ -154,7 +154,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                         );
                         // console.log(typeof returnValueOrStockNumber);
                         // console.log(returnValueOrStockNumber);
-                        if (typeof returnValueOrStockNumber === 'string') {
+                        if (config.updateBookmarksOnceDone && typeof returnValueOrStockNumber === 'string') {
                             bookmarksJSONObj = replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
                                 bookmarkPath,
                                 bookmarksJSONObj,
