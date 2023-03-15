@@ -10,7 +10,7 @@ import { makeDir, moveFile, createDirAndMoveFile, removeDir, createDirAndMoveFil
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
     return new Promise((resolve, reject) => {
         const body = [];
-        https.get(url, (response) => {
+        const getOperation = https.get(url, (response) => {
             response.on('data', (chunk) => body.push(chunk));
             response.on('end', async () => {
                 if (response.statusCode === 200) {
@@ -26,6 +26,13 @@ async function getChecksumFromURL(url, hashAlgo, debug = false) {
             response.on('error', (error) => {
                 reject(error);
             });
+        });
+        getOperation.on('error', (err) => {
+            reject(err);
+        });
+        // getOperation.setTimeout(Math.floor(Math.random() * (60 - 50)) + 50, () => {
+        getOperation.setTimeout(10000, () => {
+            getOperation.destroy();
         });
     });
 }
@@ -64,7 +71,7 @@ async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinati
             reject(err);
         });
         // getOperation.setTimeout(Math.floor(Math.random() * (60 - 50)) + 50, () => {
-        getOperation.setTimeout(15000, () => {
+        getOperation.setTimeout(10000, () => {
             getOperation.destroy();
         });
     });
