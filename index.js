@@ -36,7 +36,8 @@ if (config.environment === 'production') {
     printSectionSeperator();
 }
 
-// TODO: Edit the bookmarks to add the stock number in the end, so as to mark it as done
+// TODO: Remove the unused imports
+// TODO: Remove specificDebug messages
 // TODO: resultCheck is declared outside, work out how to bring it inside the function
 // TODO: Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
 // const resultOfValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
