@@ -8,6 +8,7 @@ import { decode } from 'html-entities';
 import { config } from '../configs/config.js';
 import { zeroPad } from './stringformatting.js';
 import { waitForSeconds } from './sleep.js';
+import { incRetryCount } from './others.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
 import { getImageNumbersToDownloadFromDC, getDealerNameFromDC } from './excelsupportive.js';
@@ -80,7 +81,41 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
         }
         debug ? '' : process.stdout.write(chalk.white(`${shortFilename} »`));
 
-        const checksumOfFile = await getChecksumFromURL(imageOriginalURLS[imageNumberToDownload - 1], hashAlgo, debug);
+        let checksumOfFile;
+        for (let checksumOfFileCnt = 0; checksumOfFileCnt < 5; checksumOfFileCnt++) {
+            try {
+                checksumOfFile = await getChecksumFromURL(imageOriginalURLS[imageNumberToDownload - 1], hashAlgo, debug);
+                break;
+            } catch (err) {
+                if (err.message === 'socket hang up' || err.message === 'aborted') {
+                    console.log(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
+                    process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
+                    if (checksumOfFileCnt < 4) {
+                        // Sleep for 30 seconds
+                        for (let cnt = 0; cnt < 10; cnt++) {
+                            process.stdout.write(chalk.yellow.bold('.'));
+                            await waitForSeconds(3);
+                        }
+                        incRetryCount();
+                    } else {
+                        console.log(
+                            chalk.white.bgRed.bold(
+                                `\nUnable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
+                            )
+                        );
+                        process.stdout.write('\t');
+                    }
+                } else {
+                    console.log(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
+                    throw err;
+                }
+            }
+        }
+        if (checksumOfFile === undefined) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+
         for (let downloadCnt = 0; downloadCnt < 5; downloadCnt++) {
             try {
                 await downloadFileAndCompareWithChecksum(
@@ -96,7 +131,8 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
                 imagesDownloaded++;
                 break;
             } catch (err) {
-                if (err.message === 'socket hang up') {
+                if (err.message === 'socket hang up' || err.message === 'aborted') {
+                    console.log(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
                     process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
                     if (downloadCnt < 4) {
                         // Sleep for 30 seconds
@@ -104,6 +140,7 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
                             process.stdout.write(chalk.yellow.bold('.'));
                             await waitForSeconds(3);
                         }
+                        incRetryCount();
                     } else {
                         console.log(
                             chalk.white.bgRed.bold(
@@ -113,6 +150,7 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
                         process.stdout.write('\t');
                     }
                 } else {
+                    console.log(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
                     throw err;
                 }
             }
