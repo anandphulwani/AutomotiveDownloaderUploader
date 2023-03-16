@@ -16,7 +16,13 @@ async function gotoURL(page, URL, debug = false) {
             // await page.goto(URL, { waitUntil: "networkidle2" }); //TODO: Add networkidle0, networkidle2 and other multiple modes
             break;
         } catch (err) {
-            if (err.message.match(/Navigation timeout of \d* ms exceeded/g) || err.message === 'socket hang up' || err.message === 'aborted') {
+            if (
+                err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
+                err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
+                err.message === 'socket hang up' ||
+                err.message === 'aborted' ||
+                err.message === 'read ECONNRESET'
+            ) {
                 console.log(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
                 process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
                 if (gotoCnt < 4) {

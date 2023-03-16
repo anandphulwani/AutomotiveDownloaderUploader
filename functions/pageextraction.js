@@ -87,7 +87,13 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
                 checksumOfFile = await getChecksumFromURL(imageOriginalURLS[imageNumberToDownload - 1], hashAlgo, debug);
                 break;
             } catch (err) {
-                if (err.message === 'socket hang up' || err.message === 'aborted') {
+                if (
+                    err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
+                    err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
+                    err.message === 'socket hang up' ||
+                    err.message === 'aborted' ||
+                    err.message === 'read ECONNRESET'
+                ) {
                     console.log(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
                     process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
                     if (checksumOfFileCnt < 4) {
@@ -131,7 +137,13 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
                 imagesDownloaded++;
                 break;
             } catch (err) {
-                if (err.message === 'socket hang up' || err.message === 'aborted') {
+                if (
+                    err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
+                    err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
+                    err.message === 'socket hang up' ||
+                    err.message === 'aborted' ||
+                    err.message === 'read ECONNRESET'
+                ) {
                     console.log(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
                     process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
                     if (downloadCnt < 4) {
