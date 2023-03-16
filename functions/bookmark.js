@@ -12,7 +12,7 @@ import { getignoreBookmarkURLObjects, getAppDomain } from './configsupportive.js
 
 const ignoreBookmarkURLObjects = getignoreBookmarkURLObjects();
 
-async function handleBookmarkURL(page, dealerFolder, name, URL, debug = false) {
+async function handleBookmarkURL(page, lotIndex, dealerFolder, name, URL, debug = false) {
     const ignoreBookmarkURLObjectFindResults = ignoreBookmarkURLObjects.find((ignoreBookmarkURLObject) => {
         if (URL.startsWith(ignoreBookmarkURLObject.URLStartsWith)) {
             return true;
@@ -21,7 +21,7 @@ async function handleBookmarkURL(page, dealerFolder, name, URL, debug = false) {
     });
     if (ignoreBookmarkURLObjectFindResults !== undefined) {
         console.log(chalk.magenta(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`));
-        return ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark;
+        return { result: false, bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark, imagesDownloaded: 0 };
     }
 
     const startingRow = await getRowPosOnTerminal();
@@ -35,11 +35,11 @@ async function handleBookmarkURL(page, dealerFolder, name, URL, debug = false) {
         debug ? '' : process.stdout.cursorTo(0);
         process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
         await waitForSeconds(5);
-        return 'Ignoring (Does not Exist)';
+        return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0 };
     }
-    const stockNumber = await getImagesFromContent(page, dealerFolder);
+    const returnObj = await getImagesFromContent(page, lotIndex, dealerFolder);
     // await waitForSeconds(10, true);
-    return stockNumber;
+    return returnObj;
 }
 
 function removeChecksumFromBookmarksObj(bookmarksObj) {

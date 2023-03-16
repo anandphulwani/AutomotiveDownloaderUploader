@@ -16,7 +16,7 @@ import { getImageNumbersToDownloadFromDC, getDealerNameFromDC } from './excelsup
 
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 
-async function getImagesFromContent(page, dealerFolder, debug = false) {
+async function getImagesFromContent(page, lotIndex, dealerFolder, debug = false) {
     const hashAlgo = 'sha1';
     /**
      * Get dealer name from excel and compare it with dealer name in the page: Begin
@@ -37,7 +37,7 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
                 `\nWARNING: Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDC}'.`
             )
         );
-        return false;
+        return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0 };
     }
     /**
      * Get dealer name from excel and compare it with dealer name in the page: End
@@ -128,7 +128,7 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
                     imageOriginalURLS[imageNumberToDownload - 1],
                     file,
                     tempPath,
-                    `${config.downloadPath}/${todaysDate}/${dealerFolder}/${stockNumber}/`,
+                    `${config.downloadPath}/${todaysDate}/Lot_${zeroPad(lotIndex, 2)}/${dealerFolder}/${stockNumber}/`,
                     imageNumbersToDownload.length === 1,
                     hashAlgo,
                     checksumOfFile,
@@ -175,7 +175,7 @@ async function getImagesFromContent(page, dealerFolder, debug = false) {
     );
     debug ? '' : process.stdout.write('\n');
     await removeDir(tempPath, debug);
-    return stockNumber;
+    return { result: true, bookmarkAppendMesg: stockNumber, imagesDownloaded: imagesDownloaded };
 }
 
 // eslint-disable-next-line import/prefer-default-export
