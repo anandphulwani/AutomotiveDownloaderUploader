@@ -9,6 +9,7 @@ const configDevelopment = {
     browserArgs: {
         headless: false,
     },
+    updateBookmarksOnceDone: false,
 };
 
 // eslint-disable-next-line import/prefer-default-export
