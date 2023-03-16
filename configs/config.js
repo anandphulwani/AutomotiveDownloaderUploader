@@ -58,12 +58,12 @@ const configBasic = {
     },
     lot: [
         // {
-        //     quantity: 2,
-        //     isImagesOrDealerFolders: 'dealerfolders',
+        //
+        //
         // },
         // {
-        //     quantity: 600,
-        //     isImagesOrDealerFolders: 'images',
+        //
+        //
         // },
     ],
 };

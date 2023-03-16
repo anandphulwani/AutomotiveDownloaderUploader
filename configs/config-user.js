@@ -53,35 +53,43 @@ const configUser = {
             normalThreshold: 500,
             higherThreshold: 500,
         },
-        karan: {
-            normalThreshold: 500,
-            higherThreshold: 500,
-        },
-        pavan: {
-            normalThreshold: 500,
-            higherThreshold: 500,
-        },
-        arjun: {
-            normalThreshold: 500,
-            higherThreshold: 500,
-        },
-        om: {
-            normalThreshold: 500,
-            higherThreshold: 500,
-        },
-        rohan: {
-            normalThreshold: 500,
-            higherThreshold: 500,
-        },
+        // karan: {
+        //     normalThreshold: 500,
+        //     higherThreshold: 500,
+        // },
+        // pavan: {
+        //     normalThreshold: 500,
+        //     higherThreshold: 500,
+        // },
+        // arjun: {
+        //     normalThreshold: 500,
+        //     higherThreshold: 500,
+        // },
+        // om: {
+        //     normalThreshold: 500,
+        //     higherThreshold: 500,
+        // },
+        // rohan: {
+        //     normalThreshold: 500,
+        //     higherThreshold: 500,
+        // },
     },
     lot: [
         {
-            quantity: 2,
-            isImagesOrDealerFolders: 'dealerfolders',
+            imagesQty: 0,
+            minimumDealerFoldersForEachContractors: 2,
         },
         {
-            quantity: 600,
-            isImagesOrDealerFolders: 'images',
+            imagesQty: 15,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 300,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 600,
+            minimumDealerFoldersForEachContractors: false,
         },
     ],
 };
