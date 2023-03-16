@@ -17,7 +17,6 @@ const configBasic = {
     appDomain: 'https://www.homenetiol.com',
     timezone: 'Asia/Calcutta',
     timeOffsetInMinutesToAvoid: 2,
-    updateBookmarksOnceDone: true,
     app: {
         port: 3000,
         name: 'myapp',
