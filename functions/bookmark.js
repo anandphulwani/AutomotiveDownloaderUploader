@@ -12,7 +12,7 @@ import { getignoreBookmarkURLObjects, getAppDomain } from './configsupportive.js
 
 const ignoreBookmarkURLObjects = getignoreBookmarkURLObjects();
 
-async function handleBookmarkURL(page, lotIndex, dealerFolder, name, URL, debug = false) {
+async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, URL, debug = false) {
     const ignoreBookmarkURLObjectFindResults = ignoreBookmarkURLObjects.find((ignoreBookmarkURLObject) => {
         if (URL.startsWith(ignoreBookmarkURLObject.URLStartsWith)) {
             return true;
@@ -37,7 +37,7 @@ async function handleBookmarkURL(page, lotIndex, dealerFolder, name, URL, debug 
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0 };
     }
-    const returnObj = await getImagesFromContent(page, lotIndex, dealerFolder);
+    const returnObj = await getImagesFromContent(page, lotIndex, username, dealerFolder);
     // await waitForSeconds(10, true);
     return returnObj;
 }

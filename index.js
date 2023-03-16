@@ -168,6 +168,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                         const returnObj = await handleBookmarkURL(
                             page,
                             lotIndex,
+                            usernameLevelBookmark.name,
                             dealerLevelBookmark.name,
                             vehicleBookmark.name,
                             vehicleBookmark.url

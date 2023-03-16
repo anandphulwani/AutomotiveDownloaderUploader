@@ -16,7 +16,8 @@ import { getImageNumbersToDownloadFromDC, getDealerNameFromDC } from './excelsup
 
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 
-async function getImagesFromContent(page, lotIndex, dealerFolder, debug = false) {
+async function getImagesFromContent(page, lotIndex, username, dealerFolder, debug = false) {
+    const usernameTrimmed = username.includes('@') ? username.split('@')[0] : username;
     const hashAlgo = 'sha1';
     /**
      * Get dealer name from excel and compare it with dealer name in the page: Begin
@@ -128,7 +129,7 @@ async function getImagesFromContent(page, lotIndex, dealerFolder, debug = false)
                     imageOriginalURLS[imageNumberToDownload - 1],
                     file,
                     tempPath,
-                    `${config.downloadPath}/${todaysDate}/Lot_${zeroPad(lotIndex, 2)}/${dealerFolder}/${stockNumber}/`,
+                    `${config.downloadPath}/${todaysDate}/Lot_${zeroPad(lotIndex, 2)}/${usernameTrimmed}/${dealerFolder}/${stockNumber}/`,
                     imageNumbersToDownload.length === 1,
                     hashAlgo,
                     checksumOfFile,
