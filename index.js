@@ -25,8 +25,6 @@ import { validateConfigFile } from './functions/configvalidation.js';
 // } = config;
 // console.log(`${host}:${port}/${name}`);
 // console.log(config);
-// console.log(config.environment);
-// console.log(config.browserArgs.headless);
 
 if (config.environment === 'production') {
     checkTimezone();
@@ -82,6 +80,9 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
     // const { windowId } = await session.send('Browser.getWindowForTarget');
     // await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
 
+    let lotIndex = 1;
+    let dealerFolderCntInLot = 0;
+    let imagesQtyInLot = 0;
     // eslint-disable-next-line no-restricted-syntax
     for (const topLevelBookmark of bookmarks) {
         if (topLevelBookmark.name === 'Bookmarks bar') {
@@ -89,6 +90,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
             const usernameLevelBookmarks = topLevelBookmark.children;
             // eslint-disable-next-line no-restricted-syntax
             for (const usernameLevelBookmark of usernameLevelBookmarks) {
+                /* #region Login details */
                 console.log(chalk.cyan(`Reading Bookmarks for the Username: ${chalk.cyan.bold(usernameLevelBookmark.name)}`));
                 const credentials = getCredentialsForUsername(usernameLevelBookmark.name);
                 if (credentials === undefined) {
@@ -129,10 +131,27 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                 // ]);
                 // console.log('007');
                 // await waitForSeconds(5, true);
+                /* #endregion */
 
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {
+                    const minDealerFoldersForEachContractors =
+                        config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
+                    console.log(`minDealerFoldersForEachContractors: ${minDealerFoldersForEachContractors}`);
+                    console.log(`dealerFolderCntInLot: ${dealerFolderCntInLot}`);
+                    console.log(`config.lot[lotIndex - 1].imagesQty: ${config.lot[lotIndex - 1].imagesQty}`);
+                    console.log(`imagesQtyInLot: ${imagesQtyInLot}`);
+                    if (
+                        ((minDealerFoldersForEachContractors !== false && dealerFolderCntInLot >= minDealerFoldersForEachContractors) ||
+                            minDealerFoldersForEachContractors === false) &&
+                        imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty
+                    ) {
+                        console.log('Reseting vars to 0.');
+                        dealerFolderCntInLot = 0;
+                        imagesQtyInLot = 0;
+                        lotIndex++;
+                    }
                     console.log(
                         chalk.cyan('Reading Bookmarks for the Dealer: ') +
                             chalk.cyan.bold(dealerLevelBookmark.name) +
@@ -146,24 +165,30 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                             // eslint-disable-next-line no-continue
                             continue;
                         }
-                        const returnValueOrStockNumber = await handleBookmarkURL(
+                        const returnObj = await handleBookmarkURL(
                             page,
+                            lotIndex,
                             dealerLevelBookmark.name,
                             vehicleBookmark.name,
                             vehicleBookmark.url
                         );
-                        // console.log(typeof returnValueOrStockNumber);
-                        // console.log(returnValueOrStockNumber);
-                        if (config.updateBookmarksOnceDone && typeof returnValueOrStockNumber === 'string') {
+                        // return { result: true, bookmarkAppendMesg: stockNumber, imagesDownloaded: imagesDownloaded };
+                        // return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0 };
+                        // return { result: false, bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark, imagesDownloaded: 0 };
+                        // return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0 };
+                        //
+                        imagesQtyInLot += returnObj.imagesDownloaded;
+                        if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
                             bookmarksJSONObj = replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
                                 bookmarkPath,
                                 bookmarksJSONObj,
                                 vehicleBookmark.guid,
-                                returnValueOrStockNumber
+                                returnObj.bookmarkAppendMesg
                             );
                         }
                         await waitForSeconds(0);
                     }
+                    dealerFolderCntInLot++;
                 }
             }
         }
