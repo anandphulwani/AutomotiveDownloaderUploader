@@ -45,7 +45,7 @@ const configBasic = {
         },
     ],
     dealerConfiguration: './configs/DealerConfiguration.xlsx',
-    downloadPath: './Downloads',
+    downloadPath: '.\\datastore\\Downloads',
     contractors: {
         // ram: {
         //     normalThreshold: 500,

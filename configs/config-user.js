@@ -29,8 +29,7 @@ const configUser = {
         },
     ],
     // dealerConfiguration: './configs/DealerConfiguration.xlsx',
-    // downloadPath: './Downloads',
-    // environment: 'production',
+    // downloadPath: '.\\datastore\\Downloads',
     credentials: [
         {
             username: 'dinesharora80@gmail.com',
