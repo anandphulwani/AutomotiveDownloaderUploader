@@ -20,6 +20,11 @@ function getDealerNameFromDC(dealerNumber) {
     return dealerName;
 }
 
+function getAddTextToFolderNameFromDC(dealerNumber) {
+    const addTextToFolderName = getSettingValueFromDC('Dealer Number', dealerNumber, 'Add text to folder name');
+    return addTextToFolderName;
+}
+
 function getAllDealerNames() {
     // const allDealerNames = dealerConfiguration.filter((a) => a[filterBySettingName] === filterBySettingValue)[0];
     const allDealerNames = dealerConfiguration.map((item) => item['Dealer Number']);
@@ -27,7 +32,7 @@ function getAllDealerNames() {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { getImageNumbersToDownloadFromDC, getDealerNameFromDC, getAllDealerNames };
+export { getImageNumbersToDownloadFromDC, getAddTextToFolderNameFromDC, getDealerNameFromDC, getAllDealerNames };
 //
 //
 /**
