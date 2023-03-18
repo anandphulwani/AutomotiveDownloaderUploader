@@ -28,6 +28,7 @@
     "puppeteer-core": "^19.6.3",
     "puppeteer-extra": "^3.3.4",
     "randomstring": "^1.2.3",
+    "readline-sync": "^1.4.10",
     "sleep": "^6.3.0",
     "xlsx": "^0.18.5"
   },
