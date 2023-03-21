@@ -62,7 +62,6 @@ async function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, 
 
 function removeDir(dirPath, recursiveDelete = false, debug = false) {
     debug ? console.log('Removing Directory : Executing') : '';
-    // await new Promise((resolve, reject) => {
     /* #region : Patch to delete a folder when recursiveDelete is false */
     /**
      * Note: Setting recursiveDelete to true because setting it to false is
@@ -91,11 +90,9 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
                 process.exit(1);
             } else {
                 debug ? console.log(`Folder path removed successfully : ${dirPath}`) : '';
-                // resolve();
             }
         }
     );
-    // });
     debug ? console.log('Removing Directory : Done') : '';
 }
 
@@ -114,10 +111,10 @@ function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = false, deb
             : '';
         if (parentDirFilesCount === 0) {
             dirPath = parentDir;
-            console.log(`removeDir ${parentDir}`);
+            debug ? console.log(`removeDir ${parentDir}`) : '';
             removeDir(parentDir, false, true);
         } else {
-            console.log(`Directory (${parentDirFilesCount}) not empty: ${dirPath}`);
+            debug ? console.log(`Directory (${parentDirFilesCount}) not empty: ${dirPath}`) : '';
             break;
         }
     }
