@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import killChrome from 'kill-chrome';
 import puppeteer from 'puppeteer';
+import { exec, spawn } from 'child_process';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
@@ -32,22 +33,21 @@ if (config.environment === 'production') {
 
     await checkTimeWithNTP();
     printSectionSeperator();
-}
 
-// TODO: Remove the unused imports
-// TODO: Remove specificDebug messages
-// TODO: resultCheck is declared outside, work out how to bring it inside the function
-// TODO: Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
-// const resultOfValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
-// const resultOfValidateBookmarksAndCheckCredentialsPresent = validateBookmarksAndCheckCredentialsPresent();
-// const resultOfValidateConfigFile = validateConfigFile();
-// if (
-//     resultOfValidateDealerConfigurationExcelFile === 'error' ||
-//     resultOfValidateBookmarksAndCheckCredentialsPresent === 'error' ||
-//     resultOfValidateConfigFile === 'error'
-// ) {
-//     process.exit(0);
-// }
+    // TODO: Remove the unused imports
+    // TODO: resultCheck is declared outside, work out how to bring it inside the function
+    // TODO: Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
+    const resultOfValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
+    const resultOfValidateBookmarksAndCheckCredentialsPresent = validateBookmarksAndCheckCredentialsPresent();
+    const resultOfValidateConfigFile = 'success'; // validateConfigFile();
+    if (
+        resultOfValidateDealerConfigurationExcelFile === 'error' ||
+        resultOfValidateBookmarksAndCheckCredentialsPresent === 'error' ||
+        resultOfValidateConfigFile === 'error'
+    ) {
+        process.exit(0);
+    }
+}
 
 // await killChrome({
 //     includingMainProcess: true,
@@ -136,18 +136,19 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {
-                    const minDealerFoldersForEachContractors =
-                        config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
-                    console.log(`minDealerFoldersForEachContractors: ${minDealerFoldersForEachContractors}`);
+                    const minDealerFolders = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
+                    console.log(`minDealerFolders: ${minDealerFolders}`);
                     console.log(`dealerFolderCntInLot: ${dealerFolderCntInLot}`);
                     console.log(`config.lot[lotIndex - 1].imagesQty: ${config.lot[lotIndex - 1].imagesQty}`);
                     console.log(`imagesQtyInLot: ${imagesQtyInLot}`);
                     if (
-                        ((minDealerFoldersForEachContractors !== false && dealerFolderCntInLot >= minDealerFoldersForEachContractors) ||
-                            minDealerFoldersForEachContractors === false) &&
+                        ((minDealerFolders !== false && dealerFolderCntInLot >= minDealerFolders) || minDealerFolders === false) &&
                         imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty
                     ) {
-                        console.log('Reseting vars to 0.');
+                        // exec(
+                        //     `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} && pause && exit"`
+                        // );
+                        console.log('Resetting vars to 0.');
                         dealerFolderCntInLot = 0;
                         imagesQtyInLot = 0;
                         lotIndex++;
