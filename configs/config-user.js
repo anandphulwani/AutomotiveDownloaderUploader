@@ -49,26 +49,31 @@ const configUser = {
         },
     ],
     contractors: {
+        karan: {
+            currentStatus: 0,
+            normalThreshold: 100,
+            higherThreshold: 150,
+        },
+        pavan: {
+            currentStatus: 0,
+            normalThreshold: 100,
+            higherThreshold: 150,
+        },
         ram: {
-            normalThreshold: 500,
+            currentStatus: 0,
+            normalThreshold: 300,
             higherThreshold: 500,
         },
-        // karan: {
-        //     normalThreshold: 500,
-        //     higherThreshold: 500,
-        // },
-        // pavan: {
-        //     normalThreshold: 500,
-        //     higherThreshold: 500,
-        // },
-        // arjun: {
-        //     normalThreshold: 500,
-        //     higherThreshold: 500,
-        // },
-        // om: {
-        //     normalThreshold: 500,
-        //     higherThreshold: 500,
-        // },
+        arjun: {
+            currentStatus: 0,
+            normalThreshold: 100,
+            higherThreshold: 150,
+        },
+        om: {
+            currentStatus: 0,
+            normalThreshold: 100,
+            higherThreshold: 150,
+        },
         // rohan: {
         //     normalThreshold: 500,
         //     higherThreshold: 500,
