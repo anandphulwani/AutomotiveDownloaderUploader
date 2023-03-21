@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import path from 'path';
 import logSymbols from 'log-symbols';
 // eslint-disable-next-line import/extensions
-import { makeDir, moveFile, createDirAndMoveFile, removeDir, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
+import { moveFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
     return new Promise((resolve, reject) => {
