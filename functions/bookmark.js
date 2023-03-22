@@ -7,10 +7,10 @@ import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
-import { getignoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
+import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
 /* eslint-enable import/extensions */
 
-const ignoreBookmarkURLObjects = getignoreBookmarkURLObjects();
+const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
 
 async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, URL, debug = false) {
     const ignoreBookmarkURLObjectFindResults = ignoreBookmarkURLObjects.find((ignoreBookmarkURLObject) => {
