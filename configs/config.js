@@ -48,10 +48,12 @@ const configBasic = {
     downloadPath: '.\\datastore\\Downloads',
     contractors: {
         // ram: {
+        //     currentAllotted: 0,
         //     normalThreshold: 500,
         //     higherThreshold: 500,
         // },
         // karan: {
+        //     currentAllotted: 0,
         //     normalThreshold: 500,
         //     higherThreshold: 500,
         // },
