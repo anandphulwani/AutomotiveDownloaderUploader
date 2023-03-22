@@ -44,7 +44,7 @@ const configBasic = {
             ignoreMesgInBookmark: '',
         },
     ],
-    dealerConfiguration: './configs/DealerConfiguration.xlsx',
+    dealerConfigurationFolder: '.\\configs\\DealerConfiguration\\',
     downloadPath: '.\\datastore\\Downloads',
     contractors: {
         // ram: {
