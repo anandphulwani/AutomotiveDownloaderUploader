@@ -112,7 +112,7 @@ function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = false, deb
         if (parentDirFilesCount === 0) {
             dirPath = parentDir;
             debug ? console.log(`removeDir ${parentDir}`) : '';
-            removeDir(parentDir, false, true);
+            removeDir(parentDir, false);
         } else {
             debug ? console.log(`Directory (${parentDirFilesCount}) not empty: ${dirPath}`) : '';
             break;
