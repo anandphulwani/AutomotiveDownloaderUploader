@@ -37,7 +37,17 @@ async function getChecksumFromURL(url, hashAlgo, debug = false) {
     });
 }
 
-async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinationPath, isSingleImage, hashAlgo, checksumOfFile, debug = false) {
+async function downloadFileAndCompareWithChecksum(
+    url,
+    file,
+    tempPath,
+    destinationPath,
+    isSingleImage,
+    hashAlgo,
+    checksumOfFile,
+    shortFilenameTextLength,
+    debug = false
+) {
     return new Promise((resolve, reject) => {
         const getOperation = https.get(url, (response) => {
             response.pipe(file);
@@ -59,7 +69,11 @@ async function downloadFileAndCompareWithChecksum(url, file, tempPath, destinati
                     await createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, debug);
                     debug
                         ? console.log(chalk.green.bold(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`))
-                        : process.stdout.write(chalk.green.bold(` ${logSymbols.success}         `));
+                        : process.stdout.write(
+                              chalk.green.bold(
+                                  ` ${logSymbols.success}${' '.repeat(28 - shortFilenameTextLength > 0 ? 28 - shortFilenameTextLength : 0)}`
+                              )
+                          );
                 }
                 resolve();
             });

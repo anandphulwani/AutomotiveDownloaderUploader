@@ -38,7 +38,7 @@ async function gotoURL(page, URL, debug = false) {
                             `\nUnable to get the following URL after 5 retries in interval of 30 seconds each, get operation timeout set to 60 seconds: ${URL} .`
                         )
                     );
-                    process.stdout.write('\t');
+                    process.stdout.write('  ');
                 }
             } else {
                 console.log(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);

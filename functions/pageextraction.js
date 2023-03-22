@@ -56,7 +56,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     const tempPath = generateTempFolderWithRandomText();
     await makeDir(tempPath, debug);
 
-    debug ? '' : process.stdout.write('\t');
+    debug ? '' : process.stdout.write('  ');
     const imageNumbersToDownload = getImageNumbersToDownloadFromDC(dealerFolder);
     let imagesDownloaded = 0;
     for (let index = 0; index < imageNumbersToDownload.length; index++) {
@@ -81,6 +81,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
             shortFilename = `${dealerFolder}/${stockNumber}/${path.basename(file.path)}`;
         }
         debug ? '' : process.stdout.write(chalk.white(`${shortFilename} »`));
+        const shortFilenameTextLength = shortFilename.length + 2;
 
         let checksumOfFile;
         for (let checksumOfFileCnt = 0; checksumOfFileCnt < 5; checksumOfFileCnt++) {
@@ -110,7 +111,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                                 `\nUnable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                             )
                         );
-                        process.stdout.write('\t');
+                        process.stdout.write('  ');
                     }
                 } else {
                     console.log(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
@@ -133,6 +134,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     imageNumbersToDownload.length === 1,
                     hashAlgo,
                     checksumOfFile,
+                    shortFilenameTextLength,
                     debug
                 );
                 imagesDownloaded++;
@@ -160,7 +162,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                                 `\nUnable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                             )
                         );
-                        process.stdout.write('\t');
+                        process.stdout.write('  ');
                     }
                 } else {
                     console.log(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
