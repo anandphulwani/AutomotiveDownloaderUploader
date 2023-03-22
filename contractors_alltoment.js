@@ -14,9 +14,8 @@ import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator, getSumOf2DArrayColumn, getIndexOfHighestIn2DArrayColumn } from './functions/others.js';
 import { removeDirAndRemoveParentDirIfEmpty, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './functions/filesystem.js';
 import { getAddTextToFolderNameFromDC } from './functions/excelsupportive.js';
+import { setContractorsCurrentAllotted, getContractorsCurrentAllotted, addToContractorsCurrentAllotted } from './functions/configsupportive.js';
 /* eslint-enable import/extensions */
-
-// TODO: Set contractors currentstatus to 0 if lot no is 1
 
 /* #region : Validation section 01 */
 if (process.argv.length !== 3) {
@@ -159,7 +158,15 @@ dealerDirectories.sort((a, b) => {
 let contractors = [];
 let totalNoOfNormalThreshold = 0;
 
+/**
+ * Set contractors currentstatus to 0 if lot no is 1
+ * Reading all name and normalThreshold to contractors array
+ * Adding all normalThreshold to totalNoOfNormalThreshold
+ */
 Object.keys(config.contractors).forEach((contractor) => {
+    if (lotIndex === 1) {
+        setContractorsCurrentAllotted(contractor, '0');
+    }
     const { normalThreshold } = config.contractors[contractor];
     contractors.push([contractor, normalThreshold]);
     totalNoOfNormalThreshold += normalThreshold;
@@ -174,15 +181,9 @@ contractors.sort((a, b) => {
 
 contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, totalNoOfNormalThreshold);
 
-// Lot Configuration
-let imagesQtyAlloted = 0;
-const { minimumDealerFoldersForEachContractors, imagesQty } = config.lot[lotIndex - 1];
-// console.log(minimumDealerFoldersForEachContractors);
-
 /**
- * Alloting minimum DealerFolders for each contractors as per config
- * Adding allotment of images to all contractors as the last column to generate `Example01` below.
- * and setting last column to 0 if minimumDealerFoldersForEachContractors is false, to generate `Example02` below.
+ * Reading currentAllotted(ImagesAlloted) from the config, and appending it as the last column to generate `Example01` below.
+ * And appending a 0 to all the last column if the Lot is 01, to generate `Example02` below, since config is old read.
  */
 /* #region: Examples */
 /**
@@ -205,9 +206,27 @@ const { minimumDealerFoldersForEachContractors, imagesQty } = config.lot[lotInde
  *    [ 'arjun', 100, 14, 0 ],
  *    [ 'om', 100, 14, 0 ]
  * ]
- *
  */
 /* #endregion */
+contractors.forEach((contractor) => {
+    if (lotIndex === 1) {
+        contractor.push(0);
+    } else {
+        const { currentAllotted } = config.contractors[contractor[0]];
+        contractor.push(currentAllotted);
+    }
+});
+// console.log(contractors);
+
+// Lot Configuration
+let imagesQtyAlloted = 0;
+const { minimumDealerFoldersForEachContractors, imagesQty } = config.lot[lotIndex - 1];
+// console.log(minimumDealerFoldersForEachContractors);
+
+/**
+ * Alloting minimum DealerFolders for each contractors as per config
+ * Adding allotment of images to the currentAllotment for all contractors in the last column.
+ */
 /* #region: CodeAbstract */
 if (minimumDealerFoldersForEachContractors !== false) {
     const minDealerFolders = minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
@@ -227,26 +246,17 @@ if (minimumDealerFoldersForEachContractors !== false) {
         // await createDirAndMoveFile(dealerFolderPath, destinationPath);
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
 
-        console.log(`${sourceDealerFolderName}         Alloted To           ${contractorAlloted} (${destinationDealerFolderName})`);
-        // TODO: Add images quantity to current status in config
+        console.log(`${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`);
+        addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
 
-        if (contractors[contractorsIndex].length === 3) {
-            contractors[contractorsIndex].push(dealerFolderFilesCount);
-        } else {
-            contractors[contractorsIndex][3] += dealerFolderFilesCount;
-        }
+        contractors[contractorsIndex][3] += dealerFolderFilesCount;
         imagesQtyAlloted += dealerFolderFilesCount;
         dealerDirectories.shift();
     }
-} else {
-    contractors.forEach((contractor) => {
-        if (contractor.length === 3) {
-            contractor.push(0);
-        }
-    });
 }
 /* #endregion */
 console.log(`-----------------------------------------------------`);
+// console.log(contractors);
 // console.log(`imagesQtyAlloted: ${imagesQtyAlloted}`);
 
 /**
@@ -290,8 +300,8 @@ if (imagesQty > 0 && imagesQty > imagesQtyAlloted) {
         // await createDirAndMoveFile(dealerFolderPath, destinationPath);
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
 
-        console.log(`${sourceDealerFolderName}         Alloted To           ${contractorAlloted} (${destinationDealerFolderName})`);
-        // TODO: Add images quantity to current status in config
+        console.log(`${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`);
+        addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
 
         contractors[contractorsIndex][3] += dealerFolderFilesCount;
         imagesQtyAlloted += dealerFolderFilesCount;
