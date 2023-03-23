@@ -15,8 +15,8 @@ import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
 import { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
 import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto.js';
 import { handleBookmarkURL, removeChecksumFromBookmarksObj, replaceBookmarksNameOnGUIDAndWriteToBookmarksFile } from './functions/bookmark.js';
+import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
-import { readDealerConfigurationFormatted, readDealerConfigurationExcel } from './functions/excel.js';
 import { validateBookmarksAndCheckCredentialsPresent } from './functions/bookmarkvalidation.js';
 import { validateConfigFile } from './functions/configvalidation.js';
 /* eslint-enable import/extensions */
@@ -133,6 +133,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                 // await waitForSeconds(5, true);
                 /* #endregion */
 
+                setCurrentDealerConfiguration(credentials.username);
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {

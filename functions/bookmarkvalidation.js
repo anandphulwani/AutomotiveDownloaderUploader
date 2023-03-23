@@ -4,13 +4,12 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { getCredentialsForUsername } from './configsupportive.js';
-import { getAllDealerNames } from './excelsupportive.js';
+import { setCurrentDealerConfiguration, getAllDealerNames } from './excelsupportive.js';
 /* eslint-enable import/extensions */
 
 function validateBookmarksAndCheckCredentialsPresent(debug = false) {
     let validationStatus = 'success';
     debug ? console.log(`Validating bookmarks and checking if credentials are present: Executing.`) : '';
-    const allDealerNames = getAllDealerNames();
     const { bookmarkPath, bookmarkOptions } = config;
     const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
     // eslint-disable-next-line no-restricted-syntax
@@ -30,9 +29,11 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
                         )
                     );
                 }
+                setCurrentDealerConfiguration(credentials.username);
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {
+                    const allDealerNames = getAllDealerNames();
                     if (!allDealerNames.includes(dealerLevelBookmark.name)) {
                         validationStatus = 'error';
                         console.log(

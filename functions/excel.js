@@ -1,4 +1,6 @@
+import fs from 'fs';
 import xlsx from 'xlsx';
+import chalk from 'chalk';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import {
@@ -9,8 +11,13 @@ import {
 } from './stringformatting.js';
 /* eslint-enable import/extensions */
 
-function readDealerConfigurationExcel() {
-    const file = xlsx.readFile(config.dealerConfiguration);
+function readDealerConfigurationExcel(username) {
+    const excelFilename = `${config.dealerConfigurationFolder}\\${username}.xlsx`;
+    if (!fs.existsSync(excelFilename)) {
+        console.log(chalk.white.bgRed.bold(`Dealer configuration excel file: ${excelFilename} does not exist, Please check.`));
+        process.exit(1);
+    }
+    const file = xlsx.readFile(excelFilename);
     const data = [];
     const sheets = file.SheetNames;
     for (let i = 0; i < sheets.length; i++) {
@@ -26,8 +33,8 @@ function readDealerConfigurationExcel() {
     return data; // console.log(data); // Printing data
 }
 
-function readDealerConfigurationFormatted() {
-    let data = readDealerConfigurationExcel();
+function readDealerConfigurationFormatted(username) {
+    let data = readDealerConfigurationExcel(username);
     data = allTrimStringArrayOfObjects(data);
     data = trimMultipleSpacesInMiddleIntoOneArrayOfObjects(data);
     // console.log(data);

@@ -29,7 +29,7 @@ const configUser = {
             ignoreMesgInBookmark: 'Ignoring (Browse-Vehicles-Details)',
         },
     ],
-    // dealerConfigurationFolder: '.\\configs\\DealerConfiguration\\',
+    // dealerConfigurationFolder: '.\\configs\\DealerConfiguration',
     // downloadPath: '.\\datastore\\Downloads',
     credentials: [
         {

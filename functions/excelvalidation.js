@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 /* eslint-disable import/extensions */
+import { config } from '../configs/config.js';
 import { readDealerConfigurationExcel } from './excel.js';
 import {
     allTrimStringArray,
@@ -13,81 +14,94 @@ import {
 let resultStatus;
 function validateDealerConfigurationExcelFile(debug = false) {
     debug ? console.log(`Validating excel file: Executing.`) : '';
-    const data = readDealerConfigurationExcel();
+    Object.keys(config.credentials).forEach((credential) => {
+        const { username } = config.credentials[credential];
+        const usernameTrimmed = username.includes('@') ? username.split('@')[0] : username;
 
-    // Array of values of the specified column name
-    // console.log(data.map((item) => item['Dealer Number']));
+        const data = readDealerConfigurationExcel(usernameTrimmed);
 
-    // Array of objects, with row number as key, column name and column value as object
-    // const test = Object.fromEntries(data.map((entry, index) => [index + 1, { 'Dealer Number': entry['Dealer Number'] }]));
-    // console.log(test);
+        // Array of values of the specified column name
+        // console.log(data.map((item) => item['Dealer Number']));
 
-    // Array of bjects, without any key, column name and column value as object
-    // const redux1 = (list) => list.map((o) => Object.fromEntries(['Dealer Number'].map((k) => [k, o[k]])));
-    // console.log(redux1(data));
+        // Array of objects, with row number as key, column name and column value as object
+        // const test = Object.fromEntries(data.map((entry, index) => [index + 1, { 'Dealer Number': entry['Dealer Number'] }]));
+        // console.log(test);
 
-    resultStatus = 'success';
+        // Array of objects, without any key, column name and column value as object
+        // const redux1 = (list) => list.map((o) => Object.fromEntries(['Dealer Number'].map((k) => [k, o[k]])));
+        // console.log(redux1(data));
 
-    const dealerNumberArray = data.map((item) => item['Dealer Number']);
-    validateDealerConfigurationExcelFileColumnDealerNumber(dealerNumberArray, 'Dealer Number');
-    const dealerNameArray = data.map((item) => item['Dealer Name']);
-    validateDealerConfigurationExcelFileColumnDealerName(dealerNameArray, 'Dealer Name');
-    const imageNumbersToDownloadArray = data.map((item) => item['Image numbers to download']);
-    validateDealerConfigurationExcelFileColumnImageNumbersToDownload(imageNumbersToDownloadArray, 'Image numbers to download');
-    const addTextToFolderNameArray = data.map((item) => item['Add text to folder name']);
-    validateDealerConfigurationExcelFileColumnAddTextToFolderName(addTextToFolderNameArray, 'Add text to folder name');
-    const deleteOriginalArray = data.map((item) => item['Delete original']);
-    validateDealerConfigurationExcelFileColumnBooleanOnly(deleteOriginalArray, 'Delete original');
-    const shiftOriginalArray = data.map((item) => item['Shift original 1st position to last position']);
-    validateDealerConfigurationExcelFileColumnBooleanOnly(shiftOriginalArray, 'Shift original 1st position to last position');
-    const putFirstArray = data.map((item) => item['Put 1st edited images in the last position also']);
-    validateDealerConfigurationExcelFileColumnBooleanOnly(putFirstArray, 'Put 1st edited images in the last position also');
-    const lockTheImageArray = data.map((item) => item['Lock the image (check mark)']);
-    validateDealerConfigurationExcelFileColumnBooleanOnly(lockTheImageArray, 'Lock the image (check mark)');
-    debug ? console.log(`resultStatus: ${resultStatus}`) : '';
+        resultStatus = 'success';
+
+        const dealerNumberArray = data.map((item) => item['Dealer Number']);
+        validateDealerConfigurationExcelFileColumnDealerNumber(usernameTrimmed, dealerNumberArray, 'Dealer Number');
+
+        const dealerNameArray = data.map((item) => item['Dealer Name']);
+        validateDealerConfigurationExcelFileColumnDealerName(usernameTrimmed, dealerNameArray, 'Dealer Name');
+
+        const imageNumbersToDownloadArray = data.map((item) => item['Image numbers to download']);
+        validateDealerConfigurationExcelFileColumnImageNumbersToDownload(usernameTrimmed, imageNumbersToDownloadArray, 'Image numbers to download');
+
+        const addTextToFolderNameArray = data.map((item) => item['Add text to folder name']);
+        validateDealerConfigurationExcelFileColumnAddTextToFolderName(usernameTrimmed, addTextToFolderNameArray, 'Add text to folder name');
+
+        const deleteOriginalArray = data.map((item) => item['Delete original']);
+        validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, deleteOriginalArray, 'Delete original');
+
+        const shiftOriginalArray = data.map((item) => item['Shift original 1st position to last position']);
+        validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, shiftOriginalArray, 'Shift original 1st position to last position');
+
+        const putFirstArray = data.map((item) => item['Put 1st edited images in the last position also']);
+        validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, putFirstArray, 'Put 1st edited images in the last position also');
+
+        const lockTheImageArray = data.map((item) => item['Lock the image (check mark)']);
+        validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, lockTheImageArray, 'Lock the image (check mark)');
+
+        debug ? console.log(`resultStatus: ${resultStatus}`) : '';
+    });
 
     debug ? console.log(`Validating excel file: Done.`) : '';
     return resultStatus;
 }
 
-function validateDealerConfigurationExcelFileColumnDealerNumber(columnData, columnName) {
-    checkForEmptyCells(columnData, columnName);
-    checkForSpaceInBeginOrEnd(columnData, columnName);
+function validateDealerConfigurationExcelFileColumnDealerNumber(usernameTrimmed, columnData, columnName) {
+    checkForEmptyCells(usernameTrimmed, columnData, columnName);
+    checkForSpaceInBeginOrEnd(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    checkForMultipleSpacesInMiddle(columnData, columnName);
+    checkForMultipleSpacesInMiddle(usernameTrimmed, columnData, columnName);
     columnData = trimMultipleSpacesInMiddleIntoOneArray(columnData);
-    checkForDuplicates(columnData, columnName);
+    checkForDuplicates(usernameTrimmed, columnData, columnName);
 }
 
-function validateDealerConfigurationExcelFileColumnDealerName(columnData, columnName) {
-    checkForEmptyCells(columnData, columnName);
-    checkForSpaceInBeginOrEnd(columnData, columnName);
+function validateDealerConfigurationExcelFileColumnDealerName(usernameTrimmed, columnData, columnName) {
+    checkForEmptyCells(usernameTrimmed, columnData, columnName);
+    checkForSpaceInBeginOrEnd(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    checkForMultipleSpacesInMiddle(columnData, columnName);
+    checkForMultipleSpacesInMiddle(usernameTrimmed, columnData, columnName);
     // columnData = trimMultipleSpacesInMiddleIntoOneArray(columnData);
 }
 
-function validateDealerConfigurationExcelFileColumnImageNumbersToDownload(columnData, columnName) {
-    checkForEmptyCells(columnData, columnName);
-    checkForSpaceInBeginOrEnd(columnData, columnName);
+function validateDealerConfigurationExcelFileColumnImageNumbersToDownload(usernameTrimmed, columnData, columnName) {
+    checkForEmptyCells(usernameTrimmed, columnData, columnName);
+    checkForSpaceInBeginOrEnd(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    checkForSingleSpaceInMiddle(columnData, columnName);
+    checkForSingleSpaceInMiddle(usernameTrimmed, columnData, columnName);
     columnData = trimSingleSpaceInMiddleArray(columnData);
-    checkForNumbersAndCommaOnly(columnData, columnName);
+    checkForNumbersAndCommaOnly(usernameTrimmed, columnData, columnName);
 }
 
-function validateDealerConfigurationExcelFileColumnAddTextToFolderName(columnData, columnName) {
-    checkForSpaceInBeginOrEnd(columnData, columnName);
+function validateDealerConfigurationExcelFileColumnAddTextToFolderName(usernameTrimmed, columnData, columnName) {
+    checkForSpaceInBeginOrEnd(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    checkForMultipleSpacesInMiddle(columnData, columnName);
+    checkForMultipleSpacesInMiddle(usernameTrimmed, columnData, columnName);
     // columnData = trimMultipleSpacesInMiddleIntoOneArray(columnData);
 }
 
-function validateDealerConfigurationExcelFileColumnBooleanOnly(columnData, columnName) {
-    checkForEmptyCells(columnData, columnName);
-    checkForSpaceInBeginOrEnd(columnData, columnName);
+function validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, columnData, columnName) {
+    checkForEmptyCells(usernameTrimmed, columnData, columnName);
+    checkForSpaceInBeginOrEnd(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    checkForBooleanValueOnly(columnData, columnName);
+    checkForBooleanValueOnly(usernameTrimmed, columnData, columnName);
 }
 
 /**
@@ -100,7 +114,7 @@ function validateDealerConfigurationExcelFileColumnBooleanOnly(columnData, colum
  *
  */
 
-function checkForDuplicates(data, columnName) {
+function checkForDuplicates(usernameTrimmed, data, columnName) {
     const findDuplicates = (arr) => arr.filter((item, index) => item !== undefined && arr.indexOf(item) !== index);
     let dupElements = findDuplicates(data); // All duplicates
     dupElements = removeDuplicates(dupElements);
@@ -115,25 +129,29 @@ function checkForDuplicates(data, columnName) {
         elementsLocations = elementsLocations.map((entry) => entry + 2);
         console.log(
             chalk.white.bgRed.bold(
-                `ERROR: In column '${columnName}', found '${dupElement}' at multiple row numbers at ${elementsLocations.join(', ')}.`
+                `ERROR: (${usernameTrimmed}) In column '${columnName}', found '${dupElement}' at multiple row numbers at ${elementsLocations.join(
+                    ', '
+                )}.`
             )
         );
     });
 }
 
-function checkForEmptyCells(data, columnName) {
+function checkForEmptyCells(usernameTrimmed, data, columnName) {
     const elementsAllIndex = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
     let elementsLocations = elementsAllIndex(data, undefined);
     if (elementsLocations.length > 0) {
         setResultStatus('error');
         elementsLocations = elementsLocations.map((entry) => entry + 2);
         console.log(
-            chalk.white.bgRed.bold(`ERROR: In column '${columnName}', found empty/blank cell at row number at ${elementsLocations.join(', ')}.`)
+            chalk.white.bgRed.bold(
+                `ERROR: (${usernameTrimmed}) In column '${columnName}', found empty/blank cell at row number at ${elementsLocations.join(', ')}.`
+            )
         );
     }
 }
 
-function checkForSpaceInBeginOrEnd(data, columnName) {
+function checkForSpaceInBeginOrEnd(usernameTrimmed, data, columnName) {
     const findElementsContainsSpacesInBeginOrEnd = (arr) => arr.filter((item) => item !== undefined && (item.startsWith(' ') || item.endsWith(' ')));
     let spaceElements = findElementsContainsSpacesInBeginOrEnd(data);
     spaceElements = removeDuplicates(spaceElements);
@@ -148,14 +166,14 @@ function checkForSpaceInBeginOrEnd(data, columnName) {
         elementsLocations = elementsLocations.map((entry) => entry + 2);
         console.log(
             chalk.white.bgYellow.bold(
-                `WARNING: In column '${columnName}', found space(s) in beginning and/or the end of element\n` +
+                `WARNING: (${usernameTrimmed}) In column '${columnName}', found space(s) in beginning and/or the end of element\n` +
                     `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
             )
         );
     });
 }
 
-function checkForMultipleSpacesInMiddle(data, columnName) {
+function checkForMultipleSpacesInMiddle(usernameTrimmed, data, columnName) {
     const findElementsContainsMultipleSpacesInMiddle = (arr) => arr.filter((item) => item !== undefined && item.includes('  '));
     let spaceElements = findElementsContainsMultipleSpacesInMiddle(data);
     spaceElements = removeDuplicates(spaceElements);
@@ -170,14 +188,14 @@ function checkForMultipleSpacesInMiddle(data, columnName) {
         elementsLocations = elementsLocations.map((entry) => entry + 2);
         console.log(
             chalk.white.bgYellow.bold(
-                `WARNING: In column '${columnName}', found multiple consecutive space in middle of the element\n` +
+                `WARNING: (${usernameTrimmed}) In column '${columnName}', found multiple consecutive space in middle of the element\n` +
                     `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
             )
         );
     });
 }
 
-function checkForSingleSpaceInMiddle(data, columnName) {
+function checkForSingleSpaceInMiddle(usernameTrimmed, data, columnName) {
     const findElementsContainsSingleSpacesInMiddle = (arr) => arr.filter((item) => item !== undefined && item.includes(' '));
     let spaceElements = findElementsContainsSingleSpacesInMiddle(data);
     spaceElements = removeDuplicates(spaceElements);
@@ -192,14 +210,14 @@ function checkForSingleSpaceInMiddle(data, columnName) {
         elementsLocations = elementsLocations.map((entry) => entry + 2);
         console.log(
             chalk.white.bgYellow.bold(
-                `WARNING: In column '${columnName}', found single space in middle of the element\n` +
+                `WARNING: (${usernameTrimmed}) In column '${columnName}', found single space in middle of the element\n` +
                     `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
             )
         );
     });
 }
 
-function checkForBooleanValueOnly(data, columnName) {
+function checkForBooleanValueOnly(usernameTrimmed, data, columnName) {
     const findElementsNotBoolean = (arr) => arr.filter((item) => item !== undefined && item.toLowerCase() !== 'yes' && item.toLowerCase() !== 'no');
     let notBooleanElements = findElementsNotBoolean(data);
     notBooleanElements = removeDuplicates(notBooleanElements);
@@ -214,14 +232,14 @@ function checkForBooleanValueOnly(data, columnName) {
         elementsLocations = elementsLocations.map((entry) => entry + 2);
         console.log(
             chalk.white.bgRed.bold(
-                `ERROR: In column '${columnName}', found invalid value for boolean(yes/no), element value: \n` +
+                `ERROR: (${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no), element value: \n` +
                     `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
             )
         );
     });
 }
 
-function checkForNumbersAndCommaOnly(data, columnName) {
+function checkForNumbersAndCommaOnly(usernameTrimmed, data, columnName) {
     const findElementsNotNumbersAndComma = (arr) => arr.filter((item) => item !== undefined && !/^[0-9]+(,[0-9]+)*$/.test(item));
     let notNumbersAndCommaElements = findElementsNotNumbersAndComma(data);
     notNumbersAndCommaElements = removeDuplicates(notNumbersAndCommaElements);
@@ -236,7 +254,7 @@ function checkForNumbersAndCommaOnly(data, columnName) {
         elementsLocations = elementsLocations.map((entry) => entry + 2);
         console.log(
             chalk.white.bgRed.bold(
-                `ERROR: In column '${columnName}', found invalid value for numbers separeted by comma, element value: \n` +
+                `ERROR: (${usernameTrimmed}) In column '${columnName}', found invalid value for numbers separeted by comma, element value: \n` +
                     `         '${notNumbersAndCommaElement}'    at row number ${elementsLocations.join(', ')}.`
             )
         );
