@@ -148,9 +148,9 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                         ((minDealerFolders !== false && dealerFolderCntInLot >= minDealerFolders) || minDealerFolders === false) &&
                         imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty
                     ) {
-                        // exec(
-                        //     `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} && pause && exit"`
-                        // );
+                        exec(
+                            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} && pause && pause && exit"`
+                        );
                         console.log('Resetting vars to 0.');
                         dealerFolderCntInLot = 0;
                         imagesQtyInLot = 0;
