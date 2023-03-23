@@ -11,7 +11,7 @@ import { waitForSeconds } from './sleep.js';
 import { incRetryCount } from './others.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
-import { getImageNumbersToDownloadFromDC, getDealerNameFromDC } from './excelsupportive.js';
+import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './excelsupportive.js';
 /* eslint-enable import/extensions */
 
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
@@ -22,20 +22,18 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     /**
      * Get dealer name from excel and compare it with dealer name in the page: Begin
      */
-    const dealerNameFromDC = getDealerNameFromDC(dealerFolder);
-    const dealerNameFromPage = decode(
-        String(
-            await page.$$eval(
-                'a#ctl00_ctl00_ContentPlaceHolder_ctl00_BrandingBar_VirtualRooftopSelector_DropdownActionButton > span > span > span > span',
-                (el) => el.map((x) => x.innerHTML)
-            )
+    const dealerNameFromDCAsIs = getDealerNameFromDCAsIs(dealerFolder);
+    const dealerNameFromPage = String(
+        await page.$$eval(
+            'a#ctl00_ctl00_ContentPlaceHolder_ctl00_BrandingBar_VirtualRooftopSelector_DropdownActionButton > span > span > span > span',
+            (el) => el.map((x) => x.innerHTML)
         )
     );
 
-    if (dealerNameFromDC.toLowerCase() !== dealerNameFromPage.toLowerCase()) {
+    if (dealerNameFromDCAsIs !== dealerNameFromPage) {
         console.log(
             chalk.white.bgYellow.bold(
-                `\nWARNING: Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDC}'.`
+                `\nWARNING: Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`
             )
         );
         return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0 };
