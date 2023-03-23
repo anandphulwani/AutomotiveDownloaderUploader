@@ -61,12 +61,12 @@ function getAddTextToFolderNameFromDC(dealerNumber) {
     return addTextToFolderName;
 }
 
-function getAllDealerNames() {
-    const allDealerNames = dealerConfiguration.map((item) => item['Dealer Number']);
-    if (allDealerNames === false) {
+function getAllDealerNumbers() {
+    const allDealerNumbers = dealerConfiguration.map((item) => item['Dealer Number']);
+    if (allDealerNumbers === false) {
         return '';
     }
-    return allDealerNames;
+    return allDealerNumbers;
 }
 
 // eslint-disable-next-line import/prefer-default-export
@@ -76,5 +76,5 @@ export {
     getAddTextToFolderNameFromDC,
     getDealerNameFromDC,
     getDealerNameFromDCAsIs,
-    getAllDealerNames,
+    getAllDealerNumbers,
 };

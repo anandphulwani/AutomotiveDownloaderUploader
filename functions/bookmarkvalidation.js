@@ -4,7 +4,7 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { getCredentialsForUsername } from './configsupportive.js';
-import { setCurrentDealerConfiguration, getAllDealerNames } from './excelsupportive.js';
+import { setCurrentDealerConfiguration, getAllDealerNumbers } from './excelsupportive.js';
 import { checkForSpaceInBeginOrEnd, checkForMultipleSpacesInMiddle, allTrimString, trimMultipleSpacesInMiddleIntoOne } from './stringformatting.js';
 /* eslint-enable import/extensions */
 
@@ -34,9 +34,9 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {
-                    const allDealerNames = getAllDealerNames();
+                    const allDealerNumbers = getAllDealerNumbers();
                     const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameLevelBookmark.name);
-                    if (!allDealerNames.includes(dealerLevelBookmarkName)) {
+                    if (!allDealerNumbers.includes(dealerLevelBookmarkName)) {
                         validationStatus = 'error';
                         console.log(
                             chalk.white.bgRed.bold(

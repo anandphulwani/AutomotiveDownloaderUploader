@@ -4,7 +4,7 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { getCredentialsForUsername } from './configsupportive.js';
-import { getAllDealerNames } from './excelsupportive.js';
+import { getAllDealerNumbers } from './excelsupportive.js';
 /* eslint-enable import/extensions */
 
 function validateConfigFile(debug = false) {
