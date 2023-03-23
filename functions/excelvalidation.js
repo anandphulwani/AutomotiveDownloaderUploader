@@ -65,43 +65,43 @@ function validateDealerConfigurationExcelFile(debug = false) {
 }
 
 function validateDealerConfigurationExcelFileColumnDealerNumber(usernameTrimmed, columnData, columnName) {
-    checkForEmptyCells(usernameTrimmed, columnData, columnName);
-    checkForSpaceInBeginOrEnd(usernameTrimmed, columnData, columnName);
+    checkForEmptyCellsInArray(usernameTrimmed, columnData, columnName);
+    checkForSpaceInBeginOrEndInArray(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    checkForMultipleSpacesInMiddle(usernameTrimmed, columnData, columnName);
+    checkForMultipleSpacesInMiddleInArray(usernameTrimmed, columnData, columnName);
     columnData = trimMultipleSpacesInMiddleIntoOneArray(columnData);
-    checkForDuplicates(usernameTrimmed, columnData, columnName);
+    checkForDuplicatesInArray(usernameTrimmed, columnData, columnName);
 }
 
 function validateDealerConfigurationExcelFileColumnDealerName(usernameTrimmed, columnData, columnName) {
-    checkForEmptyCells(usernameTrimmed, columnData, columnName);
-    checkForSpaceInBeginOrEnd(usernameTrimmed, columnData, columnName);
+    checkForEmptyCellsInArray(usernameTrimmed, columnData, columnName);
+    checkForSpaceInBeginOrEndInArray(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    checkForMultipleSpacesInMiddle(usernameTrimmed, columnData, columnName);
+    checkForMultipleSpacesInMiddleInArray(usernameTrimmed, columnData, columnName);
     // columnData = trimMultipleSpacesInMiddleIntoOneArray(columnData);
 }
 
 function validateDealerConfigurationExcelFileColumnImageNumbersToDownload(usernameTrimmed, columnData, columnName) {
-    checkForEmptyCells(usernameTrimmed, columnData, columnName);
-    checkForSpaceInBeginOrEnd(usernameTrimmed, columnData, columnName);
+    checkForEmptyCellsInArray(usernameTrimmed, columnData, columnName);
+    checkForSpaceInBeginOrEndInArray(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    checkForSingleSpaceInMiddle(usernameTrimmed, columnData, columnName);
+    checkForSingleSpaceInMiddleInArray(usernameTrimmed, columnData, columnName);
     columnData = trimSingleSpaceInMiddleArray(columnData);
-    checkForNumbersAndCommaOnly(usernameTrimmed, columnData, columnName);
+    checkForNumbersAndCommaOnlyInArray(usernameTrimmed, columnData, columnName);
 }
 
 function validateDealerConfigurationExcelFileColumnAddTextToFolderName(usernameTrimmed, columnData, columnName) {
-    checkForSpaceInBeginOrEnd(usernameTrimmed, columnData, columnName);
+    checkForSpaceInBeginOrEndInArray(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    checkForMultipleSpacesInMiddle(usernameTrimmed, columnData, columnName);
+    checkForMultipleSpacesInMiddleInArray(usernameTrimmed, columnData, columnName);
     // columnData = trimMultipleSpacesInMiddleIntoOneArray(columnData);
 }
 
 function validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, columnData, columnName) {
-    checkForEmptyCells(usernameTrimmed, columnData, columnName);
-    checkForSpaceInBeginOrEnd(usernameTrimmed, columnData, columnName);
+    checkForEmptyCellsInArray(usernameTrimmed, columnData, columnName);
+    checkForSpaceInBeginOrEndInArray(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    checkForBooleanValueOnly(usernameTrimmed, columnData, columnName);
+    checkForBooleanValueOnlyInArray(usernameTrimmed, columnData, columnName);
 }
 
 /**
@@ -114,7 +114,7 @@ function validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, 
  *
  */
 
-function checkForDuplicates(usernameTrimmed, data, columnName) {
+function checkForDuplicatesInArray(usernameTrimmed, data, columnName) {
     const findDuplicates = (arr) => arr.filter((item, index) => item !== undefined && arr.indexOf(item) !== index);
     let dupElements = findDuplicates(data); // All duplicates
     dupElements = removeDuplicates(dupElements);
@@ -137,7 +137,7 @@ function checkForDuplicates(usernameTrimmed, data, columnName) {
     });
 }
 
-function checkForEmptyCells(usernameTrimmed, data, columnName) {
+function checkForEmptyCellsInArray(usernameTrimmed, data, columnName) {
     const elementsAllIndex = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
     let elementsLocations = elementsAllIndex(data, undefined);
     if (elementsLocations.length > 0) {
@@ -151,7 +151,7 @@ function checkForEmptyCells(usernameTrimmed, data, columnName) {
     }
 }
 
-function checkForSpaceInBeginOrEnd(usernameTrimmed, data, columnName) {
+function checkForSpaceInBeginOrEndInArray(usernameTrimmed, data, columnName) {
     const findElementsContainsSpacesInBeginOrEnd = (arr) => arr.filter((item) => item !== undefined && (item.startsWith(' ') || item.endsWith(' ')));
     let spaceElements = findElementsContainsSpacesInBeginOrEnd(data);
     spaceElements = removeDuplicates(spaceElements);
@@ -173,7 +173,7 @@ function checkForSpaceInBeginOrEnd(usernameTrimmed, data, columnName) {
     });
 }
 
-function checkForMultipleSpacesInMiddle(usernameTrimmed, data, columnName) {
+function checkForMultipleSpacesInMiddleInArray(usernameTrimmed, data, columnName) {
     const findElementsContainsMultipleSpacesInMiddle = (arr) => arr.filter((item) => item !== undefined && item.includes('  '));
     let spaceElements = findElementsContainsMultipleSpacesInMiddle(data);
     spaceElements = removeDuplicates(spaceElements);
@@ -195,7 +195,7 @@ function checkForMultipleSpacesInMiddle(usernameTrimmed, data, columnName) {
     });
 }
 
-function checkForSingleSpaceInMiddle(usernameTrimmed, data, columnName) {
+function checkForSingleSpaceInMiddleInArray(usernameTrimmed, data, columnName) {
     const findElementsContainsSingleSpacesInMiddle = (arr) => arr.filter((item) => item !== undefined && item.includes(' '));
     let spaceElements = findElementsContainsSingleSpacesInMiddle(data);
     spaceElements = removeDuplicates(spaceElements);
@@ -217,7 +217,7 @@ function checkForSingleSpaceInMiddle(usernameTrimmed, data, columnName) {
     });
 }
 
-function checkForBooleanValueOnly(usernameTrimmed, data, columnName) {
+function checkForBooleanValueOnlyInArray(usernameTrimmed, data, columnName) {
     const findElementsNotBoolean = (arr) => arr.filter((item) => item !== undefined && item.toLowerCase() !== 'yes' && item.toLowerCase() !== 'no');
     let notBooleanElements = findElementsNotBoolean(data);
     notBooleanElements = removeDuplicates(notBooleanElements);
@@ -239,7 +239,7 @@ function checkForBooleanValueOnly(usernameTrimmed, data, columnName) {
     });
 }
 
-function checkForNumbersAndCommaOnly(usernameTrimmed, data, columnName) {
+function checkForNumbersAndCommaOnlyInArray(usernameTrimmed, data, columnName) {
     const findElementsNotNumbersAndComma = (arr) => arr.filter((item) => item !== undefined && !/^[0-9]+(,[0-9]+)*$/.test(item));
     let notNumbersAndCommaElements = findElementsNotNumbersAndComma(data);
     notNumbersAndCommaElements = removeDuplicates(notNumbersAndCommaElements);
