@@ -5,8 +5,24 @@ function zeroPad(num, places) {
     return Array(+(zero > 0 && zero)).join('0') + num;
 }
 
+function checkForSpaceInBeginOrEnd(txt) {
+    return txt !== undefined && (txt.startsWith(' ') || txt.endsWith(' '));
+}
+
+function checkForMultipleSpacesInMiddle(txt) {
+    return txt !== undefined && txt.includes('  ');
+}
+
+function allTrimString(txt) {
+    return txt.trim();
+}
+
+function trimMultipleSpacesInMiddleIntoOne(txt) {
+    return txt.replace(/  +/g, ' ');
+}
+
 function allTrimStringArrayOfObjects(arrObj) {
-    // return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (v !== undefined ? (o[k] = v.trim()) : ''))); // Check doing nothing on false ternary operator
+    // return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (v !== undefined ? (o[k] = v.trim()) : ''))); // TODO: Check doing nothing on false ternary operator
     // eslint-disable-next-line no-return-assign
     return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (o[k] = v.trim())));
 }
@@ -17,7 +33,7 @@ function allTrimStringArray(arr) {
 }
 
 function trimMultipleSpacesInMiddleIntoOneArrayOfObjects(arrObj) {
-    // return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (v !== undefined ? (o[k] = v.replace(/  +/g, ' ')) : ''))); // Check doing nothing on false ternary operator
+    // return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (v !== undefined ? (o[k] = v.replace(/  +/g, ' ')) : ''))); // TODO: Check doing nothing on false ternary operator
     // eslint-disable-next-line no-return-assign
     return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (o[k] = v.replace(/  +/g, ' '))));
 }
@@ -28,7 +44,7 @@ function trimMultipleSpacesInMiddleIntoOneArray(arr) {
 }
 
 function trimSingleSpaceInMiddleArrayOfObjects(arrObj) {
-    // return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (v !== undefined ? (o[k] = v.replace(/  +/g, ' ')) : ''))); // Check doing nothing on false ternary operator
+    // return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (v !== undefined ? (o[k] = v.replace(/  +/g, ' ')) : ''))); // TODO: Check doing nothing on false ternary operator
     // eslint-disable-next-line no-return-assign
     return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (o[k] = v.replace(/  +/g, ''))));
 }
@@ -44,8 +60,12 @@ function removeDuplicates(arr) {
 
 export {
     zeroPad,
+    checkForSpaceInBeginOrEnd,
+    checkForMultipleSpacesInMiddle,
+    allTrimString,
     allTrimStringArray,
     allTrimStringArrayOfObjects,
+    trimMultipleSpacesInMiddleIntoOne,
     trimMultipleSpacesInMiddleIntoOneArray,
     trimMultipleSpacesInMiddleIntoOneArrayOfObjects,
     trimSingleSpaceInMiddleArrayOfObjects,
