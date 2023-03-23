@@ -17,7 +17,7 @@ import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/go
 import { handleBookmarkURL, removeChecksumFromBookmarksObj, replaceBookmarksNameOnGUIDAndWriteToBookmarksFile } from './functions/bookmark.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
-import { validateBookmarksAndCheckCredentialsPresent } from './functions/bookmarkvalidation.js';
+import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
 import { validateConfigFile } from './functions/configvalidation.js';
 /* eslint-enable import/extensions */
 
@@ -133,10 +133,12 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                 // await waitForSeconds(5, true);
                 /* #endregion */
 
-                setCurrentDealerConfiguration(credentials.username);
+                setCurrentDealerConfiguration(usernameLevelBookmark.name);
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {
+                    const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameLevelBookmark.name);
+
                     const minDealerFolders = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
                     console.log(`minDealerFolders: ${minDealerFolders}`);
                     console.log(`dealerFolderCntInLot: ${dealerFolderCntInLot}`);
@@ -156,7 +158,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                     }
                     console.log(
                         chalk.cyan('Reading Bookmarks for the Dealer: ') +
-                            chalk.cyan.bold(dealerLevelBookmark.name) +
+                            chalk.cyan.bold(dealerLevelBookmarkName) +
                             chalk.cyan(' from the Username: ') +
                             chalk.cyan.bold(usernameLevelBookmark.name)
                     );
@@ -171,7 +173,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                             page,
                             lotIndex,
                             usernameLevelBookmark.name,
-                            dealerLevelBookmark.name,
+                            dealerLevelBookmarkName,
                             vehicleBookmark.name,
                             vehicleBookmark.url
                         );
