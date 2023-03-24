@@ -139,6 +139,24 @@ function generateTempFolderWithRandomText(debug = false) {
     return tempPathWithRandomFolder;
 }
 
+function getFileCountRecursively(dirPath) {
+    let count = 0;
+    const files = fs.readdirSync(dirPath);
+    // console.log(`files.length${files.length}`);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const file of files) {
+        const filePath = path.join(dirPath, file);
+        const stat = fs.statSync(filePath);
+        if (stat.isFile()) {
+            count++;
+        } else if (stat.isDirectory()) {
+            count += getFileCountRecursively(filePath);
+        }
+    }
+    // console.log(`count${count}`);
+    return count;
+}
+
 export {
     makeDir,
     moveFile,
@@ -147,4 +165,5 @@ export {
     removeDir,
     removeDirAndRemoveParentDirIfEmpty,
     generateTempFolderWithRandomText,
+    getFileCountRecursively,
 };
