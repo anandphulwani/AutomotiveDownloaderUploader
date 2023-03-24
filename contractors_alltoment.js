@@ -451,7 +451,11 @@ function getChangePathFromDownloadToAllotment(sourcePath, additionalText) {
     }
 
     if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
-        // TODO: Generated a red error
+        console.log(
+            chalk.white.bgRed.bold(
+                `ERROR: Unknown state in getChangePathFromDownloadToAllotment function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
+            )
+        );
         process.exit(0);
     }
     sourcePath = `${config.allotmentPath}\\${sourcePathFoldersArr.reverse().join('\\')}`;
