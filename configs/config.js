@@ -76,10 +76,10 @@ const configBasic = {
  *
  */
 let configToExport = '';
-if (configBasic.environment === 'production') {
+if (configUser.environment === 'production' || (configUser.environment === undefined && configBasic.environment === 'production')) {
     configToExport = _.merge(configBasic, configProduction);
     configToExport = _.merge(configToExport, configUser);
-} else if (configBasic.environment === 'development') {
+} else if (configUser.environment === 'development' || (configUser.environment === undefined && configBasic.environment === 'development')) {
     configToExport = _.merge(configBasic, configDevelopment);
     configToExport = _.merge(configToExport, configUser);
 } else {

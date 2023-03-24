@@ -1,6 +1,6 @@
 // Configuration in this file will override all settings in other config files
 const configUser = {
-    // environment: 'production',
+    // environment: 'production', // development Or production
     // timezone: 'Asia/Calcutta',
     // appDomain: 'https://www.homenetiol.com',
     // timeOffsetInMinutesToAvoid: 2,
