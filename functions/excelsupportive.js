@@ -15,7 +15,8 @@ function getSettingValueFromDC(filterBySettingName, filterBySettingValue, settin
         return false;
     }
     const singleelement = dealerConfiguration.filter((a) => a[filterBySettingName] === filterBySettingValue)[0];
-    const settingValues = singleelement[settingToExtract].trim();
+    const settingValues = singleelement[settingToExtract] !== undefined ? singleelement[settingToExtract].trim() : undefined;
+    // const settingValues = singleelement[settingToExtract].trim();
     return settingValues;
 }
 
@@ -56,7 +57,7 @@ function getDealerNameFromDCAsIs(dealerNumber) {
 
 function getAddTextToFolderNameFromDC(dealerNumber) {
     const addTextToFolderName = getSettingValueFromDC('Dealer Number', dealerNumber, 'Add text to folder name');
-    if (addTextToFolderName === false) {
+    if (addTextToFolderName === undefined || addTextToFolderName === false) {
         return '';
     }
     return addTextToFolderName;

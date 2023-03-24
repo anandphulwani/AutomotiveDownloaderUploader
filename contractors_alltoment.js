@@ -8,7 +8,7 @@ import { exec } from 'child_process';
 import { keyInYN } from 'readline-sync';
 
 /* eslint-disable import/extensions */
-import { zeroPad } from './functions/stringformatting.js';
+import { zeroPad, trimMultipleSpacesInMiddleIntoOne } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator, getSumOf2DArrayColumn, getIndexOfHighestIn2DArrayColumn } from './functions/others.js';
@@ -245,7 +245,9 @@ if (minimumDealerFoldersForEachContractors !== false) {
         }
 
         const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
-        const addTextToFolderName = `${getAddTextToFolderNameFromDC(path.basename(dealerFolderPath))} ${contractorAlloted} ${dealerFolderFilesCount}`;
+        const addTextToFolderName = trimMultipleSpacesInMiddleIntoOne(
+            `${getAddTextToFolderNameFromDC(path.basename(dealerFolderPath))} ${contractorAlloted} ${dealerFolderFilesCount}`
+        );
 
         const destinationPath = getChangePathFromDownloadToAllotment(dealerFolderPath, addTextToFolderName);
         const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
@@ -304,7 +306,9 @@ if (imagesQty > 0 && imagesQty > imagesQtyAlloted) {
         }
 
         const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
-        const addTextToFolderName = `${getAddTextToFolderNameFromDC(path.basename(dealerFolderPath))} ${contractorAlloted} ${dealerFolderFilesCount}`;
+        const addTextToFolderName = trimMultipleSpacesInMiddleIntoOne(
+            `${getAddTextToFolderNameFromDC(path.basename(dealerFolderPath))} ${contractorAlloted} ${dealerFolderFilesCount}`
+        );
 
         const destinationPath = getChangePathFromDownloadToAllotment(dealerFolderPath, addTextToFolderName);
         const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
