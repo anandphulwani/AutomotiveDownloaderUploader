@@ -50,34 +50,28 @@ const configUser = {
     ],
     contractors: {
         karan: {
-            currentAllotted: 60,
+            currentAllotted: 0,
             normalThreshold: 100,
-            higherThreshold: 150,
         },
         pavan: {
-            currentAllotted: 40,
+            currentAllotted: 0,
             normalThreshold: 100,
-            higherThreshold: 150,
         },
         ram: {
-            currentAllotted: 60,
+            currentAllotted: 0,
             normalThreshold: 300,
-            higherThreshold: 500,
         },
         arjun: {
-            currentAllotted: 30,
+            currentAllotted: 0,
             normalThreshold: 100,
-            higherThreshold: 150,
         },
         om: {
-            currentAllotted: 20,
+            currentAllotted: 0,
             normalThreshold: 100,
-            higherThreshold: 150,
         },
         // rohan: {
         //     currentAllotted: 0,
         //     normalThreshold: 500,
-        //     higherThreshold: 500,
         // },
     },
     lot: [
