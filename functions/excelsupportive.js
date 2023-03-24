@@ -23,7 +23,8 @@ function getSettingValueFromDCAsIs(filterBySettingName, filterBySettingValue, se
     if (dealerConfigurationAsIs === []) {
         return false;
     }
-    const singleelement = dealerConfigurationAsIs.filter((a) => a[filterBySettingName] === filterBySettingValue)[0];
+    const indexOfObject = dealerConfiguration.findIndex((object) => object[filterBySettingName] === filterBySettingValue);
+    const singleelement = dealerConfigurationAsIs[indexOfObject];
     const settingValues = singleelement[settingToExtract];
     return settingValues;
 }
