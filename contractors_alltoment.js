@@ -38,7 +38,7 @@ if (!Object.keys(config.contractors).length > 0) {
 
 const lotIndex = parseInt(process.argv[2], 10);
 const lotFolderName = `Lot_${zeroPad(lotIndex, 2)}`;
-const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
+const todaysDate = process.argv[3] !== undefined ? process.argv[3] : date.format(new Date(), 'YYYY-MM-DD');
 const { downloadPath } = config;
 const lotFolderPath = `${downloadPath}\\${todaysDate}\\${lotFolderName}`; // ${config.downloadPath}/${todaysDate}/Lot_${zeroPad(lotIndex, 2)}/${usernameTrimmed}/${dealerFolder}/${stockNumber}/
 
