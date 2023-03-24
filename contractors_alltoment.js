@@ -430,8 +430,8 @@ function recalculateAllotmentPriority(contractorsArr) {
             }
         }
     });
-    console.log(`recalculateAllotmentPriority: `);
-    console.log(contractorsArr);
+    // console.log(`recalculateAllotmentPriority: `);
+    // console.log(contractorsArr);
     return contractorsArr;
 }
 /* #endregion */
@@ -449,14 +449,13 @@ function getChangePathFromDownloadToAllotment(sourcePath, additionalText) {
         sourcePathFoldersArr.push(path.basename(sourcePath));
         sourcePath = path.dirname(sourcePath);
     }
-    if (path.basename(sourcePath) !== 'Downloads') {
+
+    if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
+        // TODO: Generated a red error
         process.exit(0);
     }
-    sourcePath = `${path.dirname(sourcePath)}\\Allotment\\${sourcePathFoldersArr.reverse().join('\\')}`;
+    sourcePath = `${config.allotmentPath}\\${sourcePathFoldersArr.reverse().join('\\')}`;
     sourcePath += ` ${additionalText}`;
-
-    // console.log(sourcePathFoldersArr);
-    // console.log(sourcePath);
     return sourcePath;
 }
 /* #endregion */
@@ -518,5 +517,3 @@ async function validateLotFolderAndReturnImageCount(lotFldrPath, debug = false) 
 /* #endregion */
 
 /* #endregion */
-
-// TODO: Put allotment folder in the config
