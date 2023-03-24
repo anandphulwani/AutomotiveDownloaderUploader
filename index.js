@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs';
+import date from 'date-and-time';
 import killChrome from 'kill-chrome';
 import puppeteer from 'puppeteer';
 import { exec, spawn } from 'child_process';
@@ -8,6 +9,7 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
 import { getCredentialsForUsername, getAppDomain } from './functions/configsupportive.js';
+import { zeroPad } from './functions/stringformatting.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
@@ -27,6 +29,7 @@ import { validateConfigFile } from './functions/configvalidation.js';
 // console.log(`${host}:${port}/${name}`);
 // console.log(config);
 
+const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 if (config.environment === 'production') {
     checkTimezone();
     printSectionSeperator();
@@ -140,10 +143,10 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                     const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameLevelBookmark.name);
 
                     const minDealerFolders = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
-                    console.log(`minDealerFolders: ${minDealerFolders}`);
-                    console.log(`dealerFolderCntInLot: ${dealerFolderCntInLot}`);
-                    console.log(`config.lot[lotIndex - 1].imagesQty: ${config.lot[lotIndex - 1].imagesQty}`);
-                    console.log(`imagesQtyInLot: ${imagesQtyInLot}`);
+                    // console.log(`minDealerFolders: ${minDealerFolders}`);
+                    // console.log(`dealerFolderCntInLot: ${dealerFolderCntInLot}`);
+                    // console.log(`config.lot[lotIndex - 1].imagesQty: ${config.lot[lotIndex - 1].imagesQty}`);
+                    // console.log(`imagesQtyInLot: ${imagesQtyInLot}`);
                     if (
                         ((minDealerFolders !== false && dealerFolderCntInLot >= minDealerFolders) || minDealerFolders === false) &&
                         imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty
@@ -151,7 +154,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                         exec(
                             `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} && pause && pause && exit"`
                         );
-                        console.log('Resetting vars to 0.');
+                        // console.log('Resetting vars to 0.');
                         dealerFolderCntInLot = 0;
                         imagesQtyInLot = 0;
                         lotIndex++;
@@ -197,6 +200,9 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                 }
             }
         }
+    }
+    if (!fs.existsSync(`${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(lotIndex, 2)}`)) {
+        exec(`start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} && pause && pause && exit"`);
     }
     await browser.close();
 })();
