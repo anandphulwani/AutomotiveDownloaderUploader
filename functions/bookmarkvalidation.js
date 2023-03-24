@@ -61,7 +61,7 @@ function validateBookmarkNameText(dealerLevelBookmarkName, username) {
 }
 
 function checkForSpaceInBeginOrEndOfBookmarkName(dealerLevelBookmarkName, username) {
-    if (!checkForSpaceInBeginOrEnd(dealerLevelBookmarkName)) {
+    if (checkForSpaceInBeginOrEnd(dealerLevelBookmarkName)) {
         console.log(
             chalk.white.bgYellow.bold(
                 `WARNING: Under bookmark for user '${username}' in dealer folder '${dealerLevelBookmarkName}', found space(s) in beginning and/or the end of bookmark name.\n`
@@ -71,7 +71,7 @@ function checkForSpaceInBeginOrEndOfBookmarkName(dealerLevelBookmarkName, userna
 }
 
 function checkForMultipleSpacesInMiddleOfBookmarkName(dealerLevelBookmarkName, username) {
-    if (!checkForMultipleSpacesInMiddle(dealerLevelBookmarkName)) {
+    if (checkForMultipleSpacesInMiddle(dealerLevelBookmarkName)) {
         console.log(
             chalk.white.bgYellow.bold(
                 `WARNING: Under bookmark for user '${username}' in dealer folder '${dealerLevelBookmarkName}', found multiple consecutive space in middle of bookmark name.\n`
