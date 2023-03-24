@@ -13,7 +13,7 @@ import { config } from './configs/config.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator, getSumOf2DArrayColumn, getIndexOfHighestIn2DArrayColumn } from './functions/others.js';
 import { removeDirAndRemoveParentDirIfEmpty, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './functions/filesystem.js';
-import { getAddTextToFolderNameFromDC } from './functions/excelsupportive.js';
+import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './functions/excelsupportive.js';
 import { setContractorsCurrentAllotted, getContractorsCurrentAllotted, addToContractorsCurrentAllotted } from './functions/configsupportive.js';
 /* eslint-enable import/extensions */
 
@@ -223,6 +223,7 @@ let imagesQtyAlloted = 0;
 const { minimumDealerFoldersForEachContractors, imagesQty } = config.lot[lotIndex - 1];
 // console.log(minimumDealerFoldersForEachContractors);
 
+let earlierLoopUsernameFolder = '';
 /**
  * Alloting minimum DealerFolders for each contractors as per config
  * Adding allotment of images to the currentAllotment for all contractors in the last column.
@@ -237,8 +238,13 @@ if (minimumDealerFoldersForEachContractors !== false) {
         const dealerFolderFilesCount = dealerDirectories[0][1];
         const contractorsIndex = index % contractors.length;
         const contractorAlloted = contractors[contractorsIndex][0];
+        const usernameFolder = path.basename(path.dirname(dealerFolderPath));
+        if (usernameFolder !== earlierLoopUsernameFolder) {
+            setCurrentDealerConfiguration(usernameFolder);
+            earlierLoopUsernameFolder = usernameFolder;
+        }
 
-        const sourceDealerFolderName = `${path.basename(path.dirname(dealerFolderPath))}/${path.basename(dealerFolderPath)}`;
+        const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
         const addTextToFolderName = `${getAddTextToFolderNameFromDC(path.basename(dealerFolderPath))} ${contractorAlloted} ${dealerFolderFilesCount}`;
 
         const destinationPath = getChangePathFromDownloadToAllotment(dealerFolderPath, addTextToFolderName);
@@ -291,8 +297,13 @@ if (imagesQty > 0 && imagesQty > imagesQtyAlloted) {
         }
         const contractorsIndex = getIndexOfHighestIn2DArrayColumn(contractors, 5);
         const contractorAlloted = contractors[contractorsIndex][0];
+        const usernameFolder = path.basename(path.dirname(dealerFolderPath));
+        if (usernameFolder !== earlierLoopUsernameFolder) {
+            setCurrentDealerConfiguration(usernameFolder);
+            earlierLoopUsernameFolder = usernameFolder;
+        }
 
-        const sourceDealerFolderName = `${path.basename(path.dirname(dealerFolderPath))}/${path.basename(dealerFolderPath)}`;
+        const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
         const addTextToFolderName = `${getAddTextToFolderNameFromDC(path.basename(dealerFolderPath))} ${contractorAlloted} ${dealerFolderFilesCount}`;
 
         const destinationPath = getChangePathFromDownloadToAllotment(dealerFolderPath, addTextToFolderName);
