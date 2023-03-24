@@ -71,14 +71,30 @@ function removeChecksumFromBookmarksObj(bookmarksObj) {
 }
 
 function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(bookmarkPath, bookmarksObj, guid, appendText) {
-    const regexString = `{(?:(?!{).)*?"guid":"${guid}".*?}`;
+    // const regexString = `{(?:(?!{).)*?"guid":"${guid}".*?}`;
+    const regexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
+    // const regexString = `{\\s*"date_added"[\\s|\\S]*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
+    // console.log(regexString);
     const regexExpression = new RegExp(regexString, 'g');
 
-    let bookmarkText = JSON.stringify(bookmarksObj);
+    let bookmarkText = JSON.stringify(bookmarksObj, null, 3);
+    // console.log(bookmarkText);
     const bookmarkBlockText = bookmarkText.match(regexExpression)[0];
+    // console.log(`${'-'.repeat(70)} Start 01`);
+    // console.log(bookmarkBlockText);
+    // console.log(`${'-'.repeat(70)} End 01`);
     const bookmarkBlockObj = JSON.parse(bookmarkBlockText);
+    // console.log(`${'-'.repeat(70)} Start 02`);
+    // console.log(bookmarkBlockObj);
+    // console.log(`${'-'.repeat(70)} End 02`);
     bookmarkBlockObj.name = `${bookmarkBlockObj.name} |#| ${appendText}`;
+    // console.log(`${'-'.repeat(70)} Start 03`);
+    // console.log(bookmarkBlockObj);
+    // console.log(`${'-'.repeat(70)} End 03`);
     const bookmarkBlockNewText = JSON.stringify(bookmarkBlockObj);
+    // console.log(`${'-'.repeat(70)} Start 04`);
+    // console.log(bookmarkBlockNewText);
+    // console.log(`${'-'.repeat(70)} End 04`);
 
     bookmarkText = bookmarkText.replace(bookmarkBlockText, bookmarkBlockNewText);
     bookmarksObj = JSON.parse(bookmarkText);
