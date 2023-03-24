@@ -18,14 +18,18 @@ import { setContractorsCurrentAllotted, getContractorsCurrentAllotted, addToCont
 /* eslint-enable import/extensions */
 
 /* #region : Validation section 01 */
-if (process.argv.length !== 3) {
-    console.log(chalk.white.bgRed.bold(`Please start the program with right parameter 'node contractors_alltoment.js lotNoIndex' `));
+if (process.argv.length < 3) {
+    console.log(
+        chalk.white.bgRed.bold(
+            `Please start the program with right parameter 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD'.`
+        )
+    );
     process.exit(1);
 }
 if (Number.isNaN(parseInt(process.argv[2], 10))) {
     console.log(
         chalk.white.bgRed.bold(
-            `Please start the program with proper parameters 'node contractors_alltoment.js lotNoIndex', The first parameter(lotNoIndex) has to be a number.`
+            `Please start the program with proper parameters 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD', The first parameter(lotNoIndex) has to be a number.`
         )
     );
     process.exit(1);
