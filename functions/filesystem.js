@@ -157,6 +157,30 @@ function getFileCountRecursively(dirPath) {
     return count;
 }
 
+function getListOfSubfoldersStartingWith(dirPath, startingTxt) {
+    let filteredSubFoldersAndFiles = [];
+    try {
+        const subFoldersAndFiles = fs.readdirSync(dirPath);
+        filteredSubFoldersAndFiles = subFoldersAndFiles.filter((subFolderOrFile) => {
+            const isDirectory = fs.statSync(`${dirPath}/${subFolderOrFile}`).isDirectory();
+            return isDirectory && subFolderOrFile.startsWith(startingTxt);
+        });
+        filteredSubFoldersAndFiles.sort((a, b) => {
+            if (a[1] === b[1]) {
+                return 0;
+            }
+            return a[1] > b[1] ? -1 : 1;
+        });
+        return filteredSubFoldersAndFiles;
+    } catch (err) {
+        // if (err.message.match(/ENOENT: no such file or directory.*/g)) {
+        //     console.log('Test'); // TODO: replace with error
+        // }
+        // process.exit(0);
+    }
+    return filteredSubFoldersAndFiles;
+}
+
 export {
     makeDir,
     moveFile,
@@ -166,4 +190,5 @@ export {
     removeDirAndRemoveParentDirIfEmpty,
     generateTempFolderWithRandomText,
     getFileCountRecursively,
+    getListOfSubfoldersStartingWith,
 };
