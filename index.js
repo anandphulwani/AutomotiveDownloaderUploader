@@ -38,9 +38,11 @@ if (config.environment === 'production') {
     printSectionSeperator();
 
     // TODO: Remove the unused imports
+    // TODO: Error summary in the end.
     // TODO: resultCheck is declared outside, work out how to bring it inside the function
     // TODO: Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
     const resultOfValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
+    // TODO: Dealer Name space in the middle gives validation error which it shoudl not
     const resultOfValidateBookmarksAndCheckCredentialsPresent = validateBookmarksAndCheckCredentialsPresent();
     const resultOfValidateConfigFile = 'success'; // validateConfigFile();
     if (
