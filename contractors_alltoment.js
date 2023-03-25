@@ -12,7 +12,11 @@ import { zeroPad } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator, getSumOf2DArrayColumn, getIndexOfHighestIn2DArrayColumn } from './functions/others.js';
-import { removeDirAndRemoveParentDirIfEmpty, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './functions/filesystem.js';
+import {
+    removeDirAndRemoveParentDirIfEmpty,
+    createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
+    getListOfSubfoldersStartingWith,
+} from './functions/filesystem.js';
 import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './functions/excelsupportive.js';
 import { setContractorsCurrentAllotted, getContractorsCurrentAllotted, addToContractorsCurrentAllotted } from './functions/configsupportive.js';
 /* eslint-enable import/extensions */
@@ -49,6 +53,17 @@ const lotFolderPath = `${downloadPath}\\${todaysDate}\\${lotFolderName}`; // ${c
 /* #region : Validation section 02 */
 if (!fs.existsSync(lotFolderPath)) {
     console.log(chalk.white.bgRed.bold(`Lot folder path: ${lotFolderPath} does not exist, Please check.`));
+    process.exit(1);
+}
+
+let LotFirstIndex = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
+LotFirstIndex = LotFirstIndex.length > 0 ? parseInt(LotFirstIndex[0].substring(4), 10) : 1;
+if (LotFirstIndex !== lotIndex) {
+    console.log(
+        chalk.white.bgRed.bold(
+            `Please allot earlier lot folders 'Lot_${zeroPad(LotFirstIndex, 2)}', before alloting this lot folder '${lotFolderName}'.`
+        )
+    );
     process.exit(1);
 }
 /* #endregion */
