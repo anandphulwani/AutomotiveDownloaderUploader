@@ -21,6 +21,7 @@ import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
 import { validateConfigFile } from './functions/configvalidation.js';
+import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 /* eslint-enable import/extensions */
 
 // const {
@@ -85,7 +86,22 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
     // const { windowId } = await session.send('Browser.getWindowForTarget');
     // await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
 
-    let lotIndex = 1;
+    const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
+    const LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : 1;
+    LotIndexArray.pop();
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const LotIndexEle of LotIndexArray) {
+        const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
+        if (fs.existsSync(`${config.downloadPath}\\${todaysDate}\\${LotIndexEle}`)) {
+            exec(
+                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndexToAllot} ${todaysDate} && pause && pause && exit"`
+            );
+        }
+        sleep(3);
+    }
+
+    let lotIndex = LotLastIndex;
     let dealerFolderCntInLot = 0;
     let imagesQtyInLot = 0;
     // eslint-disable-next-line no-restricted-syntax
@@ -189,7 +205,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                         // return { result: false, bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark, imagesDownloaded: 0 };
                         // return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0 };
                         //
-                        imagesQtyInLot += returnObj.imagesDownloaded;
+                        // imagesQtyInLot += returnObj.imagesDownloaded;
                         if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
                             bookmarksJSONObj = replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
                                 bookmarkPath,
@@ -200,6 +216,15 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                         }
                         await waitForSeconds(0);
                     }
+                    const usernameTrimmed = usernameLevelBookmark.name.includes('@')
+                        ? usernameLevelBookmark.name.split('@')[0]
+                        : usernameLevelBookmark.name;
+                    const dealerLevelPath = `${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(
+                        lotIndex,
+                        2
+                    )}\\${usernameTrimmed}\\${dealerLevelBookmarkName}`;
+                    if (fs.existsSync(dealerLevelPath)) {
+                        imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
                     dealerFolderCntInLot++;
                 }
             }
