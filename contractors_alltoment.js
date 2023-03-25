@@ -56,15 +56,22 @@ if (!fs.existsSync(lotFolderPath)) {
     process.exit(1);
 }
 
-let LotFirstIndex = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
-LotFirstIndex = LotFirstIndex.length > 0 ? parseInt(LotFirstIndex[0].substring(4), 10) : 1;
-if (LotFirstIndex !== lotIndex) {
-    console.log(
-        chalk.white.bgRed.bold(
-            `Please allot earlier lot folders 'Lot_${zeroPad(LotFirstIndex, 2)}', before alloting this lot folder '${lotFolderName}'.`
-        )
-    );
-    process.exit(1);
+let hasLotFirstIndexMatches = false;
+while (!hasLotFirstIndexMatches) {
+    let LotFirstIndex = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
+    LotFirstIndex = LotFirstIndex.length > 0 ? parseInt(LotFirstIndex[0].substring(4), 10) : 1;
+    if (LotFirstIndex !== lotIndex) {
+        console.log(
+            chalk.white.bgRed.bold(
+                `Please allot earlier lot folders 'Lot_${zeroPad(LotFirstIndex, 2)}', before alloting this lot folder '${lotFolderName}'.`
+            )
+        );
+        if (!keyInYN('Do you want to try again if you alloted to earlier lot folders (press Y), or exit the program entirely (press N)?')) {
+            process.exit(1);
+        }
+    } else {
+        hasLotFirstIndexMatches = true;
+    }
 }
 /* #endregion */
 
