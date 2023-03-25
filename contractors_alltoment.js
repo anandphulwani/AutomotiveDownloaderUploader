@@ -67,7 +67,7 @@ while (!hasLotFirstIndexMatches) {
             )
         );
         if (!keyInYN('Do you want to try again if you alloted to earlier lot folders (press Y), or exit the program entirely (press N)?')) {
-            process.exit(1);
+            process.exit(0);
         }
     } else {
         hasLotFirstIndexMatches = true;
