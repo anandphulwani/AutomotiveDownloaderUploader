@@ -249,6 +249,7 @@ let imagesQtyAlloted = 0;
 const { minimumDealerFoldersForEachContractors, imagesQty } = config.lot[lotIndex - 1];
 // console.log(minimumDealerFoldersForEachContractors);
 
+let foldersAlloted = 0;
 let earlierLoopUsernameFolder = '';
 /**
  * Alloting minimum DealerFolders for each contractors as per config
@@ -273,14 +274,15 @@ if (minimumDealerFoldersForEachContractors !== false) {
         const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
         const addTextToFolderName = `${getAddTextToFolderNameFromDC(
             path.basename(dealerFolderPath)
-        )} ${contractorAlloted} ${dealerFolderFilesCount}`.trim();
-        const destinationPath = getChangePathFromDownloadToAllotment(dealerFolderPath, addTextToFolderName);
+        )} ${contractorAlloted} ${dealerFolderFilesCount} (#${zeroPad(lotIndex, 2)}${zeroPad(index + 1, 3)})`.trim();
+        const destinationPath = getDealerFolderAllotmentPath(dealerFolderPath, contractorAlloted, addTextToFolderName);
         const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
         // await createDirAndMoveFile(dealerFolderPath, destinationPath);
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
 
         console.log(`${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`);
         addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
+        foldersAlloted++;
 
         contractors[contractorsIndex][3] += dealerFolderFilesCount;
         imagesQtyAlloted += dealerFolderFilesCount;
@@ -333,8 +335,8 @@ if (imagesQty > 0 && imagesQty > imagesQtyAlloted) {
         const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
         const addTextToFolderName = `${getAddTextToFolderNameFromDC(
             path.basename(dealerFolderPath)
-        )} ${contractorAlloted} ${dealerFolderFilesCount}`.trim();
-        const destinationPath = getChangePathFromDownloadToAllotment(dealerFolderPath, addTextToFolderName);
+        )} ${contractorAlloted} ${dealerFolderFilesCount} (#${zeroPad(lotIndex, 2)}${zeroPad(foldersAlloted + index + 1, 3)})`.trim();
+        const destinationPath = getDealerFolderAllotmentPath(dealerFolderPath, contractorAlloted, addTextToFolderName);
         const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
         // await createDirAndMoveFile(dealerFolderPath, destinationPath);
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
@@ -468,23 +470,25 @@ function recalculateAllotmentPriority(contractorsArr) {
  * 004
  * Convert the path of a folder from `Download` to `Allotment`
  */
-/* #region : getChangePathFromDownloadToAllotment (sourcePath, additionalText){...} */
-function getChangePathFromDownloadToAllotment(sourcePath, additionalText) {
+/* #region : getDealerFolderAllotmentPath (sourcePath, contractorsName, additionalText){...} */
+function getDealerFolderAllotmentPath(sourcePath, contractorsName, additionalText) {
     const sourcePathFoldersArr = [];
     for (let cnt = 0; cnt < 4; cnt++) {
         sourcePathFoldersArr.push(path.basename(sourcePath));
         sourcePath = path.dirname(sourcePath);
     }
-
     if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
         console.log(
             chalk.white.bgRed.bold(
-                `ERROR: Unknown state in getChangePathFromDownloadToAllotment function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
+                `ERROR: Unknown state in getDealerFolderAllotmentPath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
             )
         );
         process.exit(0);
     }
-    sourcePath = `${config.allotmentPath}\\${sourcePathFoldersArr.reverse().join('\\')}`;
+    sourcePathFoldersArr.reverse();
+    sourcePathFoldersArr.splice(1, 2);
+
+    sourcePath = `${config.allotmentPath}\\${contractorsName}\\${sourcePathFoldersArr.join('\\')}`;
     sourcePath += ` ${additionalText}`;
     return sourcePath;
 }
