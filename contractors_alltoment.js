@@ -13,6 +13,7 @@ import { config } from './configs/config.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator, getSumOf2DArrayColumn, getIndexOfHighestIn2DArrayColumn } from './functions/others.js';
 import {
+    makeDir,
     removeDirAndRemoveParentDirIfEmpty,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
     getListOfSubfoldersStartingWith,
@@ -188,10 +189,16 @@ let totalNoOfNormalThreshold = 0;
  * Set contractors currentstatus to 0 if lot no is 1
  * Reading all name and normalThreshold to contractors array
  * Adding all normalThreshold to totalNoOfNormalThreshold
+ *
+ * Also creating folders mentioned in processingFolders for the contractor
+ *
  */
-Object.keys(config.contractors).forEach((contractor) => {
+Object.keys(config.contractors).forEach(async (contractor) => {
     if (lotIndex === 1) {
         setContractorsCurrentAllotted(contractor, '0');
+        config.contractors[contractor].processingFolders.forEach(async (processingFolder) => {
+            await makeDir(`${config.allotmentPath}\\${contractor}\\${todaysDate}\\${processingFolder}`);
+        });
     }
     const { normalThreshold } = config.contractors[contractor];
     contractors.push([contractor, normalThreshold]);
