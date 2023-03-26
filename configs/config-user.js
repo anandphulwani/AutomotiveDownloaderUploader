@@ -53,26 +53,32 @@ const configUser = {
         karan: {
             currentAllotted: 0,
             normalThreshold: 100,
+            processingFolder: ['000_Done', '000_ReadyToUpload'],
         },
         pavan: {
             currentAllotted: 0,
             normalThreshold: 100,
+            processingFolder: ['000_Done', '000_ReadyToUpload'],
         },
         ram: {
             currentAllotted: 0,
             normalThreshold: 300,
+            processingFolder: ['000_Done', '000_ReadyToUpload'],
         },
         arjun: {
             currentAllotted: 0,
             normalThreshold: 100,
+            processingFolder: ['000_Done', '000_ReadyToUpload'],
         },
         om: {
             currentAllotted: 0,
             normalThreshold: 100,
+            processingFolder: ['000_Done', '000_ReadyToUpload'],
         },
         // rohan: {
         //     currentAllotted: 0,
         //     normalThreshold: 500,
+        //     processingFolder: ['000_Done', '000_ReadyToUpload'],
         // },
     },
     lot: [

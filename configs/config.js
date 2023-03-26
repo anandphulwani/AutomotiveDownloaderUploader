@@ -51,10 +51,12 @@ const configBasic = {
         // ram: {
         //     currentAllotted: 0,
         //     normalThreshold: 500,
+        //     processingFolder: ['000_Done', '000_ReadyToUpload'],
         // },
         // karan: {
         //     currentAllotted: 0,
         //     normalThreshold: 500,
+        //     processingFolder: ['000_Done', '000_ReadyToUpload'],
         // },
     },
     lot: [
