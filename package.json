@@ -22,6 +22,7 @@
     "kill-chrome": "^2.2.0",
     "lodash": "^4.17.21",
     "log-symbols": "^5.1.0",
+    "mv": "^2.1.1",
     "npm-time": "^1.0.0",
     "ntp-time-sync": "^0.3.0",
     "puppeteer": "^19.6.3",

@@ -1,4 +1,5 @@
 import fs from 'fs';
+import mv from 'mv';
 import os from 'os';
 import chalk from 'chalk';
 import path from 'path';
@@ -20,7 +21,7 @@ async function makeDir(dirPath, debug = false) {
 
 async function moveFile(fromPath, toPath, debug = false) {
     return new Promise((resolve, reject) => {
-        fs.rename(fromPath, toPath, (error) => {
+        mv(fromPath, toPath, (error) => {
             if (error) {
                 console.log(
                     chalk.white.bgRed.bold(
