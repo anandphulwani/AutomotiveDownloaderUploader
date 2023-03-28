@@ -46,7 +46,7 @@ const configBasic = {
     ],
     dealerConfigurationFolder: '.\\configs\\DealerConfiguration',
     downloadPath: '.\\datastore\\Downloads',
-    allotmentPath: '.\\datastore\\Allotment',
+    contractorsZonePath: '.\\datastore\\Allotment',
     contractors: {
         // ram: {
         //     currentAllotted: 0,

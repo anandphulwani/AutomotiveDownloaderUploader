@@ -197,7 +197,7 @@ Object.keys(config.contractors).forEach(async (contractor) => {
     if (lotIndex === 1) {
         setContractorsCurrentAllotted(contractor, '0');
         config.contractors[contractor].processingFolders.forEach(async (processingFolder) => {
-            await makeDir(`${config.allotmentPath}\\${contractor}\\${todaysDate}\\${processingFolder}`);
+            await makeDir(`${config.contractorsZonePath}\\${contractor}\\${todaysDate}\\${processingFolder}`);
         });
     }
     const { normalThreshold } = config.contractors[contractor];
@@ -282,7 +282,7 @@ if (minimumDealerFoldersForEachContractors !== false) {
         const addTextToFolderName = `${getAddTextToFolderNameFromDC(
             path.basename(dealerFolderPath)
         )} ${contractorAlloted} ${dealerFolderFilesCount} (#${zeroPad(lotIndex, 2)}${zeroPad(index + 1, 3)})`.trim();
-        const destinationPath = getDealerFolderAllotmentPath(dealerFolderPath, contractorAlloted, addTextToFolderName);
+        const destinationPath = getDealerFolderContractorsZonePath(dealerFolderPath, contractorAlloted, addTextToFolderName);
         const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
         // await createDirAndMoveFile(dealerFolderPath, destinationPath);
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
@@ -343,7 +343,7 @@ if (imagesQty > 0 && imagesQty > imagesQtyAlloted) {
         const addTextToFolderName = `${getAddTextToFolderNameFromDC(
             path.basename(dealerFolderPath)
         )} ${contractorAlloted} ${dealerFolderFilesCount} (#${zeroPad(lotIndex, 2)}${zeroPad(foldersAlloted + index + 1, 3)})`.trim();
-        const destinationPath = getDealerFolderAllotmentPath(dealerFolderPath, contractorAlloted, addTextToFolderName);
+        const destinationPath = getDealerFolderContractorsZonePath(dealerFolderPath, contractorAlloted, addTextToFolderName);
         const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
         // await createDirAndMoveFile(dealerFolderPath, destinationPath);
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
@@ -477,8 +477,8 @@ function recalculateAllotmentPriority(contractorsArr) {
  * 004
  * Convert the path of a folder from `Download` to `Allotment`
  */
-/* #region : getDealerFolderAllotmentPath (sourcePath, contractorsName, additionalText){...} */
-function getDealerFolderAllotmentPath(sourcePath, contractorsName, additionalText) {
+/* #region : getDealerFolderContractorsZonePath (sourcePath, contractorsName, additionalText){...} */
+function getDealerFolderContractorsZonePath(sourcePath, contractorsName, additionalText) {
     const sourcePathFoldersArr = [];
     for (let cnt = 0; cnt < 4; cnt++) {
         sourcePathFoldersArr.push(path.basename(sourcePath));
@@ -487,7 +487,7 @@ function getDealerFolderAllotmentPath(sourcePath, contractorsName, additionalTex
     if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
         console.log(
             chalk.white.bgRed.bold(
-                `ERROR: Unknown state in getDealerFolderAllotmentPath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
+                `ERROR: Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
             )
         );
         process.exit(0);
@@ -495,7 +495,7 @@ function getDealerFolderAllotmentPath(sourcePath, contractorsName, additionalTex
     sourcePathFoldersArr.reverse();
     sourcePathFoldersArr.splice(1, 2);
 
-    sourcePath = `${config.allotmentPath}\\${contractorsName}\\${sourcePathFoldersArr.join('\\')}`;
+    sourcePath = `${config.contractorsZonePath}\\${contractorsName}\\${sourcePathFoldersArr.join('\\')}`;
     sourcePath += ` ${additionalText}`;
     return sourcePath;
 }
