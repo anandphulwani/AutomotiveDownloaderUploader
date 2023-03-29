@@ -155,6 +155,30 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(processingBookmarkPat
     return bookmarksObj;
 }
 
+function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(processingBookmarkPathWithoutSync, bookmarksObj, guid, appendText) {
+    const regexString = `[ ]*"date_added"[^\\{\\}\\]\\[]*?"guid": "${guid}",[^\\{\\}\\]\\[]*?"type": "folder"`;
+    const regexExpression = new RegExp(regexString, 'g');
+
+    let bookmarkText = JSON.stringify(bookmarksObj, null, 3);
+    const bookmarkBlockText = bookmarkText.match(regexExpression)[0];
+    // const bookmarkBlockObj = JSON.parse(bookmarkBlockText);
+    // bookmarkBlockObj.name = `${bookmarkBlockObj.name} |#| ${appendText}`;
+    // const bookmarkBlockNewText = JSON.stringify(bookmarkBlockObj);
+
+    const nameRegexString = `"name": "(.*)"`;
+    const nameRegexExpression = new RegExp(nameRegexString, 'g');
+    const newBookmarkBlockText = bookmarkBlockText.replace(nameRegexExpression, `"name": "$1${appendText}"`);
+
+    bookmarkText = bookmarkText.replace(bookmarkBlockText, newBookmarkBlockText);
+    bookmarksObj = JSON.parse(bookmarkText);
+    fs.writeFileSync(processingBookmarkPathWithoutSync, JSON.stringify(bookmarksObj, null, 3), (err) => {
+        if (err) {
+            console.log(err);
+        }
+    });
+    return bookmarksObj;
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     downloadBookmarksFromSourceToProcessing,
