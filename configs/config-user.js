@@ -4,8 +4,8 @@ const configUser = {
     // timezone: 'Asia/Calcutta',
     // appDomain: 'https://www.homenetiol.com',
     // timeOffsetInMinutesToAvoid: 2,
-    // browserArgs: { headless: true },
-    // bookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
+    // sourceBookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
+    // processingBookmarkPathWithoutSync: '.\\datastore\\Bookmarks',
     // updateBookmarksOnceDone: true,
     ignoreBookmarkURLS: [
         {

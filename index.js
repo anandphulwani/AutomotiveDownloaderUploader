@@ -16,7 +16,12 @@ import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
 import { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
 import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto.js';
-import { handleBookmarkURL, removeChecksumFromBookmarksObj, replaceBookmarksNameOnGUIDAndWriteToBookmarksFile } from './functions/bookmark.js';
+import {
+    downloadBookmarksFromSourceToProcessing,
+    handleBookmarkURL,
+    removeChecksumFromBookmarksObj,
+    replaceBookmarksNameOnGUIDAndWriteToBookmarksFile,
+} from './functions/bookmark.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
@@ -37,22 +42,34 @@ if (config.environment === 'production') {
 
     await checkTimeWithNTP();
     printSectionSeperator();
+}
+
+downloadBookmarksFromSourceToProcessing();
 
     // TODO: Remove the unused imports
     // TODO: Error summary in the end.
     // TODO: resultCheck is declared outside, work out how to bring it inside the function
     // TODO: Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
-    const resultOfValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
-    // TODO: Dealer Name space in the middle gives validation error which it shoudl not
-    const resultOfValidateBookmarksAndCheckCredentialsPresent = validateBookmarksAndCheckCredentialsPresent();
-    const resultOfValidateConfigFile = 'success'; // validateConfigFile();
+
+// const resultOfValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
+// // TODO: Dealer Name space in the middle gives validation error which it shoudl not
+// const resultOfValidateBookmarksAndCheckCredentialsPresent = validateBookmarksAndCheckCredentialsPresent();
+// const resultOfValidateConfigFile = 'success'; // validateConfigFile();
+// if (
+//     resultOfValidateDealerConfigurationExcelFile === 'error' ||
+//     resultOfValidateBookmarksAndCheckCredentialsPresent === 'error' ||
+//     resultOfValidateConfigFile === 'error'
+// ) {
+//     process.exit(0);
+// }
+
     if (
-        resultOfValidateDealerConfigurationExcelFile === 'error' ||
-        resultOfValidateBookmarksAndCheckCredentialsPresent === 'error' ||
-        resultOfValidateConfigFile === 'error'
+    validateConfigFile() &&
+    downloadBookmarksFromSourceToProcessing() &&
+    // eslint-disable-next-line no-bitwise
+    validateDealerConfigurationExcelFile() & validateBookmarksAndCheckCredentialsPresent()
     ) {
         process.exit(0);
-    }
 }
 
 // await killChrome({
@@ -63,9 +80,9 @@ if (config.environment === 'production') {
  * Read chrome bookmarks from chrome browser
  */
 
-const { bookmarkPath, bookmarkOptions } = config;
-const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
-const bookmarksText = fs.readFileSync(bookmarkPath);
+const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
+const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
+const bookmarksText = fs.readFileSync(processingBookmarkPathWithoutSync);
 let bookmarksJSONObj = JSON.parse(bookmarksText);
 bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
 
@@ -208,7 +225,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                         // imagesQtyInLot += returnObj.imagesDownloaded;
                         if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
                             bookmarksJSONObj = replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
-                                bookmarkPath,
+                                processingBookmarkPathWithoutSync,
                                 bookmarksJSONObj,
                                 vehicleBookmark.guid,
                                 returnObj.bookmarkAppendMesg

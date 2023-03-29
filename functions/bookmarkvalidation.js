@@ -11,8 +11,8 @@ import { checkForSpaceInBeginOrEnd, checkForMultipleSpacesInMiddle, allTrimStrin
 function validateBookmarksAndCheckCredentialsPresent(debug = false) {
     let validationStatus = 'success';
     debug ? console.log(`Validating bookmarks and checking if credentials are present: Executing.`) : '';
-    const { bookmarkPath, bookmarkOptions } = config;
-    const bookmarks = getChromeBookmark(bookmarkPath, bookmarkOptions);
+    const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
+    const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
     // eslint-disable-next-line no-restricted-syntax
     for (const topLevelBookmark of bookmarks) {
         if (topLevelBookmark.name === 'Bookmarks bar') {

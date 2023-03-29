@@ -13,6 +13,55 @@ import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
 
+function downloadBookmarksFromSourceToProcessing() {
+    const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
+
+    // Read the contents of both JSON files into memory
+    const sourceContents = fs.readFileSync(sourceBookmarkPath, 'utf8');
+    const processingContents = fs.readFileSync(processingBookmarkPathWithoutSync, 'utf8');
+
+    // Parse the contents of both JSON files into JavaScript objects
+    const sourceData = JSON.parse(sourceContents);
+    const processingData = JSON.parse(processingContents);
+
+    let sourceDataText = JSON.stringify(sourceData, null, 3);
+    const processingDataText = JSON.stringify(processingData, null, 3);
+
+    const downloadedRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"[\\s|\\S]*?"name": ".* \\|#\\| .*"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
+    const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
+    const downloadedBookmarkBlockMatches = processingDataText.match(downloadedRegexExpression);
+
+    if (downloadedBookmarkBlockMatches !== null) {
+        const doneBookmarksInSource = [];
+        downloadedBookmarkBlockMatches.forEach((match) => {
+            const guid = match.match(/"guid": "(.*?)"/)[1];
+            // console.log(`Found bookmark with GUID: ${guid}`);
+            doneBookmarksInSource[guid] = match;
+        });
+
+        Object.keys(doneBookmarksInSource).forEach((guid) => {
+            const GUIDRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
+            const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
+
+            const GUIDBookmarkBlockMatches = sourceDataText.match(GUIDRegexExpression);
+            if (GUIDBookmarkBlockMatches !== null) {
+                const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
+                sourceDataText = sourceDataText.replace(GUIDBookmarkBlockMatch, doneBookmarksInSource[guid]);
+            }
+            // console.log(guid, doneBookmarksInSource[guid]);
+        });
+    }
+    sourceDataText = JSON.parse(sourceDataText);
+    sourceDataText = removeChecksumFromBookmarksObj(sourceDataText);
+    sourceDataText = JSON.stringify(sourceDataText, null, 3);
+
+    fs.writeFileSync(processingBookmarkPathWithoutSync, sourceDataText, (err) => {
+        if (err) {
+            console.log(err);
+        }
+    });
+}
+
 async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, URL, debug = false) {
     const ignoreBookmarkURLObjectFindResults = ignoreBookmarkURLObjects.find((ignoreBookmarkURLObject) => {
         if (URL.startsWith(ignoreBookmarkURLObject.URLStartsWith)) {
@@ -70,7 +119,7 @@ function removeChecksumFromBookmarksObj(bookmarksObj) {
     return JSON.parse(jsonString);
 }
 
-function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(bookmarkPath, bookmarksObj, guid, appendText) {
+function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(processingBookmarkPathWithoutSync, bookmarksObj, guid, appendText) {
     // const regexString = `{(?:(?!{).)*?"guid":"${guid}".*?}`;
     const regexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
     // const regexString = `{\\s*"date_added"[\\s|\\S]*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
@@ -98,7 +147,7 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(bookmarkPath, bookmar
 
     bookmarkText = bookmarkText.replace(bookmarkBlockText, bookmarkBlockNewText);
     bookmarksObj = JSON.parse(bookmarkText);
-    fs.writeFileSync(bookmarkPath, JSON.stringify(bookmarksObj, null, 3), (err) => {
+    fs.writeFileSync(processingBookmarkPathWithoutSync, JSON.stringify(bookmarksObj, null, 3), (err) => {
         if (err) {
             console.log(err);
         }
@@ -107,4 +156,9 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(bookmarkPath, bookmar
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { handleBookmarkURL, removeChecksumFromBookmarksObj, replaceBookmarksNameOnGUIDAndWriteToBookmarksFile };
+export {
+    downloadBookmarksFromSourceToProcessing,
+    handleBookmarkURL,
+    removeChecksumFromBookmarksObj,
+    replaceBookmarksNameOnGUIDAndWriteToBookmarksFile,
+};
