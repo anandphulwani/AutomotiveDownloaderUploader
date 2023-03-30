@@ -179,10 +179,34 @@ function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(processingBookm
     return bookmarksObj;
 }
 
+function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
+    const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
+    const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
+    let filteredData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
+    // eslint-disable-next-line prefer-destructuring
+    filteredData = filteredData[0].children;
+    filteredData = filteredData.filter(
+        (usernameLevelBookmark) =>
+            (usernameLevelBookmark.name.includes('@') ? usernameLevelBookmark.name.split('@')[0] : usernameLevelBookmark.name) === username
+    );
+    filteredData = filteredData[0].children;
+
+    filteredData = filteredData.filter(
+        (dealerLevelBookmark) =>
+            allTrimString(trimMultipleSpacesInMiddleIntoOne(dealerLevelBookmark.name)) ===
+                allTrimString(trimMultipleSpacesInMiddleIntoOne(dealerNumber)) ||
+            allTrimString(trimMultipleSpacesInMiddleIntoOne(dealerLevelBookmark.name)).startsWith(
+                `${allTrimString(trimMultipleSpacesInMiddleIntoOne(dealerNumber))} |#| `
+            )
+    );
+    return filteredData[0].guid;
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     downloadBookmarksFromSourceToProcessing,
     handleBookmarkURL,
     removeChecksumFromBookmarksObj,
     replaceBookmarksNameOnGUIDAndWriteToBookmarksFile,
+    getBookmarkFolderGUIDFromUsernameDealerNumber,
 };
