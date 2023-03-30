@@ -161,13 +161,15 @@ function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(processingBookm
 
     let bookmarkText = JSON.stringify(bookmarksObj, null, 3);
     const bookmarkBlockText = bookmarkText.match(regexExpression)[0];
-    // const bookmarkBlockObj = JSON.parse(bookmarkBlockText);
-    // bookmarkBlockObj.name = `${bookmarkBlockObj.name} |#| ${appendText}`;
-    // const bookmarkBlockNewText = JSON.stringify(bookmarkBlockObj);
 
     const nameRegexString = `"name": "(.*)"`;
     const nameRegexExpression = new RegExp(nameRegexString, 'g');
-    const newBookmarkBlockText = bookmarkBlockText.replace(nameRegexExpression, `"name": "$1${appendText}"`);
+    let newBookmarkBlockText;
+    if (!/"name": .* \|#\| .*/.test(bookmarkBlockText)) {
+        newBookmarkBlockText = bookmarkBlockText.replace(nameRegexExpression, `"name": "$1 |#| ${appendText}"`);
+    } else {
+        newBookmarkBlockText = bookmarkBlockText.replace(nameRegexExpression, `"name": "$1,${appendText}"`);
+    }
 
     bookmarkText = bookmarkText.replace(bookmarkBlockText, newBookmarkBlockText);
     bookmarksObj = JSON.parse(bookmarkText);
@@ -208,5 +210,6 @@ export {
     handleBookmarkURL,
     removeChecksumFromBookmarksObj,
     replaceBookmarksNameOnGUIDAndWriteToBookmarksFile,
+    replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile,
     getBookmarkFolderGUIDFromUsernameDealerNumber,
 };
