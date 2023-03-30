@@ -20,6 +20,7 @@ import {
 } from './functions/filesystem.js';
 import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './functions/excelsupportive.js';
 import { setContractorsCurrentAllotted, getContractorsCurrentAllotted, addToContractorsCurrentAllotted } from './functions/configsupportive.js';
+import { getBookmarkFolderGUIDFromUsernameDealerNumber, replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile } from './functions/bookmark.js';
 /* eslint-enable import/extensions */
 
 /* #region : Validation section 01 */
@@ -125,10 +126,11 @@ if (!doesLotFolderPathContainsFiles) {
 /* #endregion */
 
 await validateLotFolderAndReturnImageCount(lotFolderPath);
-
-exec(`explorer.exe ${process.cwd()}\\${lotFolderPath}"`);
-while (!keyInYN('Please review your lot folders, to remove any unneccesary photos, press Y to continue?')) {
-    sleep(1);
+if (config.environment === 'production') {
+    exec(`explorer.exe ${process.cwd()}\\${lotFolderPath}"`);
+    while (!keyInYN('Please review your lot folders, to remove any unneccesary photos, press Y to continue?')) {
+        sleep(1);
+    }
 }
 const dealerDirectories = await validateLotFolderAndReturnImageCount(lotFolderPath);
 
@@ -279,11 +281,24 @@ if (minimumDealerFoldersForEachContractors !== false) {
         }
 
         const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
+        const uniqueIdOfFolder = zeroPad(lotIndex, 2) + zeroPad(index + 1, 3);
         const addTextToFolderName = `${getAddTextToFolderNameFromDC(
             path.basename(dealerFolderPath)
-        )} ${contractorAlloted} ${dealerFolderFilesCount} (#${zeroPad(lotIndex, 2)}${zeroPad(index + 1, 3)})`.trim();
+        )} ${contractorAlloted} ${dealerFolderFilesCount} (#${uniqueIdOfFolder})`.trim();
         const destinationPath = getDealerFolderContractorsZonePath(dealerFolderPath, contractorAlloted, addTextToFolderName);
         const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
+
+        const processingContents = fs.readFileSync(config.processingBookmarkPathWithoutSync, 'utf8');
+        const processingObj = JSON.parse(processingContents);
+
+        const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(usernameFolder, path.basename(dealerFolderPath));
+        replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(
+            config.processingBookmarkPathWithoutSync,
+            processingObj,
+            bookmarkFolderGUID,
+            uniqueIdOfFolder
+        );
+
         // await createDirAndMoveFile(dealerFolderPath, destinationPath);
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
 
@@ -340,11 +355,24 @@ if (imagesQty > 0 && imagesQty > imagesQtyAlloted) {
         }
 
         const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
+        const uniqueIdOfFolder = zeroPad(lotIndex, 2) + zeroPad(foldersAlloted + index + 1, 3);
         const addTextToFolderName = `${getAddTextToFolderNameFromDC(
             path.basename(dealerFolderPath)
-        )} ${contractorAlloted} ${dealerFolderFilesCount} (#${zeroPad(lotIndex, 2)}${zeroPad(foldersAlloted + index + 1, 3)})`.trim();
+        )} ${contractorAlloted} ${dealerFolderFilesCount} (#${uniqueIdOfFolder})`.trim();
         const destinationPath = getDealerFolderContractorsZonePath(dealerFolderPath, contractorAlloted, addTextToFolderName);
         const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
+
+        const processingContents = fs.readFileSync(config.processingBookmarkPathWithoutSync, 'utf8');
+        const processingObj = JSON.parse(processingContents);
+
+        const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(usernameFolder, path.basename(dealerFolderPath));
+        replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(
+            config.processingBookmarkPathWithoutSync,
+            processingObj,
+            bookmarkFolderGUID,
+            uniqueIdOfFolder
+        );
+
         // await createDirAndMoveFile(dealerFolderPath, destinationPath);
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
 
