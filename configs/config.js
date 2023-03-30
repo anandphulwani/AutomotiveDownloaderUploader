@@ -33,8 +33,8 @@ const configBasic = {
         args: ['--user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data', '--hide-crash-restore-bubble'],
     },
     // sourceBookmarkPath Or processingBookmarkPathWithoutSync: '/path/to/Chrome/Bookmark' OR '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks'
-    sourceBookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
-    processingBookmarkPathWithoutSync: '.\\datastore\\Bookmarks',
+    sourceBookmarkPath: '.\\datastore\\Bookmarks',
+    processingBookmarkPathWithoutSync: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
     bookmarkOptions: {
         shouldIncludeFolders: true,
     },
