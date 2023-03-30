@@ -53,6 +53,7 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
 }
 
 function validateBookmarkNameText(dealerLevelBookmarkName, username) {
+    dealerLevelBookmarkName = dealerLevelBookmarkName.includes(' |#| ') ? dealerLevelBookmarkName.split(' |#| ')[0] : dealerLevelBookmarkName;
     checkForSpaceInBeginOrEndOfBookmarkName(dealerLevelBookmarkName, username);
     dealerLevelBookmarkName = allTrimString(dealerLevelBookmarkName);
     checkForMultipleSpacesInMiddleOfBookmarkName(dealerLevelBookmarkName, username);
