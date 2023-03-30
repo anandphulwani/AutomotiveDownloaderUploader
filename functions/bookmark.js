@@ -1,6 +1,7 @@
 import fs from 'fs';
 import chalk from 'chalk';
 import logSymbols from 'log-symbols';
+import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
@@ -9,6 +10,7 @@ import { getRowPosOnTerminal } from './terminal.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
 import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
+import { trimMultipleSpacesInMiddleIntoOne, allTrimString } from './stringformatting.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -21,15 +23,20 @@ function downloadBookmarksFromSourceToProcessing() {
     const processingContents = fs.readFileSync(processingBookmarkPathWithoutSync, 'utf8');
 
     // Parse the contents of both JSON files into JavaScript objects
-    const sourceData = JSON.parse(sourceContents);
-    const processingData = JSON.parse(processingContents);
+    const sourceObj = JSON.parse(sourceContents);
+    const processingObj = JSON.parse(processingContents);
 
-    let sourceDataText = JSON.stringify(sourceData, null, 3);
-    const processingDataText = JSON.stringify(processingData, null, 3);
+    let sourceJSONString = JSON.stringify(sourceObj, null, 3);
+    const initalSourceJSONString = sourceJSONString;
+    const initalLineCount = sourceJSONString.split(/\r\n|\r|\n/).length;
+    const processingJSONString = JSON.stringify(processingObj, null, 3);
 
-    const downloadedRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"[\\s|\\S]*?"name": ".* \\|#\\| .*"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
+    /**
+     * Copying the names of bookmarks which are done
+     */
+    const downloadedRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
     const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
-    const downloadedBookmarkBlockMatches = processingDataText.match(downloadedRegexExpression);
+    const downloadedBookmarkBlockMatches = processingJSONString.match(downloadedRegexExpression);
 
     if (downloadedBookmarkBlockMatches !== null) {
         const doneBookmarksInSource = [];
@@ -43,19 +50,52 @@ function downloadBookmarksFromSourceToProcessing() {
             const GUIDRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
             const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
 
-            const GUIDBookmarkBlockMatches = sourceDataText.match(GUIDRegexExpression);
+            const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
             if (GUIDBookmarkBlockMatches !== null) {
                 const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
-                sourceDataText = sourceDataText.replace(GUIDBookmarkBlockMatch, doneBookmarksInSource[guid]);
+                sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarksInSource[guid]);
             }
             // console.log(guid, doneBookmarksInSource[guid]);
         });
     }
-    sourceDataText = JSON.parse(sourceDataText);
-    sourceDataText = removeChecksumFromBookmarksObj(sourceDataText);
-    sourceDataText = JSON.stringify(sourceDataText, null, 3);
+    sourceJSONString = JSON.parse(sourceJSONString);
+    sourceJSONString = removeChecksumFromBookmarksObj(sourceJSONString);
+    sourceJSONString = JSON.stringify(sourceJSONString, null, 3);
 
-    fs.writeFileSync(processingBookmarkPathWithoutSync, sourceDataText, (err) => {
+
+    /**
+     * Copying the names of bookmarks folders which are done
+     */
+    const allotedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
+    const allotedFolderRegexExpression = new RegExp(allotedFolderRegexString, 'g');
+    const allotedFolderBookmarkBlockMatches = processingJSONString.match(allotedFolderRegexExpression);
+
+    if (allotedFolderBookmarkBlockMatches !== null) {
+        const doneBookmarkFoldersInSource = [];
+        allotedFolderBookmarkBlockMatches.forEach((match) => {
+            const guid = match.match(/"guid": "(.*?)"/)[1];
+            // console.log(`Found bookmark with GUID: ${guid}`);
+            doneBookmarkFoldersInSource[guid] = match;
+        });
+
+        Object.keys(doneBookmarkFoldersInSource).forEach((guid) => {
+            const GUIDRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"(?:(?!"guid": )[\\s|\\S])*?"type": "folder"`;
+            const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
+
+            const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
+            if (GUIDBookmarkBlockMatches !== null) {
+                const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
+                sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarkFoldersInSource[guid]);
+            }
+            // console.log(guid, doneBookmarksInSource[guid]);
+        });
+    }
+    sourceJSONString = JSON.parse(sourceJSONString);
+    sourceJSONString = removeChecksumFromBookmarksObj(sourceJSONString);
+    sourceJSONString = JSON.stringify(sourceJSONString, null, 3);
+
+
+    fs.writeFileSync(processingBookmarkPathWithoutSync, sourceJSONString, (err) => {
         if (err) {
             console.log(err);
         }
