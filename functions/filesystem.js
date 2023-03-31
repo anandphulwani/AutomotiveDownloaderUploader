@@ -182,6 +182,22 @@ function getListOfSubfoldersStartingWith(dirPath, startingTxt) {
     return filteredSubFoldersAndFiles;
 }
 
+function getFolderSizeInBytes(folderPath) {
+    let totalSize = 0;
+    const files = fs.readdirSync(folderPath);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const file of files) {
+        const filePath = path.join(folderPath, file);
+        const stat = fs.statSync(filePath);
+        if (stat.isFile()) {
+            totalSize += stat.size;
+        } else if (stat.isDirectory()) {
+            totalSize += getFolderSizeInBytes(filePath);
+        }
+    }
+    return totalSize;
+}
+
 export {
     makeDir,
     moveFile,
@@ -192,4 +208,5 @@ export {
     generateTempFolderWithRandomText,
     getFileCountRecursively,
     getListOfSubfoldersStartingWith,
+    getFolderSizeInBytes,
 };
