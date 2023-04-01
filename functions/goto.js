@@ -4,7 +4,7 @@ import logSymbols from 'log-symbols';
 /* eslint-disable import/extensions */
 import { waitForSeconds } from './sleep.js';
 import { incRetryCount } from './others.js';
-import { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith } from './waiting.js';
+import { waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith } from './waiting.js';
 /* eslint-enable import/extensions */
 
 async function gotoURL(page, URL, debug = false) {
@@ -54,4 +54,9 @@ async function gotoPageAndWaitTillCurrentURLStartsWith(page, URL, partialURL = U
     await waitTillCurrentURLStartsWith(page, partialURL, debug);
 }
 
-export { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith };
+async function gotoPageAndWaitTillCurrentURLEndsWith(page, URL, partialURL = URL, debug = false) {
+    await gotoURL(page, URL, debug);
+    await waitTillCurrentURLEndsWith(page, partialURL, debug);
+}
+
+export { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith, gotoPageAndWaitTillCurrentURLEndsWith };
