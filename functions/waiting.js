@@ -21,9 +21,15 @@ async function waitForElementContainsHTML(page, selector, elementHTML, debug = f
 }
 
 async function waitTillCurrentURLStartsWith(page, partialURL, debug = false) {
-    debug ? console.log(`Waiting for the current URL to match to: ${partialURL}: Executing.`) : '';
+    debug ? console.log(`Waiting for the current URL to start with: ${partialURL}: Executing.`) : '';
     await page.waitForFunction(`window.location.href.startsWith('${partialURL}')`, { timeout: 90000 });
-    debug ? console.log(`Waiting for the current URL to match to: ${partialURL}: Matched.`) : '';
+    debug ? console.log(`Waiting for the current URL to start with: ${partialURL}: Matched.`) : '';
 }
 
-export { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith };
+async function waitTillCurrentURLEndsWith(page, partialURL, debug = false) {
+    debug ? console.log(`Waiting for the current URL to ends with: ${partialURL}: Executing.`) : '';
+    await page.waitForFunction(`window.location.href.endsWith('${partialURL}')`, { timeout: 90000 });
+    debug ? console.log(`Waiting for the current URL to ends with: ${partialURL}: Matched.`) : '';
+}
+
+export { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith };
