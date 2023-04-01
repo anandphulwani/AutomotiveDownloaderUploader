@@ -278,6 +278,27 @@ function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
     return filteredData[0].guid;
 }
 
+function getBookmarkUsernameFolderFromUniqueId(uniqueId) {
+    const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
+    const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
+    let filteredData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
+    // eslint-disable-next-line prefer-destructuring
+    filteredData = filteredData[0].children;
+
+    const uniqueIdFolderRegex = new RegExp(`\\|#\\|.*?${uniqueId}.*\\n[\\s]*"type": "folder"`);
+    filteredData = filteredData.filter((usernameLevelBookmark) => uniqueIdFolderRegex.test(JSON.stringify(usernameLevelBookmark.children, null, 3)));
+    return filteredData[0].name;
+}
+
+function getUniqueIdPairsFromDealerBookmarkName(bookmarkname) {
+    if (!bookmarkname.includes(' |#| ')) {
+        return [];
+    }
+    const bookmarnameUniqueId = bookmarkname.split(' |#| ')[1].trim();
+    const bookmarnameUniqueIdArr = bookmarnameUniqueId.split(',');
+    return bookmarnameUniqueIdArr;
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     downloadBookmarksFromSourceToProcessing,
@@ -286,4 +307,6 @@ export {
     replaceBookmarksNameOnGUIDAndWriteToBookmarksFile,
     replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile,
     getBookmarkFolderGUIDFromUsernameDealerNumber,
+    getBookmarkUsernameFolderFromUniqueId,
+    getUniqueIdPairsFromDealerBookmarkName,
 };
