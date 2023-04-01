@@ -32,6 +32,7 @@ const configUser = {
     // dealerConfigurationFolder: '.\\configs\\DealerConfiguration',
     // downloadPath: '.\\datastore\\Downloads',
     // contractorsZonePath: '.\\datastore\\ContractorsZone',
+    // uploadingZonePath: '.\\datastore\\UploadingZone',
     credentials: [
         {
             username: 'dinesharora80@gmail.com',
