@@ -31,15 +31,17 @@ async function fillInTextbox(page, selector, textToFill, debug = false) {
     debug ? console.log(`Checking if ${selector} value matches filled: Done.`) : '';
 }
 
-async function clickOnButton(page, selector, buttonText, debug = false) {
+async function clickOnButton(page, selector, buttonText = false, debug = false) {
     debug ? console.log(`Waiting for the ${selector} to load: Executing.`) : '';
     await page.waitForSelector(selector, { timeout: 90000 });
     debug ? console.log(`Waiting for the ${selector} to load: Found.`) : '';
 
-    debug ? console.log(`Check if the ${selector} contains text: ${buttonText}: Executing.`) : '';
-    // eslint-disable-next-line no-undef
-    await page.waitForFunction((args) => document.querySelector(args[0]).innerText.includes(args[1]), { timeout: 90000 }, [selector, buttonText]);
-    debug ? console.log(`Check if the ${selector} contains text: ${buttonText}: Found.`) : '';
+    if (buttonText !== false) {
+        debug ? console.log(`Check if the ${selector} contains text: ${buttonText}: Executing.`) : '';
+        // eslint-disable-next-line no-undef
+        await page.waitForFunction((args) => document.querySelector(args[0]).innerText.includes(args[1]), { timeout: 90000 }, [selector, buttonText]);
+        debug ? console.log(`Check if the ${selector} contains text: ${buttonText}: Found.`) : '';
+    }
 
     debug ? console.log(`Clicking the ${selector} button: Executing.`) : '';
     await page.click(selector);
