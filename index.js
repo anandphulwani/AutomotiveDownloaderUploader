@@ -14,7 +14,7 @@ import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
-import { waitForElementContainsText, waitForElementContainsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
+import { waitForElementContainsOrEqualsText, waitForElementContainsOrEqualsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
 import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto.js';
 import {
     downloadBookmarksFromSourceToProcessing,
@@ -149,7 +149,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                 await fillInTextbox(page, '#username', credentials.username);
                 await clickOnButton(page, '#signIn', 'Next');
                 // console.log('001');
-                await waitForElementContainsText(page, '#returnLink', `← ${credentials.username}`, true);
+                await waitForElementContainsOrEqualsText(page, '#returnLink', `← ${credentials.username}`, undefined, true);
                 // console.log('002');
                 await fillInTextbox(page, '#password', credentials.password);
                 await clickOnButton(page, '#signIn', 'Sign in');
