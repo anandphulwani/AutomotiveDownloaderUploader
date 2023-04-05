@@ -71,6 +71,38 @@ function getAllDealerNumbers() {
     return allDealerNumbers;
 }
 
+function getDeleteOriginalFromDC(dealerNumber) {
+    const deleteOriginal = getSettingValueFromDC('Dealer Number', dealerNumber, 'Delete original');
+    if (deleteOriginal.toLowerCase().trim() === 'yes') {
+        return true;
+    }
+    return false;
+}
+
+function getShiftOriginalFirstPositionToLastPositionFromDC(dealerNumber) {
+    const shiftOriginal = getSettingValueFromDC('Dealer Number', dealerNumber, 'Shift original 1st position to last position');
+    if (shiftOriginal.toLowerCase().trim() === 'yes') {
+        return true;
+    }
+    return false;
+}
+
+function getPutFirstEditedImagesInTheLastPositionAlsoFromDC(dealerNumber) {
+    const shiftOriginal = getSettingValueFromDC('Dealer Number', dealerNumber, 'Put 1st edited images in the last position also');
+    if (shiftOriginal.toLowerCase().trim() === 'yes') {
+        return true;
+    }
+    return false;
+}
+
+function getLockTheImageCheckMarkFromDC(dealerNumber) {
+    const shiftOriginal = getSettingValueFromDC('Dealer Number', dealerNumber, 'Lock the image (check mark)');
+    if (shiftOriginal.toLowerCase().trim() === 'yes') {
+        return true;
+    }
+    return false;
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     setCurrentDealerConfiguration,
@@ -79,4 +111,8 @@ export {
     getDealerNameFromDC,
     getDealerNameFromDCAsIs,
     getAllDealerNumbers,
+    getDeleteOriginalFromDC,
+    getShiftOriginalFirstPositionToLastPositionFromDC,
+    getPutFirstEditedImagesInTheLastPositionAlsoFromDC,
+    getLockTheImageCheckMarkFromDC,
 };
