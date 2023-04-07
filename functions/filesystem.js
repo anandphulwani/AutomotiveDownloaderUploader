@@ -1,5 +1,6 @@
 import fs from 'fs';
 import mv from 'mv';
+import ncp from 'ncp';
 import os from 'os';
 import chalk from 'chalk';
 import path from 'path';
@@ -41,6 +42,28 @@ async function moveFile(fromPath, toPath, debug = false) {
     });
 }
 
+async function copyDirOrFile(fromPath, toPath, debug = false) {
+    return new Promise((resolve, reject) => {
+        ncp(fromPath, toPath, (error) => {
+            if (error) {
+                console.log(
+                    chalk.white.bgRed.bold(
+                        `${'Unable to copy file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`
+                    )
+                );
+                process.exit(1);
+            } else {
+                debug
+                    ? console.log(
+                          `${'File copied successfully from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
+                      )
+                    : '';
+                resolve();
+            }
+        });
+    });
+}
+
 async function createDirAndMoveFile(fromPath, toPath, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
         debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
@@ -48,6 +71,15 @@ async function createDirAndMoveFile(fromPath, toPath, debug = false) {
         debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
     }
     await moveFile(fromPath, toPath, debug);
+}
+
+async function createDirAndCopyFile(fromPath, toPath, debug = false) {
+    if (!fs.existsSync(path.dirname(toPath))) {
+        debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
+        await makeDir(`${path.dirname(toPath)}/`, debug);
+        debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
+    }
+    await copyDirOrFile(fromPath, toPath, debug);
 }
 
 async function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, destinationPath, debug = false) {
@@ -201,6 +233,8 @@ function getFolderSizeInBytes(folderPath) {
 export {
     makeDir,
     moveFile,
+    copyDirOrFile,
+    createDirAndCopyFile,
     createDirAndMoveFileFromTempDirToDestination,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
     removeDir,
