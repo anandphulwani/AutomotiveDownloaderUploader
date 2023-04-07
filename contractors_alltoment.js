@@ -14,6 +14,7 @@ import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator, getSumOf2DArrayColumn, getIndexOfHighestIn2DArrayColumn } from './functions/others.js';
 import {
     makeDir,
+    createDirAndCopyFile,
     removeDirAndRemoveParentDirIfEmpty,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
     getListOfSubfoldersStartingWith,
@@ -77,54 +78,6 @@ while (!hasLotFirstIndexMatches) {
 }
 /* #endregion */
 
-/* #region: CodeAbstract Commented */
-/* 
-let doesLotFolderPathContainsFiles = false;
-// eslint-disable-next-line no-restricted-syntax
-for (const usernameFolder of fs.readdirSync(lotFolderPath)) {
-    if (!doesLotFolderPathContainsFiles) {
-        const usernameFolderPath = path.join(lotFolderPath, usernameFolder);
-        const usernameFolderStat = fs.statSync(usernameFolderPath);
-
-        if (usernameFolderStat.isDirectory()) {
-            // eslint-disable-next-line no-restricted-syntax
-            for (const dealerFolder of fs.readdirSync(usernameFolderPath)) {
-                if (!doesLotFolderPathContainsFiles) {
-                    const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
-                    const dealerFolderStat = fs.statSync(dealerFolderPath);
-
-                    if (dealerFolderStat.isDirectory()) {
-                        // eslint-disable-next-line no-restricted-syntax
-                        for (const stockFolder of fs.readdirSync(dealerFolderPath)) {
-                            if (!doesLotFolderPathContainsFiles) {
-                                const stockFolderPath = path.join(dealerFolderPath, stockFolder);
-                                const stockFolderStat = fs.statSync(stockFolderPath);
-
-                                if (stockFolderStat.isDirectory()) {
-                                    const stockFolderLength = fs.readdirSync(stockFolderPath).length;
-                                    console.log(`stockFolderPath: ${stockFolderPath}     stockFolderLength: ${stockFolderLength}`);
-                                    if (stockFolderLength > 0) {
-                                        doesLotFolderPathContainsFiles = true;
-                                    } else {
-                                        await removeDirAndRemoveParentDirIfEmpty(stockFolderPath, true, true);
-                                    }
-                                } else {
-                                    doesLotFolderPathContainsFiles = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-if (!doesLotFolderPathContainsFiles) {
-    console.log(chalk.white.bgRed.bold(`The lot folder does not contain any files to allot.`));
-    process.exit(1);
-} */
-/* #endregion */
-
 await validateLotFolderAndReturnImageCount(lotFolderPath);
 if (config.environment === 'production') {
     exec(`explorer.exe ${process.cwd()}\\${lotFolderPath}"`);
@@ -133,41 +86,6 @@ if (config.environment === 'production') {
     }
 }
 const dealerDirectories = await validateLotFolderAndReturnImageCount(lotFolderPath);
-
-/* #region: CodeAbstract Commented */
-// const dealerDirectories = [];
-// // eslint-disable-next-line no-restricted-syntax
-// for (const usernameFolder of fs.readdirSync(lotFolderPath)) {
-//     // console.log(usernameFolder);
-//     const usernameFolderPath = path.join(lotFolderPath, usernameFolder);
-//     const usernameFolderStat = fs.statSync(usernameFolderPath);
-
-//     if (usernameFolderStat.isDirectory()) {
-//         // eslint-disable-next-line no-restricted-syntax
-//         for (const dealerFolder of fs.readdirSync(usernameFolderPath)) {
-//             const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
-//             const dealerFolderStat = fs.statSync(dealerFolderPath);
-
-//             if (dealerFolderStat.isDirectory()) {
-//                 let totalNoOfDealerFolderFiles = 0;
-//                 // eslint-disable-next-line no-restricted-syntax
-//                 for (const stockFolder of fs.readdirSync(dealerFolderPath)) {
-//                     const stockFolderPath = path.join(dealerFolderPath, stockFolder);
-//                     const stockFolderStat = fs.statSync(stockFolderPath);
-
-//                     if (stockFolderStat.isDirectory()) {
-//                         const stockFolderLength = fs.readdirSync(stockFolderPath).length;
-//                         totalNoOfDealerFolderFiles += stockFolderLength;
-//                     } else {
-//                         totalNoOfDealerFolderFiles += 1;
-//                     }
-//                 }
-//                 dealerDirectories.push([dealerFolderPath, totalNoOfDealerFolderFiles]);
-//             }
-//         }
-//     }
-// }
-/* #endregion */
 
 if (!dealerDirectories.length > 0) {
     console.log(chalk.white.bgRed.bold(`Lot folder path: ${lotFolderPath} does not contain any subfolders (dealer Folder), Please check.`));
@@ -286,6 +204,7 @@ if (minimumDealerFoldersForEachContractors !== false) {
             path.basename(dealerFolderPath)
         )} ${contractorAlloted} ${dealerFolderFilesCount} (#${uniqueIdOfFolder})`.trim();
         const destinationPath = getDealerFolderContractorsZonePath(dealerFolderPath, contractorAlloted, addTextToFolderName);
+        const destinationRecordKeepingPath = getDealerFolderRecordKeepingZonePath(dealerFolderPath, addTextToFolderName);
         const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
 
         const processingContents = fs.readFileSync(config.processingBookmarkPathWithoutSync, 'utf8');
@@ -300,6 +219,7 @@ if (minimumDealerFoldersForEachContractors !== false) {
         );
 
         // await createDirAndMoveFile(dealerFolderPath, destinationPath);
+        await createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
 
         console.log(`${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`);
@@ -360,6 +280,7 @@ if (imagesQty > 0 && imagesQty > imagesQtyAlloted) {
             path.basename(dealerFolderPath)
         )} ${contractorAlloted} ${dealerFolderFilesCount} (#${uniqueIdOfFolder})`.trim();
         const destinationPath = getDealerFolderContractorsZonePath(dealerFolderPath, contractorAlloted, addTextToFolderName);
+        const destinationRecordKeepingPath = getDealerFolderRecordKeepingZonePath(dealerFolderPath, addTextToFolderName);
         const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
 
         const processingContents = fs.readFileSync(config.processingBookmarkPathWithoutSync, 'utf8');
@@ -374,6 +295,7 @@ if (imagesQty > 0 && imagesQty > imagesQtyAlloted) {
         );
 
         // await createDirAndMoveFile(dealerFolderPath, destinationPath);
+        await createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
 
         console.log(`${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`);
@@ -524,6 +446,28 @@ function getDealerFolderContractorsZonePath(sourcePath, contractorsName, additio
     sourcePathFoldersArr.splice(1, 2);
 
     sourcePath = `${config.contractorsZonePath}\\${contractorsName}\\${sourcePathFoldersArr.join('\\')}`;
+    sourcePath += ` ${additionalText}`;
+    return sourcePath;
+}
+
+function getDealerFolderRecordKeepingZonePath(sourcePath, additionalText) {
+    const sourcePathFoldersArr = [];
+    for (let cnt = 0; cnt < 4; cnt++) {
+        sourcePathFoldersArr.push(path.basename(sourcePath));
+        sourcePath = path.dirname(sourcePath);
+    }
+    if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
+        console.log(
+            chalk.white.bgRed.bold(
+                `ERROR: Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
+            )
+        );
+        process.exit(0);
+    }
+    sourcePathFoldersArr.reverse();
+    sourcePathFoldersArr.splice(1, 2);
+
+    sourcePath = `${config.recordKeepingZonePath}\\${sourcePathFoldersArr.join('\\')}`;
     sourcePath += ` ${additionalText}`;
     return sourcePath;
 }
