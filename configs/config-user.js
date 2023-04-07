@@ -33,6 +33,7 @@ const configUser = {
     // downloadPath: '.\\datastore\\Downloads',
     // contractorsZonePath: '.\\datastore\\ContractorsZone',
     // uploadingZonePath: '.\\datastore\\UploadingZone',
+    // recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
     credentials: [
         {
             username: 'dinesharora80@gmail.com',

@@ -49,6 +49,7 @@ const configBasic = {
     downloadPath: '.\\datastore\\Downloads',
     contractorsZonePath: '.\\datastore\\ContractorsZone',
     uploadingZonePath: '.\\datastore\\UploadingZone',
+    recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
     contractors: {
         // ram: {
         //     currentAllotted: 0,
