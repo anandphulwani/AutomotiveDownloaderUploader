@@ -47,6 +47,7 @@ async function gotoURL(page, URL, debug = false) {
         }
     }
     debug ? console.log(`Navigating to the URL: ${URL}: Done.`) : '';
+    return page.url();
 }
 
 async function gotoPageAndWaitTillCurrentURLStartsWith(page, URL, partialURL = URL, debug = false) {
