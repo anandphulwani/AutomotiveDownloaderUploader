@@ -4,7 +4,7 @@ import path from 'path';
 import logSymbols from 'log-symbols';
 
 /* eslint-disable import/extensions */
-import { sleep, waitForSeconds } from './sleep.js';
+import { sleep, msleep, waitForSeconds } from './sleep.js';
 import { clickOnButton } from './actionOnElements.js';
 import {
     getDealerNameFromDCAsIs,
@@ -27,14 +27,20 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     const diffInRows = endingRow - startingRow;
 
     for (let gotoIndex = 0; gotoIndex < 24; gotoIndex++) {
-        await gotoURL(page, URL, debug);
+        if (page.url() !== URL) {
+            await gotoURL(page, URL, debug);
+        }
         if (page.url().startsWith(`${getAppDomain()}/dashboard?`)) {
             debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
             debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
             debug ? '' : process.stdout.cursorTo(0);
             process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
             await waitForSeconds(5);
-            return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0 };
+            return {
+                result: false,
+                bookmarkAppendMesg: 'Ignoring (Does not Exist)',
+                imagesDownloaded: 0,
+            };
         }
         const pageContent = await page.content();
         if (pageContent.includes('/Framework/Resources/Images/Layout/Errors/500_error.png')) {
@@ -111,7 +117,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     await clickOnButton(page, '.vehicle-detail-tab.vehicle-detail-tab-imagery');
     await waitTillCurrentURLEndsWith(page, '#imagery');
     console.log(`${uniqueIdFolderPath}\\${stockNumber}`);
-    await waitForSeconds(120, true);
+    // await waitForSeconds(3, true);
 
     // eslint-disable-next-line no-useless-catch
     try {
@@ -140,7 +146,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     }
 
     await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
-    await waitForSeconds(2, true);
+    // await waitForSeconds(2, true);
 
     const imageDIVContainer2 = await page.$('.tn-list-container');
     const imageULContainer2 = await imageDIVContainer2.$('.container.tn-list.sortable.deletable.ui-sortable');
@@ -154,33 +160,93 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         try {
             const firstPositionIdSelector = `#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00 > div.dealer-images > div.tn-list-container > ul > li:nth-child(1)`;
             const lastPositionIdSelector = `#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00 > div.dealer-images > div.tn-list-container > ul > li:nth-child(${zeroPad(
-                imageOriginalURLSLength2 - 1,
+                imageOriginalURLSLength2,
                 2
             )})`;
 
             const firstPositionElement = await page.waitForSelector(firstPositionIdSelector);
             const lastPositionElement = await page.waitForSelector(lastPositionIdSelector);
             // Find its coordinates
-            const firstPositionElementRect = await page.evaluate((el) => {
-                const { x, y } = el.getBoundingClientRect();
-                return { x, y };
+            let firstPositionElementRect = await page.evaluate((el) => {
+                const { x, y, width, height } = el.getBoundingClientRect();
+                return { x, y, width, height };
             }, firstPositionElement);
-            const lastPositionElementRect = await page.evaluate((el) => {
-                const { x, y } = el.getBoundingClientRect();
-                return { x, y };
-            }, lastPositionElement);
-
-            console.log(firstPositionElementRect.x, firstPositionElementRect.y);
-            console.log(lastPositionElementRect.x, lastPositionElementRect.y);
-            await waitForSeconds(10, true);
-
-            await page.mouse.move(firstPositionElementRect.x + 25, firstPositionElementRect.y + 25);
+            await page.mouse.move(
+                firstPositionElementRect.x + firstPositionElementRect.width / 2,
+                firstPositionElementRect.y + firstPositionElementRect.height / 2,
+                { steps: 1 }
+            );
             await page.mouse.down();
-            await page.mouse.move(firstPositionElementRect.x + 27, firstPositionElementRect.y + 27);
-            await page.mouse.move(firstPositionElementRect.x + 30, firstPositionElementRect.y + 30);
-            await page.mouse.move(lastPositionElementRect.x + 20, lastPositionElementRect.y + 20);
-            await page.mouse.move(lastPositionElementRect.x + 22, lastPositionElementRect.y + 22);
-            await page.mouse.move(lastPositionElementRect.x + 25, lastPositionElementRect.y + 25);
+            // msleep(100);
+            // await page.mouse.move(
+            //     firstPositionElementRect.x + firstPositionElementRect.width / 2 + 10,
+            //     firstPositionElementRect.y + firstPositionElementRect.height / 2 + 10,
+            //     { steps: 1 }
+            // );
+            // msleep(100);
+            // await page.mouse.move(
+            //     firstPositionElementRect.x + firstPositionElementRect.width / 2 + 20,
+            //     firstPositionElementRect.y + firstPositionElementRect.height / 2 + 20,
+            //     { steps: 1 }
+            // );
+            // msleep(100);
+            await page.evaluate((element) => element.scrollIntoView(), lastPositionElement);
+            await page.waitForFunction(
+                (element) => {
+                    const { top, bottom } = element.getBoundingClientRect();
+                    // eslint-disable-next-line no-undef
+                    const viewportHeight = window.innerHeight;
+                    return top >= 0 && bottom <= viewportHeight;
+                },
+                {},
+                lastPositionElement
+            );
+            msleep(100);
+
+            //
+            //
+            //
+            //
+            //
+            let lastPositionElementRect = await page.evaluate((el) => {
+                const { x, y, width, height } = el.getBoundingClientRect();
+                return { x, y, width, height };
+            }, lastPositionElement);
+            await page.mouse.move(
+                lastPositionElementRect.x + lastPositionElementRect.width / 2 - 1,
+                lastPositionElementRect.y + lastPositionElementRect.height / 2, // + 10
+                { steps: 1 }
+            );
+            await waitForSeconds(3, true);
+
+            //
+            //
+            //
+            //
+            let oldLastPositionElementRectX;
+            for (let lastIndex = 1; lastIndex < 200; lastIndex++) {
+                lastPositionElementRect = await page.evaluate((el) => {
+                    const { x, y, width, height } = el.getBoundingClientRect();
+                    return { x, y, width, height };
+                }, lastPositionElement);
+                if (oldLastPositionElementRectX !== undefined && Math.abs(lastPositionElementRect.x - oldLastPositionElementRectX) > 50) {
+                    console.log(`breaking now ${oldLastPositionElementRectX} > ${lastPositionElementRect.x}`);
+                    break;
+                }
+                msleep(10);
+
+                console.log(`Last Position Of Element: X:${lastPositionElementRect.x}`); // , Y:${lastPositionElementRect.y}`);
+                console.log(
+                    chalk.yellowBright(`Moving Element To:        X:${lastPositionElementRect.x + lastIndex}`) // , Y:${lastPositionElementRect.y + 35}`)
+                );
+                await page.mouse.move(
+                    lastPositionElementRect.x + lastPositionElementRect.width / 2 + lastIndex - 1,
+                    lastPositionElementRect.y + lastPositionElementRect.height / 2, // + 10
+                    { steps: 1 }
+                );
+                oldLastPositionElementRectX = lastPositionElementRect.x;
+            }
+            await waitForSeconds(2, true);
             await page.mouse.up();
         } catch (error) {
             console.log(`handled this:${error}`);
