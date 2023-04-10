@@ -5,13 +5,14 @@ import logSymbols from 'log-symbols';
 
 /* eslint-disable import/extensions */
 import { sleep, msleep, waitForSeconds } from './sleep.js';
-import { clickOnButton } from './actionOnElements.js';
+import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
 import {
     getDealerNameFromDCAsIs,
+    getImageNumbersToDownloadFromDC,
     getDeleteOriginalFromDC,
     getShiftOriginalFirstPositionToLastPositionFromDC,
-    getPutFirstEditedImagesInTheLastPositionAlsoFromDC,
-    getLockTheImageCheckMarkFromDC,
+    getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC,
+    getLockTheImagesCheckMarkFromDC,
 } from './excelsupportive.js';
 import { getRowPosOnTerminal } from './terminal.js';
 import { gotoURL } from './goto.js';
@@ -70,10 +71,16 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
 async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, debug = false) {
     // console.log(uniqueIdElement);
     // console.log(dealerFolder);
-    const deleteOriginalFromDC = getDeleteOriginalFromDC(dealerFolder);
-    const shiftOriginalFirstPositionToLastPositionFromDC = getShiftOriginalFirstPositionToLastPositionFromDC(dealerFolder);
-    const putFirstEditedImagesInTheLastPositionAlsoFromDC = getPutFirstEditedImagesInTheLastPositionAlsoFromDC(dealerFolder);
-    const lockTheImageCheckMarkFromDC = getLockTheImageCheckMarkFromDC(dealerFolder);
+    const imageNumbersToDownloadFromDC = getImageNumbersToDownloadFromDC(dealerFolder);
+    // const deleteOriginalFromDC = getDeleteOriginalFromDC(dealerFolder);
+    // const shiftOriginalFirstPositionToLastPositionFromDC = getShiftOriginalFirstPositionToLastPositionFromDC(dealerFolder);
+    // const putFirstPositionEditedImageInTheLastPositionAlsoFromDC = getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerFolder);
+    // const lockTheImagesCheckMarkFromDC = getLockTheImagesCheckMarkFromDC(dealerFolder);
+    let deleteOriginalFromDC = getDeleteOriginalFromDC(dealerFolder);
+    let shiftOriginalFirstPositionToLastPositionFromDC = getShiftOriginalFirstPositionToLastPositionFromDC(dealerFolder);
+    let putFirstPositionEditedImageInTheLastPositionAlsoFromDC = getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerFolder);
+    let lockTheImagesCheckMarkFromDC = getLockTheImagesCheckMarkFromDC(dealerFolder);
+
     /**
      * Get dealer name from excel and compare it with dealer name in the page: Begin
      */
@@ -116,17 +123,28 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
 
     await clickOnButton(page, '.vehicle-detail-tab.vehicle-detail-tab-imagery');
     await waitTillCurrentURLEndsWith(page, '#imagery');
-    console.log(`${uniqueIdFolderPath}\\${stockNumber}`);
-    // await waitForSeconds(3, true);
+    // console.log(`${uniqueIdFolderPath}\\${stockNumber}`);
+    // console.log(imageNumbersToDownloadFromDC);
 
+    deleteOriginalFromDC = true;
+    shiftOriginalFirstPositionToLastPositionFromDC = true;
+    putFirstPositionEditedImageInTheLastPositionAlsoFromDC = false;
+    // lockTheImagesCheckMarkFromDC = true;
+
+    // deleteOriginalFromDC
+    // Done: shiftOriginalFirstPositionToLastPositionFromDC: If deletingOriginal is set to yes and then is set to yes, avoid deleting the first image, but if deletingOriginal is set to no, this setting is of no use as all the image will be shifted below.
+    // Done: putFirstPositionEditedImageInTheLastPositionAlsoFromDC: If the uploading images set doesnt start with 001, this wont do anything
+
+    /* #region: Uploading the files: Begin */
+    const imagesToUpload = [];
     // eslint-disable-next-line no-useless-catch
     try {
-        let firstImagePath;
+        let firstImage;
         // eslint-disable-next-line no-restricted-syntax
         for (const stockFolderSubFolderAndFiles of fs.readdirSync(stockFolderPath)) {
             const stockFolderSubFolderAndFilesPath = path.join(stockFolderPath, stockFolderSubFolderAndFiles);
-            if (firstImagePath === undefined) {
-                firstImagePath = stockFolderSubFolderAndFilesPath;
+            if (firstImage === undefined) {
+                firstImage = stockFolderSubFolderAndFilesPath;
             }
             const stockFolderSubFolderAndFilesStat = fs.statSync(stockFolderSubFolderAndFilesPath);
 
@@ -135,143 +153,131 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
                 await fileChooser.accept([path.resolve(stockFolderSubFolderAndFilesPath)]);
             }
+            // console.log(stockFolderSubFolderAndFiles);
+            const imageNumber = parseInt(stockFolderSubFolderAndFiles.split('.')[0], 10);
+            imagesToUpload.push(imageNumber);
         }
         await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
-        if (putFirstEditedImagesInTheLastPositionAlsoFromDC) {
+        if (
+            putFirstPositionEditedImageInTheLastPositionAlsoFromDC &&
+            (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
+        ) {
+            const firstImagePath = path.join(stockFolderPath, firstImage);
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
             await fileChooser.accept([path.resolve(firstImagePath)]);
         }
     } catch (error) {
         console.log(`error01:${error}`);
     }
-
     await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
-    // await waitForSeconds(2, true);
+    /* #endregion: Uploading the files: End */
+
+    /* #region: Mark file to delete the older files to replace with the newer files: Begin */
+    if (deleteOriginalFromDC) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const imageToUpload of imagesToUpload) {
+            if (shiftOriginalFirstPositionToLastPositionFromDC && imageToUpload === 1) {
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+                try {
+                    const deleteId = `#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00_RepeaterTNImages_ctl${zeroPad(
+                        imageToUpload - 1,
+                        2
+                    )}_Img1`;
+                    await enableAndClickOnButton(page, deleteId);
+
+                    await page.waitForFunction(
+                        // eslint-disable-next-line no-loop-func
+                        (selector, attributeName, expectedValue) => {
+                            // eslint-disable-next-line no-undef
+                            const element = document.querySelector(selector);
+                            if (element) {
+                                return element.getAttribute(attributeName) === expectedValue;
+                            }
+                            return false;
+                        },
+                        {},
+                        deleteId,
+                        'title',
+                        'click to RESTORE this photo.'
+                    );
+                } catch (error) {
+                    // eslint-disable-next-line no-continue
+                    continue;
+                }
+                break;
+            }
+        }
+    }
+    /* #endregion: Delete the older files to replace with the newer files: End */
+
+    await waitForSeconds(5, true);
 
     const imageDIVContainer2 = await page.$('.tn-list-container');
     const imageULContainer2 = await imageDIVContainer2.$('.container.tn-list.sortable.deletable.ui-sortable');
     const imageOriginalURLS2 = await imageULContainer2.$$eval('img.tn-car', (el) => el.map((x) => x.getAttribute('originalUrl')));
     const imageOriginalURLSLength2 = imageOriginalURLS2.length;
-    // console.log(imageOriginalURLSLength2);
-    // process.exit(1);
-    console.log('Doing the move now');
+    console.log(`imageOriginalURLSLength2: ${imageOriginalURLSLength2}`);
 
-    if (true || shiftOriginalFirstPositionToLastPositionFromDC) {
-        try {
-            const firstPositionIdSelector = `#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00 > div.dealer-images > div.tn-list-container > ul > li:nth-child(1)`;
-            const lastPositionIdSelector = `#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00 > div.dealer-images > div.tn-list-container > ul > li:nth-child(${zeroPad(
-                imageOriginalURLSLength2,
-                2
-            )})`;
+    // // eslint-disable-next-line no-restricted-syntax
+    // for (let imageToUploadIndex = 0; imageToUploadIndex < imagesToUpload.length; imageToUploadIndex++) {
+    //     console.log(`Moving image from ${'1'} To ${imageOriginalURLSLength + imagesToUpload[imageToUploadIndex]}`);
+    //     await moveImageToPositionNumber(page, 1, imageOriginalURLSLength + imagesToUpload[imageToUploadIndex]);
+    //     // await waitForSeconds(10, true);
+    // }
+    // await waitForSeconds(60, true);
+    // process.exit(0);
 
-            const firstPositionElement = await page.waitForSelector(firstPositionIdSelector);
-            const lastPositionElement = await page.waitForSelector(lastPositionIdSelector);
-            // Find its coordinates
-            let firstPositionElementRect = await page.evaluate((el) => {
-                const { x, y, width, height } = el.getBoundingClientRect();
-                return { x, y, width, height };
-            }, firstPositionElement);
-            await page.mouse.move(
-                firstPositionElementRect.x + firstPositionElementRect.width / 2,
-                firstPositionElementRect.y + firstPositionElementRect.height / 2,
-                { steps: 1 }
-            );
-            await page.mouse.down();
-            // msleep(100);
-            // await page.mouse.move(
-            //     firstPositionElementRect.x + firstPositionElementRect.width / 2 + 10,
-            //     firstPositionElementRect.y + firstPositionElementRect.height / 2 + 10,
-            //     { steps: 1 }
-            // );
-            // msleep(100);
-            // await page.mouse.move(
-            //     firstPositionElementRect.x + firstPositionElementRect.width / 2 + 20,
-            //     firstPositionElementRect.y + firstPositionElementRect.height / 2 + 20,
-            //     { steps: 1 }
-            // );
-            // msleep(100);
-            await page.evaluate((element) => element.scrollIntoView(), lastPositionElement);
-            await page.waitForFunction(
-                (element) => {
-                    const { top, bottom } = element.getBoundingClientRect();
-                    // eslint-disable-next-line no-undef
-                    const viewportHeight = window.innerHeight;
-                    return top >= 0 && bottom <= viewportHeight;
-                },
-                {},
-                lastPositionElement
-            );
-            msleep(100);
-
-            //
-            //
-            //
-            //
-            //
-            let lastPositionElementRect = await page.evaluate((el) => {
-                const { x, y, width, height } = el.getBoundingClientRect();
-                return { x, y, width, height };
-            }, lastPositionElement);
-            await page.mouse.move(
-                lastPositionElementRect.x + lastPositionElementRect.width / 2 - 1,
-                lastPositionElementRect.y + lastPositionElementRect.height / 2, // + 10
-                { steps: 1 }
-            );
-            await waitForSeconds(3, true);
-
-            //
-            //
-            //
-            //
-            let oldLastPositionElementRectX;
-            for (let lastIndex = 1; lastIndex < 200; lastIndex++) {
-                lastPositionElementRect = await page.evaluate((el) => {
-                    const { x, y, width, height } = el.getBoundingClientRect();
-                    return { x, y, width, height };
-                }, lastPositionElement);
-                if (oldLastPositionElementRectX !== undefined && Math.abs(lastPositionElementRect.x - oldLastPositionElementRectX) > 50) {
-                    console.log(`breaking now ${oldLastPositionElementRectX} > ${lastPositionElementRect.x}`);
-                    break;
-                }
-                msleep(10);
-
-                console.log(`Last Position Of Element: X:${lastPositionElementRect.x}`); // , Y:${lastPositionElementRect.y}`);
-                console.log(
-                    chalk.yellowBright(`Moving Element To:        X:${lastPositionElementRect.x + lastIndex}`) // , Y:${lastPositionElementRect.y + 35}`)
-                );
-                await page.mouse.move(
-                    lastPositionElementRect.x + lastPositionElementRect.width / 2 + lastIndex - 1,
-                    lastPositionElementRect.y + lastPositionElementRect.height / 2, // + 10
-                    { steps: 1 }
-                );
-                oldLastPositionElementRectX = lastPositionElementRect.x;
-            }
-            await waitForSeconds(2, true);
-            await page.mouse.up();
-        } catch (error) {
-            console.log(`handled this:${error}`);
-            await waitForSeconds(240, true);
-        }
+    // eslint-disable-next-line no-restricted-syntax
+    for (let imageToUploadIndex = imagesToUpload.length; imageToUploadIndex > 0; imageToUploadIndex--) {
+        console.log(`Moving image from ${imageOriginalURLSLength2} To ${imagesToUpload[imageToUploadIndex - 1] + 1}`);
+        // await moveImageToPositionNumber(page, imageOriginalURLSLength2, imagesToUpload[imageToUploadIndex - 1] + 1);
     }
-    await waitForSeconds(200, true);
-    process.exit(0);
 
+    /* #region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin */
+    // eslint-disable-next-line no-restricted-syntax
+    for (let imageToUploadIndex = imagesToUpload.length; imageToUploadIndex > 0; imageToUploadIndex--) {
+        // If 'deleteOriginalFromDC' is set to true and 'shiftOriginalFirstPositionToLastPositionFromDC' is set to false, dont shift anything and break
+        if (deleteOriginalFromDC && !shiftOriginalFirstPositionToLastPositionFromDC) {
+            break;
+        }
+        // If 'deleteOriginalFromDC' is set to true and 'shiftOriginalFirstPositionToLastPositionFromDC' is set to true, just shift first image and then break
+        if (deleteOriginalFromDC && shiftOriginalFirstPositionToLastPositionFromDC && imageToUploadIndex === 1) {
+            break;
+        }
+        // if (deleteOriginalFromDC) {
+        //     /* #region: Shift original first image from first position to last position, according to setting : Begin */
+        //     if (shiftOriginalFirstPositionToLastPositionFromDC) {
+        //         console.log(`Moving image from ${'1'} To ${imageOriginalURLSLength2}`);
+        //         moveImageToPositionNumber(page, 1, imageOriginalURLSLength2);
+        //     }
+        //     /* #endregion: Shift original first image from first position to last position, according to setting : End */
+        //     break;
+        // }
+        console.log(`Moving image from ${imageOriginalURLSLength2} To ${imagesToUpload[imageToUploadIndex - 1] + 1}`);
+        await moveImageToPositionNumber(page, imageOriginalURLSLength2, imagesToUpload[imageToUploadIndex - 1] + 1);
+    }
+    /* #endregion: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End */
+
+    /* #region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin */
     const ImagesAreLockedFromWeb = await page.evaluate(
         // eslint-disable-next-line no-undef
         (selector) => document.querySelector(selector).checked,
         'input[type="checkbox"].vp[property-name="ImagesAreLocked"]'
     );
-    console.log(ImagesAreLockedFromWeb);
+    console.log(`Current ImagesAreLockedFromWeb: ${ImagesAreLockedFromWeb}`);
 
-    if (ImagesAreLockedFromWeb !== lockTheImageCheckMarkFromDC) {
+    if (ImagesAreLockedFromWeb !== lockTheImagesCheckMarkFromDC) {
         clickOnButton(page, 'input[type="checkbox"].vp[property-name="ImagesAreLocked"]');
     }
+    /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */
 
-    console.log('Done');
-
-    await waitForSeconds(6000, true);
-
+    await waitForSeconds(240, true);
     process.exit(0);
+
     sleep(10);
     sleep(10);
 
@@ -400,6 +406,129 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // removeDir(tempPath, true, debug);
     // return { result: true, bookmarkAppendMesg: stockNumber, imagesDownloaded: imagesDownloaded };
     return false;
+}
+
+async function moveImageToPositionNumber(page, fromPosition, toPosition, isSlow = false, debug = true) {
+    try {
+        fromPosition = parseInt(fromPosition, 10);
+        toPosition = parseInt(toPosition, 10);
+        const fromPositionIdSelector = `#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00 > div.dealer-images > div.tn-list-container > ul > li:nth-child(${zeroPad(
+            fromPosition,
+            2
+        )})`;
+        const toPositionIdSelector = `#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00 > div.dealer-images > div.tn-list-container > ul > li:nth-child(${zeroPad(
+            toPosition,
+            2
+        )})`;
+
+        const fromPositionElement = await page.waitForSelector(fromPositionIdSelector);
+        const toPositionElement = await page.waitForSelector(toPositionIdSelector);
+
+        await page.evaluate((element) => element.scrollIntoView(), fromPositionElement);
+        await page.waitForFunction(
+            (element) => {
+                const { top, bottom } = element.getBoundingClientRect();
+                // eslint-disable-next-line no-undef
+                const viewportHeight = window.innerHeight;
+                return top >= 0 && bottom <= viewportHeight;
+            },
+            {},
+            fromPositionElement
+        );
+        // await waitForSeconds(3, true);
+
+        const fromPositionElementRect = await page.evaluate((el) => {
+            const { x, y, width, height } = el.getBoundingClientRect();
+            return { x, y, width, height };
+        }, fromPositionElement);
+
+        await page.mouse.move(
+            fromPositionElementRect.x + fromPositionElementRect.width / 2,
+            fromPositionElementRect.y + fromPositionElementRect.height / 2,
+            { steps: 1 }
+        );
+        await page.mouse.down();
+        isSlow ? await waitForSeconds(4, true) : '';
+
+        await page.evaluate((element) => element.scrollIntoView(), toPositionElement);
+        await page.waitForFunction(
+            (element) => {
+                const { top, bottom } = element.getBoundingClientRect();
+                // eslint-disable-next-line no-undef
+                const viewportHeight = window.innerHeight;
+                return top >= 0 && bottom <= viewportHeight;
+            },
+            {},
+            toPositionElement
+        );
+        isSlow ? await waitForSeconds(5, true) : '';
+
+        //
+        //
+        //
+        //
+        //
+        let oldToPositionElementRectX;
+        for (let lastIndex = 0; lastIndex < 10; lastIndex++) {
+            const toPositionElementRect = await page.evaluate((el) => {
+                const { x, y, width, height } = el.getBoundingClientRect();
+                return { x, y, width, height };
+            }, toPositionElement);
+            if (oldToPositionElementRectX !== undefined && Math.abs(toPositionElementRect.x - oldToPositionElementRectX) > 50) {
+                // console.log(`breaking now ${oldToPositionElementRectX} > ${toPositionElementRect.x}`);
+                break;
+            }
+            msleep(10);
+
+            // console.log(`To Position Of Element: X:${toPositionElementRect.x}`); // , Y:${toPositionElementRect.y}`);
+            // console.log(
+            //     chalk.yellowBright(`Moving Element To:        X:${toPositionElementRect.x + lastIndex}`) // , Y:${toPositionElementRect.y + 35}`)
+            // );
+            if (fromPosition > toPosition) {
+                // Coming from down to up
+                // console.log(`toPosition: ${toPosition},        (toPosition + 1) % 5 :  ${(toPosition + 1) % 5}`);
+                if ((toPosition + 1) % 5 === 1) {
+                    await page.mouse.move(
+                        toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex,
+                        toPositionElementRect.y + toPositionElementRect.height / 2, // + 10
+                        { steps: 1 }
+                    );
+                } else {
+                    await page.mouse.move(
+                        toPositionElementRect.x + toPositionElementRect.width / 2 + lastIndex,
+                        toPositionElementRect.y + toPositionElementRect.height / 2, // + 10
+                        { steps: 1 }
+                    );
+                }
+            } else {
+                // Coming from up to down
+                // console.log(`toPosition: ${toPosition},        (toPosition + 1) % 5 :  ${(toPosition + 1) % 5}`);
+                // eslint-disable-next-line no-lonely-if
+                if ((toPosition + 1) % 5 === 1) {
+                    // console.log('Moving to the end of the row');
+                    await page.mouse.move(
+                        toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex,
+                        toPositionElementRect.y + toPositionElementRect.height / 2, // + 10
+                        { steps: 1 }
+                    );
+                } else {
+                    await page.mouse.move(
+                        toPositionElementRect.x + toPositionElementRect.width / 2 + lastIndex,
+                        toPositionElementRect.y + toPositionElementRect.height / 2, // + 10
+                        { steps: 1 }
+                    );
+                }
+            }
+            isSlow ? await waitForSeconds(1, true) : '';
+            oldToPositionElementRectX = toPositionElementRect.x;
+        }
+        // await waitForSeconds(2, true);
+        await page.mouse.up();
+        isSlow ? await waitForSeconds(6, true) : '';
+    } catch (error) {
+        console.log(`handled this:${error}`);
+        await waitForSeconds(240, true);
+    }
 }
 
 // eslint-disable-next-line import/prefer-default-export
