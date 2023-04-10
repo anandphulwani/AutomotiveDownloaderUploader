@@ -48,4 +48,17 @@ async function clickOnButton(page, selector, buttonText = false, debug = false) 
     debug ? console.log(`Clicking the ${selector} button: Done.`) : '';
 }
 
-export { fillInTextbox, clickOnButton };
+async function enableAndClickOnButton(page, selector, buttonText = false, debug = false) {
+    debug ? console.log(`Waiting for the ${selector} to load: Executing.`) : '';
+    await page.waitForSelector(selector, { timeout: 90000 });
+    debug ? console.log(`Waiting for the ${selector} to load: Found.`) : '';
+
+    await page.evaluate((selectorToEnable) => {
+        // eslint-disable-next-line no-undef
+        const element = document.querySelector(selectorToEnable);
+        element.style.display = 'block';
+    }, selector);
+    clickOnButton(page, selector, buttonText, debug);
+}
+
+export { fillInTextbox, clickOnButton, enableAndClickOnButton };
