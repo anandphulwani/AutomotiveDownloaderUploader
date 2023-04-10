@@ -87,7 +87,7 @@ function getShiftOriginalFirstPositionToLastPositionFromDC(dealerNumber) {
     return false;
 }
 
-function getPutFirstEditedImagesInTheLastPositionAlsoFromDC(dealerNumber) {
+function getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerNumber) {
     const shiftOriginal = getSettingValueFromDC('Dealer Number', dealerNumber, 'Put 1st edited images in the last position also');
     if (shiftOriginal.toLowerCase().trim() === 'yes') {
         return true;
@@ -95,7 +95,7 @@ function getPutFirstEditedImagesInTheLastPositionAlsoFromDC(dealerNumber) {
     return false;
 }
 
-function getLockTheImageCheckMarkFromDC(dealerNumber) {
+function getLockTheImagesCheckMarkFromDC(dealerNumber) {
     const shiftOriginal = getSettingValueFromDC('Dealer Number', dealerNumber, 'Lock the image (check mark)');
     if (shiftOriginal.toLowerCase().trim() === 'yes') {
         return true;
@@ -113,6 +113,6 @@ export {
     getAllDealerNumbers,
     getDeleteOriginalFromDC,
     getShiftOriginalFirstPositionToLastPositionFromDC,
-    getPutFirstEditedImagesInTheLastPositionAlsoFromDC,
-    getLockTheImageCheckMarkFromDC,
+    getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC,
+    getLockTheImagesCheckMarkFromDC,
 };
