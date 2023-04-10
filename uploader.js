@@ -8,6 +8,7 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 import { config } from './configs/config.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
+import { gotoURL } from './functions/goto.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { getUniqueIdPairsFromDealerBookmarkName } from './functions/bookmark.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
@@ -155,13 +156,6 @@ if (!allUsernamesBookmarks.length > 0) {
             // eslint-disable-next-line no-restricted-syntax
             for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
                 // if (isDealerFolderToBeUploaded) {
-                if (typeof page === 'boolean' && !page) {
-                    page = await initBrowserAndGetPage();
-                }
-                if (userLoggedIn !== usernameBookmark.name) {
-                    await loginCredentials(page, usernameBookmark.name);
-                    userLoggedIn = usernameBookmark.name;
-                }
                 console.log(
                     chalk.cyan('Uploading Bookmarks for the Dealer: ') +
                         chalk.cyan.bold(dealerLevelBookmarkName) +
@@ -170,10 +164,20 @@ if (!allUsernamesBookmarks.length > 0) {
                 );
                 const vehicleBookmarks = dealerLevelBookmark.children;
 
-                // foldersToUpload
                 // eslint-disable-next-line no-restricted-syntax
                 for (const vehicleBookmark of vehicleBookmarks) {
                     if (vehicleBookmark.name.includes(' |#| ') && /\d{1,8}/.test(vehicleBookmark.name.split(' |#| ')[1].trim())) {
+                        if (typeof page === 'boolean' && !page) {
+                            page = await initBrowserAndGetPage();
+                        }
+                        if (userLoggedIn !== usernameBookmark.name) {
+                            const currentURL = await gotoURL(page, vehicleBookmark.url);
+                            if (currentURL !== vehicleBookmark.url) {
+                                await loginCredentials(page, usernameBookmark.name);
+                            }
+                            userLoggedIn = usernameBookmark.name;
+                        }
+
                         console.log(vehicleBookmark.name);
                         const returnObj = await uploadBookmarkURL(
                             page,
