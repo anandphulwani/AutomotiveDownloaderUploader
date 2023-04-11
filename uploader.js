@@ -166,6 +166,9 @@ if (!allUsernamesBookmarks.length > 0) {
 
                 // eslint-disable-next-line no-restricted-syntax
                 for (const vehicleBookmark of vehicleBookmarks) {
+                    if (vehicleBookmark.url.endsWith('#general')) {
+                        vehicleBookmark.url = vehicleBookmark.url.replace('#general', '#imagery');
+                    }
                     if (vehicleBookmark.name.includes(' |#| ') && /\d{1,8}/.test(vehicleBookmark.name.split(' |#| ')[1].trim())) {
                         if (typeof page === 'boolean' && !page) {
                             page = await initBrowserAndGetPage();
