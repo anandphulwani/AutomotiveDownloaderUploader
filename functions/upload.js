@@ -4,6 +4,7 @@ import path from 'path';
 import logSymbols from 'log-symbols';
 
 /* eslint-disable import/extensions */
+import { config } from '../configs/config.js';
 import { sleep, msleep, waitForSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
 import {
@@ -19,6 +20,7 @@ import { gotoURL } from './goto.js';
 import { getAppDomain } from './configsupportive.js';
 import { waitForElementContainsOrEqualsHTML, waitTillCurrentURLEndsWith } from './waiting.js';
 import { zeroPad } from './stringformatting.js';
+import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 /* eslint-enable import/extensions */
 
 async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, URL, debug = false) {
@@ -110,10 +112,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         )
     );
     const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumber}`;
+    let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumber}.`));
+    stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
 
-    if (!fs.existsSync(stockFolderPath)) {
-        // TODO: Give error and exit
-        process.exit(0);
+    if (!fs.existsSync(stockFolderPath) && stockFilePath === undefined) {
+        console.log(chalk.white.bgRed.bold(`Unable to upload file/folder for the stock number: ${stockNumber} .`));
+        process.exit(1);
     }
 
     const imageDIVContainer = await page.$('.tn-list-container');
@@ -121,30 +125,41 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     const imageOriginalURLS = await imageULContainer.$$eval('img.tn-car', (el) => el.map((x) => x.getAttribute('originalUrl')));
     const imageOriginalURLSLength = imageOriginalURLS.length;
 
-    await clickOnButton(page, '.vehicle-detail-tab.vehicle-detail-tab-imagery');
-    await waitTillCurrentURLEndsWith(page, '#imagery');
+    if (!page.url().endsWith('#imagery')) {
+        await clickOnButton(page, '.vehicle-detail-tab.vehicle-detail-tab-imagery');
+        await waitTillCurrentURLEndsWith(page, '#imagery');
+    }
     // console.log(`${uniqueIdFolderPath}\\${stockNumber}`);
     // console.log(imageNumbersToDownloadFromDC);
 
-    deleteOriginalFromDC = true;
-    shiftOriginalFirstPositionToLastPositionFromDC = true;
+    deleteOriginalFromDC = false;
+    shiftOriginalFirstPositionToLastPositionFromDC = false;
     putFirstPositionEditedImageInTheLastPositionAlsoFromDC = false;
-    // lockTheImagesCheckMarkFromDC = true;
 
-    // deleteOriginalFromDC
-    // Done: shiftOriginalFirstPositionToLastPositionFromDC: If deletingOriginal is set to yes and then is set to yes, avoid deleting the first image, but if deletingOriginal is set to no, this setting is of no use as all the image will be shifted below.
-    // Done: putFirstPositionEditedImageInTheLastPositionAlsoFromDC: If the uploading images set doesnt start with 001, this wont do anything
+    lockTheImagesCheckMarkFromDC = true;
+
+    // TODO: Remove above parameters
+    // Done: Change variable for old images to just stay as there to be introduced in excel (No change required, if files are set to not delete, then keep files at the same place, only if shift paramater is there, shift 1st file to down, keep rest there itself.)
+    // Done: Single image which is not in stock folder
+    // Move folder when its done
+    // Update bookmark when its done
+    // Later: error handling if stuck delete all previous images and start again.
+    // Done: Move mouse about the save button
 
     /* #region: Uploading the files: Begin */
+    let firstImage;
     const imagesToUpload = [];
     // eslint-disable-next-line no-useless-catch
     try {
-        let firstImage;
+        const stockFolderPathList = stockFilePath === undefined ? fs.readdirSync(stockFolderPath) : [stockFilePath];
         // eslint-disable-next-line no-restricted-syntax
-        for (const stockFolderSubFolderAndFiles of fs.readdirSync(stockFolderPath)) {
-            const stockFolderSubFolderAndFilesPath = path.join(stockFolderPath, stockFolderSubFolderAndFiles);
+        for (const stockFolderSubFolderAndFiles of stockFolderPathList) {
+            const stockFolderSubFolderAndFilesPath =
+                stockFilePath === undefined
+                    ? path.join(stockFolderPath, stockFolderSubFolderAndFiles)
+                    : path.join(uniqueIdFolderPath, stockFolderSubFolderAndFiles);
             if (firstImage === undefined) {
-                firstImage = stockFolderSubFolderAndFilesPath;
+                firstImage = stockFolderSubFolderAndFiles;
             }
             const stockFolderSubFolderAndFilesStat = fs.statSync(stockFolderSubFolderAndFilesPath);
 
@@ -154,7 +169,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 await fileChooser.accept([path.resolve(stockFolderSubFolderAndFilesPath)]);
             }
             // console.log(stockFolderSubFolderAndFiles);
-            const imageNumber = parseInt(stockFolderSubFolderAndFiles.split('.')[0], 10);
+            let imageNumber = parseInt(stockFolderSubFolderAndFiles.split('.')[0], 10);
+            imageNumber = imageNumber > 500 ? 1 : imageNumber;
             imagesToUpload.push(imageNumber);
         }
         await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
@@ -162,12 +178,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             putFirstPositionEditedImageInTheLastPositionAlsoFromDC &&
             (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
         ) {
-            const firstImagePath = path.join(stockFolderPath, firstImage);
+            const firstImagePath = stockFilePath === undefined ? path.join(stockFolderPath, firstImage) : path.join(uniqueIdFolderPath, firstImage);
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
             await fileChooser.accept([path.resolve(firstImagePath)]);
         }
     } catch (error) {
-        console.log(`error01:${error}`);
+        console.log(`error01: ${error}`);
     }
     await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
     /* #endregion: Uploading the files: End */
@@ -214,51 +230,56 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     }
     /* #endregion: Delete the older files to replace with the newer files: End */
 
-    await waitForSeconds(5, true);
-
     const imageDIVContainer2 = await page.$('.tn-list-container');
     const imageULContainer2 = await imageDIVContainer2.$('.container.tn-list.sortable.deletable.ui-sortable');
     const imageOriginalURLS2 = await imageULContainer2.$$eval('img.tn-car', (el) => el.map((x) => x.getAttribute('originalUrl')));
     const imageOriginalURLSLength2 = imageOriginalURLS2.length;
-    console.log(`imageOriginalURLSLength2: ${imageOriginalURLSLength2}`);
 
-    // // eslint-disable-next-line no-restricted-syntax
-    // for (let imageToUploadIndex = 0; imageToUploadIndex < imagesToUpload.length; imageToUploadIndex++) {
-    //     console.log(`Moving image from ${'1'} To ${imageOriginalURLSLength + imagesToUpload[imageToUploadIndex]}`);
-    //     await moveImageToPositionNumber(page, 1, imageOriginalURLSLength + imagesToUpload[imageToUploadIndex]);
-    //     // await waitForSeconds(10, true);
-    // }
-    // await waitForSeconds(60, true);
-    // process.exit(0);
-
+    /* #region: Move uploaded files on the correct location: Begin */
     // eslint-disable-next-line no-restricted-syntax
     for (let imageToUploadIndex = imagesToUpload.length; imageToUploadIndex > 0; imageToUploadIndex--) {
-        console.log(`Moving image from ${imageOriginalURLSLength2} To ${imagesToUpload[imageToUploadIndex - 1] + 1}`);
-        // await moveImageToPositionNumber(page, imageOriginalURLSLength2, imagesToUpload[imageToUploadIndex - 1] + 1);
+        if (
+            putFirstPositionEditedImageInTheLastPositionAlsoFromDC &&
+            (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
+        ) {
+            // console.log(`Moving image from ${imageOriginalURLSLength2 - 1} To ${imagesToUpload[imageToUploadIndex - 1] + 1}`);
+            await moveImageToPositionNumber(
+                page,
+                imageOriginalURLSLength2,
+                imageOriginalURLSLength2 - 1,
+                imagesToUpload[imageToUploadIndex - 1] + 1,
+                false
+            );
+        } else {
+            // console.log(`Moving image from ${imageOriginalURLSLength2} To ${imagesToUpload[imageToUploadIndex - 1] + 1}`);
+            await moveImageToPositionNumber(
+                page,
+                imageOriginalURLSLength2,
+                imageOriginalURLSLength2,
+                imagesToUpload[imageToUploadIndex - 1] + 1,
+                false
+            );
+        }
     }
+    /* #endregion: Move uploaded files on the correct location: End */
 
     /* #region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin */
     // eslint-disable-next-line no-restricted-syntax
-    for (let imageToUploadIndex = imagesToUpload.length; imageToUploadIndex > 0; imageToUploadIndex--) {
-        // If 'deleteOriginalFromDC' is set to true and 'shiftOriginalFirstPositionToLastPositionFromDC' is set to false, dont shift anything and break
-        if (deleteOriginalFromDC && !shiftOriginalFirstPositionToLastPositionFromDC) {
-            break;
-        }
-        // If 'deleteOriginalFromDC' is set to true and 'shiftOriginalFirstPositionToLastPositionFromDC' is set to true, just shift first image and then break
-        if (deleteOriginalFromDC && shiftOriginalFirstPositionToLastPositionFromDC && imageToUploadIndex === 1) {
-            break;
-        }
-        // if (deleteOriginalFromDC) {
-        //     /* #region: Shift original first image from first position to last position, according to setting : Begin */
-        //     if (shiftOriginalFirstPositionToLastPositionFromDC) {
-        //         console.log(`Moving image from ${'1'} To ${imageOriginalURLSLength2}`);
-        //         moveImageToPositionNumber(page, 1, imageOriginalURLSLength2);
-        //     }
-        //     /* #endregion: Shift original first image from first position to last position, according to setting : End */
-        //     break;
-        // }
-        console.log(`Moving image from ${imageOriginalURLSLength2} To ${imagesToUpload[imageToUploadIndex - 1] + 1}`);
-        await moveImageToPositionNumber(page, imageOriginalURLSLength2, imagesToUpload[imageToUploadIndex - 1] + 1);
+    // for (let imageToUploadIndex = 0; imageToUploadIndex < imagesToUpload.length; imageToUploadIndex++) {
+    //     // If 'deleteOriginalFromDC' is set to true and 'shiftOriginalFirstPositionToLastPositionFromDC' is set to false, dont shift anything and break
+    //     if (deleteOriginalFromDC && !shiftOriginalFirstPositionToLastPositionFromDC) {
+    //         break;
+    //     }
+    //     // If 'deleteOriginalFromDC' is set to true and 'shiftOriginalFirstPositionToLastPositionFromDC' is set to true, just shift first image and then break
+    //     if (deleteOriginalFromDC && shiftOriginalFirstPositionToLastPositionFromDC && imageToUploadIndex === 1) {
+    //         break;
+    //     }
+    //     // console.log(`Test Moving image from ${imagesToUpload[imageToUploadIndex]} To ${imageOriginalURLSLength2}`);
+    //     await moveImageToPositionNumber(page, imageOriginalURLSLength2, imagesToUpload[imageToUploadIndex], imageOriginalURLSLength2);
+    // }
+    if (shiftOriginalFirstPositionToLastPositionFromDC) {
+        // console.log(`Test Moving image from ${imagesToUpload[imageToUploadIndex]} To ${imageOriginalURLSLength2}`);
+        await moveImageToPositionNumber(page, imageOriginalURLSLength2, imagesToUpload[0], imageOriginalURLSLength2);
     }
     /* #endregion: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End */
 
@@ -268,18 +289,63 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         (selector) => document.querySelector(selector).checked,
         'input[type="checkbox"].vp[property-name="ImagesAreLocked"]'
     );
-    console.log(`Current ImagesAreLockedFromWeb: ${ImagesAreLockedFromWeb}`);
+    // console.log(`Current ImagesAreLockedFromWeb: ${ImagesAreLockedFromWeb}`);
 
     if (ImagesAreLockedFromWeb !== lockTheImagesCheckMarkFromDC) {
         clickOnButton(page, 'input[type="checkbox"].vp[property-name="ImagesAreLocked"]');
     }
     /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */
 
-    await waitForSeconds(240, true);
-    process.exit(0);
+    // Bring save button to focus and move mouse over it.
+    const saveButtonSelector = `#aspnetForm > div.canvas.standard-canvas.viewport > div.canvas-body.canvas-body-no-padding.container > div > div.vehicle-details-body.container > div.vehicle-actions > ul:nth-child(2) > li:nth-child(3) > a`;
+    const saveButtonElement = await page.waitForSelector(saveButtonSelector);
 
-    sleep(10);
-    sleep(10);
+    await page.evaluate((element) => element.scrollIntoView(), saveButtonElement);
+    await page.waitForFunction(
+        (element) => {
+            const { top, bottom } = element.getBoundingClientRect();
+            // eslint-disable-next-line no-undef
+            const viewportHeight = window.innerHeight;
+            return top >= 0 && bottom <= viewportHeight;
+        },
+        {},
+        saveButtonElement
+    );
+
+    const saveButtonElementRect = await page.evaluate((el) => {
+        const { x, y, width, height } = el.getBoundingClientRect();
+        return { x, y, width, height };
+    }, saveButtonElement);
+
+    await page.mouse.move(saveButtonElementRect.x + saveButtonElementRect.width / 2, saveButtonElementRect.y + saveButtonElementRect.height / 2, {
+        steps: 1,
+    });
+    await page.waitForNavigation({ timeout: 300000 });
+    if (stockFilePath !== undefined) {
+        // const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumber}`;
+        // let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumber}.`));
+        // stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
+        await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(
+            `${uniqueIdFolderPath}\\${stockFilePath}`,
+            `${config.finishedUploadingZonePath}\\${path.basename(uniqueIdFolderPath)}\\${stockFilePath}`,
+            1
+        );
+    } else {
+        // console.log(`${stockFolderPath}\\`);
+        // console.log(`${config.finishedUploadingZonePath}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(stockFolderPath)}`);
+        await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(
+            `${stockFolderPath}\\`,
+            `${config.finishedUploadingZonePath}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(stockFolderPath)}`,
+            1
+        );
+    }
+
+    return true;
+    // await waitForSeconds(240, true);
+    // process.exit(0);
+
+    // sleep(10);
+    // sleep(10);
 
     // debug ? '' : process.stdout.write('  ');
     // const imageNumbersToDownload = getImageNumbersToDownloadFromDC(dealerFolder);
@@ -405,24 +471,30 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // // TODO: Make sure this removeDir runs properly
     // removeDir(tempPath, true, debug);
     // return { result: true, bookmarkAppendMesg: stockNumber, imagesDownloaded: imagesDownloaded };
-    return false;
+    // return false;
 }
 
-async function moveImageToPositionNumber(page, fromPosition, toPosition, isSlow = false, debug = true) {
+async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosition, isSlow = false, debug = true) {
     try {
         fromPosition = parseInt(fromPosition, 10);
         toPosition = parseInt(toPosition, 10);
-        const fromPositionIdSelector = `#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00 > div.dealer-images > div.tn-list-container > ul > li:nth-child(${zeroPad(
-            fromPosition,
-            2
-        )})`;
-        const toPositionIdSelector = `#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00 > div.dealer-images > div.tn-list-container > ul > li:nth-child(${zeroPad(
-            toPosition,
-            2
-        )})`;
+        const imagesULSelector =
+            '#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00 > div.dealer-images > div.tn-list-container > ul';
+        const fromPositionIdSelector = `${imagesULSelector} > li:nth-child(${zeroPad(fromPosition, 2)})`;
+        const toPositionIdSelector = `${imagesULSelector} > li:nth-child(${zeroPad(toPosition, 2)})`;
 
         const fromPositionElement = await page.waitForSelector(fromPositionIdSelector);
         const toPositionElement = await page.waitForSelector(toPositionIdSelector);
+
+        const fromPositionSubImageSelector = `${fromPositionIdSelector} > div > img`;
+        const toPositionSubImageSelector = `${toPositionIdSelector} > div > img`;
+
+        const fromPositionSubImageVehicleId = await page.$eval(
+            fromPositionSubImageSelector,
+            (element, attr) => element.getAttribute(attr),
+            'vehicleid'
+        );
+        const toPositionSubImageVehicleId = await page.$eval(toPositionSubImageSelector, (element, attr) => element.getAttribute(attr), 'vehicleid');
 
         await page.evaluate((element) => element.scrollIntoView(), fromPositionElement);
         await page.waitForFunction(
@@ -435,19 +507,42 @@ async function moveImageToPositionNumber(page, fromPosition, toPosition, isSlow 
             {},
             fromPositionElement
         );
-        // await waitForSeconds(3, true);
+        isSlow ? await waitForSeconds(3, true) : '';
 
         const fromPositionElementRect = await page.evaluate((el) => {
             const { x, y, width, height } = el.getBoundingClientRect();
             return { x, y, width, height };
         }, fromPositionElement);
 
-        await page.mouse.move(
-            fromPositionElementRect.x + fromPositionElementRect.width / 2,
-            fromPositionElementRect.y + fromPositionElementRect.height / 2,
-            { steps: 1 }
-        );
-        await page.mouse.down();
+        while (true) {
+            await page.mouse.move(
+                fromPositionElementRect.x + fromPositionElementRect.width / 2,
+                fromPositionElementRect.y + fromPositionElementRect.height / 2,
+                { steps: 1 }
+            );
+            await page.mouse.down();
+            await page.mouse.move(
+                fromPositionElementRect.x + fromPositionElementRect.width / 2 + 5,
+                fromPositionElementRect.y + fromPositionElementRect.height / 2 + 5,
+                { steps: 1 }
+            );
+            // eslint-disable-next-line no-loop-func
+            const opacity = await page.evaluate((fromPositionIdSel) => {
+                // eslint-disable-next-line no-undef
+                const element = document.querySelector(fromPositionIdSel);
+                // eslint-disable-next-line no-undef
+                const style = window.getComputedStyle(element);
+                return style.getPropertyValue('opacity');
+            }, fromPositionIdSelector);
+            if (opacity === '0.6') {
+                break;
+            } else {
+                // console.log(`opacity: ${opacity} is still not 0.6, so sleeping for 350ms.`);
+                msleep(50);
+                await page.mouse.up();
+                msleep(300);
+            }
+        }
         isSlow ? await waitForSeconds(4, true) : '';
 
         await page.evaluate((element) => element.scrollIntoView(), toPositionElement);
@@ -465,20 +560,68 @@ async function moveImageToPositionNumber(page, fromPosition, toPosition, isSlow 
 
         //
         //
-        //
-        //
-        //
         let oldToPositionElementRectX;
-        for (let lastIndex = 0; lastIndex < 10; lastIndex++) {
+        for (let lastIndex = 0; lastIndex <= 300; lastIndex++) {
             const toPositionElementRect = await page.evaluate((el) => {
                 const { x, y, width, height } = el.getBoundingClientRect();
                 return { x, y, width, height };
             }, toPositionElement);
             if (oldToPositionElementRectX !== undefined && Math.abs(toPositionElementRect.x - oldToPositionElementRectX) > 50) {
-                // console.log(`breaking now ${oldToPositionElementRectX} > ${toPositionElementRect.x}`);
-                break;
+                const currToPositionPrevIdSelector = fromPosition !== 1 ? `${toPositionIdSelector} + li ` : false;
+                const currToPositionNextIdSelector = totalImages !== toPosition ? `${toPositionIdSelector} ~ li` : false;
+                // console.log('1');
+                const currToPositionPrevSubImageVehicleId =
+                    currToPositionPrevIdSelector !== false
+                        ? await page.$eval(`${currToPositionPrevIdSelector} > div > img`, (element, attr) => element.getAttribute(attr), 'vehicleid')
+                        : false;
+                // console.log('2');
+                const currToPositionNextSubImageVehicleId =
+                    currToPositionNextIdSelector !== false
+                        ? await page.$eval(`${currToPositionNextIdSelector} > div > img`, (element, attr) => element.getAttribute(attr), 'vehicleid')
+                        : false;
+                // console.log('3');
+
+                if (
+                    (fromPosition > toPosition && toPositionSubImageVehicleId === currToPositionNextSubImageVehicleId) ||
+                    (fromPosition < toPosition && toPositionSubImageVehicleId === currToPositionPrevSubImageVehicleId)
+                ) {
+                    await page.mouse.up();
+                    msleep(10);
+
+                    const currToPositionSubImageVehicleId = await page.$eval(
+                        toPositionSubImageSelector,
+                        (element, attr) => element.getAttribute(attr),
+                        'vehicleid'
+                    );
+                    // console.log('4');
+                    if (fromPositionSubImageVehicleId === currToPositionSubImageVehicleId) {
+                        // console.log(`breaking now ${oldToPositionElementRectX} > ${toPositionElementRect.x}`);
+                        break;
+                    } else {
+                        // console.log('-------------------------Var Start---------------------');
+                        // console.log(`${fromPositionSubImageVehicleId} , ${currToPositionSubImageVehicleId}`);
+                        // console.log(`${fromPosition} > ${toPosition} ${toPositionSubImageVehicleId} === ${currToPositionNextSubImageVehicleId}`);
+                        // console.log(`${fromPosition} < ${toPosition} ${toPositionSubImageVehicleId} === ${currToPositionPrevSubImageVehicleId}`);
+                        // console.log('-------------------------Var End---------------------');
+                        console.log(
+                            chalk.white.bgRed.bold(
+                                `Image position changed, but the 'vechileId' from 'fromPositionSubImageVehicleId' and 'currToPositionSubImageVehicleId' doesn't match.`
+                            )
+                        );
+                        await waitForSeconds(240, true);
+                        process.exit(1);
+                    }
+                } else {
+                    // console.log('-------------------------Var Start---------------------');
+                    // console.log(`${fromPositionSubImageVehicleId}`);
+                    // console.log(`${fromPosition} > ${toPosition} ${toPositionSubImageVehicleId} === ${currToPositionNextSubImageVehicleId}`);
+                    // console.log(`${fromPosition} < ${toPosition} ${toPositionSubImageVehicleId} === ${currToPositionPrevSubImageVehicleId}`);
+                    // console.log('-------------------------Var End---------------------');
+                    console.log(chalk.white.bgRed.bold(`Image position changed, but the 'vechileId' from previous/next doesn't match.`));
+                    await waitForSeconds(240, true);
+                    process.exit(1);
+                }
             }
-            msleep(10);
 
             // console.log(`To Position Of Element: X:${toPositionElementRect.x}`); // , Y:${toPositionElementRect.y}`);
             // console.log(
@@ -495,7 +638,7 @@ async function moveImageToPositionNumber(page, fromPosition, toPosition, isSlow 
                     );
                 } else {
                     await page.mouse.move(
-                        toPositionElementRect.x + toPositionElementRect.width / 2 + lastIndex,
+                        toPositionElementRect.x + toPositionElementRect.width / 2 - lastIndex,
                         toPositionElementRect.y + toPositionElementRect.height / 2, // + 10
                         { steps: 1 }
                     );
@@ -519,14 +662,25 @@ async function moveImageToPositionNumber(page, fromPosition, toPosition, isSlow 
                     );
                 }
             }
+            msleep(10);
             isSlow ? await waitForSeconds(1, true) : '';
             oldToPositionElementRectX = toPositionElementRect.x;
+            if (lastIndex === 300) {
+                console.log(chalk.white.bgRed.bold(`Tried changing image position for 300 iterations, but it didn't work.`));
+                process.exit(1);
+            }
         }
-        // await waitForSeconds(2, true);
-        await page.mouse.up();
         isSlow ? await waitForSeconds(6, true) : '';
     } catch (error) {
+        // throw error;
         console.log(`handled this:${error}`);
+        // console.log('-------------------------------------------------------------');
+        // console.log(
+        //     await page.$eval(
+        //         '#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00 > div.dealer-images > div.tn-list-container > ul',
+        //         (element) => element.innerHTML
+        //     )
+        // );
         await waitForSeconds(240, true);
     }
 }
