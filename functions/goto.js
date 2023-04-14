@@ -21,7 +21,8 @@ async function gotoURL(page, URL, debug = false) {
                 err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
                 err.message === 'socket hang up' ||
                 err.message === 'aborted' ||
-                err.message === 'read ECONNRESET'
+                err.message === 'read ECONNRESET' ||
+                err.message === 'Page.navigate timed out.'
             ) {
                 console.log(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
                 process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
