@@ -35,6 +35,7 @@ const configUser = {
     // uploadingZonePath: '.\\datastore\\UploadingZone',
     // finishedUploadingZonePath: '.\\datastore\\FinishedUploadingZone',
     // recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
+    automaticClickSaveButtonOnUpload: false,
     credentials: [
         {
             username: 'dinesharora80@gmail.com',
