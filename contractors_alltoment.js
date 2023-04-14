@@ -6,6 +6,7 @@ import date from 'date-and-time';
 
 import { exec } from 'child_process';
 import { keyInYN } from 'readline-sync';
+import cfonts from 'cfonts';
 
 /* eslint-disable import/extensions */
 import { zeroPad } from './functions/stringformatting.js';
@@ -52,6 +53,18 @@ const lotFolderName = `Lot_${zeroPad(lotIndex, 2)}`;
 const todaysDate = process.argv[3] !== undefined ? process.argv[3] : date.format(new Date(), 'YYYY-MM-DD');
 const { downloadPath } = config;
 const lotFolderPath = `${downloadPath}\\${todaysDate}\\${lotFolderName}`; // ${config.downloadPath}/${todaysDate}/Lot_${zeroPad(lotIndex, 2)}/${usernameTrimmed}/${dealerFolder}/${stockNumber}/
+const lotHeadingOptions = {
+    font: 'block', // font to use for the output
+    align: 'center', // alignment of the output
+    colors: ['cyan', 'blue'], // colors of the output (gradient)
+    background: 'black', // background color of the output
+    letterSpacing: 1, // letter spacing of the output
+    lineHeight: 1, // line height of the output
+    space: true, // add space between letters
+    maxLength: '0', // maximum length of the output (0 = unlimited)
+};
+
+cfonts.say(lotFolderName.replace('_', ' '), lotHeadingOptions);
 
 /* #region : Validation section 02 */
 if (!fs.existsSync(lotFolderPath)) {
