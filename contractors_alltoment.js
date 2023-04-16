@@ -34,7 +34,7 @@ if (process.argv.length < 3) {
     );
     process.exit(1);
 }
-if (Number.isNaN(parseInt(process.argv[2], 10))) {
+if (Number.isNaN(Number(process.argv[2]))) {
     console.log(
         chalk.white.bgRed.bold(
             `Please start the program with proper parameters 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD', The first parameter(lotNoIndex) has to be a number.`
