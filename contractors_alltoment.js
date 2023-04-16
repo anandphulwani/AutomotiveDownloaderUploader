@@ -130,7 +130,10 @@ Object.keys(config.contractors).forEach(async (contractor) => {
     if (lotIndex === 1) {
         setContractorsCurrentAllotted(contractor, '0');
         config.contractors[contractor].processingFolders.forEach(async (processingFolder) => {
-            await makeDir(`${config.contractorsZonePath}\\${contractor}\\${todaysDate}\\${processingFolder}`);
+            const contractorsProcessingFolder = `${config.contractorsZonePath}\\${contractor}\\${todaysDate}\\${processingFolder}`;
+            if (!fs.existsSync(contractorsProcessingFolder)) {
+                await makeDir(contractorsProcessingFolder);
+            }
         });
     }
     const { normalThreshold } = config.contractors[contractor];
