@@ -91,14 +91,14 @@ while (!hasLotFirstIndexMatches) {
 }
 /* #endregion */
 
-await validateLotFolderAndReturnImageCount(lotFolderPath);
+let dealerDirectories = await validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs(lotFolderPath);
 if (config.environment === 'production') {
     exec(`explorer.exe ${process.cwd()}\\${lotFolderPath}"`);
     while (!keyInYN('Please review your lot folders, to remove any unneccesary photos, press Y to continue?')) {
         sleep(1);
     }
 }
-const dealerDirectories = await validateLotFolderAndReturnImageCount(lotFolderPath);
+dealerDirectories = await returnImageCountFromDealerDirs(dealerDirectories);
 
 if (!dealerDirectories.length > 0) {
     console.log(chalk.white.bgRed.bold(`Lot folder path: ${lotFolderPath} does not contain any subfolders (dealer Folder), Please check.`));
@@ -494,42 +494,39 @@ function getDealerFolderRecordKeepingZonePath(sourcePath, additionalText) {
  * Also make sure one dealerDirectory with single file exists in the lot
  */
 /* #region : validateLotFolderAndReturnImageCount (lotFldrPath, debug = false) {...} */
-async function validateLotFolderAndReturnImageCount(lotFldrPath, debug = false) {
+async function validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs(lotFldrPath, debug = false) {
     let doesLotFolderPathContainsFiles = false;
     const dealerDirs = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameFolder of fs.readdirSync(lotFldrPath)) {
+        // TODO: config.credentials.username
         const usernameFolderPath = path.join(lotFldrPath, usernameFolder);
-        const usernameFolderStat = fs.statSync(usernameFolderPath);
 
-        if (usernameFolderStat.isDirectory()) {
+        if (fs.statSync(usernameFolderPath).isDirectory()) {
             // eslint-disable-next-line no-restricted-syntax
             for (const dealerFolder of fs.readdirSync(usernameFolderPath)) {
                 const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
-                const dealerFolderStat = fs.statSync(dealerFolderPath);
 
-                if (dealerFolderStat.isDirectory()) {
-                    let totalNoOfDealerFolderFiles = 0;
+                if (fs.statSync(dealerFolderPath).isDirectory()) {
                     // eslint-disable-next-line no-restricted-syntax
                     for (const stockFolder of fs.readdirSync(dealerFolderPath)) {
                         const stockFolderPath = path.join(dealerFolderPath, stockFolder);
-                        const stockFolderStat = fs.statSync(stockFolderPath);
 
-                        if (stockFolderStat.isDirectory()) {
+                        if (fs.statSync(stockFolderPath).isDirectory()) {
                             const stockFolderLength = fs.readdirSync(stockFolderPath).length;
                             debug ? console.log(`stockFolderPath: ${stockFolderPath}     stockFolderLength: ${stockFolderLength}`) : '';
                             if (stockFolderLength > 0) {
                                 doesLotFolderPathContainsFiles = true;
-                                totalNoOfDealerFolderFiles += stockFolderLength;
                             } else {
                                 removeDirAndRemoveParentDirIfEmpty(stockFolderPath, 3, true);
                             }
                         } else {
                             doesLotFolderPathContainsFiles = true;
-                            totalNoOfDealerFolderFiles += 1;
                         }
                     }
-                    dealerDirs.push([dealerFolderPath, totalNoOfDealerFolderFiles]);
+                    if (fs.existsSync(dealerFolderPath)) {
+                        dealerDirs.push([dealerFolderPath, 0]);
+                    }
                 }
             }
         }
@@ -537,6 +534,33 @@ async function validateLotFolderAndReturnImageCount(lotFldrPath, debug = false) 
     if (!doesLotFolderPathContainsFiles) {
         console.log(chalk.white.bgRed.bold(`The lot folder does not contain any files to allot.`));
         process.exit(1);
+    }
+    return dealerDirs;
+}
+async function returnImageCountFromDealerDirs(dealerDirs, debug = false) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const dealerDir of dealerDirs) {
+        if (fs.existsSync(dealerDir[0])) {
+            let totalNoOfDealerFolderFiles = 0;
+            // eslint-disable-next-line no-restricted-syntax
+            for (const stockFolder of fs.readdirSync(dealerDir[0])) {
+                const stockFolderPath = path.join(dealerDir[0], stockFolder);
+                const stockFolderStat = fs.statSync(stockFolderPath);
+
+                if (stockFolderStat.isDirectory()) {
+                    const stockFolderLength = fs.readdirSync(stockFolderPath).length;
+                    debug ? console.log(`stockFolderPath: ${stockFolderPath}     stockFolderLength: ${stockFolderLength}`) : '';
+                    if (stockFolderLength > 0) {
+                        totalNoOfDealerFolderFiles += stockFolderLength;
+                    } else {
+                        removeDirAndRemoveParentDirIfEmpty(stockFolderPath, 3, true);
+                    }
+                } else {
+                    totalNoOfDealerFolderFiles += 1;
+                }
+            }
+            dealerDir[1] = totalNoOfDealerFolderFiles;
+        }
     }
     return dealerDirs;
 }
