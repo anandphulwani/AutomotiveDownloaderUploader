@@ -168,6 +168,8 @@ if (!allUsernamesBookmarks.length > 0) {
                 for (const vehicleBookmark of vehicleBookmarks) {
                     if (vehicleBookmark.url.endsWith('#general')) {
                         vehicleBookmark.url = vehicleBookmark.url.replace('#general', '#imagery');
+                    } else if (!vehicleBookmark.url.includes('#')) {
+                        vehicleBookmark.url += '#imagery';
                     }
                     if (vehicleBookmark.name.includes(' |#| ') && /\d{1,8}/.test(vehicleBookmark.name.split(' |#| ')[1].trim())) {
                         if (typeof page === 'boolean' && !page) {
