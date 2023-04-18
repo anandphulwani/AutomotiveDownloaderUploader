@@ -34,11 +34,12 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
             }
             const checkLock = checkSync('.\\configs\\config-user.js');
             if (checkLock) {
-                await waitForMilliSeconds(200);
+                await waitForMilliSeconds(50);
             } else {
                 lockSync('.\\configs\\config-user.js');
                 const currentAllotted = getContractorsCurrentAllotted(contractor);
                 if (currentAllotted === allottedQty) {
+                    unlockSync('.\\configs\\config-user.js');
                     return;
                 }
                 const configUser = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
@@ -46,13 +47,13 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
                 const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
                 const regexExpression = new RegExp(regexString, 'g');
                 const newConfigUser = configUser.replace(regexExpression, `$1$2$3${allottedQty}$5`);
-
                 if (configUser === newConfigUser) {
                     console.log(
                         chalk.white.bgRed.bold(
                             `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
                         )
                     );
+                    unlockSync('.\\configs\\config-user.js');
                     process.exit(1);
                 }
                 fs.writeFileSync('.\\configs\\config-user.js', newConfigUser, 'utf8');
