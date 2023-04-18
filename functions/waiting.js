@@ -22,7 +22,7 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, e
     await page.waitForSelector(selector, { timeout: 90000 });
     debug ? console.log(`Waiting for the ${selector} to load: Found.`) : '';
 
-    debug ? console.log(`Waiting for ${elementHTML} (${selector}) text to show up: Executing.`) : '';
+    debug ? console.log(`Waiting for ${elementHTML} (${selector}) HTML to show up: Executing.`) : '';
     if (exactMatch) {
         // eslint-disable-next-line no-undef
         await page.waitForFunction((args) => document.querySelector(args[0]).innerHTML === args[1], { timeout: 90000 }, [selector, elementHTML]);
