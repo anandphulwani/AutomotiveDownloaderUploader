@@ -5,6 +5,7 @@ import killChrome from 'kill-chrome';
 import puppeteer from 'puppeteer';
 import { exec, spawn } from 'child_process';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
+import { keyInYN } from 'readline-sync';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
@@ -249,9 +250,11 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
         }
     }
     if (fs.existsSync(`${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(lotIndex, 2)}`)) {
+        if (!keyInYN('Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?')) {
         exec(
             `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${todaysDate} && pause && pause && exit"`
         );
+        }
     }
     await browser.close();
 })();
