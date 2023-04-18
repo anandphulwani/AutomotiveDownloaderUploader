@@ -1,3 +1,4 @@
+// TODO: Do cleanup
 import chalk from 'chalk';
 import path from 'path';
 import { keyInSelect } from 'readline-sync';
