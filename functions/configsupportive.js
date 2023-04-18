@@ -1,8 +1,11 @@
 import chalk from 'chalk';
 import fs from 'fs';
+import { lockSync, unlockSync, checkSync } from 'proper-lockfile';
 
-// eslint-disable-next-line import/extensions
+/* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
+import { waitForMilliSeconds } from './sleep.js';
+/* eslint-enable import/extensions */
 
 function getCredentialsForUsername(username) {
     const configCredentials = config.credentials;

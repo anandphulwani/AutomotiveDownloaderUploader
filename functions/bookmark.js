@@ -1,11 +1,12 @@
 import fs from 'fs';
 import chalk from 'chalk';
 import logSymbols from 'log-symbols';
+import { lockSync, unlockSync, checkSync } from 'proper-lockfile';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { waitForSeconds } from './sleep.js';
+import { waitForMilliSeconds, waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
