@@ -44,12 +44,12 @@ if (config.environment === 'production') {
     printSectionSeperator();
 }
 
-downloadBookmarksFromSourceToProcessing();
+await downloadBookmarksFromSourceToProcessing();
 
-    // TODO: Remove the unused imports
-    // TODO: Error summary in the end.
-    // TODO: resultCheck is declared outside, work out how to bring it inside the function
-    // TODO: Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
+// TODO: Remove the unused imports
+// TODO: Error summary in the end.
+// TODO: resultCheck is declared outside, work out how to bring it inside the function
+// TODO: Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
 
 // const resultOfValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
 // // TODO: Dealer Name space in the middle gives validation error which it shoudl not
@@ -63,13 +63,13 @@ downloadBookmarksFromSourceToProcessing();
 //     process.exit(0);
 // }
 
-    if (
+if (
     validateConfigFile() &&
-    downloadBookmarksFromSourceToProcessing() &&
+    (await downloadBookmarksFromSourceToProcessing()) &&
     // eslint-disable-next-line no-bitwise
     validateDealerConfigurationExcelFile() & validateBookmarksAndCheckCredentialsPresent()
-    ) {
-        process.exit(0);
+) {
+    process.exit(0);
 }
 
 // await killChrome({
@@ -187,9 +187,9 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                         imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty
                     ) {
                         if (fs.existsSync(`${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(lotIndex, 2)}`)) {
-                        exec(
+                            exec(
                                 `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${todaysDate} && pause && pause && exit"`
-                        );
+                            );
                         }
                         // console.log('Resetting vars to 0.');
                         dealerFolderCntInLot = 0;
@@ -224,7 +224,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                         //
                         // imagesQtyInLot += returnObj.imagesDownloaded;
                         if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
-                            bookmarksJSONObj = replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
+                            bookmarksJSONObj = await replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
                                 processingBookmarkPathWithoutSync,
                                 bookmarksJSONObj,
                                 vehicleBookmark.guid,
@@ -242,7 +242,8 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                     )}\\${usernameTrimmed}\\${dealerLevelBookmarkName}`;
                     if (fs.existsSync(dealerLevelPath)) {
                         imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
-                    dealerFolderCntInLot++;
+                        dealerFolderCntInLot++;
+                    }
                 }
             }
         }

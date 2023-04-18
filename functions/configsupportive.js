@@ -26,26 +26,44 @@ function getAppDomain() {
     return config.appDomain;
 }
 
-function setContractorsCurrentAllotted(contractor, allottedQty) {
-    const currentAllotted = getContractorsCurrentAllotted(contractor);
-    if (currentAllotted === allottedQty) {
-        return;
-    }
-    const configUser = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
+async function setContractorsCurrentAllotted(contractor, allottedQty) {
+    for (let lockTryIndex = 0; lockTryIndex <= 10; lockTryIndex++) {
+        try {
+            if (lockTryIndex === 10) {
+                throw new Error('Unable to get lock for the file after 10 retries.');
+            }
+            const checkLock = checkSync('.\\configs\\config-user.js');
+            if (checkLock) {
+                await waitForMilliSeconds(200);
+            } else {
+                lockSync('.\\configs\\config-user.js');
+                const currentAllotted = getContractorsCurrentAllotted(contractor);
+                if (currentAllotted === allottedQty) {
+                    return;
+                }
+                const configUser = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
 
-    const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
-    const regexExpression = new RegExp(regexString, 'g');
-    const newConfigUser = configUser.replace(regexExpression, `$1$2$3${allottedQty}$5`);
+                const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+                const regexExpression = new RegExp(regexString, 'g');
+                const newConfigUser = configUser.replace(regexExpression, `$1$2$3${allottedQty}$5`);
 
-    if (configUser === newConfigUser) {
-        console.log(
-            chalk.white.bgRed.bold(
-                `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
-            )
-        );
-        process.exit(1);
+                if (configUser === newConfigUser) {
+                    console.log(
+                        chalk.white.bgRed.bold(
+                            `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
+                        )
+                    );
+                    process.exit(1);
+                }
+                fs.writeFileSync('.\\configs\\config-user.js', newConfigUser, 'utf8');
+                unlockSync('.\\configs\\config-user.js');
+                break;
+            }
+        } catch (err) {
+            console.log(`${err.message}`);
+            process.exit(1);
+        }
     }
-    fs.writeFileSync('.\\configs\\config-user.js', newConfigUser, 'utf8');
 }
 
 function getContractorsCurrentAllotted(contractor) {
@@ -57,11 +75,11 @@ function getContractorsCurrentAllotted(contractor) {
     return currentAllotted;
 }
 
-function addToContractorsCurrentAllotted(contractor, quantity) {
+async function addToContractorsCurrentAllotted(contractor, quantity) {
     let newQuantity = getContractorsCurrentAllotted(contractor);
     newQuantity = parseInt(newQuantity, 10);
     newQuantity += quantity;
-    setContractorsCurrentAllotted(contractor, newQuantity);
+    await setContractorsCurrentAllotted(contractor, newQuantity);
 }
 
 // eslint-disable-next-line import/prefer-default-export

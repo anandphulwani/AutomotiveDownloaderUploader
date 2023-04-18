@@ -100,7 +100,7 @@ const uniqueIdOfFoldersShifted = Object.keys(foldersToUpload); // foldersToShift
 
 // if (
 //     validateConfigFile() &&
-//     // downloadBookmarksFromSourceToProcessing() &&
+//     // await downloadBookmarksFromSourceToProcessing() &&
 //     // eslint-disable-next-line no-bitwise
 //     validateDealerConfigurationExcelFile() & validateBookmarksAndCheckCredentialsPresent()
 // ) {
@@ -219,7 +219,7 @@ if (!allUsernamesBookmarks.length > 0) {
                     continue;
                 }
                 // if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
-                //     bookmarksJSONObj = replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
+                //     bookmarksJSONObj = await replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
                 //         bookmarkPath,
                 //         bookmarksJSONObj,
                 //         vehicleBookmark.guid,
