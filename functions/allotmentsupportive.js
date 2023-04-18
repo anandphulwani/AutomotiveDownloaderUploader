@@ -69,7 +69,8 @@ function recalculateRatioOfImagesAlloted(contractorsArr) {
     const totalImgsAlloted = contractorsArr.map((row) => row[3]).reduce((accumulator, currentValue) => accumulator + currentValue);
     contractorsArr.forEach((contractorEle) => {
         if (contractorEle.length >= 4) {
-            const ratio = Math.round((contractorEle[3] / totalImgsAlloted) * 100);
+            let ratio = Math.round((contractorEle[3] / totalImgsAlloted) * 100);
+            ratio = Number.isNaN(ratio) ? 0 : ratio;
             if (contractorEle.length === 4) {
                 contractorEle.push(ratio);
             } else {
@@ -107,7 +108,8 @@ function recalculateRatioOfImagesAlloted(contractorsArr) {
 function recalculateAllotmentPriority(contractorsArr) {
     contractorsArr.forEach((contractorEle) => {
         if (contractorEle.length >= 5) {
-            const allotmentPriority = contractorEle[2] - contractorEle[4];
+            let allotmentPriority = contractorEle[2] - contractorEle[4];
+            allotmentPriority = Number.isNaN(allotmentPriority) ? 0 : allotmentPriority;
             if (contractorEle.length === 5) {
                 contractorEle.push(allotmentPriority);
             } else {
