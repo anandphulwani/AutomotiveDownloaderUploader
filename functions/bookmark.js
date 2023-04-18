@@ -184,14 +184,18 @@ function removeChecksumFromBookmarksObj(bookmarksObj) {
     return JSON.parse(jsonString);
 }
 
-function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(processingBookmarkPathWithoutSync, bookmarksObj, guid, appendText) {
+function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
+    const bookmarksText = fs.readFileSync(config.processingBookmarkPathWithoutSync);
+    let bookmarksJSONObj = JSON.parse(bookmarksText);
+    bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
+
     // const regexString = `{(?:(?!{).)*?"guid":"${guid}".*?}`;
     const regexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
     // const regexString = `{\\s*"date_added"[\\s|\\S]*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
     // console.log(regexString);
     const regexExpression = new RegExp(regexString, 'g');
 
-    let bookmarkText = JSON.stringify(bookmarksObj, null, 3);
+    let bookmarkText = JSON.stringify(bookmarksJSONObj, null, 3);
     const initalBookmarkTest = bookmarkText;
     const initalLineCount = bookmarkText.split(/\r\n|\r|\n/).length;
     // console.log(bookmarkText);
@@ -213,24 +217,27 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(processingBookmarkPat
     // console.log(`${'-'.repeat(70)} End 04`);
 
     bookmarkText = bookmarkText.replace(bookmarkBlockText, bookmarkBlockNewText);
-    bookmarksObj = JSON.parse(bookmarkText);
-    if (Math.abs(initalLineCount - JSON.stringify(bookmarksObj, null, 3).split(/\r\n|\r|\n/).length) > 1) {
+    bookmarksJSONObj = JSON.parse(bookmarkText);
+    if (Math.abs(initalLineCount - JSON.stringify(bookmarksJSONObj, null, 3).split(/\r\n|\r|\n/).length) > 1) {
         console.log(initalBookmarkTest);
         console.log(`${'-'.repeat(70)}`);
-        console.log(JSON.stringify(bookmarksObj, null, 3));
+        console.log(JSON.stringify(bookmarksJSONObj, null, 3));
         console.log(`${'-'.repeat(70)}`);
-        console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${JSON.stringify(bookmarksObj, null, 3).split(/\r\n|\r|\n/).length}`);
+        console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${JSON.stringify(bookmarksJSONObj, null, 3).split(/\r\n|\r|\n/).length}`);
         process.exit(0);
     }
-    fs.writeFileSync(processingBookmarkPathWithoutSync, JSON.stringify(bookmarksObj, null, 3), (err) => {
+    fs.writeFileSync(config.processingBookmarkPathWithoutSync, JSON.stringify(bookmarksJSONObj, null, 3), (err) => {
         if (err) {
             console.log(err);
         }
     });
-    return bookmarksObj;
 }
 
-function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(processingBookmarkPathWithoutSync, bookmarksObj, guid, appendText) {
+function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
+    const processingContents = fs.readFileSync(config.processingBookmarkPathWithoutSync, 'utf8');
+    let bookmarksObj = JSON.parse(processingContents);
+    bookmarksObj = removeChecksumFromBookmarksObj(bookmarksObj);
+
     const regexString = `[ ]*"date_added"[^\\{\\}\\]\\[]*?"guid": "${guid}",[^\\{\\}\\]\\[]*?"type": "folder"`;
     const regexExpression = new RegExp(regexString, 'g');
 
@@ -248,7 +255,7 @@ function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(processingBookm
 
     bookmarkText = bookmarkText.replace(bookmarkBlockText, newBookmarkBlockText);
     bookmarksObj = JSON.parse(bookmarkText);
-    fs.writeFileSync(processingBookmarkPathWithoutSync, JSON.stringify(bookmarksObj, null, 3), (err) => {
+    fs.writeFileSync(config.processingBookmarkPathWithoutSync, JSON.stringify(bookmarksObj, null, 3), (err) => {
         if (err) {
             console.log(err);
         }
