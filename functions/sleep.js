@@ -16,4 +16,14 @@ async function waitForSeconds(seconds, debug = false) {
     debug ? console.log(`\nWaiting start for ${seconds} seconds: Done.`) : '';
 }
 
-export { msleep, sleep, waitForSeconds };
+async function waitForMilliSeconds(milliseconds, debug = false) {
+    debug ? process.stdout.write(`Waiting start for ${milliseconds} milliseconds: Executing.  `) : '';
+    for (let cnt = 0; cnt < milliseconds; cnt++) {
+        debug ? process.stdout.write('.') : '';
+        // eslint-disable-next-line no-promise-executor-return
+        await new Promise((r) => setTimeout(r, 1));
+    }
+    debug ? console.log(`\nWaiting start for ${milliseconds} milliseconds: Done.`) : '';
+}
+
+export { msleep, sleep, waitForSeconds, waitForMilliSeconds };
