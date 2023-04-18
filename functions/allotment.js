@@ -1,7 +1,7 @@
 // TODO: Do cleanup
 import chalk from 'chalk';
 import path from 'path';
-import { keyInSelect } from 'readline-sync';
+import { question } from 'readline-sync';
 
 /* eslint-disable import/extensions */
 import { zeroPad } from './stringformatting.js';
@@ -117,9 +117,37 @@ async function doAllotment(
                     chalk.cyan.bold(`Allot            ${sourceDealerFolderName.padEnd(20, ' ')} To                  ???????`.padEnd(120, ' '))
                 );
                 console.log(chalk.cyan.bold(`${currentPrioritySingleLine}`));
-                const cancelVal = index === 0 ? 'Exit' : false;
-                const defaultOptionIndex = 5;
-                contractorsIndex = keyInSelect(contractorsNames, null, { cancel: cancelVal, defaultInput: defaultOptionIndex });
+                // const cancelVal = index === 0 ? 'Exit' : false;
+                // contractorsIndex = keyInSelect(contractorsNames, null, { cancel: cancelVal });
+
+                let allotmentQuestion = `\n${contractorsNames
+                    .map((contractorsName, contractorInnerIndex) =>
+                        contractorsSortedByPriority[0][0] === contractorsName
+                            ? chalk.black.bgWhiteBright(`[${contractorInnerIndex + 1}] ${contractorsName}`)
+                            : `[${contractorInnerIndex + 1}] ${contractorsName}`
+                    )
+                    .join('\n')}\n`;
+                allotmentQuestion = index === 0 ? (allotmentQuestion += `[0] EXIT\n`) : allotmentQuestion;
+                console.log(allotmentQuestion);
+                const indexOfPriorityContractor = contractorsNames.indexOf(contractorsSortedByPriority[0][0]) + 1;
+                do {
+                    contractorsIndex = question('', { defaultInput: indexOfPriorityContractor.toString() });
+                    if (
+                        Number.isNaN(Number(contractorsIndex)) ||
+                        (index === 0 && Number(contractorsIndex) < 0) ||
+                        (index !== 0 && Number(contractorsIndex) < 1) ||
+                        Number(contractorsIndex) > contractorsNames.length
+                    ) {
+                        console.log('Invalid input, please try again: ');
+                    }
+                } while (
+                    Number.isNaN(Number(contractorsIndex)) ||
+                    (index === 0 && Number(contractorsIndex) < 0) ||
+                    (index !== 0 && Number(contractorsIndex) < 1) ||
+                    Number(contractorsIndex) > contractorsNames.length
+                );
+                contractorsIndex--;
+
                 contractorsIndex = contractors.findIndex((innerArr) => innerArr.indexOf(contractorsNames[contractorsIndex]) !== -1);
                 if (contractorsIndex === -1) {
                     process.exit(0);
