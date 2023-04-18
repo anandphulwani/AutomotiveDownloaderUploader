@@ -1,7 +1,6 @@
 /* #region : Supporting functions */ /* #endregion */
 import chalk from 'chalk';
 import fs from 'fs';
-import path from 'path';
 import date from 'date-and-time';
 
 import { exec } from 'child_process';
@@ -9,20 +8,17 @@ import { keyInYN } from 'readline-sync';
 import cfonts from 'cfonts';
 
 /* eslint-disable import/extensions */
+import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
-import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
-import { printSectionSeperator, getSumOf2DArrayColumn, getIndexOfHighestIn2DArrayColumn } from './functions/others.js';
+import { makeDir, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
+import { setContractorsCurrentAllotted } from './functions/configsupportive.js';
 import {
-    makeDir,
-    createDirAndCopyFile,
-    removeDirAndRemoveParentDirIfEmpty,
-    createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
-    getListOfSubfoldersStartingWith,
-} from './functions/filesystem.js';
-import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './functions/excelsupportive.js';
-import { setContractorsCurrentAllotted, getContractorsCurrentAllotted, addToContractorsCurrentAllotted } from './functions/configsupportive.js';
-import { getBookmarkFolderGUIDFromUsernameDealerNumber, replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile } from './functions/bookmark.js';
+    recalculateRatioOfThreshHoldWithOtherContractors,
+    validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs,
+    returnImageCountFromDealerDirs,
+} from './functions/allotmentsupportive.js';
+import { doAllotment } from './functions/allotment.js';
 /* eslint-enable import/extensions */
 
 /* #region : Validation section 01 */
@@ -112,7 +108,9 @@ dealerDirectories.sort((a, b) => {
     return a[1] > b[1] ? -1 : 1;
 });
 
+// console.log(`dealerDirectories: `);
 // console.log(dealerDirectories);
+// console.log(`Object.keys(config.contractors): `);
 // console.log(Object.keys(config.contractors));
 
 let contractors = [];
@@ -128,7 +126,7 @@ let totalNoOfNormalThreshold = 0;
  */
 Object.keys(config.contractors).forEach(async (contractor) => {
     if (lotIndex === 1) {
-        setContractorsCurrentAllotted(contractor, '0');
+        await setContractorsCurrentAllotted(contractor, '0');
         config.contractors[contractor].processingFolders.forEach(async (processingFolder) => {
             const contractorsProcessingFolder = `${config.contractorsZonePath}\\${contractor}\\${todaysDate}\\${processingFolder}`;
             if (!fs.existsSync(contractorsProcessingFolder)) {
@@ -140,6 +138,9 @@ Object.keys(config.contractors).forEach(async (contractor) => {
     contractors.push([contractor, normalThreshold]);
     totalNoOfNormalThreshold += normalThreshold;
 });
+process.exit(1);
+// console.log(`contractors from config: `);
+// console.log(contractors);
 
 contractors.sort((a, b) => {
     if (a[1] === b[1]) {
@@ -147,8 +148,12 @@ contractors.sort((a, b) => {
     }
     return a[1] > b[1] ? -1 : 1;
 });
+// console.log(`contractors sorted: `);
+// console.log(contractors);
 
 contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, totalNoOfNormalThreshold);
+// console.log(`contractors ratio calculated: `);
+// console.log(contractors);
 
 /**
  * Reading currentAllotted(ImagesAlloted) from the config, and appending it as the last column to generate `Example01` below.
@@ -185,388 +190,128 @@ contractors.forEach((contractor) => {
         contractor.push(currentAllotted);
     }
 });
-// console.log(contractors);
+console.log(`contractors currentAlloted set: `);
+console.log(contractors);
 
 // Lot Configuration
-let imagesQtyAlloted = 0;
-const { minimumDealerFoldersForEachContractors, imagesQty } = config.lot[lotIndex - 1];
-// console.log(minimumDealerFoldersForEachContractors);
+const lotsMinimumDealerFoldersForEachContractors = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors;
+const lotsImagesQty = config.lot[lotIndex - 1].imagesQty;
+console.log(`configs.minimumDealerFoldersForEachContractors: ${lotsMinimumDealerFoldersForEachContractors}`);
+console.log(`configs.imagesQty: ${lotsImagesQty}`);
 
-let foldersAlloted = 0;
-let earlierLoopUsernameFolder = '';
-/**
- * Alloting minimum DealerFolders for each contractors as per config
- * Adding allotment of images to the currentAllotment for all contractors in the last column.
- */
-/* #region: CodeAbstract */
-if (minimumDealerFoldersForEachContractors !== false) {
-    const minDealerFolders = minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
-    // console.log(`${minDealerFolders}:${dealerDirectories.length}`);
-    for (let index = 0; index < minDealerFolders && dealerDirectories.length > 0; index++) {
-        // console.log(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`);
-        const dealerFolderPath = dealerDirectories[0][0];
-        const dealerFolderFilesCount = dealerDirectories[0][1];
-        const contractorsIndex = index % contractors.length;
-        const contractorAlloted = contractors[contractorsIndex][0];
-        const usernameFolder = path.basename(path.dirname(dealerFolderPath));
-        if (usernameFolder !== earlierLoopUsernameFolder) {
-            setCurrentDealerConfiguration(usernameFolder);
-            earlierLoopUsernameFolder = usernameFolder;
-        }
+let dryRunImagesQtyAllotedInCurrentLot = 0;
+let dryRunFoldersAlloted = 0;
+let dryRunDealerDirectories = [...dealerDirectories];
+let dryRunContractors = contractors.map((contractor) => [...contractor]);
+[dryRunDealerDirectories, dryRunContractors, dryRunImagesQtyAllotedInCurrentLot, dryRunFoldersAlloted] = await doAllotment(
+    'allotmentByMinimumDealerFoldersForEachContractors',
+    lotsMinimumDealerFoldersForEachContractors,
+    undefined,
+    dryRunDealerDirectories,
+    dryRunContractors,
+    lotIndex,
+    dryRunImagesQtyAllotedInCurrentLot,
+    dryRunFoldersAlloted,
+    true
+);
+// console.log(`dryRunImagesQtyAllotedInCurrentLot:`);
+// console.log(dryRunImagesQtyAllotedInCurrentLot);
+// console.log(`dryRunFoldersAlloted:`);
+// console.log(dryRunFoldersAlloted);
+// console.log(`dryRunDealerDirectories:`);
+// console.log(dryRunDealerDirectories);
+// console.log(`dryRunContractors:`);
+// console.log(dryRunContractors);
 
-        const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
-        const uniqueIdOfFolder = zeroPad(lotIndex, 2) + zeroPad(index + 1, 3);
-        const addTextToFolderName = `${getAddTextToFolderNameFromDC(
-            path.basename(dealerFolderPath)
-        )} ${contractorAlloted} ${dealerFolderFilesCount} (#${uniqueIdOfFolder})`.trim();
-        const destinationPath = getDealerFolderContractorsZonePath(dealerFolderPath, contractorAlloted, addTextToFolderName);
-        const destinationRecordKeepingPath = getDealerFolderRecordKeepingZonePath(dealerFolderPath, addTextToFolderName);
-        const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
-
-        const processingContents = fs.readFileSync(config.processingBookmarkPathWithoutSync, 'utf8');
-        const processingObj = JSON.parse(processingContents);
-
-        const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(usernameFolder, path.basename(dealerFolderPath));
-        replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(
-            config.processingBookmarkPathWithoutSync,
-            processingObj,
-            bookmarkFolderGUID,
-            uniqueIdOfFolder
-        );
-
-        // await createDirAndMoveFile(dealerFolderPath, destinationPath);
-        await createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
-        await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
-
-        console.log(`${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`);
-        addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
-        foldersAlloted++;
-
-        contractors[contractorsIndex][3] += dealerFolderFilesCount;
-        imagesQtyAlloted += dealerFolderFilesCount;
-        dealerDirectories.shift();
-    }
-}
-/* #endregion */
-console.log(`-----------------------------------------------------`);
+// console.log(`dealerDirectories:`);
+// console.log(dealerDirectories);
+// console.log(`contractors:`);
 // console.log(contractors);
-// console.log(`imagesQtyAlloted: ${imagesQtyAlloted}`);
 
-/**
- * Once the minimum DealerFolders for each contractors is alloted, using the pre allotted quantity
- * as the initial alloted quantity for the contractors, continuing there on
- * alloting to contractors as per config as in to maintain ratios, devised from the
- * quantity(ImagesQty) parameters in the config, to generate `Example03` below,
- * and updating the columns
- */
-/* #region: Examples */
-/**
- * `Example03`
- * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAlloted, RatioOfImagesAlloted, AllotmentPriority(RatioOfThreshHoldWithOtherContractors - RatioOfImagesAlloted) ],
- *    [ 'ram', 300, 43, 50, 26, 17 ],
- *    [ 'karan', 100, 14, 40, 21, -7 ],
- *    [ 'pavan', 100, 14, 40, 21, -7 ],
- *    [ 'arjun', 100, 14, 30, 16, -2 ],
- *    [ 'om', 100, 14, 30, 16, -2 ]
- * ]
- */
-/* #endregion */
-/* #region: CodeAbstract */
-if (imagesQty > 0 && imagesQty > imagesQtyAlloted) {
-    for (let index = 0; index < dealerDirectories.length; index++) {
-        const dealerFolderPath = dealerDirectories[index][0];
-        const dealerFolderFilesCount = dealerDirectories[index][1];
+[dryRunDealerDirectories, dryRunContractors, dryRunImagesQtyAllotedInCurrentLot, dryRunFoldersAlloted] = await doAllotment(
+    'allotmentByImagesQty',
+    undefined,
+    lotsImagesQty,
+    dryRunDealerDirectories,
+    dryRunContractors,
+    lotIndex,
+    dryRunImagesQtyAllotedInCurrentLot,
+    dryRunFoldersAlloted,
+    true
+);
 
-        if (imagesQtyAlloted !== 0) {
-            contractors = recalculateRatioOfImagesAlloted(contractors, imagesQtyAlloted);
-            contractors = recalculateAllotmentPriority(contractors);
-        }
-        const contractorsIndex = getIndexOfHighestIn2DArrayColumn(contractors, 5);
-        const contractorAlloted = contractors[contractorsIndex][0];
-        const usernameFolder = path.basename(path.dirname(dealerFolderPath));
-        if (usernameFolder !== earlierLoopUsernameFolder) {
-            setCurrentDealerConfiguration(usernameFolder);
-            earlierLoopUsernameFolder = usernameFolder;
-        }
+let imagesQtyAllotedInCurrentLot = 0;
+let foldersAlloted = 0;
 
-        const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
-        const uniqueIdOfFolder = zeroPad(lotIndex, 2) + zeroPad(foldersAlloted + index + 1, 3);
-        const addTextToFolderName = `${getAddTextToFolderNameFromDC(
-            path.basename(dealerFolderPath)
-        )} ${contractorAlloted} ${dealerFolderFilesCount} (#${uniqueIdOfFolder})`.trim();
-        const destinationPath = getDealerFolderContractorsZonePath(dealerFolderPath, contractorAlloted, addTextToFolderName);
-        const destinationRecordKeepingPath = getDealerFolderRecordKeepingZonePath(dealerFolderPath, addTextToFolderName);
-        const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
+console.log('');
+if (keyInYN('To continue with the above allotment press Y, for other options press N.')) {
+    /**
+     * Alloting minimum DealerFolders for each contractors as per config
+     * Adding allotment of images to the currentAllotment for all contractors in the last column.
+     */
+    /* #region: CodeAbstract */
 
-        const processingContents = fs.readFileSync(config.processingBookmarkPathWithoutSync, 'utf8');
-        const processingObj = JSON.parse(processingContents);
+    [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted] = await doAllotment(
+        'allotmentByMinimumDealerFoldersForEachContractors',
+        lotsMinimumDealerFoldersForEachContractors,
+        undefined,
+        dealerDirectories,
+        contractors,
+        lotIndex,
+        imagesQtyAllotedInCurrentLot,
+        foldersAlloted
+    );
+    /* #endregion */
+    console.log(`-----------------------------------------------------`);
+    // console.log(contractors);
+    // console.log(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}`);
 
-        const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(usernameFolder, path.basename(dealerFolderPath));
-        replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(
-            config.processingBookmarkPathWithoutSync,
-            processingObj,
-            bookmarkFolderGUID,
-            uniqueIdOfFolder
-        );
-
-        // await createDirAndMoveFile(dealerFolderPath, destinationPath);
-        await createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
-        await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
-
-        console.log(`${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`);
-        addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
-
-        contractors[contractorsIndex][3] += dealerFolderFilesCount;
-        imagesQtyAlloted += dealerFolderFilesCount;
-
-        // console.log(`imagesQtyAlloted: ${imagesQtyAlloted}`);
-    }
-    contractors = recalculateRatioOfImagesAlloted(contractors, imagesQtyAlloted);
-    contractors = recalculateAllotmentPriority(contractors);
+    /**
+     * Once the minimum DealerFolders for each contractors is alloted, using the pre allotted quantity
+     * as the initial alloted quantity for the contractors, continuing there on
+     * alloting to contractors as per config as in to maintain ratios, devised from the
+     * quantity(ImagesQty) parameters in the config, to generate `Example03` below,
+     * and updating the columns
+     */
+    /* #region: Examples */
+    /**
+     * `Example03`
+     * [
+     * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAlloted, RatioOfImagesAlloted, AllotmentPriority(RatioOfThreshHoldWithOtherContractors - RatioOfImagesAlloted) ],
+     *    [ 'ram', 300, 43, 50, 26, 17 ],
+     *    [ 'karan', 100, 14, 40, 21, -7 ],
+     *    [ 'pavan', 100, 14, 40, 21, -7 ],
+     *    [ 'arjun', 100, 14, 30, 16, -2 ],
+     *    [ 'om', 100, 14, 30, 16, -2 ]
+     * ]
+     */
+    /* #endregion */
+    /* #region: CodeAbstract */
+    [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted] = await doAllotment(
+        'allotmentByImagesQty',
+        undefined,
+        lotsImagesQty,
+        dealerDirectories,
+        contractors,
+        lotIndex,
+        imagesQtyAllotedInCurrentLot,
+        foldersAlloted
+    );
+    /* #endregion */
+} else if (keyInYN('To use manual allotment system press Y, to exit from this process press N.')) {
+    console.log('');
+    await doAllotment(
+        'allotmentByManual',
+        undefined,
+        lotsImagesQty,
+        dealerDirectories,
+        contractors,
+        lotIndex,
+        imagesQtyAllotedInCurrentLot,
+        foldersAlloted,
+        false,
+        false
+    );
 }
-/* #endregion */
-
-/* #region : Supporting functions */
-/**
- * 001
- * Calculate ratio of all contractors as the third column to generate  something like in `Example`
- */
-/* #region : recalculateRatioOfThreshHoldWithOtherContractors (contractorsArr, totalOfNormalThreshold) {...} */
-
-/* #region : Examples */
-/**
- * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors ],
- *    [ 'ram', 300, 43 ],
- *    [ 'karan', 100, 14 ],
- *    [ 'pavan', 100, 14 ],
- *    [ 'arjun', 100, 14 ],
- *    [ 'om', 100, 14 ]
- * ]
- */
-/* #endregion */
-/* #region : CodeAbstract */
-function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalOfNormalThreshold) {
-    contractorsArr.forEach((contractorEle) => {
-        if (contractorEle.length >= 2) {
-            if (contractorEle.length === 2) {
-                contractorEle.push(Math.round((contractorEle[1] / totalOfNormalThreshold) * 100));
-            } else {
-                contractorEle[2] = Math.round((contractorEle[1] / totalOfNormalThreshold) * 100);
-            }
-        }
-    });
-    // console.log(`recalculateRatioOfThreshHoldWithOtherContractors: `);
-    // console.log(contractorsArr);
-    return contractorsArr;
-}
-/* #endregion */
-
-/* #endregion */
-
-/**
- * 002
- * Added ratio of images alloted to all contractors as the fifth column(RatioOfImagesAlloted) to generate something like in `Example`
- */
-/* #region : recalculateRatioOfImagesAlloted(contractorsArr, imgsQtyAlloted) {...} */
-
-/* #region : Examples */
-/**
- * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAlloted, RatioOfImagesAlloted ],
- *    [ 'ram', 300, 43, 50, 26 ],
- *    [ 'karan', 100, 14, 40, 21 ],
- *    [ 'pavan', 100, 14, 40, 21 ],
- *    [ 'arjun', 100, 14, 30, 16 ],
- *    [ 'om', 100, 14, 30, 16 ]
- * ]
- */
-/* #endregion */
-/* #region : CodeAbstract */
-function recalculateRatioOfImagesAlloted(contractorsArr, imgsQtyAlloted) {
-    contractorsArr.forEach((contractorEle) => {
-        if (contractorEle.length >= 4) {
-            if (contractorEle.length === 4) {
-                contractorEle.push(Math.round((contractorEle[3] / imgsQtyAlloted) * 100));
-            } else {
-                contractorEle[4] = Math.round((contractorEle[3] / imgsQtyAlloted) * 100);
-            }
-        }
-    });
-    // console.log(`recalculateRatioOfImagesAlloted: `);
-    // console.log(contractorsArr);
-    return contractorsArr;
-}
-/* #endregion */
-
-/* #endregion */
-
-/**
- * 003
- * Calculated sixth column (AllotmentPriority) by subtracting RatioOfThreshHoldWithOtherContractors and RatioOfImagesAlloted to generate something like in `Example`
- */
-/* #region : recalculateAllotmentPriority (contractorsArr){...} */
-
-/* #region : Examples */
-/**
- * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAlloted, RatioOfImagesAlloted,  AllotmentPriority(RatioOfThreshHoldWithOtherContractors - RatioOfImagesAlloted)],
- *    [ 'ram', 300, 43, 50, 26, 17 ],
- *    [ 'karan', 100, 14, 40, 21, -7 ],
- *    [ 'pavan', 100, 14, 40, 21, -7 ],
- *    [ 'arjun', 100, 14, 30, 16, -2 ],
- *    [ 'om', 100, 14, 30, 16, -2 ]
- * ]
- */
-/* #endregion */
-/* #region : CodeAbstract */
-function recalculateAllotmentPriority(contractorsArr) {
-    contractorsArr.forEach((contractorEle) => {
-        if (contractorEle.length >= 5) {
-            if (contractorEle.length === 5) {
-                contractorEle.push(contractorEle[2] - contractorEle[4]);
-            } else {
-                contractorEle[5] = contractorEle[2] - contractorEle[4];
-            }
-        }
-    });
-    // console.log(`recalculateAllotmentPriority: `);
-    // console.log(contractorsArr);
-    return contractorsArr;
-}
-/* #endregion */
-
-/* #endregion */
-
-/**
- * 004
- * Convert the path of a folder from `Download` to `Allotment`
- */
-/* #region : getDealerFolderContractorsZonePath (sourcePath, contractorsName, additionalText){...} */
-function getDealerFolderContractorsZonePath(sourcePath, contractorsName, additionalText) {
-    const sourcePathFoldersArr = [];
-    for (let cnt = 0; cnt < 4; cnt++) {
-        sourcePathFoldersArr.push(path.basename(sourcePath));
-        sourcePath = path.dirname(sourcePath);
-    }
-    if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
-            )
-        );
-        process.exit(0);
-    }
-    sourcePathFoldersArr.reverse();
-    sourcePathFoldersArr.splice(1, 2);
-
-    sourcePath = `${config.contractorsZonePath}\\${contractorsName}\\${sourcePathFoldersArr.join('\\')}`;
-    sourcePath += ` ${additionalText}`;
-    return sourcePath;
-}
-
-function getDealerFolderRecordKeepingZonePath(sourcePath, additionalText) {
-    const sourcePathFoldersArr = [];
-    for (let cnt = 0; cnt < 4; cnt++) {
-        sourcePathFoldersArr.push(path.basename(sourcePath));
-        sourcePath = path.dirname(sourcePath);
-    }
-    if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
-            )
-        );
-        process.exit(0);
-    }
-    sourcePathFoldersArr.reverse();
-    sourcePathFoldersArr.splice(1, 2);
-
-    sourcePath = `${config.recordKeepingZonePath}\\${sourcePathFoldersArr.join('\\')}`;
-    sourcePath += ` ${additionalText}`;
-    return sourcePath;
-}
-/* #endregion */
-
-/**
- * 005
- * Check whether LotFolder / Username / StockFolder / At least a single file{type:jpg} exists.
- * If no files exist and stockFolder is empty, remove the stockFolder if it is empty
- * Also remove the parents of stockFolder recursively if they are empty.
- * Also make sure one dealerDirectory with single file exists in the lot
- */
-/* #region : validateLotFolderAndReturnImageCount (lotFldrPath, debug = false) {...} */
-async function validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs(lotFldrPath, debug = false) {
-    let doesLotFolderPathContainsFiles = false;
-    const dealerDirs = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const usernameFolder of fs.readdirSync(lotFldrPath)) {
-        // TODO: config.credentials.username
-        const usernameFolderPath = path.join(lotFldrPath, usernameFolder);
-
-        if (fs.statSync(usernameFolderPath).isDirectory()) {
-            // eslint-disable-next-line no-restricted-syntax
-            for (const dealerFolder of fs.readdirSync(usernameFolderPath)) {
-                const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
-
-                if (fs.statSync(dealerFolderPath).isDirectory()) {
-                    // eslint-disable-next-line no-restricted-syntax
-                    for (const stockFolder of fs.readdirSync(dealerFolderPath)) {
-                        const stockFolderPath = path.join(dealerFolderPath, stockFolder);
-
-                        if (fs.statSync(stockFolderPath).isDirectory()) {
-                            const stockFolderLength = fs.readdirSync(stockFolderPath).length;
-                            debug ? console.log(`stockFolderPath: ${stockFolderPath}     stockFolderLength: ${stockFolderLength}`) : '';
-                            if (stockFolderLength > 0) {
-                                doesLotFolderPathContainsFiles = true;
-                            } else {
-                                removeDirAndRemoveParentDirIfEmpty(stockFolderPath, 3, true);
-                            }
-                        } else {
-                            doesLotFolderPathContainsFiles = true;
-                        }
-                    }
-                    if (fs.existsSync(dealerFolderPath)) {
-                        dealerDirs.push([dealerFolderPath, 0]);
-                    }
-                }
-            }
-        }
-    }
-    if (!doesLotFolderPathContainsFiles) {
-        console.log(chalk.white.bgRed.bold(`The lot folder does not contain any files to allot.`));
-        process.exit(1);
-    }
-    return dealerDirs;
-}
-async function returnImageCountFromDealerDirs(dealerDirs, debug = false) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const dealerDir of dealerDirs) {
-        if (fs.existsSync(dealerDir[0])) {
-            let totalNoOfDealerFolderFiles = 0;
-            // eslint-disable-next-line no-restricted-syntax
-            for (const stockFolder of fs.readdirSync(dealerDir[0])) {
-                const stockFolderPath = path.join(dealerDir[0], stockFolder);
-                const stockFolderStat = fs.statSync(stockFolderPath);
-
-                if (stockFolderStat.isDirectory()) {
-                    const stockFolderLength = fs.readdirSync(stockFolderPath).length;
-                    debug ? console.log(`stockFolderPath: ${stockFolderPath}     stockFolderLength: ${stockFolderLength}`) : '';
-                    if (stockFolderLength > 0) {
-                        totalNoOfDealerFolderFiles += stockFolderLength;
-                    } else {
-                        removeDirAndRemoveParentDirIfEmpty(stockFolderPath, 3, true);
-                    }
-                } else {
-                    totalNoOfDealerFolderFiles += 1;
-                }
-            }
-            dealerDir[1] = totalNoOfDealerFolderFiles;
-        }
-    }
-    return dealerDirs;
-}
-/* #endregion */
 
 /* #endregion */
