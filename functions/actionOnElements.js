@@ -44,7 +44,14 @@ async function clickOnButton(page, selector, buttonText = false, debug = false) 
     }
 
     debug ? console.log(`Clicking the ${selector} button: Executing.`) : '';
-    await page.click(selector);
+    // await page.click(selector);
+    await page.evaluate((selectorString) => {
+        // eslint-disable-next-line no-undef
+        const element = document.querySelector(selectorString);
+        if (element) {
+            element.click();
+        }
+    }, selector);
     debug ? console.log(`Clicking the ${selector} button: Done.`) : '';
 }
 
