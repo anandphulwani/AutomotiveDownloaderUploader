@@ -125,7 +125,8 @@ let totalNoOfNormalThreshold = 0;
  * Also creating folders mentioned in processingFolders for the contractor
  *
  */
-Object.keys(config.contractors).forEach(async (contractor) => {
+// eslint-disable-next-line no-restricted-syntax
+for (const contractor of Object.keys(config.contractors)) {
     if (lotIndex === 1) {
         await setContractorsCurrentAllotted(contractor, '0');
         config.contractors[contractor].processingFolders.forEach(async (processingFolder) => {
@@ -138,8 +139,7 @@ Object.keys(config.contractors).forEach(async (contractor) => {
     const { normalThreshold } = config.contractors[contractor];
     contractors.push([contractor, normalThreshold]);
     totalNoOfNormalThreshold += normalThreshold;
-});
-process.exit(1);
+}
 // console.log(`contractors from config: `);
 // console.log(contractors);
 
@@ -191,14 +191,14 @@ contractors.forEach((contractor) => {
         contractor.push(currentAllotted);
     }
 });
-console.log(`contractors currentAlloted set: `);
-console.log(contractors);
+// console.log(`contractors currentAlloted set: `);
+// console.log(contractors);
 
 // Lot Configuration
 const lotsMinimumDealerFoldersForEachContractors = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors;
 const lotsImagesQty = config.lot[lotIndex - 1].imagesQty;
-console.log(`configs.minimumDealerFoldersForEachContractors: ${lotsMinimumDealerFoldersForEachContractors}`);
-console.log(`configs.imagesQty: ${lotsImagesQty}`);
+// console.log(`configs.minimumDealerFoldersForEachContractors: ${lotsMinimumDealerFoldersForEachContractors}`);
+// console.log(`configs.imagesQty: ${lotsImagesQty}`);
 
 let dryRunImagesQtyAllotedInCurrentLot = 0;
 let dryRunFoldersAlloted = 0;
