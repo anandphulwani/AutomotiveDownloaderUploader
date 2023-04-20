@@ -46,10 +46,40 @@ async function loginCredentials(page, username) {
     await fillInTextbox(page, '#password', credentials.password);
     await clickOnButton(page, '#signIn', 'Sign in');
     await waitTillCurrentURLStartsWith(page, `${getAppDomain()}/dashboard`);
-    await page.waitForSelector('#bridge-bar-user-menu', { timeout: 90000 });
+    await page.waitForSelector('#bridge-bar-user-menu > div.bb-popover > div > section.bb-userdata', { timeout: 90000 });
     await page.waitForSelector('.bb-logout', { timeout: 90000 });
+
+    await verifyUserLoggedIn(page, username);
     return true;
     /* #endregion */
+}
+
+async function verifyUserLoggedIn(page, username) {
+    // Verify that the user has logged in
+    await page.evaluate(
+        // eslint-disable-next-line no-loop-func
+        (selectorInner, usernameToCompare) =>
+            new Promise((resolve, reject) => {
+                const intervalId = setInterval(() => {
+                    // eslint-disable-next-line no-undef
+                    const element = document.querySelector(selectorInner);
+                    if (element && element.innerHTML.toLowerCase() === usernameToCompare) {
+                        clearInterval(intervalId);
+                        resolve();
+                    }
+                }, 1000);
+                setTimeout(() => {
+                    clearInterval(intervalId);
+                    reject(
+                        new Error(
+                            `Timeout waiting for element with selector's lowercase "${selectorInner}" to have exact text's lowercase "${usernameToCompare}"`
+                        )
+                    );
+                }, 30000);
+            }),
+        '#bridge-bar-user-menu > div.bb-popover > div > section.bb-userdata > dl:nth-child(1) > dt.bb-userdatum__value',
+        username
+    );
 }
 // eslint-disable-next-line import/prefer-default-export
 export { initBrowserAndGetPage, loginCredentials };
