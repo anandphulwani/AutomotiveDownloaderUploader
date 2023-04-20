@@ -190,7 +190,7 @@ function getFileCountRecursively(dirPath) {
     return count;
 }
 
-function getListOfSubfoldersStartingWith(dirPath, startingTxt) {
+function getListOfSubfoldersStartingWith(dirPath, startingTxt, isStrict = false) {
     let filteredSubFoldersAndFiles = [];
     try {
         const subFoldersAndFiles = fs.readdirSync(dirPath);
@@ -206,10 +206,16 @@ function getListOfSubfoldersStartingWith(dirPath, startingTxt) {
         });
         return filteredSubFoldersAndFiles;
     } catch (err) {
-        // if (err.message.match(/ENOENT: no such file or directory.*/g)) {
-        //     console.log('Test'); // TODO: replace with error
-        // }
-        // process.exit(0);
+        // eslint-disable-next-line prefer-regex-literals
+        const noSuchFileRegex = new RegExp('ENOENT: no such file or directory.*', 'g');
+        if (noSuchFileRegex.test(err.message)) {
+            if (isStrict) {
+                console.log(chalk.white.bgRed.bold(`getListOfSubfoldersStartingWith${err.message.replace(/^ENOENT: n/, ': N')}`));
+                process.exit(1);
+            }
+        } else {
+            throw err;
+        }
     }
     return filteredSubFoldersAndFiles;
 }
