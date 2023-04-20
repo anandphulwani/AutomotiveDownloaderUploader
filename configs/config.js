@@ -29,6 +29,7 @@ const configBasic = {
     browserArgs: {
         headless: false,
         defaultViewport: null,
+        protocolTimeout: 0,
         executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
         args: ['--user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data', '--hide-crash-restore-bubble'],
     },
