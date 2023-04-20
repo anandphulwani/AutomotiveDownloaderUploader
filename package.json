@@ -30,8 +30,6 @@
     "ntp-time-sync": "^0.3.0",
     "proper-lockfile": "^4.1.2",
     "puppeteer": "^19.6.3",
-    "puppeteer-core": "^19.6.3",
-    "puppeteer-extra": "^3.3.4",
     "randomstring": "^1.2.3",
     "readline-sync": "^1.4.10",
     "sleep": "^6.3.0",
