@@ -176,6 +176,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
             return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0 };
         }
         const pageContent = await page.content();
+        // LOWPRIORITY: Make sure this is applied everywhere when a page.goto happens
         if (pageContent.includes('/Framework/Resources/Images/Layout/Errors/500_error.png')) {
             process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
             if (gotoIndex < 4) {

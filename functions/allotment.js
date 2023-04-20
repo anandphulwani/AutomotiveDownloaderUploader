@@ -1,4 +1,4 @@
-// TODO: Do cleanup
+// LOWPRIORITY: Do cleanup
 import chalk from 'chalk';
 import path from 'path';
 import { question } from 'readline-sync';

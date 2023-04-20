@@ -1,4 +1,4 @@
-// TODO: Do cleanup
+// LOWPRIORITY: Do cleanup
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -189,7 +189,7 @@ async function validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealer
     const dealerDirs = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameFolder of fs.readdirSync(lotFldrPath)) {
-        // TODO: config.credentials.username
+        // TODO: one of the config.credentials.username matches usernameFolder
         const usernameFolderPath = path.join(lotFldrPath, usernameFolder);
 
         if (fs.statSync(usernameFolderPath).isDirectory()) {
