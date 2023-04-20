@@ -56,6 +56,8 @@ async function downloadBookmarksFromSourceToProcessing() {
                     downloadedBookmarkBlockMatches.forEach((match) => {
                         if (match.split(/\r\n|\r|\n/).length > 15) {
                             console.log(match);
+                            unlockSync(processingBookmarkPathWithoutSync);
+                            unlockSync(sourceBookmarkPath);
                             process.exit(0);
                         }
                         const guid = match.match(/"guid": "(.*?)"/)[1];
@@ -85,6 +87,8 @@ async function downloadBookmarksFromSourceToProcessing() {
                     console.log(sourceJSONString);
                     console.log(`${'-'.repeat(70)}`);
                     console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
+                    unlockSync(processingBookmarkPathWithoutSync);
+                    unlockSync(sourceBookmarkPath);
                     process.exit(0);
                 }
 
@@ -100,6 +104,8 @@ async function downloadBookmarksFromSourceToProcessing() {
                     allotedFolderBookmarkBlockMatches.forEach((match) => {
                         if (match.split(/\r\n|\r|\n/).length > 9) {
                             console.log(match);
+                            unlockSync(processingBookmarkPathWithoutSync);
+                            unlockSync(sourceBookmarkPath);
                             process.exit(0);
                         }
                         const guid = match.match(/"guid": "(.*?)"/)[1];
@@ -129,12 +135,17 @@ async function downloadBookmarksFromSourceToProcessing() {
                     console.log(sourceJSONString);
                     console.log(`${'-'.repeat(70)}`);
                     console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
+                    unlockSync(processingBookmarkPathWithoutSync);
+                    unlockSync(sourceBookmarkPath);
                     process.exit(0);
                 }
 
                 fs.writeFileSync(processingBookmarkPathWithoutSync, sourceJSONString, (err) => {
                     if (err) {
                         console.log(err);
+                        unlockSync(processingBookmarkPathWithoutSync);
+                        unlockSync(sourceBookmarkPath);
+                        process.exit(1);
                     }
                 });
                 unlockSync(processingBookmarkPathWithoutSync);
@@ -143,6 +154,12 @@ async function downloadBookmarksFromSourceToProcessing() {
             }
         } catch (err) {
             console.log(`${err.message}`);
+            if (checkSync(processingBookmarkPathWithoutSync)) {
+                unlockSync(processingBookmarkPathWithoutSync);
+            }
+            if (checkSync(sourceBookmarkPath)) {
+                unlockSync(sourceBookmarkPath);
+            }
             process.exit(1);
         }
     }
@@ -259,11 +276,14 @@ async function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendTex
                     console.log(
                         `initalLineCount: ${initalLineCount}, finalLineCount: ${JSON.stringify(bookmarksJSONObj, null, 3).split(/\r\n|\r|\n/).length}`
                     );
+                    unlockSync(config.processingBookmarkPathWithoutSync);
                     process.exit(0);
                 }
                 fs.writeFileSync(config.processingBookmarkPathWithoutSync, JSON.stringify(bookmarksJSONObj, null, 3), (err) => {
                     if (err) {
+                        unlockSync(config.processingBookmarkPathWithoutSync);
                         console.log(err);
+                        process.exit(1);
                     }
                 });
                 unlockSync(config.processingBookmarkPathWithoutSync);
@@ -271,6 +291,9 @@ async function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendTex
             }
         } catch (err) {
             console.log(`${err.message}`);
+            if (checkSync(config.processingBookmarkPathWithoutSync)) {
+                unlockSync(config.processingBookmarkPathWithoutSync);
+            }
             process.exit(1);
         }
     }
@@ -311,6 +334,8 @@ async function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, app
                 fs.writeFileSync(config.processingBookmarkPathWithoutSync, JSON.stringify(bookmarksObj, null, 3), (err) => {
                     if (err) {
                         console.log(err);
+                        unlockSync(config.processingBookmarkPathWithoutSync);
+                        process.exit(1);
                     }
                 });
                 unlockSync(config.processingBookmarkPathWithoutSync);
@@ -318,6 +343,9 @@ async function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, app
             }
         } catch (err) {
             console.log(`${err.message}`);
+            if (checkSync(config.processingBookmarkPathWithoutSync)) {
+                unlockSync(config.processingBookmarkPathWithoutSync);
+            }
             process.exit(1);
         }
     }
