@@ -42,7 +42,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             return {
                 result: false,
                 bookmarkAppendMesg: 'Ignoring (Does not Exist)',
-                imagesDownloaded: 0,
+                imagesUploaded: 0,
             };
         }
         const pageContent = await page.content();
@@ -65,12 +65,12 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         }
     }
 
-    const returnObj = await uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder);
+    const returnObj = await uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name);
     // await waitForSeconds(10, true);
     return returnObj;
 }
 
-async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, debug = false) {
+async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, debug = false) {
     // console.log(uniqueIdElement);
     // console.log(dealerFolder);
     const imageNumbersToDownloadFromDC = getImageNumbersToDownloadFromDC(dealerFolder);
@@ -100,23 +100,33 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 `\nWARNING: Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`
             )
         );
-        return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0 };
+        return { result: false, bookmarkAppendMesg: '', imagesUploaded: 0 };
     }
     /**
      * Get dealer name from excel and compare it with dealer name in the page: End
      */
 
-    const stockNumber = String(
+    const stockNumberFromBookmark = name.split(' |#| ')[1].trim();
+    const stockNumberFromWeb = String(
         await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_StockNumber', (el) =>
             el.map((x) => x.getAttribute('value'))
         )
     );
-    const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumber}`;
-    let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumber}.`));
+
+    if (stockNumberFromBookmark !== stockNumberFromWeb) {
+        console.log(
+            chalk.white.bgYellow.bold(
+                `\nWARNING: Stock Number values mismatch, name from web is '${stockNumberFromWeb}' vs name from bookmark is '${stockNumberFromBookmark}'.`
+            )
+        );
+    }
+
+    const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumberFromBookmark}`;
+    let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumberFromBookmark}.`));
     stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
 
     if (!fs.existsSync(stockFolderPath) && stockFilePath === undefined) {
-        console.log(chalk.white.bgRed.bold(`Unable to upload file/folder for the stock number: ${stockNumber} .`));
+        console.log(chalk.white.bgRed.bold(`Unable to upload file/folder for the stock number: ${stockNumberFromBookmark} .`));
         process.exit(1);
     }
 
@@ -129,7 +139,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         await clickOnButton(page, '.vehicle-detail-tab.vehicle-detail-tab-imagery');
         await waitTillCurrentURLEndsWith(page, '#imagery');
     }
-    // console.log(`${uniqueIdFolderPath}\\${stockNumber}`);
+    // console.log(`${uniqueIdFolderPath}\\${stockNumberFromBookmark}`);
     // console.log(imageNumbersToDownloadFromDC);
 
     deleteOriginalFromDC = false;
