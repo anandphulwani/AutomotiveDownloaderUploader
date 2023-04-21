@@ -13,7 +13,7 @@ async function gotoURL(page, URL, debug = false) {
         try {
             await page.goto(URL, { timeout: 60 * 1000 }); // waitUntil: 'load',
             // await page.goto(URL, { timeout: 10 }); // waitUntil: 'load',
-            // await page.goto(URL, { waitUntil: "networkidle2" }); //LOWPRIORITY: Add networkidle0, networkidle2 and other multiple modes
+            // await page.goto(URL, { waitUntil: "networkidle2" }); // ONPROJECTFINISH: Add networkidle0, networkidle2 and other multiple modes
             break;
         } catch (err) {
             if (

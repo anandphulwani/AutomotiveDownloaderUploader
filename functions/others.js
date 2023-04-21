@@ -4,7 +4,7 @@ function printSectionSeperator() {
     console.log(chalk.black.bgWhiteBright('-'.repeat(80)));
 }
 
-// TODO: Remove retryCount variable and relative functions, when debugging is complete
+// ONPROJECTFINISH: Remove retryCount variable and relative functions, when debugging is complete
 let retryCount = 0;
 function incRetryCount() {
     retryCount++;

@@ -177,7 +177,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         )
     );
     debug ? '' : process.stdout.write('\n');
-    // TODO: Make sure this removeDir runs properly
+    // LOWPRIORITY:  Make sure this removeDir runs properly
     removeDir(tempPath, true, debug);
     return { result: true, bookmarkAppendMesg: stockNumber, imagesDownloaded: imagesDownloaded };
 }

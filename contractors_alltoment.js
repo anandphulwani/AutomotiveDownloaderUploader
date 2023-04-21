@@ -1,4 +1,4 @@
-// LOWPRIORITY: Do cleanup
+// ONPROJECTFINISH: Do cleanup
 /* #region : Supporting functions */ /* #endregion */
 import chalk from 'chalk';
 import fs from 'fs';

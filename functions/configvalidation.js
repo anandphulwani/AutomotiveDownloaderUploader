@@ -27,7 +27,7 @@ function validateConfigFile(debug = false) {
 
     debug ? console.log(`Validating bookmarks and checking if credentials are present: Executing.`) : '';
     validationStatus = 'success';
-    // LOWPRIORITY: Complete the validation of config file.
+    // ONPROJECTFINISH: Complete the validation of config file.
     // validationStatus = 'error';
     debug ? console.log(`Validating excel file: Done.`) : '';
     return validationStatus;
