@@ -291,7 +291,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     // console.log(`Current ImagesAreLockedFromWeb: ${ImagesAreLockedFromWeb}`);
 
-    if (ImagesAreLockedFromWeb !== lockTheImagesCheckMarkFromDC) {
+    if (lockTheImagesCheckMarkFromDC !== null && lockTheImagesCheckMarkFromDC !== ImagesAreLockedFromWeb) {
         clickOnButton(page, 'input[type="checkbox"].vp[property-name="ImagesAreLocked"]');
     }
     /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */

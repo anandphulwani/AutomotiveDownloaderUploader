@@ -76,7 +76,10 @@ function getDeleteOriginalFromDC(dealerNumber) {
     if (deleteOriginal.toLowerCase().trim() === 'yes') {
         return true;
     }
-    return false;
+    if (deleteOriginal.toLowerCase().trim() === 'no') {
+        return false;
+    }
+    throw new Error(`getDeleteOriginalFromDC(dealerNumber): Invalid value: ${deleteOriginal} for dealerNumber: ${dealerNumber}.`);
 }
 
 function getShiftOriginalFirstPositionToLastPositionFromDC(dealerNumber) {
@@ -84,7 +87,12 @@ function getShiftOriginalFirstPositionToLastPositionFromDC(dealerNumber) {
     if (shiftOriginal.toLowerCase().trim() === 'yes') {
         return true;
     }
-    return false;
+    if (shiftOriginal.toLowerCase().trim() === 'no') {
+        return false;
+    }
+    throw new Error(
+        `getShiftOriginalFirstPositionToLastPositionFromDC(dealerNumber): Invalid value: ${shiftOriginal} for dealerNumber: ${dealerNumber}.`
+    );
 }
 
 function getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerNumber) {
@@ -92,15 +100,26 @@ function getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerNumber)
     if (shiftOriginal.toLowerCase().trim() === 'yes') {
         return true;
     }
-    return false;
+    if (shiftOriginal.toLowerCase().trim() === 'no') {
+        return false;
+    }
+    throw new Error(
+        `getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerNumber): Invalid value: ${shiftOriginal} for dealerNumber: ${dealerNumber}.`
+    );
 }
 
 function getLockTheImagesCheckMarkFromDC(dealerNumber) {
-    const shiftOriginal = getSettingValueFromDC('Dealer Number', dealerNumber, 'Lock the image (check mark)');
-    if (shiftOriginal.toLowerCase().trim() === 'yes') {
+    const locktheImagesCheckMark = getSettingValueFromDC('Dealer Number', dealerNumber, 'Lock the image (check mark)');
+    if (locktheImagesCheckMark.toLowerCase().trim() === 'yes') {
         return true;
     }
-    return false;
+    if (locktheImagesCheckMark.toLowerCase().trim() === 'no') {
+        return false;
+    }
+    if (locktheImagesCheckMark.toLowerCase().trim() === '') {
+        return null;
+    }
+    throw new Error(`getLockTheImagesCheckMarkFromDC(dealerNumber): Invalid value: ${locktheImagesCheckMark} for dealerNumber: ${dealerNumber}.`);
 }
 
 // eslint-disable-next-line import/prefer-default-export
