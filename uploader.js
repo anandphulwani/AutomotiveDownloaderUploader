@@ -171,7 +171,7 @@ if (!allUsernamesBookmarks.length > 0) {
                     } else if (!vehicleBookmark.url.includes('#')) {
                         vehicleBookmark.url += '#imagery';
                     }
-                    if (vehicleBookmark.name.includes(' |#| ') && /\d{1,8}/.test(vehicleBookmark.name.split(' |#| ')[1].trim())) {
+                    if (vehicleBookmark.name.includes(' |#| ') && !vehicleBookmark.name.split(' |#| ')[1].startsWith('Ignoring')) {
                         if (typeof page === 'boolean' && !page) {
                             page = await initBrowserAndGetPage();
                         }
