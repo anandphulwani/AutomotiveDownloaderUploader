@@ -14,7 +14,25 @@ async function fillInTextbox(page, selector, textToFill, debug = false) {
     debug ? console.log(`Filling the ${selector} with empty value: Done.`) : '';
     debug ? console.log(`Checking if ${selector} is empty: Executing.`) : '';
     // eslint-disable-next-line no-undef, no-shadow
-    await page.waitForFunction((selector) => document.querySelector(selector).value === '', { timeout: 90000 }, selector);
+    // await page.waitForFunction((selector) => document.querySelector(selector).value === '', { timeout: 90000 }, selector);
+    await page.evaluate(
+        (selectorInner) =>
+            new Promise((resolve, reject) => {
+                const intervalId = setInterval(() => {
+                    // eslint-disable-next-line no-undef
+                    const element = document.querySelector(selectorInner);
+                    if (element && element.value === '') {
+                        clearInterval(intervalId);
+                        resolve();
+                    }
+                }, 1000);
+                setTimeout(() => {
+                    clearInterval(intervalId);
+                    reject(new Error(`Timeout waiting for element with selector "${selectorInner}" to have blank value."`));
+                }, 90000);
+            }),
+        selector
+    );
     debug ? console.log(`Checking if ${selector} is empty: Done.`) : '';
 
     debug ? console.log('Waiting for 10 seconds.') : '';
@@ -27,7 +45,26 @@ async function fillInTextbox(page, selector, textToFill, debug = false) {
     debug ? console.log(`Filling the ${selector} now: Done.`) : '';
     debug ? console.log(`Checking if ${selector} value matches filled: Executing.`) : '';
     // eslint-disable-next-line no-undef
-    await page.waitForFunction((args) => document.querySelector(args[0]).value === args[1], { timeout: 90000 }, [selector, textToFill]);
+    // await page.waitForFunction((args) => document.querySelector(args[0]).value === args[1], { timeout: 90000 }, [selector, textToFill]);
+    await page.evaluate(
+        (selectorInner, textToFillInner) =>
+            new Promise((resolve, reject) => {
+                const intervalId = setInterval(() => {
+                    // eslint-disable-next-line no-undef
+                    const element = document.querySelector(selectorInner);
+                    if (element && element.value === textToFillInner) {
+                        clearInterval(intervalId);
+                        resolve();
+                    }
+                }, 1000);
+                setTimeout(() => {
+                    clearInterval(intervalId);
+                    reject(new Error(`Timeout waiting for element with selector "${selectorInner}" to have value "${textToFillInner}"`));
+                }, 90000);
+            }),
+        selector,
+        textToFill
+    );
     debug ? console.log(`Checking if ${selector} value matches filled: Done.`) : '';
 }
 
@@ -39,7 +76,28 @@ async function clickOnButton(page, selector, buttonText = false, debug = false) 
     if (buttonText !== false) {
         debug ? console.log(`Check if the ${selector} contains text: ${buttonText}: Executing.`) : '';
         // eslint-disable-next-line no-undef
-        await page.waitForFunction((args) => document.querySelector(args[0]).innerText.includes(args[1]), { timeout: 90000 }, [selector, buttonText]);
+        // await page.waitForFunction((args) => document.querySelector(args[0]).innerText.includes(args[1]), { timeout: 90000 }, [selector, buttonText]);
+        await page.evaluate(
+            (selectorInner, buttonTextInner) =>
+                new Promise((resolve, reject) => {
+                    const intervalId = setInterval(() => {
+                        // eslint-disable-next-line no-undef
+                        const element = document.querySelector(selectorInner);
+                        if (element && element.innerText.includes(buttonTextInner)) {
+                            clearInterval(intervalId);
+                            resolve();
+                        }
+                    }, 1000);
+                    setTimeout(() => {
+                        clearInterval(intervalId);
+                        reject(
+                            new Error(`Timeout waiting for element with selector "${selectorInner}" to include(non exact) text "${buttonTextInner}"`)
+                        );
+                    }, 30000);
+                }),
+            selector,
+            buttonText
+        );
         debug ? console.log(`Check if the ${selector} contains text: ${buttonText}: Found.`) : '';
     }
 
