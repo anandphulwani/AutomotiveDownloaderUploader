@@ -54,27 +54,47 @@ const configUser = {
         },
     ],
     contractors: {
-        karan: {
+        biswas: {
             currentAllotted: 0,
-            normalThreshold: 100,
-            processingFolders: ['000_Done', '000_ReadyToUpload'],
+            normalThreshold: 800,
+            processingFolders: ['000_Done'],
         },
-        pavan: {
-            currentAllotted: 0,
-            normalThreshold: 100,
-            processingFolders: ['000_Done', '000_ReadyToUpload'],
-        },
-        ram: {
+        saikat: {
             currentAllotted: 0,
             normalThreshold: 300,
+            processingFolders: ['000_Done'],
+        },
+        sachin: {
+            currentAllotted: 0,
+            normalThreshold: 450,
             processingFolders: ['000_Done', '000_ReadyToUpload'],
         },
-        arjun: {
+        shivani: {
+            currentAllotted: 0,
+            normalThreshold: 250,
+            processingFolders: ['000_Done'],
+        },
+        rakesh: {
+            currentAllotted: 0,
+            normalThreshold: 200,
+            processingFolders: ['000_Done'],
+        },
+        poonam: {
             currentAllotted: 0,
             normalThreshold: 100,
+            processingFolders: ['000_Done'],
+        },
+        kalpana: {
+            currentAllotted: 0,
+            normalThreshold: 100,
+            processingFolders: ['000_Done'],
+        },
+        rishabh: {
+            currentAllotted: 0,
+            normalThreshold: 0,
             processingFolders: ['000_Done', '000_ReadyToUpload'],
         },
-        om: {
+        monika: {
             currentAllotted: 0,
             normalThreshold: 100,
             processingFolders: ['000_Done', '000_ReadyToUpload'],
