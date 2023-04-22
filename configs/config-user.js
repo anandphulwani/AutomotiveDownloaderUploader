@@ -108,18 +108,30 @@ const configUser = {
     lot: [
         {
             imagesQty: 0,
-            minimumDealerFoldersForEachContractors: 2,
+            minimumDealerFoldersForEachContractors: 1,
         },
         {
-            imagesQty: 15,
-            minimumDealerFoldersForEachContractors: false,
+            imagesQty: 0,
+            minimumDealerFoldersForEachContractors: 2,
         },
         {
             imagesQty: 300,
             minimumDealerFoldersForEachContractors: false,
         },
         {
+            imagesQty: 400,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 500,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
             imagesQty: 600,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 5000,
             minimumDealerFoldersForEachContractors: false,
         },
     ],
