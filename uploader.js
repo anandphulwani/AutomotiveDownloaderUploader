@@ -140,6 +140,7 @@ if (!allUsernamesBookmarks.length > 0) {
 
 (async () => {
     let page = false;
+    let browser = false;
     let userLoggedIn = '';
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
@@ -176,7 +177,7 @@ if (!allUsernamesBookmarks.length > 0) {
                     }
                     if (vehicleBookmark.name.includes(' |#| ') && !vehicleBookmark.name.split(' |#| ')[1].startsWith('Ignoring')) {
                         if (typeof page === 'boolean' && !page) {
-                            page = await initBrowserAndGetPage();
+                            ({ page, browser } = await initBrowserAndGetPage('upload'));
                         }
                         if (userLoggedIn !== usernameBookmark.name) {
                             const currentURL = await gotoURL(page, vehicleBookmark.url);
@@ -255,7 +256,9 @@ if (!allUsernamesBookmarks.length > 0) {
             // }
         }
     }
-    // await browser.close();
+    if (typeof browser !== 'boolean') {
+        await browser.close();
+    }
 })();
 // await sleep(10000);
 // process.exit(0);

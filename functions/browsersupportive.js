@@ -23,7 +23,7 @@ async function initBrowserAndGetPage(profile) {
         process.exit(1);
     }
     const [page] = await browser.pages();
-    return page;
+    return { page: page, browser: browser };
 }
 
 async function loginCredentials(page, username) {

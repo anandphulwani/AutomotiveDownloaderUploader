@@ -89,17 +89,7 @@ let bookmarksJSONObj = JSON.parse(bookmarksText);
 bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
 
 (async () => {
-    const browser = await puppeteer.launch(config.browserArgs);
-    const numberOfOpenPages = (await browser.pages()).length;
-    if (numberOfOpenPages > 1) {
-        console.log(chalk.white.bgRed.bold(`\nGoogle Chrome has older multiple tabs opened, Change google chrome settings:`));
-        console.log(chalk.white.bgRed.bold(`        01. Open "chrome://settings/" URL in Google Chrome.`));
-        console.log(chalk.white.bgRed.bold(`        02. Search "On startup" in the search bar.`));
-        console.log(chalk.white.bgRed.bold(`        03. Select "Open the New Tab page" in the options.`));
-        console.log(chalk.white.bgRed.bold(`        04. Close the browser.`));
-        process.exit(1);
-    }
-    const [page] = await browser.pages();
+    const { page, browser } = await initBrowserAndGetPage('download');
     // Create raw protocol session.
     const session = await page.target().createCDPSession();
     const { windowId } = await session.send('Browser.getWindowForTarget');
@@ -281,5 +271,3 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
     }
     await browser.close();
 })();
-// await sleep(10000);
-// process.exit(0);
