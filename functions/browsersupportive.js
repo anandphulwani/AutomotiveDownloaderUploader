@@ -10,7 +10,8 @@ import { gotoPageAndWaitTillCurrentURLStartsWith } from './goto.js';
 
 /* eslint-enable import/extensions */
 
-async function initBrowserAndGetPage() {
+async function initBrowserAndGetPage(profile) {
+    setChromeProfile(profile);
     const browser = await puppeteer.launch(config.browserArgs);
     const numberOfOpenPages = (await browser.pages()).length;
     if (numberOfOpenPages > 1) {
@@ -80,6 +81,29 @@ async function verifyUserLoggedIn(page, username) {
         '#bridge-bar-user-menu > div.bb-popover > div > section.bb-userdata > dl:nth-child(1) > dt.bb-userdatum__value',
         username
     );
+}
+
+function setChromeProfile(profile) {
+    const filteredArgs = config.browserArgs.args
+        .map((item, index) => ({ item, index })) // Create an array of objects with item and index properties
+        .filter(({ item }) => item.startsWith('--user-data-dir=')) // Filter out items that don't start with 'abc'
+        .map(({ item, index }) => index); // Extract the index of each remaining item
+    if (filteredArgs.length === 1 && (profile === 'download' || profile === 'upload')) {
+        let userDataDir = filteredArgs[0].item.replace(/^--user-data-dir=/, '');
+        userDataDir = userDataDir.split('\\');
+        userDataDir.pop();
+        if (profile === 'download') {
+            userDataDir.push('Download');
+        }
+        if (profile === 'upload') {
+            userDataDir.push('Upload');
+        }
+        userDataDir = userDataDir.join('\\');
+        userDataDir = `--user-data-dir=${userDataDir}`;
+        config.browserArgs.args[filteredArgs[0].index] = userDataDir;
+    } else {
+        throw new Error(`Chrome profile setting option: ${profile} not in the available options 'download' and 'upload'.`);
+    }
 }
 // eslint-disable-next-line import/prefer-default-export
 export { initBrowserAndGetPage, loginCredentials };
