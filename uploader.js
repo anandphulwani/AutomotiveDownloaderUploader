@@ -65,7 +65,7 @@ for (const folderToShift of foldersToShift) {
     if (folderSizeAfter10Seconds !== folderToShift[1]) {
         foldersToShift.splice(folderToShift);
     } else {
-        const newUploadingZonePath = `${config.uploadingZonePath}\\${path.basename(folderToShift[0])}`;
+        const newUploadingZonePath = `${config.uploadingZonePath}\\${todaysDate}\\${path.basename(folderToShift[0])}`;
         await moveFile(folderToShift[0], newUploadingZonePath);
         folderToShift[0] = newUploadingZonePath;
     }
@@ -74,8 +74,8 @@ for (const folderToShift of foldersToShift) {
 
 const foldersToUpload = {};
 // eslint-disable-next-line no-restricted-syntax
-for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(config.uploadingZonePath)) {
-    const uploadingZoneSubFolderPath = path.join(config.uploadingZonePath, uploadingZoneSubFolderAndFiles);
+for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZonePath}\\${todaysDate}`)) {
+    const uploadingZoneSubFolderPath = path.join(`${config.uploadingZonePath}\\${todaysDate}`, uploadingZoneSubFolderAndFiles);
     const uploadingZoneStat = fs.statSync(uploadingZoneSubFolderPath);
 
     if (uploadingZoneStat.isDirectory()) {
