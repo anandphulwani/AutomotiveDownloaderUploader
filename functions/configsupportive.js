@@ -83,6 +83,61 @@ async function addToContractorsCurrentAllotted(contractor, quantity) {
     await setContractorsCurrentAllotted(contractor, newQuantity);
 }
 
+async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
+    for (let lockTryIndex = 0; lockTryIndex <= 10; lockTryIndex++) {
+        try {
+            if (lockTryIndex === 10) {
+                throw new Error('Unable to get lock for the file after 10 retries.');
+            }
+            const checkLock = checkSync('.\\configs\\config.js');
+            if (checkLock) {
+                await waitForMilliSeconds(50);
+            } else {
+                lockSync('.\\configs\\config.js');
+                const currentLotLastRunNumber = config.lotLastRunNumber;
+                const currentLotLastRunDate = config.lotLastRunDate;
+                if (currentLotLastRunNumber === lastLotNumber && currentLotLastRunDate === lastLotDate) {
+                    unlockSync('.\\configs\\config.js');
+                    return;
+                }
+                let configUser = fs.readFileSync('.\\configs\\config.js', 'utf8');
+                let newConfigUser;
+
+                if (currentLotLastRunNumber !== lastLotNumber) {
+                    const lastRunNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\n)`;
+                    const lastRunNumberRegexExpression = new RegExp(lastRunNumberRegexString, 'g');
+                    newConfigUser = configUser.replace(lastRunNumberRegexExpression, `$1${lastLotNumber}$3`);
+                    if (configUser === newConfigUser) {
+                        console.log(
+                            chalk.white.bgRed.bold(`Unable to set lastLotNumber: '${lastLotNumber}'. Serious issue, please contact developer.`)
+                        );
+                        unlockSync('.\\configs\\config.js');
+                        process.exit(1);
+                    }
+                    configUser = newConfigUser;
+                }
+
+                if (currentLotLastRunDate !== lastLotDate) {
+                    const lastRunDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\n)`;
+                    const lastRunDateRegexExpression = new RegExp(lastRunDateRegexString, 'g');
+                    newConfigUser = configUser.replace(lastRunDateRegexExpression, `$1${lastLotDate}$3`);
+                    if (configUser === newConfigUser) {
+                        console.log(chalk.white.bgRed.bold(`Unable to set lastLotDate: '${lastLotDate}'. Serious issue, please contact developer.`));
+                        unlockSync('.\\configs\\config.js');
+                        process.exit(1);
+                    }
+                }
+                fs.writeFileSync('.\\configs\\config.js', newConfigUser, 'utf8');
+                unlockSync('.\\configs\\config.js');
+                break;
+            }
+        } catch (err) {
+            console.log(`${err.message}`);
+            process.exit(1);
+        }
+    }
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     getCredentialsForUsername,
@@ -91,4 +146,5 @@ export {
     setContractorsCurrentAllotted,
     getContractorsCurrentAllotted,
     addToContractorsCurrentAllotted,
+    setLastLotNumberAndDate,
 };

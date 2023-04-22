@@ -80,6 +80,8 @@ const configBasic = {
         //
         // },
     ],
+    lotLastRunNumber: '',
+    lotLastRunDate: '',
 };
 
 /**

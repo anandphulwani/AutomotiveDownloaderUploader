@@ -13,7 +13,7 @@ import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
 import { makeDir, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
-import { setContractorsCurrentAllotted } from './functions/configsupportive.js';
+import { setContractorsCurrentAllotted, setLastLotNumberAndDate } from './functions/configsupportive.js';
 import {
     recalculateRatioOfThreshHoldWithOtherContractors,
     validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs,
@@ -298,6 +298,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
         imagesQtyAllotedInCurrentLot,
         foldersAlloted
     );
+    setLastLotNumberAndDate(lotFolderName, todaysDate);
     /* #endregion */
 } else if (keyInYN('To use manual allotment system press Y, to exit from this process press N.')) {
     console.log('');
@@ -313,6 +314,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
         false,
         false
     );
+    setLastLotNumberAndDate(lotFolderName, todaysDate);
 }
 
 /* #endregion */

@@ -105,7 +105,12 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
     // await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
 
     const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
-    const LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : 1;
+    let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
+    if (LotLastIndex === null && config.lotLastRunDate === todaysDate) {
+        LotLastIndex = parseInt(config.lotLastRunNumber.substring(4), 10) + 1;
+    } else {
+        LotLastIndex = 1;
+    }
     LotIndexArray.pop();
 
     // eslint-disable-next-line no-restricted-syntax
