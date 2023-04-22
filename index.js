@@ -100,10 +100,10 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
         process.exit(1);
     }
     const [page] = await browser.pages();
-    // Create raw protocol session. // TODO: Check why minimized makes program hanging.
-    // const session = await page.target().createCDPSession();
-    // const { windowId } = await session.send('Browser.getWindowForTarget');
-    // await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
+    // Create raw protocol session.
+    const session = await page.target().createCDPSession();
+    const { windowId } = await session.send('Browser.getWindowForTarget');
+    await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
 
     const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
     let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
