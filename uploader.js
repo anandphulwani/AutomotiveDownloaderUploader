@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import date from 'date-and-time';
+import { URL } from 'url';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
@@ -177,7 +178,14 @@ if (!allUsernamesBookmarks.length > 0) {
                         }
                         if (userLoggedIn !== usernameBookmark.name) {
                             const currentURL = await gotoURL(page, vehicleBookmark.url);
-                            if (currentURL !== vehicleBookmark.url) {
+
+                            let parsedCurrentUrl = new URL(currentURL);
+                            parsedCurrentUrl = parsedCurrentUrl.host + parsedCurrentUrl.pathname;
+
+                            let parsedVehicleBookmarkURL = new URL(vehicleBookmark.url);
+                            parsedVehicleBookmarkURL = parsedVehicleBookmarkURL.host + parsedVehicleBookmarkURL.pathname;
+
+                            if (parsedCurrentUrl !== parsedVehicleBookmarkURL) {
                                 await loginCredentials(page, usernameBookmark.name);
                             }
                             userLoggedIn = usernameBookmark.name;
