@@ -124,14 +124,16 @@ const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkO
 
 const bookmarksBarData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
 if (!bookmarksBarData.length > 0) {
-    // TODO: Print error here
+    console.log(chalk.white.bgRed.bold(`Bookmarks section doesn't contain bookmarks bar.`));
+    process.exit(1);
 }
 const bookmarksBarDataChildren = bookmarksBarData[0].children;
 
 const allUsernamesFromConfig = config.credentials.map((item) => item.username);
 const allUsernamesBookmarks = bookmarksBarDataChildren.filter((usernameLevelBookmark) => allUsernamesFromConfig.includes(usernameLevelBookmark.name));
 if (!allUsernamesBookmarks.length > 0) {
-    // TODO: Print error here
+    console.log(chalk.white.bgRed.bold(`Bookmarks bar doesn't contain folders of the usernames available in the config.`));
+    process.exit(1);
 }
 
 // filteredData = filteredData[0].children;
