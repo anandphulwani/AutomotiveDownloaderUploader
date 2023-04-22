@@ -6,6 +6,7 @@ import puppeteer from 'puppeteer';
 import { exec, spawn } from 'child_process';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
 import { keyInYN } from 'readline-sync';
+import { URL as URLparser } from 'url';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
@@ -124,6 +125,31 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
         sleep(3);
     }
 
+    // Create a set of all completed bookmarks to compare for duplicates
+    let urlsDownloaded = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const topLevelBookmark of bookmarks) {
+        if (topLevelBookmark.name === 'Bookmarks bar') {
+            const usernameLevelBookmarks = topLevelBookmark.children;
+            // eslint-disable-next-line no-restricted-syntax
+            for (const usernameLevelBookmark of usernameLevelBookmarks) {
+                const dealerLevelBookmarks = usernameLevelBookmark.children;
+                // eslint-disable-next-line no-restricted-syntax
+                for (const dealerLevelBookmark of dealerLevelBookmarks) {
+                    const vehicleBookmarks = dealerLevelBookmark.children;
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const vehicleBookmark of vehicleBookmarks) {
+                        if (vehicleBookmark.name.includes('|#|')) {
+                            let vehicleBookmarkUrlWOQueryParams = new URLparser(vehicleBookmark.url);
+                            vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
+                            urlsDownloaded.push(vehicleBookmarkUrlWOQueryParams);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     let lotIndex = LotLastIndex;
     let dealerFolderCntInLot = 0;
     let imagesQtyInLot = 0;
@@ -211,24 +237,16 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                     const vehicleBookmarks = dealerLevelBookmark.children;
                     // eslint-disable-next-line no-restricted-syntax
                     for (const vehicleBookmark of vehicleBookmarks) {
-                        if (vehicleBookmark.name.includes('|#|')) {
-                            // eslint-disable-next-line no-continue
-                            continue;
-                        }
                         const returnObj = await handleBookmarkURL(
                             page,
                             lotIndex,
                             usernameLevelBookmark.name,
                             dealerLevelBookmarkName,
                             vehicleBookmark.name,
-                            vehicleBookmark.url
+                            vehicleBookmark.url,
+                            urlsDownloaded
                         );
-                        // return { result: true, bookmarkAppendMesg: stockNumber, imagesDownloaded: imagesDownloaded };
-                        // return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0 };
-                        // return { result: false, bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark, imagesDownloaded: 0 };
-                        // return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0 };
-                        //
-                        // imagesQtyInLot += returnObj.imagesDownloaded;
+                        urlsDownloaded = returnObj.urlsDownloaded;
                         if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
                             bookmarksJSONObj = await replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
                                 processingBookmarkPathWithoutSync,

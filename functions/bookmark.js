@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import logSymbols from 'log-symbols';
 import { lockSync, unlockSync, checkSync } from 'proper-lockfile';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
+import { URL as URLparser } from 'url';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
@@ -165,7 +166,10 @@ async function downloadBookmarksFromSourceToProcessing() {
     }
 }
 
-async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, URL, debug = false) {
+async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, URL, urlsDownloaded, debug = false) {
+    if (name.includes(' |#| ')) {
+        return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
+    }
     const ignoreBookmarkURLObjectFindResults = ignoreBookmarkURLObjects.find((ignoreBookmarkURLObject) => {
         if (URL.startsWith(ignoreBookmarkURLObject.URLStartsWith)) {
             return true;
@@ -174,13 +178,29 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
     });
     if (ignoreBookmarkURLObjectFindResults !== undefined) {
         console.log(chalk.magenta(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`));
-        return { result: false, bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark, imagesDownloaded: 0 };
+        return {
+            result: false,
+            bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark,
+            imagesDownloaded: 0,
+            urlsDownloaded: urlsDownloaded,
+        };
     }
 
     const startingRow = await getRowPosOnTerminal();
     process.stdout.write(chalk.cyan(`\t${name} : ${URL}\n`));
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
+
+    let vehicleBookmarkUrlWOQueryParams = new URLparser(URL);
+    vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
+    if (urlsDownloaded.includes(vehicleBookmarkUrlWOQueryParams)) {
+        debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
+        debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
+        debug ? '' : process.stdout.cursorTo(0);
+        process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)\n`));
+        await waitForSeconds(5);
+        return { result: false, bookmarkAppendMesg: 'Ignoring (Duplicate, Already downloaded)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
+    }
 
     for (let gotoIndex = 0; gotoIndex < 24; gotoIndex++) {
         await gotoURL(page, URL, debug);
@@ -190,7 +210,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
             debug ? '' : process.stdout.cursorTo(0);
             process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
             await waitForSeconds(5);
-            return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0 };
+            return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
         }
         const pageContent = await page.content();
         // LOWPRIORITY: Make sure this is applied everywhere when a page.goto happens
@@ -214,7 +234,12 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
     }
 
     const returnObj = await getImagesFromContent(page, lotIndex, username, dealerFolder);
-    // await waitForSeconds(10, true);
+    if (returnObj.result) {
+        urlsDownloaded.push(vehicleBookmarkUrlWOQueryParams);
+        returnObj.urlsDownloaded = urlsDownloaded;
+    } else {
+        returnObj.urlsDownloaded = urlsDownloaded;
+    }
     return returnObj;
 }
 
