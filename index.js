@@ -47,15 +47,14 @@ if (config.environment === 'production') {
     printSectionSeperator();
 }
 
-await downloadBookmarksFromSourceToProcessing();
+// ONPROJECTFINISH: Remove the unused imports
+// NORMALPRIORITY: Error summary in the end.
+// TODO: Delete repeated bookmark in the same dealer folder
+// TODO: disallow same dealerNumber folders in a username folder, and same username folder in bookmark bar
+// ONPROJECTFINISH:  resultCheck is declared outside, work out how to bring it inside the function
+// ONPROJECTFINISH:  Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
+// ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
 
-// TODO: Remove the unused imports
-// TODO: Error summary in the end.
-// TODO: resultCheck is declared outside, work out how to bring it inside the function
-// TODO: Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
-
-// const resultOfValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
-// // TODO: Dealer Name space in the middle gives validation error which it shoudl not
 // Non-shortcircuiting and: [f1(), f2()].every(i => i)
 // Non-shortcircuiting or: [f1(), f2()].some(i => i)
 
