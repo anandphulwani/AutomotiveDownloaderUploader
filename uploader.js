@@ -189,7 +189,7 @@ if (!allUsernamesBookmarks.length > 0) {
                             parsedVehicleBookmarkURL = parsedVehicleBookmarkURL.host + parsedVehicleBookmarkURL.pathname;
 
                             if (parsedCurrentUrl !== parsedVehicleBookmarkURL) {
-                                await loginCredentials(page, usernameBookmark.name);
+                                await loginCredentials(page, credentials);
                             }
                             userLoggedIn = usernameBookmark.name;
                         }
