@@ -26,16 +26,8 @@ async function initBrowserAndGetPage(profile) {
     return { page: page, browser: browser };
 }
 
-async function loginCredentials(page, username) {
+async function loginCredentials(page, credentials) {
     /* #region Login details */
-    console.log(chalk.cyan(`Reading/Uploading Bookmarks for the Username: ${chalk.cyan.bold(username)}`));
-    const credentials = getCredentialsForUsername(username);
-    if (credentials === undefined) {
-        console.log(chalk.white.bgYellow.bold(`WARNING: Credentials for ${username} not found in config file, Please declare in config.`));
-        // eslint-disable-next-line no-continue
-        return false;
-    }
-
     await gotoPageAndWaitTillCurrentURLStartsWith(
         page,
         'https://signin.coxautoinc.com/logout?bridge_solution=HME',
@@ -50,7 +42,7 @@ async function loginCredentials(page, username) {
     await page.waitForSelector('#bridge-bar-user-menu > div.bb-popover > div > section.bb-userdata', { timeout: 90000 });
     await page.waitForSelector('.bb-logout', { timeout: 90000 });
 
-    await verifyUserLoggedIn(page, username);
+    await verifyUserLoggedIn(page, credentials.username);
     return true;
     /* #endregion */
 }
