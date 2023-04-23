@@ -85,9 +85,6 @@ if (
 
 const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
 const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
-const bookmarksText = fs.readFileSync(processingBookmarkPathWithoutSync);
-let bookmarksJSONObj = JSON.parse(bookmarksText);
-bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
 
 (async () => {
     const { page, browser } = await initBrowserAndGetPage('download');
@@ -210,12 +207,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                         );
                         urlsDownloaded = returnObj.urlsDownloaded;
                         if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
-                            bookmarksJSONObj = await replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
-                                processingBookmarkPathWithoutSync,
-                                bookmarksJSONObj,
-                                vehicleBookmark.guid,
-                                returnObj.bookmarkAppendMesg
-                            );
+                            await replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
                         }
                         await waitForSeconds(0);
                     }
