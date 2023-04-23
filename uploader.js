@@ -99,14 +99,15 @@ for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZ
 const uniqueIdOfFoldersShifted = Object.keys(foldersToUpload); // foldersToShift.map((item) => item[1]);
 // console.log(uniqueIdOfFoldersShifted);
 
-// if (
-//     validateConfigFile() &&
-//     // await downloadBookmarksFromSourceToProcessing() &&
-//     // eslint-disable-next-line no-bitwise
-//     validateDealerConfigurationExcelFile() & validateBookmarksAndCheckCredentialsPresent()
-// ) {
-//     process.exit(0);
-// }
+if (
+    !(
+        true && // validateConfigFile()
+        // // TODO: validateBookmarksAndCheckCredentialsPresent() => Dealer Name space in the middle gives validation error which it shoudl not
+        [validateDealerConfigurationExcelFile(), validateBookmarksAndCheckCredentialsPresent()].every((i) => i)
+    )
+) {
+    process.exit(0);
+}
 
 // await killChrome({
 //     includingMainProcess: true,
