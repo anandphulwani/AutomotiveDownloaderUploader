@@ -167,12 +167,7 @@ const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkO
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {
                     const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameLevelBookmark.name);
-
                     const minDealerFolders = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
-                    // console.log(`minDealerFolders: ${minDealerFolders}`);
-                    // console.log(`dealerFolderCntInLot: ${dealerFolderCntInLot}`);
-                    // console.log(`config.lot[lotIndex - 1].imagesQty: ${config.lot[lotIndex - 1].imagesQty}`);
-                    // console.log(`imagesQtyInLot: ${imagesQtyInLot}`);
                     if (
                         ((minDealerFolders !== false && dealerFolderCntInLot >= minDealerFolders) || minDealerFolders === false) &&
                         imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty
@@ -182,7 +177,6 @@ const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkO
                                 `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${todaysDate} && pause && pause && exit"`
                             );
                         }
-                        // console.log('Resetting vars to 0.');
                         dealerFolderCntInLot = 0;
                         imagesQtyInLot = 0;
                         lotIndex++;
