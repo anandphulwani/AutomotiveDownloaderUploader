@@ -56,21 +56,16 @@ await downloadBookmarksFromSourceToProcessing();
 
 // const resultOfValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
 // // TODO: Dealer Name space in the middle gives validation error which it shoudl not
-// const resultOfValidateBookmarksAndCheckCredentialsPresent = validateBookmarksAndCheckCredentialsPresent();
-// const resultOfValidateConfigFile = 'success'; // validateConfigFile();
-// if (
-//     resultOfValidateDealerConfigurationExcelFile === 'error' ||
-//     resultOfValidateBookmarksAndCheckCredentialsPresent === 'error' ||
-//     resultOfValidateConfigFile === 'error'
-// ) {
-//     process.exit(0);
-// }
+// Non-shortcircuiting and: [f1(), f2()].every(i => i)
+// Non-shortcircuiting or: [f1(), f2()].some(i => i)
 
 if (
-    validateConfigFile() &&
-    (await downloadBookmarksFromSourceToProcessing()) &&
-    // eslint-disable-next-line no-bitwise
-    validateDealerConfigurationExcelFile() & validateBookmarksAndCheckCredentialsPresent()
+    !(
+        true && // validateConfigFile()
+        true && // await downloadBookmarksFromSourceToProcessing()
+        // // TODO: validateBookmarksAndCheckCredentialsPresent() => Dealer Name space in the middle gives validation error which it shoudl not
+        [validateDealerConfigurationExcelFile(), validateBookmarksAndCheckCredentialsPresent()].every((i) => i)
+    )
 ) {
     process.exit(0);
 }
