@@ -162,36 +162,7 @@ bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
                     // eslint-disable-next-line no-continue
                     continue;
                 }
-
-                await gotoPageAndWaitTillCurrentURLStartsWith(
-                    page,
-                    'https://signin.coxautoinc.com/logout?bridge_solution=HME',
-                    'https://homenetauto.signin.coxautoinc.com/?solutionID=HME_prod&clientId='
-                ); // use  (..., undefined, true) as params
-                await fillInTextbox(page, '#username', credentials.username);
-                await clickOnButton(page, '#signIn', 'Next');
-                // console.log('001');
-                await waitForElementContainsOrEqualsText(page, '#returnLink', `← ${credentials.username}`, undefined, true);
-                // console.log('002');
-                await fillInTextbox(page, '#password', credentials.password);
-                await clickOnButton(page, '#signIn', 'Sign in');
-                // console.log('003');
-                await waitTillCurrentURLStartsWith(page, `${getAppDomain()}/dashboard`);
-                // console.log('004');
-                await page.waitForSelector('#bridge-bar-user-menu', { timeout: 90000 });
-                // console.log('005');
-                await page.waitForSelector('.bb-logout', { timeout: 90000 });
-                // console.log('006');
-
-                // TODO: Enable the below block
-                // eslint-disable-next-line no-undef, no-loop-func
-                // await page.waitForFunction((args) => document.querySelector(args[0]).innerHTML.toLowerCase() === args[1].toLowerCase(), { timeout: 90000 }, [
-                //     'dt.bb-userdatum__value',
-                //     credentials.username,
-                // ]);
-                // console.log('007');
-                // await waitForSeconds(5, true);
-                /* #endregion */
+                await loginCredentials(page, credentials);
 
                 setCurrentDealerConfiguration(usernameLevelBookmark.name);
                 const dealerLevelBookmarks = usernameLevelBookmark.children;
