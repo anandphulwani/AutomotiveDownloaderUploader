@@ -13,38 +13,35 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
     debug ? console.log(`Validating bookmarks and checking if credentials are present: Executing.`) : '';
     const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
     const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
+
+    const bookmarksBarData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
+    if (!bookmarksBarData.length > 0) {
+        console.log(chalk.white.bgRed.bold(`ERROR: Bookmarks section doesn't contain bookmarks bar.`));
+    }
+    const bookmarksBarDataChildren = bookmarksBarData[0].children;
+
+    const allUsernamesFromConfig = config.credentials.map((item) => item.username);
+    const allUsernamesBookmarks = bookmarksBarDataChildren.filter((usernameLevelBookmark) =>
+        allUsernamesFromConfig.includes(usernameLevelBookmark.name)
+    );
+    if (!allUsernamesBookmarks.length > 0) {
+        console.log(chalk.white.bgRed.bold(`ERROR: Bookmarks bar doesn't contain folders of the usernames available in the config.`));
+    }
     // eslint-disable-next-line no-restricted-syntax
-    for (const topLevelBookmark of bookmarks) {
-        if (topLevelBookmark.name === 'Bookmarks bar') {
-            console.log(chalk.cyan('Validating Bookmarks bar from the bookmarks data.'));
-            const usernameLevelBookmarks = topLevelBookmark.children;
-            // eslint-disable-next-line no-restricted-syntax
-            for (const usernameLevelBookmark of usernameLevelBookmarks) {
-                console.log(chalk.cyan(`Validating Bookmarks for the Username: ${chalk.cyan.bold(usernameLevelBookmark.name)}`));
-                const credentials = getCredentialsForUsername(usernameLevelBookmark.name);
-                if (credentials === undefined) {
-                    validationStatus = 'error';
-                    console.log(
-                        chalk.white.bgRed.bold(
-                            `ERROR: Credentials for ${usernameLevelBookmark.name} not found in config file, Please declare in config.`
-                        )
-                    );
-                }
-                setCurrentDealerConfiguration(usernameLevelBookmark.name);
-                const dealerLevelBookmarks = usernameLevelBookmark.children;
-                // eslint-disable-next-line no-restricted-syntax
-                for (const dealerLevelBookmark of dealerLevelBookmarks) {
-                    const allDealerNumbers = getAllDealerNumbers();
-                    const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameLevelBookmark.name);
-                    if (!allDealerNumbers.includes(dealerLevelBookmarkName)) {
-                        validationStatus = 'error';
-                        console.log(
-                            chalk.white.bgRed.bold(
-                                `ERROR: Unable to find dealer folder: ${dealerLevelBookmarkName} for the Username: ${usernameLevelBookmark.name}, it is not present in the excel.`
-                            )
-                        );
-                    }
-                }
+    for (const usernameBookmark of allUsernamesBookmarks) {
+        setCurrentDealerConfiguration(usernameBookmark.name);
+        const allDealerNumbers = getAllDealerNumbers();
+        const dealerLevelBookmarks = usernameBookmark.children;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const dealerLevelBookmark of dealerLevelBookmarks) {
+            const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
+            if (!allDealerNumbers.includes(dealerLevelBookmarkName)) {
+                validationStatus = 'error';
+                console.log(
+                    chalk.white.bgRed.bold(
+                        `ERROR: Unable to find dealer folder: '${dealerLevelBookmarkName}' for the Username: '${usernameBookmark.name}', it is not present in the excel.`
+                    )
+                );
             }
         }
     }
