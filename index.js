@@ -96,30 +96,24 @@ for (const LotIndexEle of LotIndexArray) {
     sleep(3);
 }
 
-    // Create a set of all completed bookmarks to compare for duplicates
-    let urlsDownloaded = [];
+// Create a set of all completed bookmarks to compare for duplicates
+let urlsDownloaded = [];
+// eslint-disable-next-line no-restricted-syntax
+for (const usernameBookmark of allUsernamesBookmarks) {
+    const dealerLevelBookmarks = usernameBookmark.children;
     // eslint-disable-next-line no-restricted-syntax
-    for (const topLevelBookmark of bookmarks) {
-        if (topLevelBookmark.name === 'Bookmarks bar') {
-            const usernameLevelBookmarks = topLevelBookmark.children;
-            // eslint-disable-next-line no-restricted-syntax
-            for (const usernameLevelBookmark of usernameLevelBookmarks) {
-                const dealerLevelBookmarks = usernameLevelBookmark.children;
-                // eslint-disable-next-line no-restricted-syntax
-                for (const dealerLevelBookmark of dealerLevelBookmarks) {
-                    const vehicleBookmarks = dealerLevelBookmark.children;
-                    // eslint-disable-next-line no-restricted-syntax
-                    for (const vehicleBookmark of vehicleBookmarks) {
-                        if (vehicleBookmark.name.includes('|#|')) {
-                            let vehicleBookmarkUrlWOQueryParams = new URLparser(vehicleBookmark.url);
-                            vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
-                            urlsDownloaded.push(vehicleBookmarkUrlWOQueryParams);
-                        }
-                    }
-                }
+    for (const dealerLevelBookmark of dealerLevelBookmarks) {
+        const vehicleBookmarks = dealerLevelBookmark.children;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const vehicleBookmark of vehicleBookmarks) {
+            if (vehicleBookmark.name.includes('|#|')) {
+                let vehicleBookmarkUrlWOQueryParams = new URLparser(vehicleBookmark.url);
+                vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
+                urlsDownloaded.push(vehicleBookmarkUrlWOQueryParams);
             }
         }
     }
+}
 
 // try{
 (async () => {
