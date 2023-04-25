@@ -74,28 +74,16 @@ if (
 //     includingMainProcess: true,
 // });
 
-/**
- * Read chrome bookmarks from chrome browser
- */
-
-const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
-const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
-
-(async () => {
-    const { page, browser } = await initBrowserAndGetPage('download');
-    // Create raw protocol session.
-    const session = await page.target().createCDPSession();
-    const { windowId } = await session.send('Browser.getWindowForTarget');
-    await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
-
-    const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
-    let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
-    if (LotLastIndex === null && config.lotLastRunDate === todaysDate) {
+const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
+let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
+if (LotLastIndex === null) {
+    if (config.lotLastRunDate === todaysDate) {
         LotLastIndex = parseInt(config.lotLastRunNumber.substring(4), 10) + 1;
     } else {
         LotLastIndex = 1;
     }
-    LotIndexArray.pop();
+}
+LotIndexArray.pop();
 
 // eslint-disable-next-line no-restricted-syntax
 for (const LotIndexEle of LotIndexArray) {
