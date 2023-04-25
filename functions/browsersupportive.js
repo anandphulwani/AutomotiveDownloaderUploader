@@ -56,7 +56,7 @@ async function verifyUserLoggedIn(page, username) {
                 const intervalId = setInterval(() => {
                     // eslint-disable-next-line no-undef
                     const element = document.querySelector(selectorInner);
-                    if (element && element.innerHTML.toLowerCase() === usernameToCompare) {
+                    if (element && element.innerHTML.toLowerCase() === usernameToCompare.toLowerCase()) {
                         clearInterval(intervalId);
                         resolve();
                     }
