@@ -137,8 +137,6 @@ if (!allUsernamesBookmarks.length > 0) {
     process.exit(1);
 }
 
-// filteredData = filteredData[0].children;
-
 (async () => {
     let page = false;
     let browser = false;
