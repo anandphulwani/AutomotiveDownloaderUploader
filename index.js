@@ -49,7 +49,6 @@ if (config.environment === 'production') {
 
 // ONPROJECTFINISH: Remove the unused imports
 // NORMALPRIORITY: Error summary in the end.
-// TODO: Delete repeated bookmark in the same dealer folder
 // TODO: disallow same dealerNumber folders in a username folder, and same username folder in bookmark bar
 // ONPROJECTFINISH:  resultCheck is declared outside, work out how to bring it inside the function
 // ONPROJECTFINISH:  Decide whether to use bookmarkPath or bookmarksPath (with s in variable) and replace all bookmarks variable accordingly
