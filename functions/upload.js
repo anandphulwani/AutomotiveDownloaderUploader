@@ -335,9 +335,6 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     }
     await page.waitForNavigation({ timeout: 300000 });
     if (stockFilePath !== undefined) {
-        // const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumber}`;
-        // let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumber}.`));
-        // stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(
             `${uniqueIdFolderPath}\\${stockFilePath}`,
             `${config.finishedUploadingZonePath}\\${todaysDate}\\${path.basename(uniqueIdFolderPath)}\\${stockFilePath}`,
