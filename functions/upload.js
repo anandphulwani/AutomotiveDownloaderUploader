@@ -80,14 +80,10 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // console.log(uniqueIdElement);
     // console.log(dealerFolder);
     const imageNumbersToDownloadFromDC = getImageNumbersToDownloadFromDC(dealerFolder);
-    // const deleteOriginalFromDC = getDeleteOriginalFromDC(dealerFolder);
-    // const shiftOriginalFirstPositionToLastPositionFromDC = getShiftOriginalFirstPositionToLastPositionFromDC(dealerFolder);
-    // const putFirstPositionEditedImageInTheLastPositionAlsoFromDC = getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerFolder);
-    // const lockTheImagesCheckMarkFromDC = getLockTheImagesCheckMarkFromDC(dealerFolder);
-    let deleteOriginalFromDC = getDeleteOriginalFromDC(dealerFolder);
-    let shiftOriginalFirstPositionToLastPositionFromDC = getShiftOriginalFirstPositionToLastPositionFromDC(dealerFolder);
-    let putFirstPositionEditedImageInTheLastPositionAlsoFromDC = getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerFolder);
-    let lockTheImagesCheckMarkFromDC = getLockTheImagesCheckMarkFromDC(dealerFolder);
+    const deleteOriginalFromDC = getDeleteOriginalFromDC(dealerFolder);
+    const shiftOriginalFirstPositionToLastPositionFromDC = getShiftOriginalFirstPositionToLastPositionFromDC(dealerFolder);
+    const putFirstPositionEditedImageInTheLastPositionAlsoFromDC = getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerFolder);
+    const lockTheImagesCheckMarkFromDC = getLockTheImagesCheckMarkFromDC(dealerFolder);
 
     /**
      * Get dealer name from excel and compare it with dealer name in the page: Begin
