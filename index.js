@@ -97,16 +97,16 @@ const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkO
     }
     LotIndexArray.pop();
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const LotIndexEle of LotIndexArray) {
-        const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
-        if (fs.existsSync(`${config.downloadPath}\\${todaysDate}\\${LotIndexEle}`)) {
-            exec(
-                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndexToAllot} ${todaysDate} && pause && pause && exit"`
-            );
-        }
-        sleep(3);
+// eslint-disable-next-line no-restricted-syntax
+for (const LotIndexEle of LotIndexArray) {
+    const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
+    if (fs.existsSync(`${config.downloadPath}\\${todaysDate}\\${LotIndexEle}`)) {
+        exec(
+            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndexToAllot} ${todaysDate} && pause && pause && exit"`
+        );
     }
+    sleep(3);
+}
 
     // Create a set of all completed bookmarks to compare for duplicates
     let urlsDownloaded = [];
