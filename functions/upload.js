@@ -571,7 +571,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         //
         //
         let oldToPositionElementRectX;
-        for (let lastIndex = 0; lastIndex <= 300; lastIndex++) {
+        for (let lastIndex = 0; lastIndex <= 100; lastIndex++) {
             const toPositionElementRect = await page.evaluate((el) => {
                 const { x, y, width, height } = el.getBoundingClientRect();
                 return { x, y, width, height };
@@ -673,8 +673,8 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             msleep(10);
             isSlow ? await waitForSeconds(1, true) : '';
             oldToPositionElementRectX = toPositionElementRect.x;
-            if (lastIndex === 300) {
-                console.log(chalk.white.bgRed.bold(`Tried changing image position for 300 iterations, but it didn't work.`));
+            if (lastIndex === 100) {
+                console.log(chalk.white.bgRed.bold(`Tried changing image position for 100 iterations, but it didn't work.`));
                 process.exit(1);
             }
         }
