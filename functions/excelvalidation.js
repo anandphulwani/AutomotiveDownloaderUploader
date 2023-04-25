@@ -54,7 +54,7 @@ function validateDealerConfigurationExcelFile(debug = false) {
         validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, putFirstArray, 'Put 1st edited images in the last position also');
 
         const lockTheImageArray = data.map((item) => item['Lock the image (check mark)']);
-        validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, lockTheImageArray, 'Lock the image (check mark)');
+        validateDealerConfigurationExcelFileColumnBooleanOrBlankOnly(usernameTrimmed, lockTheImageArray, 'Lock the image (check mark)');
 
         debug ? console.log(`resultStatus: ${resultStatus}`) : '';
     });
@@ -101,6 +101,12 @@ function validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, 
     checkForSpaceInBeginOrEndInArray(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
     checkForBooleanValueOnlyInArray(usernameTrimmed, columnData, columnName);
+}
+
+function validateDealerConfigurationExcelFileColumnBooleanOrBlankOnly(usernameTrimmed, columnData, columnName) {
+    checkForSpaceInBeginOrEndInArray(usernameTrimmed, columnData, columnName);
+    columnData = allTrimStringArray(columnData);
+    checkForBooleanOrBlankValueOnlyInArray(usernameTrimmed, columnData, columnName);
 }
 
 /**
@@ -232,6 +238,29 @@ function checkForBooleanValueOnlyInArray(usernameTrimmed, data, columnName) {
         console.log(
             chalk.white.bgRed.bold(
                 `ERROR: (${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no), element value: \n` +
+                    `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
+            )
+        );
+    });
+}
+
+function checkForBooleanOrBlankValueOnlyInArray(usernameTrimmed, data, columnName) {
+    const findElementsNotBooleanOrBlank = (arr) =>
+        arr.filter((item) => item !== undefined && item.toLowerCase() !== 'yes' && item.toLowerCase() !== 'no');
+    let notBooleanElements = findElementsNotBooleanOrBlank(data);
+    notBooleanElements = removeDuplicates(notBooleanElements);
+
+    if (notBooleanElements.length > 0) {
+        setResultStatus('error');
+    }
+
+    const elementsAllIndex = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
+    notBooleanElements.forEach((notBooleanElement) => {
+        let elementsLocations = elementsAllIndex(data, notBooleanElement);
+        elementsLocations = elementsLocations.map((entry) => entry + 2);
+        console.log(
+            chalk.white.bgRed.bold(
+                `ERROR: (${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no) or blank, element value: \n` +
                     `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
             )
         );
