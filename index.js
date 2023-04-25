@@ -17,7 +17,7 @@ import { printSectionSeperator } from './functions/others.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitForElementContainsOrEqualsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
-import { initBrowserAndGetPage, loginCredentials } from './functions/browsersupportive.js';
+import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto.js';
 import {
     downloadBookmarksFromSourceToProcessing,
@@ -134,85 +134,119 @@ const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkO
     }
 
 // try{
+(async () => {
     let lotIndex = LotLastIndex;
     let dealerFolderCntInLot = 0;
     let imagesQtyInLot = 0;
-    // eslint-disable-next-line no-restricted-syntax
-    for (const topLevelBookmark of bookmarks) {
-        if (topLevelBookmark.name === 'Bookmarks bar') {
-            console.log(chalk.cyan('Reading Bookmarks bar from the bookmarks data.'));
-            const usernameLevelBookmarks = topLevelBookmark.children;
-            // eslint-disable-next-line no-restricted-syntax
-            for (const usernameLevelBookmark of usernameLevelBookmarks) {
-                /* #region Login details */
-                console.log(chalk.cyan(`Reading Bookmarks for the Username: ${chalk.cyan.bold(usernameLevelBookmark.name)}`));
-                const credentials = getCredentialsForUsername(usernameLevelBookmark.name);
-                if (credentials === undefined) {
-                    console.log(
-                        chalk.white.bgYellow.bold(
-                            `WARNING: Credentials for ${usernameLevelBookmark.name} not found in config file, Please declare in config.`
-                        )
-                    );
-                    // eslint-disable-next-line no-continue
-                    continue;
-                }
-                await loginCredentials(page, credentials);
 
-                setCurrentDealerConfiguration(usernameLevelBookmark.name);
-                const dealerLevelBookmarks = usernameLevelBookmark.children;
-                // eslint-disable-next-line no-restricted-syntax
-                for (const dealerLevelBookmark of dealerLevelBookmarks) {
-                    const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameLevelBookmark.name);
-                    const minDealerFolders = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
-                    if (
-                        ((minDealerFolders !== false && dealerFolderCntInLot >= minDealerFolders) || minDealerFolders === false) &&
-                        imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty
-                    ) {
-                        if (fs.existsSync(`${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(lotIndex, 2)}`)) {
-                            exec(
-                                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${todaysDate} && pause && pause && exit"`
-                            );
-                        }
-                        dealerFolderCntInLot = 0;
-                        imagesQtyInLot = 0;
-                        lotIndex++;
-                    }
-                    console.log(
-                        chalk.cyan('Reading Bookmarks for the Dealer: ') +
-                            chalk.cyan.bold(dealerLevelBookmarkName) +
-                            chalk.cyan(' from the Username: ') +
-                            chalk.cyan.bold(usernameLevelBookmark.name)
+    let page = false;
+    let browser = false;
+    let userLoggedIn = '';
+    // eslint-disable-next-line no-restricted-syntax
+    for (const usernameBookmark of allUsernamesBookmarks) {
+        console.log(chalk.cyan(`Reading bookmarks for the Username: ${chalk.cyan.bold(usernameBookmark.name)}`));
+        const credentials = getCredentialsForUsername(usernameBookmark.name);
+
+        setCurrentDealerConfiguration(usernameBookmark.name);
+        // const dealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) => dealerLevelBookmark.name.includes(' |#| '));
+        const dealerLevelBookmarks = usernameBookmark.children;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const dealerLevelBookmark of dealerLevelBookmarks) {
+            const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
+            const minDealerFolders = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
+            if (
+                (minDealerFolders === false || dealerFolderCntInLot >= minDealerFolders) &&
+                (config.lot[lotIndex - 1].imagesQty === 0 || imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty)
+            ) {
+                if (fs.existsSync(`${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(lotIndex, 2)}`)) {
+                    exec(
+                        `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${todaysDate} && pause && pause && exit"`
                     );
-                    const vehicleBookmarks = dealerLevelBookmark.children;
-                    // eslint-disable-next-line no-restricted-syntax
-                    for (const vehicleBookmark of vehicleBookmarks) {
-                        const returnObj = await handleBookmarkURL(
-                            page,
-                            lotIndex,
-                            usernameLevelBookmark.name,
-                            dealerLevelBookmarkName,
-                            vehicleBookmark.name,
-                            vehicleBookmark.url,
-                            urlsDownloaded
-                        );
-                        urlsDownloaded = returnObj.urlsDownloaded;
-                        if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
-                            await replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
-                        }
-                        await waitForSeconds(0);
-                    }
-                    const usernameTrimmed = usernameLevelBookmark.name.includes('@')
-                        ? usernameLevelBookmark.name.split('@')[0]
-                        : usernameLevelBookmark.name;
-                    const dealerLevelPath = `${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(
-                        lotIndex,
-                        2
-                    )}\\${usernameTrimmed}\\${dealerLevelBookmarkName}`;
-                    if (fs.existsSync(dealerLevelPath)) {
-                        imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
-                        dealerFolderCntInLot++;
-                    }
                 }
+                dealerFolderCntInLot = 0;
+                imagesQtyInLot = 0;
+                lotIndex++;
+            }
+            console.log(
+                chalk.cyan('Reading bookmarks for the Dealer: ') +
+                    chalk.cyan.bold(dealerLevelBookmarkName) +
+                    chalk.cyan(' from the Username: ') +
+                    chalk.cyan.bold(usernameBookmark.name)
+            );
+            const vehicleBookmarks = dealerLevelBookmark.children;
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const vehicleBookmark of vehicleBookmarks) {
+                if (!vehicleBookmark.name.includes(' |#| ')) {
+                    if (typeof page === 'boolean' && !page) {
+                        ({ page, browser } = await initBrowserAndGetPage('download'));
+                        // Create raw protocol session.
+                        const session = await page.target().createCDPSession();
+                        const { windowId } = await session.send('Browser.getWindowForTarget');
+                        await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
+                    }
+                    if (userLoggedIn !== usernameBookmark.name) {
+                        const currentURL = await gotoURL(page, vehicleBookmark.url);
+                        const currentUser = await getCurrentUser(page);
+
+                        let parsedCurrentUrl = new URL(currentURL);
+                        parsedCurrentUrl = parsedCurrentUrl.host + parsedCurrentUrl.pathname;
+
+                        let parsedVehicleBookmarkURL = new URL(vehicleBookmark.url);
+                        parsedVehicleBookmarkURL = parsedVehicleBookmarkURL.host + parsedVehicleBookmarkURL.pathname;
+
+                        if (currentUser !== usernameBookmark.name.toLowerCase() || parsedCurrentUrl !== parsedVehicleBookmarkURL) {
+                            await loginCredentials(page, credentials);
+                        }
+                        userLoggedIn = usernameBookmark.name;
+                    }
+
+                    const returnObj = await handleBookmarkURL(
+                        page,
+                        lotIndex,
+                        usernameBookmark.name,
+                        dealerLevelBookmarkName,
+                        vehicleBookmark.name,
+                        vehicleBookmark.url,
+                        urlsDownloaded
+                    );
+                    urlsDownloaded = returnObj.urlsDownloaded;
+                    if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
+                        await replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
+                    } else {
+                        console.log('Bookmark not appended!');
+                        try {
+                            // TODO: Check this
+                            fs.appendFileSync(
+                                './logs/test.txt',
+                                '--------------------------------------------------------------------------------------------------'
+                            );
+                            fs.appendFileSync(
+                                './logs/test.txt',
+                                `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, vehicleBookmark.name: ${vehicleBookmark.name}, vehicleBookmark.url: ${vehicleBookmark.url}`
+                            );
+
+                            fs.appendFileSync('./logs/test.txt', `vehicleBookmark.guid: ${vehicleBookmark.guid}`);
+                            fs.appendFileSync('./logs/test.txt', `returnObj: ${returnObj}`);
+                            fs.appendFileSync(
+                                './logs/test.txt',
+                                '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+                            );
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    }
+                    await waitForSeconds(0);
+                }
+            }
+            const usernameTrimmed = usernameBookmark.name.includes('@') ? usernameBookmark.name.split('@')[0] : usernameBookmark.name;
+            const dealerLevelPath = `${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(
+                lotIndex,
+                2
+            )}\\${usernameTrimmed}\\${dealerLevelBookmarkName}`;
+            if (fs.existsSync(dealerLevelPath)) {
+                imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
+                dealerFolderCntInLot++;
             }
         }
     }
