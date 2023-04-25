@@ -90,8 +90,7 @@ async function getCurrentUser(page) {
 function setChromeProfile(profile) {
     const filteredArgs = config.browserArgs.args
         .map((item, index) => ({ item, index })) // Create an array of objects with item and index properties
-        .filter(({ item }) => item.startsWith('--user-data-dir=')) // Filter out items that don't start with 'abc'
-        .map(({ item, index }) => index); // Extract the index of each remaining item
+        .filter(({ item }) => item.startsWith('--user-data-dir=')); // Filter out items that don't start with 'abc'
     if (filteredArgs.length === 1 && (profile === 'download' || profile === 'upload')) {
         let userDataDir = filteredArgs[0].item.replace(/^--user-data-dir=/, '');
         userDataDir = userDataDir.split('\\');
