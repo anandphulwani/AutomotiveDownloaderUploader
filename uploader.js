@@ -175,7 +175,7 @@ if (!allUsernamesBookmarks.length > 0) {
             for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
                 // if (isDealerFolderToBeUploaded) {
                 console.log(
-                    chalk.cyan('Uploading Bookmarks for the Dealer: ') +
+                    chalk.cyan('Uploading bookmarks for the Dealer: ') +
                         chalk.cyan.bold(dealerLevelBookmarkName) +
                         chalk.cyan(' from the Username: ') +
                         chalk.cyan.bold(usernameBookmark.name)
