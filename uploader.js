@@ -75,6 +75,11 @@ for (const folderToShift of foldersToShift) {
 } // );
 // console.log(foldersToShift);
 
+if (!fs.existsSync(`${config.uploadingZonePath}\\${todaysDate}`)) {
+    console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));
+    process.exit(0);
+}
+
 const foldersToUpload = {};
 // eslint-disable-next-line no-restricted-syntax
 for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZonePath}\\${todaysDate}`)) {
