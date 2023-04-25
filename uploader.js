@@ -212,55 +212,7 @@ if (!allUsernamesBookmarks.length > 0) {
                         );
                     }
                 }
-                // } else {
-                //     // eslint-disable-next-line no-continue
-                //     continue;
-                // }
             }
-        }
-        process.exit(0);
-        const usernameLevelBookmark = usernameBookmark;
-
-        const dealerLevelBookmarks = usernameLevelBookmark.children;
-        // eslint-disable-next-line no-restricted-syntax
-        for (const dealerLevelBookmark of dealerLevelBookmarks) {
-            const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameLevelBookmark.name);
-            console.log(
-                chalk.cyan('Reading Bookmarks for the Dealer: ') +
-                    chalk.cyan.bold(dealerLevelBookmarkName) +
-                    chalk.cyan(' from the Username: ') +
-                    chalk.cyan.bold(usernameLevelBookmark.name)
-            );
-            const vehicleBookmarks = dealerLevelBookmark.children;
-            // eslint-disable-next-line no-restricted-syntax
-            for (const vehicleBookmark of vehicleBookmarks) {
-                if (vehicleBookmark.name.includes('|#|')) {
-                    // eslint-disable-next-line no-continue
-                    continue;
-                }
-                // if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
-                //     bookmarksJSONObj = await replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(
-                //         bookmarkPath,
-                //         bookmarksJSONObj,
-                //         vehicleBookmark.guid,
-                //         returnObj.bookmarkAppendMesg
-                //     );
-                // }
-                await waitForSeconds(0);
-            }
-            // const usernameTrimmed = usernameLevelBookmark.name.includes('@')
-            //     ? usernameLevelBookmark.name.split('@')[0]
-            //     : usernameLevelBookmark.name;
-            // const dealerLevelPath = `${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(
-            //     lotIndex,
-            //     2
-            // )}\\${usernameTrimmed}\\${dealerLevelBookmarkName}`;
-            // if (fs.existsSync(dealerLevelPath)) {
-            //     // console.log(`exists dealerLevelPath: ${dealerLevelPath}`);
-            //     // console.log(`getFileCountRecursively(dealerLevelPath).length: ${getFileCountRecursively(dealerLevelPath)}`);
-            //     imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
-            //     dealerFolderCntInLot++;
-            // }
         }
     }
     if (typeof browser !== 'boolean') {
