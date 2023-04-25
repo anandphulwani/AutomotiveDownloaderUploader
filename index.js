@@ -133,6 +133,7 @@ const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkO
         }
     }
 
+// try{
     let lotIndex = LotLastIndex;
     let dealerFolderCntInLot = 0;
     let imagesQtyInLot = 0;
@@ -226,3 +227,8 @@ const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkO
         await browser.close();
     }
 })();
+// TODO: Enable this error catching, and copy it in the uploading section as well
+// } catch (error)
+// {
+//     Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+// }
