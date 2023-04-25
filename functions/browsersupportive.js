@@ -75,6 +75,18 @@ async function verifyUserLoggedIn(page, username) {
     );
 }
 
+async function getCurrentUser(page) {
+    const logoutButtonSelectorExists = await page.$('.bb-logout');
+
+    if (logoutButtonSelectorExists) {
+        const usernameSelector = '#bridge-bar-user-menu > div.bb-popover > div > section.bb-userdata > dl:nth-child(1) > dt.bb-userdatum__value';
+        await page.waitForSelector(usernameSelector, { timeout: 30000 });
+        const usernameHTML = await page.$eval(usernameSelector, (element) => element.innerHTML);
+        return usernameHTML.toLowerCase();
+    }
+    return null;
+}
+
 function setChromeProfile(profile) {
     const filteredArgs = config.browserArgs.args
         .map((item, index) => ({ item, index })) // Create an array of objects with item and index properties
@@ -98,4 +110,4 @@ function setChromeProfile(profile) {
     }
 }
 // eslint-disable-next-line import/prefer-default-export
-export { initBrowserAndGetPage, loginCredentials };
+export { initBrowserAndGetPage, loginCredentials, getCurrentUser };
