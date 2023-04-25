@@ -25,6 +25,7 @@ import { zeroPad } from './stringformatting.js';
 import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 /* eslint-enable import/extensions */
 
+const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, URL, debug = false) {
     const startingRow = await getRowPosOnTerminal();
     process.stdout.write(chalk.cyan(`\t${name} : ${URL}\n`));
