@@ -238,6 +238,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                         'click to RESTORE this photo.'
                     );
                 } catch (error) {
+                    console.log(`error02: ${error}`);
                     // eslint-disable-next-line no-continue
                     continue;
                 }
