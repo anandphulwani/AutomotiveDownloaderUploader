@@ -340,13 +340,13 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         // stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(
             `${uniqueIdFolderPath}\\${stockFilePath}`,
-            `${config.finishedUploadingZonePath}\\${path.basename(uniqueIdFolderPath)}\\${stockFilePath}`,
+            `${config.finishedUploadingZonePath}\\${todaysDate}\\${path.basename(uniqueIdFolderPath)}\\${stockFilePath}`,
             1
         );
     } else {
         await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(
             `${stockFolderPath}\\`,
-            `${config.finishedUploadingZonePath}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(stockFolderPath)}`,
+            `${config.finishedUploadingZonePath}\\${todaysDate}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(stockFolderPath)}`,
             1
         );
     }
