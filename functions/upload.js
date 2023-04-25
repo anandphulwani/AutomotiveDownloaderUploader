@@ -126,8 +126,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumberFromBookmark}`;
     let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumberFromBookmark}.`));
     stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
+    const typeOfStockPath = stockFilePath === undefined ? 'stockFolder' : 'stockFile';
 
-    if (!fs.existsSync(stockFolderPath) && stockFilePath === undefined) {
+    if (typeOfStockPath === 'stockFolder' && !fs.existsSync(stockFolderPath)) {
         console.log(chalk.white.bgRed.bold(`Unable to upload file/folder for the stock number: ${stockNumberFromBookmark} .`));
         process.exit(1);
     }
@@ -163,11 +164,11 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     const imagesToUpload = [];
     // eslint-disable-next-line no-useless-catch
     try {
-        const stockFolderPathList = stockFilePath === undefined ? fs.readdirSync(stockFolderPath) : [stockFilePath];
+        const stockFolderPathList = typeOfStockPath === 'stockFolder' ? fs.readdirSync(stockFolderPath) : [stockFilePath];
         // eslint-disable-next-line no-restricted-syntax
         for (const stockFolderSubFolderAndFiles of stockFolderPathList) {
             const stockFolderSubFolderAndFilesPath =
-                stockFilePath === undefined
+                typeOfStockPath === 'stockFolder'
                     ? path.join(stockFolderPath, stockFolderSubFolderAndFiles)
                     : path.join(uniqueIdFolderPath, stockFolderSubFolderAndFiles);
             if (firstImage === undefined) {
@@ -181,8 +182,13 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 await fileChooser.accept([path.resolve(stockFolderSubFolderAndFilesPath)]);
             }
             // console.log(stockFolderSubFolderAndFiles);
-            let imageNumber = parseInt(stockFolderSubFolderAndFiles.split('.')[0], 10);
-            imageNumber = imageNumber > 500 ? 1 : imageNumber;
+            let imageNumber;
+            if (typeOfStockPath === 'stockFolder') {
+                const fileNameWOExt = stockFolderSubFolderAndFiles.split('.')[0];
+                imageNumber = parseInt(fileNameWOExt, 10);
+            } else {
+                imageNumber = 1;
+            }
             imagesToUpload.push(imageNumber);
         }
         await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
