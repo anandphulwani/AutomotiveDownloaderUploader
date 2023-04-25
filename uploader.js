@@ -123,10 +123,6 @@ if (
 const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
 const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
 
-// const bookmarksText = fs.readFileSync(processingBookmarkPathWithoutSync);
-// let bookmarksJSONObj = JSON.parse(bookmarksText);
-// bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
-
 const bookmarksBarData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
 if (!bookmarksBarData.length > 0) {
     console.log(chalk.white.bgRed.bold(`Bookmarks section doesn't contain bookmarks bar.`));
