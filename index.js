@@ -222,5 +222,7 @@ const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkO
             );
         }
     }
-    await browser.close();
+    if (typeof browser !== 'boolean') {
+        await browser.close();
+    }
 })();
