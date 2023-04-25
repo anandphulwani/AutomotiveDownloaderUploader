@@ -11,6 +11,9 @@ async function gotoURL(page, URL, debug = false) {
     debug ? console.log(`Navigating to the URL: ${URL}: Executing.`) : '';
     for (let gotoCnt = 0; gotoCnt < 5; gotoCnt++) {
         try {
+            // ONPROJECTFINISH: Error 500 is applied here, make sure page.goto is not called anywhere in the project.
+            // ONPROJECTFINISH: Add networkidle0, networkidle2 and other multiple modes
+
             await page.goto(URL, { timeout: 60 * 1000 }); // waitUntil: 'load',
             // await page.goto(URL, { timeout: 10 }); // waitUntil: 'load',
             // await page.goto(URL, { waitUntil: "networkidle2" });
