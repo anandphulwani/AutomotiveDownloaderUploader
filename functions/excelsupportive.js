@@ -110,13 +110,14 @@ function getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerNumber)
 
 function getLockTheImagesCheckMarkFromDC(dealerNumber) {
     const locktheImagesCheckMark = getSettingValueFromDC('Dealer Number', dealerNumber, 'Lock the image (check mark)');
-    if (locktheImagesCheckMark.toLowerCase().trim() === 'yes') {
-        return true;
-    }
-    if (locktheImagesCheckMark.toLowerCase().trim() === 'no') {
-        return false;
-    }
-    if (locktheImagesCheckMark.toLowerCase().trim() === '') {
+    if (locktheImagesCheckMark !== undefined) {
+        if (locktheImagesCheckMark.toLowerCase().trim() === 'yes') {
+            return true;
+        }
+        if (locktheImagesCheckMark.toLowerCase().trim() === 'no') {
+            return false;
+        }
+    } else {
         return null;
     }
     throw new Error(`getLockTheImagesCheckMarkFromDC(dealerNumber): Invalid value: ${locktheImagesCheckMark} for dealerNumber: ${dealerNumber}.`);
