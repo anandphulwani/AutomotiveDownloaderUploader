@@ -19,7 +19,7 @@ import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText }
 import { validateConfigFile } from './functions/configvalidation.js';
 import { moveFile, getFileCountRecursively, getFolderSizeInBytes } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder, getUniqueIDFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
-import { initBrowserAndGetPage, loginCredentials } from './functions/browsersupportive.js';
+import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
 /* eslint-enable import/extensions */
 
@@ -183,6 +183,7 @@ if (!allUsernamesBookmarks.length > 0) {
                         }
                         if (userLoggedIn !== usernameBookmark.name) {
                             const currentURL = await gotoURL(page, vehicleBookmark.url);
+                            const currentUser = await getCurrentUser(page);
 
                             let parsedCurrentUrl = new URL(currentURL);
                             parsedCurrentUrl = parsedCurrentUrl.host + parsedCurrentUrl.pathname;
@@ -190,7 +191,7 @@ if (!allUsernamesBookmarks.length > 0) {
                             let parsedVehicleBookmarkURL = new URL(vehicleBookmark.url);
                             parsedVehicleBookmarkURL = parsedVehicleBookmarkURL.host + parsedVehicleBookmarkURL.pathname;
 
-                            if (parsedCurrentUrl !== parsedVehicleBookmarkURL) {
+                            if (currentUser !== usernameBookmark.name.toLowerCase() || parsedCurrentUrl !== parsedVehicleBookmarkURL) {
                                 await loginCredentials(page, credentials);
                             }
                             userLoggedIn = usernameBookmark.name;
