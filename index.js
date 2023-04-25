@@ -63,10 +63,11 @@ if (
         true && // validateConfigFile()
         true && // await downloadBookmarksFromSourceToProcessing()
         // // TODO: validateBookmarksAndCheckCredentialsPresent() => Dealer Name space in the middle gives validation error which it shoudl not
-        [validateDealerConfigurationExcelFile(), validateBookmarksAndCheckCredentialsPresent()].every((i) => i)
+        [validateDealerConfigurationExcelFile() !== 'error', validateBookmarksAndCheckCredentialsPresent() !== 'error'].every((i) => i)
     )
 ) {
-    process.exit(0);
+    console.log(chalk.white.bgRed.bold(`Please correct the above errors, in order to continue.`));
+    process.exit(1);
 }
 
 // await killChrome({
