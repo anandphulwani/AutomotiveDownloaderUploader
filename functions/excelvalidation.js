@@ -14,6 +14,7 @@ import {
 let resultStatus;
 function validateDealerConfigurationExcelFile(debug = false) {
     debug ? console.log(`Validating excel file: Executing.`) : '';
+    resultStatus = 'success';
     Object.keys(config.credentials).forEach((credential) => {
         const { username } = config.credentials[credential];
         const usernameTrimmed = username.includes('@') ? username.split('@')[0] : username;
@@ -30,8 +31,6 @@ function validateDealerConfigurationExcelFile(debug = false) {
         // Array of objects, without any key, column name and column value as object
         // const redux1 = (list) => list.map((o) => Object.fromEntries(['Dealer Number'].map((k) => [k, o[k]])));
         // console.log(redux1(data));
-
-        resultStatus = 'success';
 
         const dealerNumberArray = data.map((item) => item['Dealer Number']);
         validateDealerConfigurationExcelFileColumnDealerNumber(usernameTrimmed, dealerNumberArray, 'Dealer Number');
