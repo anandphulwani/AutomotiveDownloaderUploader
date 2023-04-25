@@ -180,6 +180,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 await fileChooser.accept([path.resolve(stockFolderSubFolderAndFilesPath)]);
             }
             // console.log(stockFolderSubFolderAndFiles);
+            // TODO: Folder still exists after picking from 000_ReadyToUpload, was a user fault earlier, but have to create a system to create a failsafe.
             let imageNumber;
             if (typeOfStockPath === 'stockFolder') {
                 const fileNameWOExt = stockFolderSubFolderAndFiles.split('.')[0];
@@ -202,6 +203,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         console.log(`error01: ${error}`);
     }
     await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
+    // TODO: Verify all files are uploaded in qty, also rename bookmarks by giving quantity while download
     /* #endregion: Uploading the files: End */
 
     /* #region: Mark file to delete the older files to replace with the newer files: Begin */
