@@ -47,11 +47,22 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
             debug ? '' : process.stdout.cursorTo(0);
             process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
+            const stockNumberFromBookmark = name.split(' |#| ')[1].trim();
+            const { typeOfStockPath, stockFolderPath, stockFilePath } = typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark);
+            const { moveSource, moveDestination } = getSourceAndDestinationFrom(
+                typeOfStockPath,
+                stockFolderPath,
+                uniqueIdFolderPath,
+                stockFilePath,
+                true
+            );
             await waitForSeconds(5);
             return {
                 result: false,
                 bookmarkAppendMesg: 'Ignoring (Does not Exist)',
                 imagesUploaded: 0,
+                moveSource: moveSource,
+                moveDestination: moveDestination,
             };
         }
         const pageContent = await page.content();
@@ -75,7 +86,6 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     }
 
     const returnObj = await uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name);
-    // await waitForSeconds(10, true);
     return returnObj;
 }
 
@@ -126,10 +136,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         );
     }
 
-    const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumberFromBookmark}`;
-    let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumberFromBookmark}.`));
-    stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
-    const typeOfStockPath = stockFilePath === undefined ? 'stockFolder' : 'stockFile';
+    const { typeOfStockPath, stockFolderPath, stockFilePath } = typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark);
 
     if (typeOfStockPath === 'stockFolder' && !fs.existsSync(stockFolderPath)) {
         console.log(chalk.white.bgRed.bold(`Unable to upload file/folder for the stock number: ${stockNumberFromBookmark} .`));
@@ -321,21 +328,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         });
     }
     await page.waitForNavigation({ timeout: 300000 });
-    if (stockFilePath !== undefined) {
-        await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(
-            `${uniqueIdFolderPath}\\${stockFilePath}`,
-            `${config.finishedUploadingZonePath}\\${todaysDate}\\${path.basename(uniqueIdFolderPath)}\\${stockFilePath}`,
-            1
-        );
-    } else {
-        await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(
-            `${stockFolderPath}\\`,
-            `${config.finishedUploadingZonePath}\\${todaysDate}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(stockFolderPath)}`,
-            1
-        );
-    }
-
-    return true;
+    const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdFolderPath, stockFilePath, false);
+    fs.appendFileSync(logFile, `returning True\r\n`);
+    return { result: true, bookmarkAppendMesg: '', imagesUploaded: 0, moveSource: moveSource, moveDestination: moveDestination };
 }
 
 async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosition, isSlow = false, debug = true) {
@@ -538,6 +533,42 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         console.log(`handled this:${error}`);
         await waitForSeconds(240, true);
     }
+}
+
+function typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark) {
+    const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumberFromBookmark}`;
+    let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumberFromBookmark}.`));
+    stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
+    const typeOfStockPath = stockFilePath === undefined ? 'stockFolder' : 'stockFile';
+    return { typeOfStockPath: typeOfStockPath, stockFolderPath: stockFolderPath, stockFilePath: stockFilePath };
+}
+
+function getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdFolderPath, stockFilePath, isURLDoesNotExist) {
+    let moveSource;
+    let moveDestination;
+    if (typeOfStockPath === 'stockFolder') {
+        fs.appendFileSync(logFile, `stockFolderPath\\: ${stockFolderPath}\\\r\n`);
+        // console.log(`${stockFolderPath}\\`);
+        fs.appendFileSync(
+            logFile,
+            `config.finishedUploadingZonePath\\todaysDate\\path.basename(path.dirname(stockFolderPath)\\path.basename(stockFolderPath): ${
+                config.finishedUploadingZonePath
+            }\\${isURLDoesNotExist ? 'DeletedURLs\\' : ''}${todaysDate}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(
+                stockFolderPath
+            )}`
+        );
+        // console.log(`${config.finishedUploadingZonePath}\\${todaysDate}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(stockFolderPath)}`);
+        moveSource = `${stockFolderPath}\\`;
+        moveDestination = `${config.finishedUploadingZonePath}\\${isURLDoesNotExist ? 'DeletedURLs\\' : ''}${todaysDate}\\${path.basename(
+            path.dirname(stockFolderPath)
+        )}\\${path.basename(stockFolderPath)}`;
+    } else {
+        moveSource = `${uniqueIdFolderPath}\\${stockFilePath}`;
+        moveDestination = `${config.finishedUploadingZonePath}\\${isURLDoesNotExist ? 'DeletedURLs\\' : ''}${todaysDate}\\${path.basename(
+            uniqueIdFolderPath
+        )}\\${stockFilePath}`;
+    }
+    return { moveSource: moveSource, moveDestination: moveDestination };
 }
 
 // eslint-disable-next-line import/prefer-default-export

@@ -17,7 +17,12 @@ import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
 import { validateConfigFile } from './functions/configvalidation.js';
-import { moveFile, getFileCountRecursively, getFolderSizeInBytes } from './functions/filesystem.js';
+import {
+    moveFile,
+    getFileCountRecursively,
+    getFolderSizeInBytes,
+    createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
+} from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder, getUniqueIDFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
@@ -217,6 +222,12 @@ if (!allUsernamesBookmarks.length > 0) {
                             vehicleBookmark.name,
                             vehicleBookmark.url
                         );
+                        if (
+                            returnObj.result === true ||
+                            (returnObj.result === false && returnObj.bookmarkAppendMesg === 'Ignoring (Does not Exist)')
+                        ) {
+                            await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(returnObj.moveSource, returnObj.moveDestination, 2);
+                        }
                     }
                 }
             }
