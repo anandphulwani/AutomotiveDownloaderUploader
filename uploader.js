@@ -60,7 +60,7 @@ Object.keys(config.contractors).forEach((contractor) => {
 });
 // sleep(15);
 // console.log(foldersToShift);
-console.log('--------------------------------------------------------------');
+
 // eslint-disable-next-line no-restricted-syntax
 for (const folderToShift of foldersToShift) {
     // foldersToShift.forEach(async (folderToShift) => {
