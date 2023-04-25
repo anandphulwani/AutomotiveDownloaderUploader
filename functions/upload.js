@@ -263,17 +263,11 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 page,
                 imageOriginalURLSLength2,
                 imageOriginalURLSLength2 - 1,
-                imagesToUpload[imageToUploadIndex - 1] + 1,
+                imagesToUpload[imageToUploadIndex - 1],
                 false
             );
         } else {
-            await moveImageToPositionNumber(
-                page,
-                imageOriginalURLSLength2,
-                imageOriginalURLSLength2,
-                imagesToUpload[imageToUploadIndex - 1] + 1,
-                false
-            );
+            await moveImageToPositionNumber(page, imageOriginalURLSLength2, imageOriginalURLSLength2, imagesToUpload[imageToUploadIndex - 1], false);
         }
     }
     /* #endregion: Move uploaded files on the correct location: End */
