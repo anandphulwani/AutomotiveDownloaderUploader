@@ -118,7 +118,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     if (stockNumberFromBookmark !== stockNumberFromWeb) {
         console.log(
             chalk.white.bgYellow.bold(
-                `\nWARNING: Stock Number values mismatch, name from web is '${stockNumberFromWeb}' vs name from bookmark is '${stockNumberFromBookmark}'.`
+                `\nWARNING: Stock Number values mismatch, name from web is '${stockNumberFromWeb}' vs name from bookmark is '${stockNumberFromBookmark}', Continuing.`
             )
         );
     }
