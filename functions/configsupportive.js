@@ -44,7 +44,7 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
                 }
                 const configUser = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
 
-                const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+                const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
                 const regexExpression = new RegExp(regexString, 'g');
                 const newConfigUser = configUser.replace(regexExpression, `$1$2$3${allottedQty}$5`);
                 if (configUser === newConfigUser) {
@@ -69,7 +69,7 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
 
 function getContractorsCurrentAllotted(contractor) {
     const configUser = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
-    const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+    const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
     const regexExpression = new RegExp(regexString, 'g');
     const match = configUser.match(regexExpression);
     const currentAllotted = match[0].match(regexString)[4];
@@ -104,7 +104,7 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
                 let newConfigUser;
 
                 if (currentLotLastRunNumber !== lastLotNumber) {
-                    const lastRunNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\n)`;
+                    const lastRunNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\r\\n)`;
                     const lastRunNumberRegexExpression = new RegExp(lastRunNumberRegexString, 'g');
                     newConfigUser = configUser.replace(lastRunNumberRegexExpression, `$1${lastLotNumber}$3`);
                     if (configUser === newConfigUser) {
@@ -118,7 +118,7 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
                 }
 
                 if (currentLotLastRunDate !== lastLotDate) {
-                    const lastRunDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\n)`;
+                    const lastRunDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\r\\n)`;
                     const lastRunDateRegexExpression = new RegExp(lastRunDateRegexString, 'g');
                     newConfigUser = configUser.replace(lastRunDateRegexExpression, `$1${lastLotDate}$3`);
                     if (configUser === newConfigUser) {
