@@ -13,8 +13,25 @@ async function gotoURL(page, URL, debug = false) {
         try {
             await page.goto(URL, { timeout: 60 * 1000 }); // waitUntil: 'load',
             // await page.goto(URL, { timeout: 10 }); // waitUntil: 'load',
-            // await page.goto(URL, { waitUntil: "networkidle2" }); // ONPROJECTFINISH: Add networkidle0, networkidle2 and other multiple modes
-            break;
+            // await page.goto(URL, { waitUntil: "networkidle2" });
+            const pageContent = await page.content();
+            if (pageContent.includes('/Framework/Resources/Images/Layout/Errors/500_error.png')) {
+                process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
+                if (gotoCnt < 4) {
+                    // Sleep for 5 mins
+                    for (let cnt = 0; cnt < 100; cnt++) {
+                        process.stdout.write(chalk.yellow.bold('.'));
+                        await waitForSeconds(3);
+                    }
+                } else {
+                    console.log(
+                        chalk.white.bgRed.bold(`\nUnable to open the url after 4 retries in interval of 5 mins each (20 mins), found error 500.`)
+                    );
+                    process.exit(0);
+                }
+            } else {
+                break;
+            }
         } catch (err) {
             if (
                 err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
