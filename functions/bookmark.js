@@ -202,35 +202,18 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         return { result: false, bookmarkAppendMesg: 'Ignoring (Duplicate, Already downloaded)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }
 
-    for (let gotoIndex = 0; gotoIndex < 24; gotoIndex++) {
+    let parsedCurrentUrlWOQueryParams = new URLparser(page.url());
+    parsedCurrentUrlWOQueryParams = parsedCurrentUrlWOQueryParams.host + parsedCurrentUrlWOQueryParams.pathname;
+    if (parsedCurrentUrlWOQueryParams !== vehicleBookmarkUrlWOQueryParams) {
         await gotoURL(page, URL, debug);
-        if (page.url().startsWith(`${getAppDomain()}/dashboard?`)) {
-            debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
-            debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
-            debug ? '' : process.stdout.cursorTo(0);
-            process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
-            await waitForSeconds(5);
-            return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
-        }
-        const pageContent = await page.content();
-        // LOWPRIORITY: Make sure this is applied everywhere when a page.goto happens
-        if (pageContent.includes('/Framework/Resources/Images/Layout/Errors/500_error.png')) {
-            process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
-            if (gotoIndex < 4) {
-                // Sleep for 5 mins
-                for (let cnt = 0; cnt < 100; cnt++) {
-                    process.stdout.write(chalk.yellow.bold('.'));
-                    await waitForSeconds(3);
-                }
-            } else {
-                console.log(
-                    chalk.white.bgRed.bold(`\nUnable to open the url after 24 retries in interval of 5 mins each (2 hours), found error 500.`)
-                );
-                process.exit(0);
-            }
-        } else {
-            break;
-        }
+    }
+    if (page.url().startsWith(`${getAppDomain()}/dashboard?`)) {
+        debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
+        debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
+        debug ? '' : process.stdout.cursorTo(0);
+        process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
+        await waitForSeconds(5);
+        return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }
 
     const returnObj = await getImagesFromContent(page, lotIndex, username, dealerFolder);
