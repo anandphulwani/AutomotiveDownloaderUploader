@@ -96,6 +96,26 @@ for (const LotIndexEle of LotIndexArray) {
     sleep(3);
 }
 
+/**
+ * Read chrome bookmarks from chrome browser
+ */
+const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
+const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
+
+const bookmarksBarData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
+if (!bookmarksBarData.length > 0) {
+    console.log(chalk.white.bgRed.bold(`Bookmarks section doesn't contain bookmarks bar.`));
+    process.exit(1);
+}
+const bookmarksBarDataChildren = bookmarksBarData[0].children;
+
+const allUsernamesFromConfig = config.credentials.map((item) => item.username);
+const allUsernamesBookmarks = bookmarksBarDataChildren.filter((usernameLevelBookmark) => allUsernamesFromConfig.includes(usernameLevelBookmark.name));
+if (!allUsernamesBookmarks.length > 0) {
+    console.log(chalk.white.bgRed.bold(`Bookmarks bar doesn't contain folders of the usernames available in the config.`));
+    process.exit(1);
+}
+
 // Create a set of all completed bookmarks to compare for duplicates
 let urlsDownloaded = [];
 // eslint-disable-next-line no-restricted-syntax
