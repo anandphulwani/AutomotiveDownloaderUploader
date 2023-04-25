@@ -328,9 +328,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     if (config.automaticClickSaveButtonOnUpload) {
         await clickOnButton(page, saveButtonSelector);
     } else {
-    await page.mouse.move(saveButtonElementRect.x + saveButtonElementRect.width / 2, saveButtonElementRect.y + saveButtonElementRect.height / 2, {
-        steps: 1,
-    });
+        await page.mouse.move(saveButtonElementRect.x + saveButtonElementRect.width / 2, saveButtonElementRect.y + saveButtonElementRect.height / 2, {
+            steps: 1,
+        });
     }
     await page.waitForNavigation({ timeout: 300000 });
     if (stockFilePath !== undefined) {
