@@ -577,8 +577,14 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                 return { x, y, width, height };
             }, toPositionElement);
             if (oldToPositionElementRectX !== undefined && Math.abs(toPositionElementRect.x - oldToPositionElementRectX) > 50) {
-                const currToPositionPrevIdSelector = fromPosition !== 1 ? `${toPositionIdSelector} + li ` : false;
-                const currToPositionNextIdSelector = totalImages !== toPosition ? `${toPositionIdSelector} ~ li` : false;
+                const currToPositionPrevIdSelector =
+                    toPosition !== 1
+                        ? `${imagesULSelector} > li:nth-child(${zeroPad(fromPosition < toPosition ? toPosition : toPosition - 1, 2)})`
+                        : false;
+                const currToPositionNextIdSelector =
+                    totalImages !== toPosition
+                        ? `${imagesULSelector} > li:nth-child(${zeroPad(fromPosition < toPosition ? toPosition + 2 : toPosition + 1, 2)})`
+                        : false;
                 const currToPositionPrevSubImageVehicleId =
                     currToPositionPrevIdSelector !== false
                         ? await page.$eval(`${currToPositionPrevIdSelector} > div > img`, (element, attr) => element.getAttribute(attr), 'vehicleid')
