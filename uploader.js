@@ -143,14 +143,14 @@ if (!allUsernamesBookmarks.length > 0) {
     let userLoggedIn = '';
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
-        console.log(chalk.cyan(`Uploading Bookmarks for the Username: ${chalk.cyan.bold(usernameBookmark.name)}`));
+        console.log(chalk.cyan(`Uploading bookmarks for the Username: ${chalk.cyan.bold(usernameBookmark.name)}`));
         const credentials = getCredentialsForUsername(usernameBookmark.name);
 
         setCurrentDealerConfiguration(usernameBookmark.name);
         const allottedDealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) => dealerLevelBookmark.name.includes(' |#| '));
         // eslint-disable-next-line no-restricted-syntax
         for (const dealerLevelBookmark of allottedDealerLevelBookmarks) {
-            console.log(dealerLevelBookmark.name);
+            // console.log(dealerLevelBookmark.name);
             // eslint-disable-next-line no-continue
             // continue;
 
@@ -196,7 +196,7 @@ if (!allUsernamesBookmarks.length > 0) {
                             userLoggedIn = usernameBookmark.name;
                         }
 
-                        console.log(vehicleBookmark.name);
+                        // console.log(vehicleBookmark.name);
                         const returnObj = await uploadBookmarkURL(
                             page,
                             uniqueIdElement,
