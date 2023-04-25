@@ -66,7 +66,9 @@ if (
     )
 ) {
     console.log(chalk.white.bgRed.bold(`Please correct the above errors, in order to continue.`));
-    process.exit(1);
+    if (config.environment === 'production') {
+        process.exit(1);
+    }
 }
 
 // await killChrome({
