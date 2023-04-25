@@ -30,7 +30,13 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     const diffInRows = endingRow - startingRow;
 
     for (let gotoIndex = 0; gotoIndex < 24; gotoIndex++) {
-        if (page.url() !== URL) {
+        let vehicleBookmarkUrlWOQueryParams = new URLparser(URL);
+        vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
+
+        let parsedCurrentUrlWOQueryParams = new URLparser(page.url());
+        parsedCurrentUrlWOQueryParams = parsedCurrentUrlWOQueryParams.host + parsedCurrentUrlWOQueryParams.pathname;
+
+        if (parsedCurrentUrlWOQueryParams !== vehicleBookmarkUrlWOQueryParams) {
             await gotoURL(page, URL, debug);
         }
         if (page.url().startsWith(`${getAppDomain()}/dashboard?`)) {
