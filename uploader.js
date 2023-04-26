@@ -18,7 +18,7 @@ import { validateDealerConfigurationExcelFile } from './functions/excelvalidatio
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
 import { validateConfigFile } from './functions/configvalidation.js';
 import {
-    moveFile,
+    createDirAndMoveFile,
     getFileCountRecursively,
     getFolderSizeInBytes,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
@@ -74,7 +74,7 @@ for (const folderToShift of foldersToShift) {
         foldersToShift.splice(folderToShift);
     } else {
         const newUploadingZonePath = `${config.uploadingZonePath}\\${todaysDate}\\${path.basename(folderToShift[0])}`;
-        await moveFile(folderToShift[0], newUploadingZonePath);
+        await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
         folderToShift[0] = newUploadingZonePath;
     }
 } // );
