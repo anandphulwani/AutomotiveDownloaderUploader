@@ -182,8 +182,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             const stockFolderSubFolderAndFilesStat = fs.statSync(stockFolderSubFolderAndFilesPath);
 
             if (stockFolderSubFolderAndFilesStat.isFile()) {
+                await page.bringToFront();
                 const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
                 await fileChooser.accept([path.resolve(stockFolderSubFolderAndFilesPath)]);
+                const session = await page.target().createCDPSession();
+                const { windowId } = await session.send('Browser.getWindowForTarget');
+                await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
             }
             // console.log(stockFolderSubFolderAndFiles);
             // TODO: Folder still exists after picking from 000_ReadyToUpload, was a user fault earlier, but have to create a system to create a failsafe.
@@ -201,9 +205,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             putFirstPositionEditedImageInTheLastPositionAlsoFromDC &&
             (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
         ) {
-            const firstImagePath = stockFilePath === undefined ? path.join(stockFolderPath, firstImage) : path.join(uniqueIdFolderPath, firstImage);
+            await page.bringToFront();
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
             await fileChooser.accept([path.resolve(firstImagePath)]);
+            const session = await page.target().createCDPSession();
+            const { windowId } = await session.send('Browser.getWindowForTarget');
+            await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
         }
     } catch (error) {
         console.log(`error01: ${error}`);

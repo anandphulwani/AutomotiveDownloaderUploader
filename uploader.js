@@ -192,10 +192,10 @@ if (!allUsernamesBookmarks.length > 0) {
                     if (vehicleBookmark.name.includes(' |#| ') && !vehicleBookmark.name.split(' |#| ')[1].startsWith('Ignoring')) {
                         if (typeof page === 'boolean' && !page) {
                             ({ page, browser } = await initBrowserAndGetPage('upload'));
-                            // TODO: Check and enable // Create raw protocol session.
-                            // const session = await page.target().createCDPSession();
-                            // const { windowId } = await session.send('Browser.getWindowForTarget');
-                            // await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
+                            // ONPROJECTFINISH: Check if we can stop flickering. // Create raw protocol session.
+                            const session = await page.target().createCDPSession();
+                            const { windowId } = await session.send('Browser.getWindowForTarget');
+                            await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
                         }
                         if (userLoggedIn !== usernameBookmark.name) {
                             const currentURL = await gotoURL(page, vehicleBookmark.url);
