@@ -241,6 +241,7 @@ export {
     moveFile,
     copyDirOrFile,
     createDirAndCopyFile,
+    createDirAndMoveFile,
     createDirAndMoveFileFromTempDirToDestination,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
     removeDir,
