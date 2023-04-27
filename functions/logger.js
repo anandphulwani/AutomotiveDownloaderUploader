@@ -30,7 +30,17 @@ const logFormatConsole = printf(({ level, message, uniqueId, timestamp: ts, stac
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
     uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
-    logMesg.push(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}:`.padEnd(11, ' '));
+    let levelToPrint = '';
+    if (level === 'warn') {
+        levelToPrint = 'warning';
+    } else if (level === 'info') {
+        levelToPrint = '';
+    } else {
+        levelToPrint = level;
+    }
+    if (level === 'catcherror' || level === 'error' || level === 'warn') {
+        logMesg.push(`${levelToPrint}:`.padEnd(11, ' ').toUpperCase());
+    }
     logMesg.push(message);
     logMesg = logMesg.join(' ');
     if (level === 'catcherror') {
