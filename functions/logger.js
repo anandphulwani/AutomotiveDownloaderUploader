@@ -110,6 +110,7 @@ const catcherrorFileWinston = createLogger({
     defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
+            handleExceptions: true,
             ...fileTransportOptions,
             name: 'all',
             filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
@@ -129,6 +130,7 @@ const errorFileWinston = createLogger({
     defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
+            handleExceptions: true,
             ...fileTransportOptions,
             name: 'all',
             filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
@@ -148,6 +150,7 @@ const warnFileWinston = createLogger({
     defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
+            handleExceptions: true,
             ...fileTransportOptions,
             name: 'all',
             filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
@@ -167,6 +170,7 @@ const infoFileWinston = createLogger({
     defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
+            handleExceptions: true,
             ...fileTransportOptions,
             name: 'all',
             filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
