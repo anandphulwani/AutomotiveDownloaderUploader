@@ -116,12 +116,6 @@ const catcherrorFileWinston = createLogger({
             filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
             level: 'catcherror',
         }),
-        new transports.File({
-            ...fileTransportOptions,
-            name: 'catcherror',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_catcherror.log`,
-            level: 'catcherror',
-        }),
     ],
 });
 
@@ -134,12 +128,6 @@ const errorFileWinston = createLogger({
             ...fileTransportOptions,
             name: 'all',
             filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
-            level: 'error',
-        }),
-        new transports.File({
-            ...fileTransportOptions,
-            name: 'error',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_error.log`,
             level: 'error',
         }),
     ],
@@ -156,12 +144,6 @@ const warnFileWinston = createLogger({
             filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
             level: 'warn',
         }),
-        new transports.File({
-            ...fileTransportOptions,
-            name: 'warn',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_warn.log`,
-            level: 'warn',
-        }),
     ],
 });
 
@@ -174,12 +156,6 @@ const infoFileWinston = createLogger({
             ...fileTransportOptions,
             name: 'all',
             filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
-            level: 'info',
-        }),
-        new transports.File({
-            ...fileTransportOptions,
-            name: 'info',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_info.log`,
             level: 'info',
         }),
     ],
@@ -238,6 +214,69 @@ const infoConsoleWinston = createLogger({
 });
 /* #endregion Console loggers: catcherror, error, warn, info : End */
 
+/* #region addIndividualTransport Functions : Begin */
+let isIndividualTransportCatcherrorConsoleWinstonEnabled = false;
+function addIndividualTransportCatcherrorConsoleWinston() {
+    if (!isIndividualTransportCatcherrorConsoleWinstonEnabled) {
+        catcherrorConsoleWinston.add(
+            new transports.File({
+                handleExceptions: true,
+                ...fileTransportOptions,
+                name: 'catcherror',
+                filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_catcherror.log`,
+                level: 'catcherror',
+            })
+        );
+        isIndividualTransportCatcherrorConsoleWinstonEnabled = true;
+    }
+}
+
+let isIndividualTransportErrorConsoleWinstonEnabled = false;
+function addIndividualTransportErrorConsoleWinston() {
+    if (!isIndividualTransportErrorConsoleWinstonEnabled) {
+        errorConsoleWinston.add(
+            new transports.File({
+                ...fileTransportOptions,
+                name: 'error',
+                filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_error.log`,
+                level: 'error',
+            })
+        );
+        isIndividualTransportErrorConsoleWinstonEnabled = true;
+    }
+}
+
+let isIndividualTransportWarnConsoleWinstonEnabled = false;
+function addIndividualTransportWarnConsoleWinston() {
+    if (!isIndividualTransportWarnConsoleWinstonEnabled) {
+        warnConsoleWinston.add(
+            new transports.File({
+                ...fileTransportOptions,
+                name: 'warn',
+                filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_warn.log`,
+                level: 'warn',
+            })
+        );
+        isIndividualTransportWarnConsoleWinstonEnabled = true;
+    }
+}
+
+let isIndividualTransportInfoConsoleWinstonEnabled = false;
+function addIndividualTransportInfoConsoleWinston() {
+    if (!isIndividualTransportInfoConsoleWinstonEnabled) {
+        infoConsoleWinston.add(
+            new transports.File({
+                ...fileTransportOptions,
+                name: 'info',
+                filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_info.log`,
+                level: 'info',
+            })
+        );
+        isIndividualTransportInfoConsoleWinstonEnabled = true;
+    }
+}
+/* #endregion addIndividualTransport Functions : End */
+
 /* #region Main logger functions: loggerFile, loggerConsole : Begin */
 const loggerFile = {
     catcherror: (params) => catcherrorFileWinston.catcherror(params),
@@ -268,7 +307,14 @@ loggerConsole.level = process.env.LOG_LEVEL || 'silly';
 // #endregion
 
 // eslint-disable-next-line import/prefer-default-export
-export { loggerFile, loggerConsole };
+export {
+    loggerFile,
+    loggerConsole,
+    addIndividualTransportCatcherrorConsoleWinston,
+    addIndividualTransportErrorConsoleWinston,
+    addIndividualTransportWarnConsoleWinston,
+    addIndividualTransportInfoConsoleWinston,
+};
 
 // new transports.File(fileTransportOptions('verbose', `${todaysDateWithTime}_verbose.log`)),
 // new transports.File(fileTransportOptions('debug', `${todaysDateWithTime}_debug.log`)),

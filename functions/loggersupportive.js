@@ -1,22 +1,33 @@
-// eslint-disable-next-line import/extensions
-import { loggerFile, loggerConsole } from './logger.js';
+/* eslint-disable import/extensions */
+import {
+    loggerFile,
+    loggerConsole,
+    addIndividualTransportCatcherrorConsoleWinston,
+    addIndividualTransportErrorConsoleWinston,
+    addIndividualTransportWarnConsoleWinston,
+    addIndividualTransportInfoConsoleWinston,
+} from './logger.js';
 
-const lgc = (...args) => {
+const lgc = async (...args) => {
+    addIndividualTransportCatcherrorConsoleWinston();
     loggerConsole.catcherror(...args);
     loggerFile.catcherror(...args);
 };
 
 const lge = (...args) => {
+    addIndividualTransportErrorConsoleWinston();
     loggerConsole.error(...args);
     loggerFile.error(...args);
 };
 
 const lgw = (...args) => {
+    addIndividualTransportWarnConsoleWinston();
     loggerConsole.warn(...args);
     loggerFile.warn(...args);
 };
 
 const lgi = (...args) => {
+    addIndividualTransportInfoConsoleWinston();
     loggerConsole.info(...args);
     loggerFile.info(...args);
 };
