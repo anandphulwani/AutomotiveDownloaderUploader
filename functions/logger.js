@@ -39,11 +39,15 @@ const logFormatConsole = printf(({ level, message, uniqueId, timestamp: ts, stac
         levelToPrint = level;
     }
     if (level === 'catcherror' || level === 'error' || level === 'warn') {
-        logMesg.push(`${levelToPrint}:`.padEnd(11, ' ').toUpperCase());
+        logMesg.push(`${levelToPrint}:`.toUpperCase());
     }
     logMesg.push(message);
     logMesg = logMesg.join(' ');
+    logMesg = logMesg.padEnd(120, ' ');
     if (level === 'catcherror') {
+        stack = stack.split('\n');
+        stack = stack.map((line) => line.padEnd(120, ' '));
+        stack = stack.join('\n');
         logMesg = `${chalk.bgRed.white(logMesg)}\n${chalk.bgRedBright.white(stack)}`;
     } else if (level === 'error') {
         logMesg = chalk.white.bgRed.bold(logMesg);
