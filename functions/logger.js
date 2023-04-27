@@ -1,22 +1,64 @@
+import date from 'date-and-time';
+import chalk from 'chalk';
 import { createLogger, format, transports } from 'winston';
-import { combine, timestamp, printf } from 'logform';
-// import { generateUniqueId } from './utils';
 
-// Define log message format
-const logFormat = printf(({ level, message, uniqueId, timestamp: ts }) => `${ts} [${level.toUpperCase()}] [${uniqueId}] ${message}`);
+const { combine, timestamp, printf, errors } = format;
+const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
+const todaysDateWithTime = date.format(new Date(), 'YYYYMMDD-HHmmss');
 
-// Define transport options for logging to file
+// #region
+// Define log functions
+// TODO: Change this option to take id generated from config
+const generateUniqueId = () => Math.floor(Math.random() * 900000) + 100000;
+const timezoned = () => date.format(new Date(), 'YYYY-MM-DD HH:mm:ss:SSS');
+
+/* #region logFormatFile and logFormatConsole : Begin */
+const logFormatFile = printf(({ level, message, uniqueId, timestamp: ts, stack }) => {
+    let logMesg = [];
+    ts !== undefined ? logMesg.push(ts) : null;
+    uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
+    logMesg.push(`[${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}]`.padEnd(12, ' '));
+    logMesg.push(message);
+    logMesg = logMesg.join(' ');
+    if (stack) {
+        logMesg = `${logMesg}\n${stack}`;
+    }
+    return logMesg;
+});
+
+const logFormatConsole = printf(({ level, message, uniqueId, timestamp: ts, stack }) => {
+    let logMesg = [];
+    ts !== undefined ? logMesg.push(ts) : null;
+    uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
+    logMesg.push(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}:`.padEnd(11, ' '));
+    logMesg.push(message);
+    logMesg = logMesg.join(' ');
+    if (level === 'catcherror') {
+        logMesg = `${chalk.bgRed.white(logMesg)}\n${chalk.bgRedBright.white(stack)}`;
+    } else if (level === 'error') {
+        logMesg = chalk.white.bgRed.bold(logMesg);
+    } else if (level === 'warn') {
+        logMesg = chalk.white.bgYellow.bold(logMesg);
+    } else if (level === 'info') {
+        logMesg = chalk.cyan(logMesg);
+    } else {
+        logMesg = chalk.inverse(logMesg);
+    }
+    return logMesg;
+});
+/* #endregion logFormatFile and logFormatConsole : End */
+
+/* #region fileTransportOptions and consoleTransportOptions : Begin */
 const fileTransportOptions = {
-    filename: `logs/${new Date().toISOString().slice(0, 10)}/application.log`,
-    level: 'info',
     handleExceptions: true,
     format: combine(
-        timestamp(),
+        timestamp({ format: timezoned }),
+        errors({ stack: true }),
         format((info, opts) => {
-            info.uniqueId = ''; // generateUniqueId();
+            info.uniqueId = generateUniqueId();
             return info;
         })(),
-        logFormat
+        logFormatFile
     ),
     maxsize: 10485760, // 10MB
     maxFiles: 5,
@@ -25,86 +67,191 @@ const fileTransportOptions = {
 
 // Define transport options for logging to console
 const consoleTransportOptions = {
-    level: 'info',
     handleExceptions: true,
     format: combine(
+        timestamp({ format: timezoned }),
+        errors({ stack: true }),
         format((info, opts) => {
-            info.uniqueId = ''; // generateUniqueId();
+            info.uniqueId = generateUniqueId();
             return info;
         })(),
-        format.colorize(),
         format((info, opts) => {
             delete info.timestamp;
             return info;
         })(),
-        logFormat
+        format((info, opts) => {
+            delete info.uniqueId;
+            return info;
+        })(),
+        logFormatConsole
     ),
 };
+/* #endregion fileTransportOptions and consoleTransportOptions : End */
 
-// Create logger with custom levels and transports
-const logger = createLogger({
-    levels: {
-        error: 0,
-        warn: 1,
-        info: 2,
-        verbose: 3,
-        debug: 4,
-        // silly: 5,
-    },
-    transports: [new transports.File(fileTransportOptions), new transports.Console(consoleTransportOptions)],
+/* #region File loggers: catcherror, error, warn, info : Begin */
+const catcherrorFileWinston = createLogger({
+    format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'catcherror',
+    levels: { catcherror: 0 },
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'all',
+            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            level: 'catcherror',
+        }),
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'catcherror',
+            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_catcherror.log`,
+            level: 'catcherror',
+        }),
+    ],
 });
 
-// Only log warn, error, and fatal to file
-logger.add(
-    new transports.File({
-        ...fileTransportOptions,
-        level: 'warn',
-        filename: `logs/${new Date().toISOString().slice(0, 10)}/error.log`,
-    })
-);
+const errorFileWinston = createLogger({
+    level: 'error',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'all',
+            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            level: 'error',
+        }),
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'error',
+            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_error.log`,
+            level: 'error',
+        }),
+    ],
+});
 
-const lge = (...args) => {
-    logger.error(...args);
+const warnFileWinston = createLogger({
+    level: 'warn',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'all',
+            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            level: 'warn',
+        }),
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'warn',
+            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_warn.log`,
+            level: 'warn',
+        }),
+    ],
+});
+
+const infoFileWinston = createLogger({
+    level: 'info',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'all',
+            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            level: 'info',
+        }),
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'info',
+            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_info.log`,
+            level: 'info',
+        }),
+    ],
+});
+/* #endregion File loggers: catcherror, error, warn, info : End */
+
+/* #region Console loggers: catcherror, error, warn, info : Begin */
+const catcherrorConsoleWinston = createLogger({
+    format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'catcherror',
+    levels: { catcherror: 0 },
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'catcherror',
+            level: 'catcherror',
+        }),
+    ],
+});
+
+const errorConsoleWinston = createLogger({
+    level: 'error',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'error',
+            level: 'error',
+        }),
+    ],
+});
+
+const warnConsoleWinston = createLogger({
+    level: 'warn',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'warn',
+            level: 'warn',
+        }),
+    ],
+});
+
+const infoConsoleWinston = createLogger({
+    level: 'info',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'info',
+            level: 'info',
+        }),
+    ],
+});
+/* #endregion Console loggers: catcherror, error, warn, info : End */
+
+/* #region Main logger functions: loggerFile, loggerConsole : Begin */
+const loggerFile = {
+    catcherror: (params) => catcherrorFileWinston.catcherror(params),
+    error: (params) => errorFileWinston.error(params),
+    warn: (params) => warnFileWinston.warn(params),
+    info: (params) => infoFileWinston.info(params),
 };
 
-const lgw = (...args) => {
-    logger.warn(...args);
+const loggerConsole = {
+    catcherror: (params) => catcherrorConsoleWinston.catcherror(params),
+    error: (params) => errorConsoleWinston.error(params),
+    warn: (params) => warnConsoleWinston.warn(params),
+    info: (params) => infoConsoleWinston.info(params),
 };
+/* #endregion Main logger functions: loggerFile, loggerConsole : End */
 
-const lgi = (...args) => {
-    logger.info(...args);
-};
-
-const lgv = (...args) => {
-    logger.verbose(...args);
-};
-
-const lgd = (...args) => {
-    logger.debug(...args);
-};
-
+// #region
 // Set logger level based on environment variable (default to info)
-logger.level = process.env.LOG_LEVEL || 'info';
+// logger.level = process.env.LOG_LEVEL || 'info';
+loggerFile.level = process.env.LOG_LEVEL || 'silly';
+loggerConsole.level = process.env.LOG_LEVEL || 'silly';
 
-export { lge, lgw, lgi, lgv, lgd };
+// // Rotate logs and persist logs with warn, error, fatal on disk
+// setInterval(() => {
+//     logger.info('Rotating logs');
+//     logger.flush();
+// }, 24 * 60 * 60 * 1000); // Rotate logs once per day
+// #endregion
 
-// const logger = winston.createLogger({
-//     level: 'info',
-//     format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
-//     transports: [
-//         new winston.transports.Console(),
-//         new winston.transports.File({ filename: 'error.log', level: 'error' }),
-//         new winston.transports.File({ filename: 'combined.log' }),
-//     ],
-// });
+// eslint-disable-next-line import/prefer-default-export
+export { loggerFile, loggerConsole };
 
-// // import logger from './logger.js';
-
-// const lgi = (...args) => {
-//     logger.info(...args);
-// };
-
-// logger.info('This is an information message.');
-// logger.error('This is an error message.');
-
-// export default logger;
+// new transports.File(fileTransportOptions('verbose', `${todaysDateWithTime}_verbose.log`)),
+// new transports.File(fileTransportOptions('debug', `${todaysDateWithTime}_debug.log`)),
+// new transports.File(fileTransportOptions('silly', `${todaysDateWithTime}_silly.log`)),
