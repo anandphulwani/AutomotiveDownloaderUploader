@@ -82,6 +82,8 @@ const configBasic = {
     ],
     lotLastRunNumber: '',
     lotLastRunDate: '',
+    nonCatchErrorLogLevels9DigitUniqueId: '',
+    catchErrorLogLevels6DigitUniqueId: '',
 };
 
 /**
