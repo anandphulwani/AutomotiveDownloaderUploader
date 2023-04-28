@@ -8,43 +8,71 @@ import {
     addIndividualTransportInfoConsoleWinston,
 } from './logger.js';
 
+const addFileInfo = (message, filename, line) => {
+    const fileInfo = `${filename}:${line}`;
+    return `${message} (${fileInfo})`;
+};
+
+const getCallerDetails = () => {
+    const stackTrace = new Error().stack.split('\n');
+    const stackDetails = stackTrace[3].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+    return {
+        filename: stackDetails[2],
+        lineNumber: stackDetails[3],
+    };
+};
+
 const lgc = async (...args) => {
     addIndividualTransportCatcherrorConsoleWinston();
-    loggerConsole.catcherror(...args);
-    loggerFile.catcherror(...args);
+    const { filename, lineNumber } = getCallerDetails();
+    const message = addFileInfo(...args, filename, lineNumber);
+    loggerConsole.catcherror(message);
+    loggerFile.catcherror(message);
 };
 
 const lge = (...args) => {
     addIndividualTransportErrorConsoleWinston();
-    loggerConsole.error(...args);
-    loggerFile.error(...args);
+    const { filename, lineNumber } = getCallerDetails();
+    const message = addFileInfo(...args, filename, lineNumber);
+    loggerConsole.error(message);
+    loggerFile.error(message);
 };
 
 const lgw = (...args) => {
     addIndividualTransportWarnConsoleWinston();
-    loggerConsole.warn(...args);
-    loggerFile.warn(...args);
+    const { filename, lineNumber } = getCallerDetails();
+    const message = addFileInfo(...args, filename, lineNumber);
+    loggerConsole.warn(message);
+    loggerFile.warn(message);
 };
 
 const lgi = (...args) => {
     addIndividualTransportInfoConsoleWinston();
-    loggerConsole.info(...args);
-    loggerFile.info(...args);
+    const { filename, lineNumber } = getCallerDetails();
+    const message = addFileInfo(...args, filename, lineNumber);
+    loggerConsole.info(message);
+    loggerFile.info(message);
 };
 
 const lgv = (...args) => {
-    loggerConsole.verbose(...args);
-    loggerFile.verbose(...args);
+    const { filename, lineNumber } = getCallerDetails();
+    const message = addFileInfo(...args, filename, lineNumber);
+    loggerConsole.verbose(message);
+    loggerFile.verbose(message);
 };
 
 const lgd = (...args) => {
-    loggerConsole.debug(...args);
-    loggerFile.debug(...args);
+    const { filename, lineNumber } = getCallerDetails();
+    const message = addFileInfo(...args, filename, lineNumber);
+    loggerConsole.debug(message);
+    loggerFile.debug(message);
 };
 
 const lgs = (...args) => {
-    loggerConsole.silly(...args);
-    loggerFile.silly(...args);
+    const { filename, lineNumber } = getCallerDetails();
+    const message = addFileInfo(...args, filename, lineNumber);
+    loggerConsole.silly(message);
+    loggerFile.silly(message);
 };
 
 // Export log functions
