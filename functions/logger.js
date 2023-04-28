@@ -41,6 +41,8 @@ const logFormatConsole = printf(({ level, message, uniqueId, timestamp: ts, stac
     if (level === 'catcherror' || level === 'error' || level === 'warn') {
         logMesg.push(`${levelToPrint}:`.toUpperCase());
     }
+    message = message.match(/(.+)( \((.+?).(.+?):\d+)\)/);
+    [, message] = message;
     logMesg.push(message);
     logMesg = logMesg.join(' ');
     logMesg = logMesg.padEnd(120, ' ');
