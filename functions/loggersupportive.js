@@ -25,9 +25,13 @@ const getCallerDetails = (...args) => {
     if (filename === undefined && lineNumber === undefined) {
         stackTrace = new Error().stack.split('\n');
         const stackDetailsCatchLine = stackTrace[3].match(/at (.+)\/(.+?):(\d+):(\d+)/);
-        const stackDetailsErrorLineInTry = stackTrace[4].match(/at (.+)\/(.+?):(\d+):(\d+)/);
         [, , filename] = stackDetailsCatchLine;
-        lineNumber = `${stackDetailsCatchLine[3]},${stackDetailsErrorLineInTry[3]}`;
+        if (stackTrace[4] !== undefined) {
+            const stackDetailsErrorLineInTry = stackTrace[4].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+            lineNumber = `${stackDetailsCatchLine[3]},${stackDetailsErrorLineInTry[3]}`;
+        } else {
+            [, , , lineNumber] = stackDetailsCatchLine;
+        }
     }
     return {
         filename: filename,
