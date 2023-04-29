@@ -69,10 +69,10 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
 }
 
 function getContractorsCurrentAllotted(contractor) {
-    const configUser = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
-    const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+    const configUserContent = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
+    const regexString = `(const configUserContent = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
     const regexExpression = new RegExp(regexString, 'g');
-    const match = configUser.match(regexExpression);
+    const match = configUserContent.match(regexExpression);
     const currentAllotted = match[0].match(regexString)[4];
     return currentAllotted;
 }
