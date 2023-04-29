@@ -2,23 +2,41 @@ import chalk from 'chalk';
 import fs from 'fs';
 
 /* eslint-disable import/extensions */
+import { lge, lgw, lgi, lgv, lgd, lgs, lgc } from './functions/loggersupportive.js';
 /* eslint-enable import/extensions */
 
 try {
-    const subFoldersAndFiles = fs.readdirSync('F:\\abcde');
-    // filteredSubFoldersAndFiles = subFoldersAndFiles.filter((subFolderOrFile) => {
-    //     const isDirectory = fs.statSync(`${dirPath}/${subFolderOrFile}`).isDirectory();
-    //     return isDirectory && subFolderOrFile.startsWith(startingTxt);
-    // });
+    throw new Error('No One(1) Such known exception');
 } catch (err) {
-    console.log(err.message);
-    console.log(err.errno);
-    console.log(err.code);
-    // eslint-disable-next-line prefer-regex-literals
-    const noSuchFileRegex = new RegExp('ENOENT: no such file or directory.*', 'g');
-    if (noSuchFileRegex.test(err.message)) {
-        // if (noSuchFileRegex.test('ENOENT: no such file or directory Hello worlds this is atest ')) {
-        console.log(chalk.white.bgRed.bold(`getListOfSubfoldersStartingWith${err.message.replace(/^ENOENT: n/, ': N')}`));
-    }
-    process.exit(1);
+    lgc(err);
 }
+
+try {
+    throw new Error('No Two(2) Such known exception');
+} catch (err) {
+    lgc(`cathcing now`, err);
+}
+try {
+    throw new Error('No Three(3) Such known exception');
+} catch (err) {
+    lgc(`cathcing now`, err);
+}
+try {
+    throw new Error('No Four(4) Such known exception');
+} catch (err) {
+    lgc(`cathcing now`, err);
+}
+try {
+    throw new Error('No Five(5) Such known exception');
+} catch (err) {
+    lgc(`cathcing now`, err);
+}
+
+// eslint-disable-next-line no-undef
+lge(`This is a error.`);
+// lgw('This is a warn.');
+// lgi('This is an info.');
+
+// lgv('This is a verbose.');
+// lgd('This is a debug.');
+// lgs('This is a silly');
