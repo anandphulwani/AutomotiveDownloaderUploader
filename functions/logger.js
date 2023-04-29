@@ -8,17 +8,16 @@ const todaysDateWithTime = date.format(new Date(), 'YYYYMMDD-HHmmss');
 
 // #region
 // Define log functions
-// TODO: Change this option to take id generated from config
-const generateUniqueId = () => Math.floor(Math.random() * 900000) + 100000;
 const timezoned = () => date.format(new Date(), 'YYYY-MM-DD HH:mm:ss:SSS');
 
 /* #region logFormatFile and logFormatConsole : Begin */
-const logFormatFile = printf(({ level, message, uniqueId, timestamp: ts, stack }) => {
+const logFormatFile = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
+    const { filename, lineNumber, uniqueId } = sp.slice(-1)[0];
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
     uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
     logMesg.push(`[${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}]`.padEnd(12, ' '));
-    logMesg.push(message);
+    logMesg.push(`${message} (${filename}:${lineNumber})`);
     logMesg = logMesg.join(' ');
     if (stack) {
         logMesg = `${logMesg}\n${stack}`;
@@ -26,10 +25,13 @@ const logFormatFile = printf(({ level, message, uniqueId, timestamp: ts, stack }
     return logMesg;
 });
 
-const logFormatConsole = printf(({ level, message, uniqueId, timestamp: ts, stack }) => {
+const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
+    const { filename, lineNumber, uniqueId } = sp.slice(-1)[0];
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
-    uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
+    if (level === 'catcherror') {
+        uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
+    }
     let levelToPrint = '';
     if (level === 'warn') {
         levelToPrint = 'warning';
@@ -38,12 +40,13 @@ const logFormatConsole = printf(({ level, message, uniqueId, timestamp: ts, stac
     } else {
         levelToPrint = level;
     }
-    if (level === 'catcherror' || level === 'error' || level === 'warn') {
-        logMesg.push(`${levelToPrint}:`.toUpperCase());
+    logMesg.push(`${levelToPrint}:`.toUpperCase());
+    if (level === 'info') {
+        logMesg.push(message);
+    } else {
+        logMesg.push(message);
+        // logMesg.push(`${message} (${filename}:${lineNumber})`);
     }
-    message = message.match(/(.+)( \((.+?).(.+?):\d+)\)/);
-    [, message] = message;
-    logMesg.push(message);
     logMesg = logMesg.join(' ');
     logMesg = logMesg.padEnd(120, ' ');
     if (level === 'catcherror') {
