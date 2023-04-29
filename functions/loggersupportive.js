@@ -7,51 +7,68 @@ import {
     addIndividualTransportWarnConsoleWinston,
     addIndividualTransportInfoConsoleWinston,
 } from './logger.js';
+import { generateAndGetNonCatchErrorLogLevels9DigitUniqueId, generateAndGetCatchErrorLogLevels6DigitUniqueId } from './configsupportive.js';
+/* eslint-enable import/extensions */
 
-const addFileInfo = (message, filename, line) => {
-    const fileInfo = `${filename}:${line}`;
-    return `${message} (${fileInfo})`;
-};
-
-const getCallerDetails = () => {
-    const stackTrace = new Error().stack.split('\n');
-    const stackDetails = stackTrace[3].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+const getCallerDetails = (...args) => {
+    let stackTrace;
+    let filename;
+    let lineNumber;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const arg of args) {
+        if (arg instanceof Error) {
+            stackTrace = arg.stack.split('\n');
+            const stackDetailsCatchLine = stackTrace[1].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+            [, , filename, lineNumber] = stackDetailsCatchLine;
+        }
+    }
+    if (filename === undefined && lineNumber === undefined) {
+        stackTrace = new Error().stack.split('\n');
+        const stackDetailsCatchLine = stackTrace[3].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+        const stackDetailsErrorLineInTry = stackTrace[4].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+        [, , filename] = stackDetailsCatchLine;
+        lineNumber = `${stackDetailsCatchLine[3]},${stackDetailsErrorLineInTry[3]}`;
+    }
     return {
-        filename: stackDetails[2],
-        lineNumber: stackDetails[3],
+        filename: filename,
+        lineNumber: lineNumber,
     };
 };
 
-const lgc = async (...args) => {
+const lgc = (...args) => {
     addIndividualTransportCatcherrorConsoleWinston();
-    const { filename, lineNumber } = getCallerDetails();
-    const message = addFileInfo(...args, filename, lineNumber);
-    loggerConsole.catcherror(message);
-    loggerFile.catcherror(message);
+    const { filename, lineNumber } = getCallerDetails(...args);
+    generateAndGetCatchErrorLogLevels6DigitUniqueId().then((uniqueId) => {
+        loggerConsole.catcherror(...args, { filename, lineNumber, uniqueId });
+        loggerFile.catcherror(...args, { filename, lineNumber, uniqueId });
+    });
 };
 
 const lge = (...args) => {
     addIndividualTransportErrorConsoleWinston();
-    const { filename, lineNumber } = getCallerDetails();
-    const message = addFileInfo(...args, filename, lineNumber);
-    loggerConsole.error(message);
-    loggerFile.error(message);
+    const { filename, lineNumber } = getCallerDetails(...args);
+    generateAndGetNonCatchErrorLogLevels9DigitUniqueId().then((uniqueId) => {
+        loggerConsole.error(...args, { filename, lineNumber, uniqueId });
+        loggerFile.error(...args, { filename, lineNumber, uniqueId });
+    });
 };
 
 const lgw = (...args) => {
     addIndividualTransportWarnConsoleWinston();
-    const { filename, lineNumber } = getCallerDetails();
-    const message = addFileInfo(...args, filename, lineNumber);
-    loggerConsole.warn(message);
-    loggerFile.warn(message);
+    const { filename, lineNumber } = getCallerDetails(...args);
+    generateAndGetNonCatchErrorLogLevels9DigitUniqueId().then((uniqueId) => {
+        loggerConsole.warn(...args, { filename, lineNumber, uniqueId });
+        loggerFile.warn(...args, { filename, lineNumber, uniqueId });
+    });
 };
 
 const lgi = (...args) => {
     addIndividualTransportInfoConsoleWinston();
-    const { filename, lineNumber } = getCallerDetails();
-    const message = addFileInfo(...args, filename, lineNumber);
-    loggerConsole.info(message);
-    loggerFile.info(message);
+    const { filename, lineNumber } = getCallerDetails(...args);
+    generateAndGetNonCatchErrorLogLevels9DigitUniqueId().then((uniqueId) => {
+        loggerConsole.info(...args, { filename, lineNumber, uniqueId });
+        loggerFile.info(...args, { filename, lineNumber, uniqueId });
+    });
 };
 
 const lgv = (...args) => {
@@ -75,6 +92,5 @@ const lgs = (...args) => {
     loggerFile.silly(message);
 };
 
-// Export log functions
 // eslint-disable-next-line import/prefer-default-export
 export { lgc, lge, lgw, lgi, lgv, lgd, lgs };
