@@ -84,6 +84,24 @@ async function addToContractorsCurrentAllotted(contractor, quantity) {
     await setContractorsCurrentAllotted(contractor, newQuantity);
 }
 
+function getLastLotNumber() {
+    const configContent = fs.readFileSync('.\\configs\\config.js', 'utf8');
+    const lastLotNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\r\\n)`;
+    const lastLotNumberRegexExpression = new RegExp(lastLotNumberRegexString, 'g');
+
+    const match = configContent.match(lastLotNumberRegexExpression);
+    return match[0].match(lastLotNumberRegexExpression)[2];
+}
+
+function getLastLotDate() {
+    const configContent = fs.readFileSync('.\\configs\\config.js', 'utf8');
+    const lastLotDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\r\\n)`;
+    const lastLotDateRegexExpression = new RegExp(lastLotDateRegexString, 'g');
+
+    const match = configContent.match(lastLotDateRegexExpression);
+    return match[0].match(lastLotDateRegexExpression)[2];
+}
+
 async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
     for (let lockTryIndex = 0; lockTryIndex <= 10; lockTryIndex++) {
         try {
