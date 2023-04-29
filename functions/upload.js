@@ -544,10 +544,16 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
 }
 
 function typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark) {
+    lgif(
+        `typeOfStockPathAndOtherVars : BEGIN, Params: uniqueIdFolderPath: ${uniqueIdFolderPath}, stockNumberFromBookmark: ${stockNumberFromBookmark}`
+    );
     const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumberFromBookmark}`;
     let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumberFromBookmark}.`));
     stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
     const typeOfStockPath = stockFilePath === undefined ? 'stockFolder' : 'stockFile';
+    lgif(
+        `typeOfStockPathAndOtherVars : END, Returning: typeOfStockPath: ${typeOfStockPath}, stockFolderPath: ${stockFolderPath}, stockFilePath: ${stockFilePath}`
+    );
     return { typeOfStockPath: typeOfStockPath, stockFolderPath: stockFolderPath, stockFilePath: stockFilePath };
 }
 
