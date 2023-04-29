@@ -173,6 +173,7 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
     }
 }
 
+// ONPROJECTFINISH: Check if all codes are present in log files which are generated because winston is found to not log in files just before process.exit(1)
 /* #region getLastNonCatchErrorLogLevels9DigitUniqueId(), generateAndGetNonCatchErrorLogLevels9DigitUniqueId() : Begin */
 function getLastNonCatchErrorLogLevels9DigitUniqueId() {
     const configContent = fs.readFileSync('.\\configs\\config.js', 'utf8');
