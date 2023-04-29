@@ -7,7 +7,7 @@
  */
 const configProduction = {
     browserArgs: {
-        headless: true,
+        headless: false, // ONPROJECTFINISH: Change this to 'true' at the end.
     },
     updateBookmarksOnceDone: true,
 };
