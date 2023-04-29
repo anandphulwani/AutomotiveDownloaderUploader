@@ -5,7 +5,7 @@ import { lockSync, unlockSync, checkSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { zeroPad } from './stringformatting.js';
-import { waitForMilliSeconds } from './sleep.js';
+import { msleep, waitForMilliSeconds } from './sleep.js';
 /* eslint-enable import/extensions */
 
 function getCredentialsForUsername(username) {
@@ -186,7 +186,7 @@ function getLastNonCatchErrorLogLevels9DigitUniqueId() {
     return lastNonCatchErrorLogLevels9DigitUniqueId;
 }
 
-async function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
+function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
     const fileToOperateOn = '.\\configs\\config.js';
     for (let lockTryIndex = 0; lockTryIndex <= 30; lockTryIndex++) {
         if (lockTryIndex === 5) {
@@ -196,7 +196,7 @@ async function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         try {
             const checkLock = checkSync(fileToOperateOn);
             if (checkLock) {
-                await waitForMilliSeconds(50 + lockTryIndex * 3);
+                msleep(50 + lockTryIndex * 3);
                 // eslint-disable-next-line no-continue
                 continue;
             }
@@ -252,7 +252,7 @@ function getLastCatchErrorLogLevels6DigitUniqueId() {
     return lastLastCatchErrorLogLevels6DigitUniqueId;
 }
 
-async function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
+function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
     const fileToOperateOn = '.\\configs\\config.js';
     for (let lockTryIndex = 0; lockTryIndex <= 30; lockTryIndex++) {
         if (lockTryIndex === 5) {
@@ -261,7 +261,7 @@ async function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
         try {
             const checkLock = checkSync(fileToOperateOn);
             if (checkLock) {
-                await waitForMilliSeconds(50 + lockTryIndex * 3, true);
+                msleep(50 + lockTryIndex * 3, true);
                 // eslint-disable-next-line no-continue
                 continue;
             }

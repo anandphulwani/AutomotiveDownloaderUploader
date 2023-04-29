@@ -42,37 +42,33 @@ const getCallerDetails = (...args) => {
 const lgc = (...args) => {
     addIndividualTransportCatcherrorConsoleWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
-    generateAndGetCatchErrorLogLevels6DigitUniqueId().then((uniqueId) => {
-        loggerConsole.catcherror(...args, { filename, lineNumber, uniqueId });
-        loggerFile.catcherror(...args, { filename, lineNumber, uniqueId });
-    });
+    const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
+    loggerConsole.catcherror(...args, { filename, lineNumber, uniqueId });
+    loggerFile.catcherror(...args, { filename, lineNumber, uniqueId });
 };
 
 const lge = (...args) => {
     addIndividualTransportErrorConsoleWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
-    generateAndGetNonCatchErrorLogLevels9DigitUniqueId().then((uniqueId) => {
-        loggerConsole.error(...args, { filename, lineNumber, uniqueId });
-        loggerFile.error(...args, { filename, lineNumber, uniqueId });
-    });
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerConsole.error(...args, { filename, lineNumber, uniqueId });
+    loggerFile.error(...args, { filename, lineNumber, uniqueId });
 };
 
 const lgw = (...args) => {
     addIndividualTransportWarnConsoleWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
-    generateAndGetNonCatchErrorLogLevels9DigitUniqueId().then((uniqueId) => {
-        loggerConsole.warn(...args, { filename, lineNumber, uniqueId });
-        loggerFile.warn(...args, { filename, lineNumber, uniqueId });
-    });
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerConsole.warn(...args, { filename, lineNumber, uniqueId });
+    loggerFile.warn(...args, { filename, lineNumber, uniqueId });
 };
 
 const lgi = (...args) => {
     addIndividualTransportInfoConsoleWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
-    generateAndGetNonCatchErrorLogLevels9DigitUniqueId().then((uniqueId) => {
-        loggerConsole.info(...args, { filename, lineNumber, uniqueId });
-        loggerFile.info(...args, { filename, lineNumber, uniqueId });
-    });
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerConsole.info(...args, { filename, lineNumber, uniqueId });
+    loggerFile.info(...args, { filename, lineNumber, uniqueId });
 };
 
 const lgv = (...args) => {
