@@ -28,43 +28,52 @@ function getAppDomain() {
 }
 
 async function setContractorsCurrentAllotted(contractor, allottedQty) {
-    for (let lockTryIndex = 0; lockTryIndex <= 10; lockTryIndex++) {
-        try {
-            if (lockTryIndex === 10) {
-                throw new Error('Unable to get lock for the file after 10 retries.');
-            }
-            const checkLock = checkSync('.\\configs\\config-user.js');
-            if (checkLock) {
-                await waitForMilliSeconds(50);
-            } else {
-                lockSync('.\\configs\\config-user.js');
-                const currentAllotted = getContractorsCurrentAllotted(contractor);
-                if (currentAllotted === allottedQty) {
-                    unlockSync('.\\configs\\config-user.js');
-                    return;
-                }
-                const configUser = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
-
-                const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
-                const regexExpression = new RegExp(regexString, 'g');
-                const newConfigUser = configUser.replace(regexExpression, `$1$2$3${allottedQty}$5`);
-                if (configUser === newConfigUser) {
-                    console.log(
-                        chalk.white.bgRed.bold(
-                            `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
-                        )
-                    );
-                    unlockSync('.\\configs\\config-user.js');
-                    process.exit(1);
-                }
-                fs.writeFileSync('.\\configs\\config-user.js', newConfigUser, 'utf8');
-                unlockSync('.\\configs\\config-user.js');
-                break;
-            }
-        } catch (err) {
-            console.log(`${err.message}`);
+    const fileToOperateOn = '.\\configs\\config-user.js';
+    for (let lockTryIndex = 0; lockTryIndex <= 30; lockTryIndex++) {
+        if (lockTryIndex === 30) {
+            console.log(`Unable to get the lock`);
             process.exit(1);
         }
+        try {
+            const checkLock = checkSync(fileToOperateOn);
+            if (checkLock) {
+                await waitForMilliSeconds(50 + lockTryIndex * 3);
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+            lockSync(fileToOperateOn);
+            break;
+        } catch (error) {
+            console.log(`${error.message}`);
+            console.log(`This piece of code should be unreachable.`);
+        }
+    }
+
+    try {
+        const currentAllotted = getContractorsCurrentAllotted(contractor);
+        if (currentAllotted === allottedQty) {
+            unlockSync(fileToOperateOn);
+            return;
+        }
+        const configUserContent = fs.readFileSync(fileToOperateOn, 'utf8');
+
+        const regexString = `(const configUserContent = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+        const regexExpression = new RegExp(regexString, 'g');
+        const newConfigUserContent = configUserContent.replace(regexExpression, `$1$2$3${allottedQty}$5`);
+        if (configUserContent === newConfigUserContent) {
+            console.log(
+                chalk.white.bgRed.bold(
+                    `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
+                )
+            );
+            unlockSync(fileToOperateOn);
+            process.exit(1);
+        }
+        fs.writeFileSync(fileToOperateOn, newConfigUserContent, 'utf8');
+        unlockSync(fileToOperateOn);
+    } catch (err) {
+        console.log(`${err.message}`);
+        process.exit(1);
     }
 }
 
@@ -103,38 +112,66 @@ function getLastLotDate() {
 }
 
 async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
-    for (let lockTryIndex = 0; lockTryIndex <= 10; lockTryIndex++) {
+    const fileToOperateOn = '.\\configs\\config.js';
+    for (let lockTryIndex = 0; lockTryIndex <= 30; lockTryIndex++) {
+        if (lockTryIndex === 30) {
+            console.log(`Unable to get the lock`);
+            process.exit(1);
+        }
         try {
-            if (lockTryIndex === 10) {
-                throw new Error('Unable to get lock for the file after 10 retries.');
-            }
-            const checkLock = checkSync('.\\configs\\config.js');
+            const checkLock = checkSync(fileToOperateOn);
             if (checkLock) {
-                await waitForMilliSeconds(50);
-            } else {
-                lockSync('.\\configs\\config.js');
-                const currentLotLastRunNumber = config.lotLastRunNumber;
-                const currentLotLastRunDate = config.lotLastRunDate;
-                if (currentLotLastRunNumber === lastLotNumber && currentLotLastRunDate === lastLotDate) {
-                    unlockSync('.\\configs\\config.js');
-                    return;
-                }
-                let configUser = fs.readFileSync('.\\configs\\config.js', 'utf8');
-                let newConfigUser;
+                await waitForMilliSeconds(50 + lockTryIndex * 3);
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+            lockSync(fileToOperateOn);
+            break;
+        } catch (error) {
+            console.log(`${error.message}`);
+            console.log(`This piece of code should be unreachable.`);
+        }
+    }
 
-                if (currentLotLastRunNumber !== lastLotNumber) {
-                    const lastRunNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\r\\n)`;
-                    const lastRunNumberRegexExpression = new RegExp(lastRunNumberRegexString, 'g');
-                    newConfigUser = configUser.replace(lastRunNumberRegexExpression, `$1${lastLotNumber}$3`);
-                    if (configUser === newConfigUser) {
-                        console.log(
-                            chalk.white.bgRed.bold(`Unable to set lastLotNumber: '${lastLotNumber}'. Serious issue, please contact developer.`)
-                        );
-                        unlockSync('.\\configs\\config.js');
-                        process.exit(1);
-                    }
-                    configUser = newConfigUser;
-                }
+    try {
+        const currentLotLastRunNumber = getLastLotNumber();
+        const currentLotLastRunDate = getLastLotDate();
+        if (currentLotLastRunNumber === lastLotNumber && currentLotLastRunDate === lastLotDate) {
+            unlockSync(fileToOperateOn);
+            return;
+        }
+        let configContent = fs.readFileSync(fileToOperateOn, 'utf8');
+        let newConfigContent;
+
+        if (currentLotLastRunNumber !== lastLotNumber) {
+            const lastRunNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\r\\n)`;
+            const lastRunNumberRegexExpression = new RegExp(lastRunNumberRegexString, 'g');
+            newConfigContent = configContent.replace(lastRunNumberRegexExpression, `$1${lastLotNumber}$3`);
+            if (configContent === newConfigContent) {
+                console.log(chalk.white.bgRed.bold(`Unable to set lastLotNumber: '${lastLotNumber}'. Serious issue, please contact developer.`));
+                unlockSync(fileToOperateOn);
+                process.exit(1);
+            }
+            configContent = newConfigContent;
+        }
+
+        if (currentLotLastRunDate !== lastLotDate) {
+            const lastRunDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\r\\n)`;
+            const lastRunDateRegexExpression = new RegExp(lastRunDateRegexString, 'g');
+            newConfigContent = configContent.replace(lastRunDateRegexExpression, `$1${lastLotDate}$3`);
+            if (configContent === newConfigContent) {
+                console.log(chalk.white.bgRed.bold(`Unable to set lastLotDate: '${lastLotDate}'. Serious issue, please contact developer.`));
+                unlockSync(fileToOperateOn);
+                process.exit(1);
+            }
+        }
+        fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
+        unlockSync(fileToOperateOn);
+    } catch (err) {
+        console.log(`${err.message}`);
+        process.exit(1);
+    }
+}
 
 /* #region getLastNonCatchErrorLogLevels9DigitUniqueId(), generateAndGetNonCatchErrorLogLevels9DigitUniqueId() : Begin */
 function getLastNonCatchErrorLogLevels9DigitUniqueId() {
