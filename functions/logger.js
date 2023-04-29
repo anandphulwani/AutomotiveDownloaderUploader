@@ -70,15 +70,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
 /* #region fileTransportOptions and consoleTransportOptions : Begin */
 const fileTransportOptions = {
     handleExceptions: true,
-    format: combine(
-        timestamp({ format: timezoned }),
-        errors({ stack: true }),
-        format((info, opts) => {
-            info.uniqueId = generateUniqueId();
-            return info;
-        })(),
-        logFormatFile
-    ),
+    format: combine(timestamp({ format: timezoned }), errors({ stack: true }), logFormatFile),
     maxsize: 10485760, // 10MB
     maxFiles: 5,
     tailable: true,
@@ -90,16 +82,8 @@ const consoleTransportOptions = {
     format: combine(
         timestamp({ format: timezoned }),
         errors({ stack: true }),
-        format((info, opts) => {
-            info.uniqueId = generateUniqueId();
-            return info;
-        })(),
-        format((info, opts) => {
+        format((info) => {
             delete info.timestamp;
-            return info;
-        })(),
-        format((info, opts) => {
-            delete info.uniqueId;
             return info;
         })(),
         logFormatConsole
