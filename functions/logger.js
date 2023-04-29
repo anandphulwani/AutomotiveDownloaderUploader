@@ -281,17 +281,17 @@ function addIndividualTransportInfoConsoleWinston() {
 
 /* #region Main logger functions: loggerFile, loggerConsole : Begin */
 const loggerFile = {
-    catcherror: (params) => catcherrorFileWinston.catcherror(params),
-    error: (params) => errorFileWinston.error(params),
-    warn: (params) => warnFileWinston.warn(params),
-    info: (params) => infoFileWinston.info(params),
+    catcherror: (...args) => catcherrorFileWinston.catcherror(...args),
+    error: (...args) => errorFileWinston.error(...args),
+    warn: (...args) => warnFileWinston.warn(...args),
+    info: (...args) => infoFileWinston.info(...args),
 };
 
 const loggerConsole = {
-    catcherror: (params) => catcherrorConsoleWinston.catcherror(params),
-    error: (params) => errorConsoleWinston.error(params),
-    warn: (params) => warnConsoleWinston.warn(params),
-    info: (params) => infoConsoleWinston.info(params),
+    catcherror: (...args) => catcherrorConsoleWinston.catcherror(...args),
+    error: (...args) => errorConsoleWinston.error(...args),
+    warn: (...args) => warnConsoleWinston.warn(...args),
+    info: (...args) => infoConsoleWinston.info(...args),
 };
 /* #endregion Main logger functions: loggerFile, loggerConsole : End */
 
