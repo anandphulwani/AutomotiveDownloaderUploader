@@ -6,6 +6,7 @@ import logSymbols from 'log-symbols';
 import { URL as URLparser } from 'url';
 
 /* eslint-disable import/extensions */
+import { lgc, lge, lgw, lgi, lgcf, lgef, lgwf, lgif } from './loggersupportive.js';
 import { config } from '../configs/config.js';
 import { sleep, msleep, waitForSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
@@ -551,30 +552,25 @@ function typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark
 }
 
 function getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdFolderPath, stockFilePath, isURLDoesNotExist) {
+    lgif(
+        `getSourceAndDestinationFrom : BEGIN, Params: typeOfStockPath: ${typeOfStockPath}, stockFolderPath: ${stockFolderPath}, uniqueIdFolderPath: ${uniqueIdFolderPath}, stockFilePath: ${stockFilePath}, isURLDoesNotExist: ${isURLDoesNotExist}`
+    );
     let moveSource;
     let moveDestination;
     if (typeOfStockPath === 'stockFolder') {
-        fs.appendFileSync(logFile, `stockFolderPath\\: ${stockFolderPath}\\\r\n`);
-        // console.log(`${stockFolderPath}\\`);
-        fs.appendFileSync(
-            logFile,
-            `config.finishedUploadingZonePath\\todaysDate\\path.basename(path.dirname(stockFolderPath)\\path.basename(stockFolderPath): ${
-                config.finishedUploadingZonePath
-            }\\${isURLDoesNotExist ? 'DeletedURLs\\' : ''}${todaysDate}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(
-                stockFolderPath
-            )}`
-        );
-        // console.log(`${config.finishedUploadingZonePath}\\${todaysDate}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(stockFolderPath)}`);
+        lgif('typeOfStockPath is stockFolder');
         moveSource = `${stockFolderPath}\\`;
         moveDestination = `${config.finishedUploadingZonePath}\\${isURLDoesNotExist ? 'DeletedURLs\\' : ''}${todaysDate}\\${path.basename(
             path.dirname(stockFolderPath)
         )}\\${path.basename(stockFolderPath)}`;
     } else {
+        lgif('typeOfStockPath IS NOT stockFolder');
         moveSource = `${uniqueIdFolderPath}\\${stockFilePath}`;
         moveDestination = `${config.finishedUploadingZonePath}\\${isURLDoesNotExist ? 'DeletedURLs\\' : ''}${todaysDate}\\${path.basename(
             uniqueIdFolderPath
         )}\\${stockFilePath}`;
     }
+    lgif(`getSourceAndDestinationFrom : END, Returning: moveSource: ${moveSource}, moveDestination: ${moveDestination}`);
     return { moveSource: moveSource, moveDestination: moveDestination };
 }
 
