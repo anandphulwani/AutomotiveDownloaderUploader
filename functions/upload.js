@@ -524,6 +524,41 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                     );
                 }
             }
+            /* #region Old code */
+            // if (fromPosition > toPosition) {
+            //     lgif(`Coming from down to up`);
+            //     if ((toPosition + 1) % 5 === 1) {
+            //         await page.mouse.move(
+            //             toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex,
+            //             toPositionElementRect.y + toPositionElementRect.height / 2,
+            //             { steps: 1 }
+            //         );
+            //     } else {
+            //         await page.mouse.move(
+            //             toPositionElementRect.x + toPositionElementRect.width / 2 - lastIndex,
+            //             toPositionElementRect.y + toPositionElementRect.height / 2,
+            //             { steps: 1 }
+            //         );
+            //     }
+            // } else {
+            //     lgif(`Coming from up to down`);
+            //     if ((toPosition + 1) % 5 === 1) {
+            //         lgif(`Moving to the end of the row`);
+            //         await page.mouse.move(
+            //             toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex,
+            //             toPositionElementRect.y + toPositionElementRect.height / 2,
+            //             { steps: 1 }
+            //         );
+            //     } else {
+            //         lgif(`Moving to not the end of the row`);
+            //         await page.mouse.move(
+            //             toPositionElementRect.x + toPositionElementRect.width / 2 + lastIndex,
+            //             toPositionElementRect.y + toPositionElementRect.height / 2,
+            //             { steps: 1 }
+            //         );
+            //     }
+            // }
+            /* #endregion Old code */
             msleep(10);
             isSlow ? await waitForSeconds(1, true) : '';
             oldToPositionElementRectX = toPositionElementRect.x;
