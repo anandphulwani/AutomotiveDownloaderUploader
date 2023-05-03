@@ -6,7 +6,7 @@ import logSymbols from 'log-symbols';
 import { URL as URLparser } from 'url';
 
 /* eslint-disable import/extensions */
-import { lgc, lge, lgw, lgi, lgcf, lgef, lgwf, lgif } from './loggersupportive.js';
+import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif } from './loggersupportive.js';
 import { config } from '../configs/config.js';
 import { sleep, msleep, waitForSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
@@ -339,6 +339,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
 }
 
 async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosition, isSlow = false, debug = true) {
+    lgif(
+        `fn moveImageToPositionNumber() : BEGIN, Params: page: OBJECT, totalImages: ${totalImages}, fromPosition: ${fromPosition}, toPosition: ${toPosition}, isSlow: ${isSlow}, debug: ${debug}`
+    );
     try {
         fromPosition = parseInt(fromPosition, 10);
         toPosition = parseInt(toPosition, 10);
@@ -360,7 +363,12 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         );
         const toPositionSubImageVehicleId = await page.$eval(toPositionSubImageSelector, (element, attr) => element.getAttribute(attr), 'vehicleid');
 
+        lgif(`fromPositionSubImageVehicleId: ${fromPositionSubImageVehicleId}`);
+        lgif(`toPositionSubImageVehicleId: ${toPositionSubImageVehicleId}`);
+
+        lgif(`Moving to the fromPositionElement: ${fromPositionElement}`);
         await page.evaluate((element) => element.scrollIntoView(), fromPositionElement);
+        lgif(`Confirming the fromPositionElement is in the browser viewport.`);
         await page.waitForFunction(
             (element) => {
                 const { top, bottom } = element.getBoundingClientRect();
@@ -378,6 +386,9 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             return { x, y, width, height };
         }, fromPositionElement);
 
+        lgif(`fromPositionElementRect: ${JSON.stringify(fromPositionElementRect)}`);
+
+        // Making sure that the element is selected and its opacity changes to 0.6, which confirms selected.
         while (true) {
             await page.mouse.move(
                 fromPositionElementRect.x + fromPositionElementRect.width / 2,
@@ -401,7 +412,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             if (opacity === '0.6') {
                 break;
             } else {
-                // console.log(`opacity: ${opacity} is still not 0.6, so sleeping for 350ms.`);
+                lgif(`opacity: ${opacity} is still not 0.6, so sleeping for 350ms.`);
                 msleep(50);
                 await page.mouse.up();
                 msleep(300);
@@ -409,7 +420,9 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         }
         isSlow ? await waitForSeconds(4, true) : '';
 
+        lgif(`Moving to the toPositionElement: ${toPositionElement}`);
         await page.evaluate((element) => element.scrollIntoView(), toPositionElement);
+        lgif(`Confirming the toPositionElement is in the browser viewport.`);
         await page.waitForFunction(
             (element) => {
                 const { top, bottom } = element.getBoundingClientRect();
@@ -422,14 +435,15 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         );
         isSlow ? await waitForSeconds(5, true) : '';
 
-        //
-        //
+        // After grabbing the image from the old position, and navigating to the new position, doing the moving action here
         let oldToPositionElementRectX;
         for (let lastIndex = 0; lastIndex <= 100; lastIndex++) {
             const toPositionElementRect = await page.evaluate((el) => {
                 const { x, y, width, height } = el.getBoundingClientRect();
                 return { x, y, width, height };
             }, toPositionElement);
+            lgif(`From Element To: toPositionElementRect: ${JSON.stringify(toPositionElementRect)}`);
+
             if (oldToPositionElementRectX !== undefined && Math.abs(toPositionElementRect.x - oldToPositionElementRectX) > 50) {
                 const currToPositionPrevIdSelector =
                     toPosition !== 1
@@ -550,16 +564,17 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             isSlow ? await waitForSeconds(1, true) : '';
             oldToPositionElementRectX = toPositionElementRect.x;
             if (lastIndex === 100) {
-                console.log(chalk.white.bgRed.bold(`Tried changing image position for 100 iterations, but it didn't work.`));
+                lgu(`Tried changing image position for 100 iterations, but it didn't work.`);
+                // console.log(chalk.white.bgRed.bold(`Tried changing image position for 100 iterations, but it didn't work.`));
                 process.exit(1);
             }
         }
         isSlow ? await waitForSeconds(6, true) : '';
     } catch (error) {
-        // throw error;
-        console.log(`handled this:${error}`);
+        lgc('moveImageToPositionNumber Try Error: ', error);
         await waitForSeconds(240, true);
     }
+    lgif(`fn moveImageToPositionNumber() : END`);
 }
 
 function typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark) {
