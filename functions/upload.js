@@ -485,44 +485,31 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                 }
             }
 
-            // console.log(`To Position Of Element: X:${toPositionElementRect.x}`); // , Y:${toPositionElementRect.y}`);
-            // console.log(
-            //     chalk.yellowBright(`Moving Element To:        X:${toPositionElementRect.x + lastIndex}`) // , Y:${toPositionElementRect.y + 35}`)
-            // );
-            if (fromPosition > toPosition) {
-                // Coming from down to up
-                // console.log(`toPosition: ${toPosition},        (toPosition + 1) % 5 :  ${(toPosition + 1) % 5}`);
-                if ((toPosition + 1) % 5 === 1) {
-                    await page.mouse.move(
-                        toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex,
-                        toPositionElementRect.y + toPositionElementRect.height / 2, // + 10
-                        { steps: 1 }
-                    );
-                } else {
-                    await page.mouse.move(
-                        toPositionElementRect.x + toPositionElementRect.width / 2 - lastIndex,
-                        toPositionElementRect.y + toPositionElementRect.height / 2, // + 10
-                        { steps: 1 }
-                    );
-                }
+            lgif(`toPosition: ${toPosition},        (toPosition + 1) % 5 === 1:  ${(toPosition + 1) % 5 === 1}`);
+            if ((toPosition + 1) % 5 === 1) {
+                lgif(
+                    `Moving to the end of the row, Moving Element To:        X:${
+                        toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex
+                    }, Y:${toPositionElementRect.y + toPositionElementRect.height / 2}`
+                );
+                await page.mouse.move(
+                    toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex,
+                    toPositionElementRect.y + toPositionElementRect.height / 2,
+                    { steps: 1 }
+                );
             } else {
-                // Coming from up to down
-                // console.log(`toPosition: ${toPosition},        (toPosition + 1) % 5 :  ${(toPosition + 1) % 5}`);
-                // eslint-disable-next-line no-lonely-if
-                if ((toPosition + 1) % 5 === 1) {
-                    // console.log('Moving to the end of the row');
-                    await page.mouse.move(
-                        toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex,
-                        toPositionElementRect.y + toPositionElementRect.height / 2, // + 10
-                        { steps: 1 }
-                    );
-                } else {
-                    await page.mouse.move(
-                        toPositionElementRect.x + toPositionElementRect.width / 2 + lastIndex,
-                        toPositionElementRect.y + toPositionElementRect.height / 2, // + 10
-                        { steps: 1 }
-                    );
-                }
+                lgif(
+                    `Moving to NOT THE end of the row, ${
+                        fromPosition > toPosition ? 'Coming from down to up' : 'Coming from up to down'
+                    }, Moving Element To:        X:${
+                        toPositionElementRect.x + toPositionElementRect.width / 2 + (fromPosition > toPosition ? -lastIndex : +lastIndex)
+                    }, Y:${toPositionElementRect.y + toPositionElementRect.height / 2}`
+                );
+                await page.mouse.move(
+                    toPositionElementRect.x + toPositionElementRect.width / 2 + (fromPosition > toPosition ? -lastIndex : +lastIndex),
+                    toPositionElementRect.y + toPositionElementRect.height / 2,
+                    { steps: 1 }
+                );
             }
             /* #region Old code */
             // if (fromPosition > toPosition) {
