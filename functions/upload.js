@@ -26,10 +26,16 @@ import { zeroPad } from './stringformatting.js';
 import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 /* eslint-enable import/extensions */
 
+const printToLogBuffer = [];
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
+
 async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, URL, debug = false) {
+    lgif(
+        `fn uploadBookmarkURL() : BEGIN, Params: page: OBJECT, uniqueIdElement: ${uniqueIdElement}, uniqueIdFolderPath: ${uniqueIdFolderPath}, dealerFolder: ${dealerFolder}, name: ${name}, URL: ${URL}, debug: ${debug}`
+    );
     const startingRow = await getRowPosOnTerminal();
     process.stdout.write(chalk.cyan(`\t${name} : ${URL}\n`));
+    printToLogBuffer.push(`\${name} : \${URL}  :   ${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
 
@@ -39,6 +45,8 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     let parsedCurrentUrlWOQueryParams = new URLparser(page.url());
     parsedCurrentUrlWOQueryParams = parsedCurrentUrlWOQueryParams.host + parsedCurrentUrlWOQueryParams.pathname;
 
+    lgif(`vehicleBookmarkUrlWOQueryParams: ${vehicleBookmarkUrlWOQueryParams}`);
+    lgif(`parsedCurrentUrlWOQueryParams: ${parsedCurrentUrlWOQueryParams}`);
     if (parsedCurrentUrlWOQueryParams !== vehicleBookmarkUrlWOQueryParams) {
         await gotoURL(page, URL, debug);
     }
@@ -46,6 +54,8 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
+        printToLogBuffer.pop();
+        lgef(`${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
         process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
         const stockNumberFromBookmark = name.split(' |#| ')[1].trim();
         const { typeOfStockPath, stockFolderPath, stockFilePath } = typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark);
@@ -64,10 +74,16 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             moveSource: moveSource,
             moveDestination: moveDestination,
         };
+        lgif(`fn uploadBookmarkURL() : END( From: Supplied URL doesn't exist ...... (Ignoring)), Returning: returnObj: ${JSON.stringify(returnObj)}`);
         return returnObj;
     }
+    printToLogBuffer.map((value) => {
+        lgif(value);
+        return undefined;
+    });
 
     const returnObj = await uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name);
+    lgif(`fn uploadBookmarkURL() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
     return returnObj;
 }
 
@@ -526,21 +542,21 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
 
 function typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark) {
     lgif(
-        `typeOfStockPathAndOtherVars : BEGIN, Params: uniqueIdFolderPath: ${uniqueIdFolderPath}, stockNumberFromBookmark: ${stockNumberFromBookmark}`
+        `fn typeOfStockPathAndOtherVars() : BEGIN, Params: uniqueIdFolderPath: ${uniqueIdFolderPath}, stockNumberFromBookmark: ${stockNumberFromBookmark}`
     );
     const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumberFromBookmark}`;
     let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumberFromBookmark}.`));
     stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
     const typeOfStockPath = stockFilePath === undefined ? 'stockFolder' : 'stockFile';
     lgif(
-        `typeOfStockPathAndOtherVars : END, Returning: typeOfStockPath: ${typeOfStockPath}, stockFolderPath: ${stockFolderPath}, stockFilePath: ${stockFilePath}`
+        `fn typeOfStockPathAndOtherVars() : END, Returning: typeOfStockPath: ${typeOfStockPath}, stockFolderPath: ${stockFolderPath}, stockFilePath: ${stockFilePath}`
     );
     return { typeOfStockPath: typeOfStockPath, stockFolderPath: stockFolderPath, stockFilePath: stockFilePath };
 }
 
 function getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdFolderPath, stockFilePath, isURLDoesNotExist) {
     lgif(
-        `getSourceAndDestinationFrom : BEGIN, Params: typeOfStockPath: ${typeOfStockPath}, stockFolderPath: ${stockFolderPath}, uniqueIdFolderPath: ${uniqueIdFolderPath}, stockFilePath: ${stockFilePath}, isURLDoesNotExist: ${isURLDoesNotExist}`
+        `fn getSourceAndDestinationFrom() : BEGIN, Params: typeOfStockPath: ${typeOfStockPath}, stockFolderPath: ${stockFolderPath}, uniqueIdFolderPath: ${uniqueIdFolderPath}, stockFilePath: ${stockFilePath}, isURLDoesNotExist: ${isURLDoesNotExist}`
     );
     let moveSource;
     let moveDestination;
@@ -557,7 +573,7 @@ function getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdF
             uniqueIdFolderPath
         )}\\${stockFilePath}`;
     }
-    lgif(`getSourceAndDestinationFrom : END, Returning: moveSource: ${moveSource}, moveDestination: ${moveDestination}`);
+    lgif(`fn getSourceAndDestinationFrom() : END, Returning: moveSource: ${moveSource}, moveDestination: ${moveDestination}`);
     return { moveSource: moveSource, moveDestination: moveDestination };
 }
 
