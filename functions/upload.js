@@ -33,41 +33,38 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
 
-    for (let gotoIndex = 0; gotoIndex < 24; gotoIndex++) {
-        let vehicleBookmarkUrlWOQueryParams = new URLparser(URL);
-        vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
+    let vehicleBookmarkUrlWOQueryParams = new URLparser(URL);
+    vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
 
-        let parsedCurrentUrlWOQueryParams = new URLparser(page.url());
-        parsedCurrentUrlWOQueryParams = parsedCurrentUrlWOQueryParams.host + parsedCurrentUrlWOQueryParams.pathname;
+    let parsedCurrentUrlWOQueryParams = new URLparser(page.url());
+    parsedCurrentUrlWOQueryParams = parsedCurrentUrlWOQueryParams.host + parsedCurrentUrlWOQueryParams.pathname;
 
-        if (parsedCurrentUrlWOQueryParams !== vehicleBookmarkUrlWOQueryParams) {
-            await gotoURL(page, URL, debug);
-        }
-        if (page.url().startsWith(`${getAppDomain()}/dashboard?`)) {
-            debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
-            debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
-            debug ? '' : process.stdout.cursorTo(0);
-            process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
-            const stockNumberFromBookmark = name.split(' |#| ')[1].trim();
-            const { typeOfStockPath, stockFolderPath, stockFilePath } = typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark);
-            const { moveSource, moveDestination } = getSourceAndDestinationFrom(
-                typeOfStockPath,
-                stockFolderPath,
-                uniqueIdFolderPath,
-                stockFilePath,
-                true
-            );
-            await waitForSeconds(5);
-            const returnObj = {
-                result: false,
-                bookmarkAppendMesg: 'Ignoring (Does not Exist)',
-                imagesUploaded: 0,
-                moveSource: moveSource,
-                moveDestination: moveDestination,
-            };
-            return returnObj;
-        }
-        break;
+    if (parsedCurrentUrlWOQueryParams !== vehicleBookmarkUrlWOQueryParams) {
+        await gotoURL(page, URL, debug);
+    }
+    if (page.url().startsWith(`${getAppDomain()}/dashboard?`)) {
+        debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
+        debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
+        debug ? '' : process.stdout.cursorTo(0);
+        process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
+        const stockNumberFromBookmark = name.split(' |#| ')[1].trim();
+        const { typeOfStockPath, stockFolderPath, stockFilePath } = typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark);
+        const { moveSource, moveDestination } = getSourceAndDestinationFrom(
+            typeOfStockPath,
+            stockFolderPath,
+            uniqueIdFolderPath,
+            stockFilePath,
+            true
+        );
+        await waitForSeconds(5);
+        const returnObj = {
+            result: false,
+            bookmarkAppendMesg: 'Ignoring (Does not Exist)',
+            imagesUploaded: 0,
+            moveSource: moveSource,
+            moveDestination: moveDestination,
+        };
+        return returnObj;
     }
 
     const returnObj = await uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name);
