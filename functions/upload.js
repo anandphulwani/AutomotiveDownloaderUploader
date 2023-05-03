@@ -58,13 +58,14 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
                 true
             );
             await waitForSeconds(5);
-            return {
+            const returnObj = {
                 result: false,
                 bookmarkAppendMesg: 'Ignoring (Does not Exist)',
                 imagesUploaded: 0,
                 moveSource: moveSource,
                 moveDestination: moveDestination,
             };
+            return returnObj;
         }
         break;
     }
