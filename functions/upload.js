@@ -449,10 +449,14 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                     toPosition !== 1
                         ? `${imagesULSelector} > li:nth-child(${zeroPad(fromPosition < toPosition ? toPosition : toPosition - 1, 2)})`
                         : false;
+                lgif(`toPosition !== 1: ${toPosition} !== 1       currToPositionPrevIdSelector: ${currToPositionPrevIdSelector}`);
                 const currToPositionNextIdSelector =
                     totalImages !== toPosition
                         ? `${imagesULSelector} > li:nth-child(${zeroPad(fromPosition < toPosition ? toPosition + 2 : toPosition + 1, 2)})`
                         : false;
+                lgif(
+                    `totalImages !== toPosition: ${totalImages} !== ${toPosition}       currToPositionNextIdSelector: ${currToPositionNextIdSelector}`
+                );
                 const currToPositionPrevSubImageVehicleId =
                     currToPositionPrevIdSelector !== false
                         ? await page.$eval(`${currToPositionPrevIdSelector} > div > img`, (element, attr) => element.getAttribute(attr), 'vehicleid')
@@ -461,6 +465,9 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                     currToPositionNextIdSelector !== false
                         ? await page.$eval(`${currToPositionNextIdSelector} > div > img`, (element, attr) => element.getAttribute(attr), 'vehicleid')
                         : false;
+                lgif(
+                    `currToPositionPrevSubImageVehicleId: ${currToPositionPrevSubImageVehicleId}, currToPositionNextSubImageVehicleId: ${currToPositionNextSubImageVehicleId}`
+                );
 
                 if (
                     (fromPosition > toPosition && toPositionSubImageVehicleId === currToPositionNextSubImageVehicleId) ||
@@ -474,16 +481,22 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                         (element, attr) => element.getAttribute(attr),
                         'vehicleid'
                     );
-                    // console.log('4');
+                    lgif(
+                        `fromPositionSubImageVehicleId: ${fromPositionSubImageVehicleId},  currToPositionSubImageVehicleId: ${currToPositionSubImageVehicleId}`
+                    );
                     if (fromPositionSubImageVehicleId === currToPositionSubImageVehicleId) {
-                        // console.log(`breaking now ${oldToPositionElementRectX} > ${toPositionElementRect.x}`);
+                        lgif(`Breaking now ${fromPositionSubImageVehicleId} === ${currToPositionSubImageVehicleId}`);
                         break;
                     } else {
-                        // console.log('-------------------------Var Start---------------------');
-                        // console.log(`${fromPositionSubImageVehicleId} , ${currToPositionSubImageVehicleId}`);
-                        // console.log(`${fromPosition} > ${toPosition} ${toPositionSubImageVehicleId} === ${currToPositionNextSubImageVehicleId}`);
-                        // console.log(`${fromPosition} < ${toPosition} ${toPositionSubImageVehicleId} === ${currToPositionPrevSubImageVehicleId}`);
-                        // console.log('-------------------------Var End---------------------');
+                        lgu(
+                            `Image position changed, but the 'vechileId' from 'fromPositionSubImageVehicleId' and 'currToPositionSubImageVehicleId' doesn't match.`
+                        );
+                        lgu(
+                            `fromPosition > toPosition: ${fromPosition} > ${toPosition}, toPositionSubImageVehicleId === currToPositionNextSubImageVehicleId: ${toPositionSubImageVehicleId} === ${currToPositionNextSubImageVehicleId}`
+                        );
+                        lgu(
+                            `fromPosition < toPosition: ${fromPosition} < ${toPosition}, toPositionSubImageVehicleId === currToPositionPrevSubImageVehicleId: ${toPositionSubImageVehicleId} === ${currToPositionPrevSubImageVehicleId}`
+                        );
                         console.log(
                             chalk.white.bgRed.bold(
                                 `Image position changed, but the 'vechileId' from 'fromPositionSubImageVehicleId' and 'currToPositionSubImageVehicleId' doesn't match.`
@@ -494,6 +507,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                     }
                 } else {
                     console.log(chalk.white.bgRed.bold(`Image position changed, but the 'vechileId' from previous/next doesn't match.`));
+                    lgu(`Image position changed, but the 'vechileId' from previous/next doesn't match.`);
                     await waitForSeconds(240, true);
                     process.exit(1);
                 }
@@ -564,8 +578,8 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             isSlow ? await waitForSeconds(1, true) : '';
             oldToPositionElementRectX = toPositionElementRect.x;
             if (lastIndex === 100) {
+                console.log(chalk.white.bgRed.bold(`Tried changing image position for 100 iterations, but it didn't work.`));
                 lgu(`Tried changing image position for 100 iterations, but it didn't work.`);
-                // console.log(chalk.white.bgRed.bold(`Tried changing image position for 100 iterations, but it didn't work.`));
                 process.exit(1);
             }
         }
