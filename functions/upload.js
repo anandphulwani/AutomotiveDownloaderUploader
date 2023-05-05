@@ -28,6 +28,7 @@ import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesy
 
 const printToLogBuffer = [];
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
+let isWindowsMaximized = false;
 
 async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, URL, debug = false) {
     lgif(
@@ -185,6 +186,11 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 await fileChooser.accept([path.resolve(stockFolderSubFolderAndFilesPath)]);
                 const session = await page.target().createCDPSession();
                 const { windowId } = await session.send('Browser.getWindowForTarget');
+                if (!isWindowsMaximized) {
+                    await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'maximized' } });
+                    isWindowsMaximized = true;
+                    await waitForSeconds(10);
+                }
                 await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
             }
             // console.log(stockFolderSubFolderAndFiles);
