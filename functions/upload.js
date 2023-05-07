@@ -28,7 +28,6 @@ import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesy
 
 const printToLogBuffer = [];
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
-let isWindowsMaximized = false;
 
 async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, URL, debug = false) {
     lgif(
@@ -184,16 +183,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 await page.bringToFront();
                 const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
                 await fileChooser.accept([path.resolve(stockFolderSubFolderAndFilesPath)]);
-                const session = await page.target().createCDPSession();
-                const { windowId } = await session.send('Browser.getWindowForTarget');
-                if (!isWindowsMaximized) {
-                    await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'maximized' } });
-                    isWindowsMaximized = true;
-                    await waitForSeconds(10);
-                }
-                await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
             }
-            // console.log(stockFolderSubFolderAndFiles);
             // TODO: Folder still exists after picking from 000_ReadyToUpload, was a user fault earlier, but have to create a system to create a failsafe.
             let imageNumber;
             if (typeOfStockPath === 'stockFolder') {
@@ -212,9 +202,6 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             await page.bringToFront();
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
             await fileChooser.accept([path.resolve(firstImagePath)]);
-            const session = await page.target().createCDPSession();
-            const { windowId } = await session.send('Browser.getWindowForTarget');
-            await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
         }
     } catch (error) {
         console.log(`error01: ${error}`);
