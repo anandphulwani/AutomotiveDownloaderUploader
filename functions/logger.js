@@ -173,13 +173,19 @@ const infoFileWinston = createLogger({
 const catcherrorConsoleWinston = createLogger({
     format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'catcherror',
-    levels: { catcherror: 0 },
+    levels: { catcherror: 0, error: 1 },
     defaultMeta: { service: 'log-service' },
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
             name: 'catcherror',
             level: 'catcherror',
+        }),
+        new transports.Console({
+            handleExceptions: true,
+            ...consoleTransportOptions,
+            name: 'error',
+            level: 'error',
         }),
     ],
 });
