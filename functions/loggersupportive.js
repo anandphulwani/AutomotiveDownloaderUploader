@@ -2,6 +2,7 @@
 import {
     loggerFile,
     loggerConsole,
+    addIndividualTransportUnreachableFileWinston,
     addIndividualTransportCatcherrorFileWinston,
     addIndividualTransportErrorFileWinston,
     addIndividualTransportWarnFileWinston,
@@ -37,6 +38,14 @@ const getCallerDetails = (...args) => {
         filename: filename,
         lineNumber: lineNumber,
     };
+};
+
+const lgu = (...args) => {
+    addIndividualTransportUnreachableFileWinston();
+    const { filename, lineNumber } = getCallerDetails(...args);
+    const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
+    loggerConsole.unreachable(...args, { filename, lineNumber, uniqueId });
+    loggerFile.unreachable(...args, { filename, lineNumber, uniqueId });
 };
 
 const lgc = (...args) => {
@@ -93,4 +102,4 @@ const lgs = (...args) => {
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { lgc, lge, lgw, lgi, lgv, lgd, lgs };
+export { lgc, lgu, lge, lgw, lgi, lgv, lgd, lgs };
