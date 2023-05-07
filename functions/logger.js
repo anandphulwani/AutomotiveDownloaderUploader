@@ -77,7 +77,6 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
 
 /* #region fileTransportOptions and consoleTransportOptions : Begin */
 const fileTransportOptions = {
-    handleExceptions: true,
     format: combine(timestamp({ format: timezoned }), errors({ stack: true }), logFormatFile),
     maxsize: 10485760, // 10MB
     maxFiles: 5,
@@ -86,7 +85,6 @@ const fileTransportOptions = {
 
 // Define transport options for logging to console
 const consoleTransportOptions = {
-    handleExceptions: true,
     format: combine(
         timestamp({ format: timezoned }),
         errors({ stack: true }),
