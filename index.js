@@ -183,10 +183,6 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                 if (!vehicleBookmark.name.includes(' |#| ')) {
                     if (typeof page === 'boolean' && !page) {
                         ({ page, browser } = await initBrowserAndGetPage('download'));
-                        // Create raw protocol session.
-                        const session = await page.target().createCDPSession();
-                        const { windowId } = await session.send('Browser.getWindowForTarget');
-                        await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
                     }
                     if (userLoggedIn !== usernameBookmark.name) {
                         const currentURL = await gotoURL(page, vehicleBookmark.url);
