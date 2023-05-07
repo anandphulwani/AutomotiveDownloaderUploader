@@ -2,10 +2,10 @@
 import {
     loggerFile,
     loggerConsole,
-    addIndividualTransportCatcherrorConsoleWinston,
-    addIndividualTransportErrorConsoleWinston,
-    addIndividualTransportWarnConsoleWinston,
-    addIndividualTransportInfoConsoleWinston,
+    addIndividualTransportCatcherrorFileWinston,
+    addIndividualTransportErrorFileWinston,
+    addIndividualTransportWarnFileWinston,
+    addIndividualTransportInfoFileWinston,
 } from './logger.js';
 import { generateAndGetNonCatchErrorLogLevels9DigitUniqueId, generateAndGetCatchErrorLogLevels6DigitUniqueId } from './configsupportive.js';
 /* eslint-enable import/extensions */
@@ -40,7 +40,7 @@ const getCallerDetails = (...args) => {
 };
 
 const lgc = (...args) => {
-    addIndividualTransportCatcherrorConsoleWinston();
+    addIndividualTransportCatcherrorFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
     loggerConsole.catcherror(...args, { filename, lineNumber, uniqueId });
@@ -48,7 +48,7 @@ const lgc = (...args) => {
 };
 
 const lge = (...args) => {
-    addIndividualTransportErrorConsoleWinston();
+    addIndividualTransportErrorFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
     loggerConsole.error(...args, { filename, lineNumber, uniqueId });
@@ -56,7 +56,7 @@ const lge = (...args) => {
 };
 
 const lgw = (...args) => {
-    addIndividualTransportWarnConsoleWinston();
+    addIndividualTransportWarnFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
     loggerConsole.warn(...args, { filename, lineNumber, uniqueId });
@@ -64,7 +64,7 @@ const lgw = (...args) => {
 };
 
 const lgi = (...args) => {
-    addIndividualTransportInfoConsoleWinston();
+    addIndividualTransportInfoFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
     loggerConsole.info(...args, { filename, lineNumber, uniqueId });
