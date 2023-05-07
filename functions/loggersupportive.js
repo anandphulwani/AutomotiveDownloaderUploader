@@ -114,11 +114,34 @@ const lgd = (...args) => {
 };
 
 const lgs = (...args) => {
-    const { filename, lineNumber } = getCallerDetails();
-    const message = addFileInfo(...args, filename, lineNumber);
-    loggerConsole.silly(message);
-    loggerFile.silly(message);
+
+const lgcf = (...args) => {
+    addIndividualTransportCatcherrorFileWinston();
+    const { filename, lineNumber } = getCallerDetails(...args);
+    const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
+    loggerFile.catcherror(...args, { filename, lineNumber, uniqueId });
+};
+
+const lgef = (...args) => {
+    addIndividualTransportErrorFileWinston();
+    const { filename, lineNumber } = getCallerDetails(...args);
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerFile.error(...args, { filename, lineNumber, uniqueId });
+};
+
+const lgwf = (...args) => {
+    addIndividualTransportWarnFileWinston();
+    const { filename, lineNumber } = getCallerDetails(...args);
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerFile.warn(...args, { filename, lineNumber, uniqueId });
+};
+
+const lgif = (...args) => {
+    addIndividualTransportInfoFileWinston();
+    const { filename, lineNumber } = getCallerDetails(...args);
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerFile.info(...args, { filename, lineNumber, uniqueId });
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { lgc, lgu, lge, lgw, lgi, lgv, lgd, lgs };
+export { lgc, lgu, lge, lgw, lgi, lgv, lgd, lgs, lgcf, lgef, lgwf, lgif };
