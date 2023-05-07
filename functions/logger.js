@@ -16,7 +16,7 @@ const logFormatFile = printf(({ level, message, timestamp: ts, stack, [Symbol.fo
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
     uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
-    logMesg.push(`[${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}]`.padEnd(12, ' '));
+    logMesg.push(`[${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}]`.padEnd(13, ' '));
     logMesg.push(`${message} (${filename}:${lineNumber})`);
     logMesg = logMesg.join(' ');
     if (stack) {
@@ -29,7 +29,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     const { filename, lineNumber, uniqueId } = sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '' };
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
-    if (level === 'catcherror') {
+    if (level === 'catcherror' || level === 'unreachable') {
         uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
     }
     let levelToPrint = '';
@@ -54,6 +54,8 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         stack = stack.map((line) => line.padEnd(120, ' '));
         stack = stack.join('\n');
         logMesg = `${chalk.bgRed.white(logMesg)}\n${chalk.bgRedBright.white(stack)}`;
+    } else if (level === 'unreachable') {
+        logMesg = chalk.white.bgRedBright.bold(logMesg);
     } else if (level === 'error') {
         logMesg = chalk.white.bgRed.bold(logMesg);
     } else if (level === 'warn') {
@@ -104,6 +106,22 @@ const catcherrorFileWinston = createLogger({
             name: 'all',
             filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
             level: 'catcherror',
+        }),
+    ],
+});
+
+const unreachableFileWinston = createLogger({
+    format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'unreachable',
+    levels: { unreachable: 0 },
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions,
+            name: 'all',
+            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            level: 'unreachable',
         }),
     ],
 });
@@ -166,6 +184,20 @@ const catcherrorConsoleWinston = createLogger({
     ],
 });
 
+const unreachableConsoleWinston = createLogger({
+    format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'unreachable',
+    levels: { unreachable: 0 },
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'unreachable',
+            level: 'unreachable',
+        }),
+    ],
+});
+
 const errorConsoleWinston = createLogger({
     level: 'error',
     defaultMeta: { service: 'log-service' },
@@ -217,6 +249,22 @@ function addIndividualTransportCatcherrorFileWinston() {
             })
         );
         isIndividualTransportCatcherrorFileWinstonEnabled = true;
+    }
+}
+
+let isIndividualTransportUnreachableFileWinstonEnabled = false;
+function addIndividualTransportUnreachableFileWinston() {
+    if (!isIndividualTransportUnreachableFileWinstonEnabled) {
+        unreachableFileWinston.add(
+            new transports.File({
+                handleExceptions: true,
+                ...fileTransportOptions,
+                name: 'unreachable',
+                filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_unreachable.log`,
+                level: 'unreachable',
+            })
+        );
+        isIndividualTransportUnreachableFileWinstonEnabled = true;
     }
 }
 
@@ -303,6 +351,7 @@ export {
     loggerFile,
     loggerConsole,
     addIndividualTransportCatcherrorFileWinston,
+    addIndividualTransportUnreachableFileWinston,
     addIndividualTransportErrorFileWinston,
     addIndividualTransportWarnFileWinston,
     addIndividualTransportInfoFileWinston,
