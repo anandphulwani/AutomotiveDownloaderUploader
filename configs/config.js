@@ -34,6 +34,7 @@ const configBasic = {
         args: [
             '--user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data',
             '--hide-crash-restore-bubble',
+            '--window-size=1600,860',
             // '--disable-extensions-except=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\faacfelnnfhdicdmkdeclkeanllppdbm\\0.4.6.4_0',
             // '--load-extension=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\faacfelnnfhdicdmkdeclkeanllppdbm\\0.4.6.4_0',
         ],

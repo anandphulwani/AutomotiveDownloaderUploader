@@ -108,6 +108,18 @@ function setChromeProfile(profile) {
         userDataDir = `--user-data-dir=${userDataDir}`;
         config.browserArgs.args[filteredUserDataArg[0].index] = userDataDir;
 
+        let windowsHeight = filteredWindowSizeArg[0].item.replace(/^--window-size=/, '');
+        windowsHeight = windowsHeight.split(',');
+        windowsHeight.shift();
+        [windowsHeight] = windowsHeight;
+        windowsHeight = parseInt(windowsHeight, 10);
+
+        if (profile === 'download') {
+            config.browserArgs.args.push(`--window-position=0,${windowsHeight - 30}`);
+        }
+        if (profile === 'upload') {
+            config.browserArgs.args.push(`--window-position=0,${windowsHeight - 50}`);
+        }
     } else {
         throw new Error(`Chrome profile setting option: ${profile} not in the available options 'download' and 'upload'.`);
     }
