@@ -12,7 +12,7 @@ const timezoned = () => date.format(new Date(), 'YYYY-MM-DD HH:mm:ss:SSS');
 
 /* #region logFormatFile and logFormatConsole : Begin */
 const logFormatFile = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
-    const { filename, lineNumber, uniqueId } = sp.slice(-1)[0];
+    const { filename, lineNumber, uniqueId } = sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '' };
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
     uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
@@ -26,7 +26,7 @@ const logFormatFile = printf(({ level, message, timestamp: ts, stack, [Symbol.fo
 });
 
 const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
-    const { filename, lineNumber, uniqueId } = sp.slice(-1)[0];
+    const { filename, lineNumber, uniqueId } = sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '' };
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
     if (level === 'catcherror') {
