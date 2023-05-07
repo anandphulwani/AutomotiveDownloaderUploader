@@ -46,10 +46,10 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     } else {
         levelToPrint = level;
     }
-    logMesg.push(`${levelToPrint}:`.toUpperCase());
     if (level === 'info') {
         logMesg.push(message);
     } else {
+        logMesg.push(`${levelToPrint}:`.toUpperCase());
         logMesg.push(message);
         // logMesg.push(`${message} (${filename}:${lineNumber})`);
     }
