@@ -3,10 +3,9 @@ import chalk from 'chalk';
 import { createLogger, format, transports } from 'winston';
 
 const { combine, timestamp, printf, errors } = format;
-const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
-const todaysDateWithTime = date.format(new Date(), 'YYYYMMDD-HHmmss');
+const todaysDateForLogger = date.format(new Date(), 'YYYY-MM-DD');
+const todaysDateWithTimeForLogger = date.format(new Date(), 'YYYYMMDD-HHmmss');
 
-// #region
 // Define log functions
 const timezoned = () => date.format(new Date(), 'YYYY-MM-DD HH:mm:ss:SSS');
 
@@ -107,7 +106,7 @@ const catcherrorFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
             level: 'catcherror',
         }),
         // To catch the non catched errors
@@ -115,14 +114,14 @@ const catcherrorFileWinston = createLogger({
             handleExceptions: true,
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
             level: 'error',
         }),
         new transports.File({
             handleExceptions: true,
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_noncatcherror.log`,
+            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}_noncatcherror.log`,
             level: 'error',
         }),
     ],
@@ -137,7 +136,7 @@ const unreachableFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
             level: 'unreachable',
         }),
     ],
@@ -150,7 +149,7 @@ const errorFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
             level: 'error',
         }),
     ],
@@ -163,7 +162,7 @@ const warnFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
             level: 'warn',
         }),
     ],
@@ -176,7 +175,7 @@ const infoFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}.log`,
+            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
             level: 'info',
         }),
     ],
@@ -263,7 +262,7 @@ function addIndividualTransportCatcherrorFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'catcherror',
-                filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_catcherror.log`,
+                filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}_catcherror.log`,
                 level: 'catcherror',
             })
         );
@@ -278,7 +277,7 @@ function addIndividualTransportUnreachableFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'unreachable',
-                filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_unreachable.log`,
+                filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}_unreachable.log`,
                 level: 'unreachable',
             })
         );
@@ -293,7 +292,7 @@ function addIndividualTransportErrorFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'error',
-                filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_error.log`,
+                filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}_error.log`,
                 level: 'error',
             })
         );
@@ -308,7 +307,7 @@ function addIndividualTransportWarnFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'warn',
-                filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_warn.log`,
+                filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}_warn.log`,
                 level: 'warn',
             })
         );
@@ -323,7 +322,7 @@ function addIndividualTransportInfoFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'info',
-                filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_info.log`,
+                filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}_info.log`,
                 level: 'info',
             })
         );
@@ -395,6 +394,8 @@ loggerConsole.level = process.env.LOG_LEVEL || 'silly';
 
 // eslint-disable-next-line import/prefer-default-export
 export {
+    todaysDateForLogger,
+    todaysDateWithTimeForLogger,
     loggerFile,
     loggerConsole,
     addIndividualTransportCatcherrorFileWinston,
@@ -404,6 +405,6 @@ export {
     addIndividualTransportInfoFileWinston,
 };
 
-// new transports.File(fileTransportOptions('verbose', `${todaysDateWithTime}_verbose.log`)),
-// new transports.File(fileTransportOptions('debug', `${todaysDateWithTime}_debug.log`)),
-// new transports.File(fileTransportOptions('silly', `${todaysDateWithTime}_silly.log`)),
+// new transports.File(fileTransportOptions('verbose', `${todaysDateWithTimeForLogger}_verbose.log`)),
+// new transports.File(fileTransportOptions('debug', `${todaysDateWithTimeForLogger}_debug.log`)),
+// new transports.File(fileTransportOptions('silly', `${todaysDateWithTimeForLogger}_silly.log`)),

@@ -1,5 +1,12 @@
+import fs from 'fs';
+import path from 'path';
+import { checkSync, lockSync } from 'proper-lockfile';
+
 /* eslint-disable import/extensions */
+import { waitForMilliSeconds } from './sleep.js';
 import {
+    todaysDateForLogger,
+    todaysDateWithTimeForLogger,
     loggerFile,
     loggerConsole,
     addIndividualTransportUnreachableFileWinston,
@@ -10,6 +17,55 @@ import {
 } from './logger.js';
 import { generateAndGetNonCatchErrorLogLevels9DigitUniqueId, generateAndGetCatchErrorLogLevels6DigitUniqueId } from './configsupportive.js';
 /* eslint-enable import/extensions */
+
+fs.writeFile(`.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}`, '', (err) => {});
+const fileToOperateOn = `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}`;
+for (let lockTryIndex = 0; lockTryIndex <= 30; lockTryIndex++) {
+    if (lockTryIndex === 30) {
+        console.log(`Unable to get the lock`);
+        process.exit(1);
+    }
+    const checkLock = checkSync(fileToOperateOn);
+    if (checkLock) {
+        await waitForMilliSeconds(50 + lockTryIndex * 3);
+        // eslint-disable-next-line no-continue
+        continue;
+    }
+    lockSync(fileToOperateOn);
+    break;
+}
+
+// eslint-disable-next-line no-restricted-syntax
+for (const dateDir of fs.readdirSync('.\\logs\\')) {
+    const entryPath = path.join('.\\logs\\', dateDir);
+    if (fs.statSync(entryPath).isDirectory()) {
+        const dateDirFilesAndFolders = fs.readdirSync(entryPath);
+        let lockDirectories = dateDirFilesAndFolders.filter((filesAndFolders) => {
+            const filePath = path.join(entryPath, filesAndFolders);
+            return fs.statSync(filePath).isDirectory() && filesAndFolders.endsWith('.lock');
+        });
+        lockDirectories = lockDirectories.map((dir) => dir.replace(/\.lock$/, ''));
+        // console.log(lockDirectories);
+
+        // Filter only the files that are not in lockDirectories
+        const nonLockFiles = dateDirFilesAndFolders.filter((file) => {
+            const filePath = path.join(entryPath, file);
+            const statSync = fs.statSync(filePath);
+            const isDirectory = statSync.isDirectory();
+            const isNotLocked = !lockDirectories.some((lockDir) => file.startsWith(lockDir));
+            const isSizeZero = statSync.size === 0;
+            return !isDirectory && isNotLocked && isSizeZero;
+        });
+        // console.log(nonLockFiles);
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const file of nonLockFiles) {
+            const filePath = path.join(entryPath, file);
+            // Uncomment the following line to delete the file
+            fs.unlinkSync(filePath);
+        }
+    }
+}
 
 const getCallerDetails = (...args) => {
     let stackTrace;
