@@ -25,7 +25,7 @@ const getCallerDetails = (...args) => {
     }
     if (filename === undefined && lineNumber === undefined) {
         stackTrace = new Error().stack.split('\n');
-        if (stackTrace[0] === 'Error') {
+        if (stackTrace[0].startsWith('Error')) {
             stackTrace.shift();
         }
         if (stackTrace[0].trim().startsWith('at getCallerDetails')) {
