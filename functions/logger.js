@@ -334,17 +334,49 @@ function addIndividualTransportInfoFileWinston() {
 
 /* #region Main logger functions: loggerFile, loggerConsole : Begin */
 const loggerFile = {
-    catcherror: (...args) => catcherrorFileWinston.catcherror(...args),
-    error: (...args) => errorFileWinston.error(...args),
-    warn: (...args) => warnFileWinston.warn(...args),
-    info: (...args) => infoFileWinston.info(...args),
+    catcherror: (...args) => {
+        // console.log('Logger File CatchError');
+        catcherrorFileWinston.catcherror(...args);
+    },
+    unreachable: (...args) => {
+        // console.log('Logger File Unreachable');
+        unreachableFileWinston.unreachable(...args);
+    },
+    error: (...args) => {
+        // console.log('Logger File Erro');
+        errorFileWinston.error(...args);
+    },
+    warn: (...args) => {
+        // console.log('Logger File Warn');
+        warnFileWinston.warn(...args);
+    },
+    info: (...args) => {
+        // console.log('Logger File Info');
+        infoFileWinston.info(...args);
+    },
 };
 
 const loggerConsole = {
-    catcherror: (...args) => catcherrorConsoleWinston.catcherror(...args),
-    error: (...args) => errorConsoleWinston.error(...args),
-    warn: (...args) => warnConsoleWinston.warn(...args),
-    info: (...args) => infoConsoleWinston.info(...args),
+    catcherror: (...args) => {
+        // console.log('Logger Console CatchError');
+        catcherrorConsoleWinston.catcherror(...args);
+    },
+    unreachable: (...args) => {
+        // console.log('Logger Console Unreachable');
+        unreachableConsoleWinston.unreachable(...args);
+    },
+    error: (...args) => {
+        // console.log('Logger Console Error');
+        errorConsoleWinston.error(...args);
+    },
+    warn: (...args) => {
+        // console.log('Logger Console Warn');
+        warnConsoleWinston.warn(...args);
+    },
+    info: (...args) => {
+        // console.log('Logger Console Info');
+        infoConsoleWinston.info(...args);
+    },
 };
 /* #endregion Main logger functions: loggerFile, loggerConsole : End */
 
