@@ -25,13 +25,32 @@ const getCallerDetails = (...args) => {
     }
     if (filename === undefined && lineNumber === undefined) {
         stackTrace = new Error().stack.split('\n');
-        const stackDetailsCatchLine = stackTrace[3].match(/at (.+)\/(.+?):(\d+):(\d+)/);
-        [, , filename] = stackDetailsCatchLine;
-        if (stackTrace[4] !== undefined) {
-            const stackDetailsErrorLineInTry = stackTrace[4].match(/at (.+)\/(.+?):(\d+):(\d+)/);
-            lineNumber = `${stackDetailsCatchLine[3]},${stackDetailsErrorLineInTry[3]}`;
+        if (stackTrace[0] === 'Error') {
+            stackTrace.shift();
+        }
+        if (stackTrace[0].trim().startsWith('at getCallerDetails')) {
+            stackTrace.shift();
+            stackTrace.shift();
+        }
+        const stackDetailsCatchLine = stackTrace[0].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+        if (stackDetailsCatchLine) {
+            let [, fullFilePath] = stackDetailsCatchLine;
+            [, , filename, lineNumber] = stackDetailsCatchLine;
+            fullFilePath += `/${filename}`;
+            if (stackTrace[1] !== undefined) {
+                const stackDetailsErrorLineInTry = stackTrace[1].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+                if (stackDetailsErrorLineInTry) {
+                    let [, fullFilePath2ndLine] = stackDetailsErrorLineInTry;
+                    const [, , filename2ndLine, lineNumber2ndLine] = stackDetailsErrorLineInTry;
+                    fullFilePath2ndLine += `/${filename2ndLine}`;
+                    if (fullFilePath === fullFilePath2ndLine) {
+                        lineNumber += `,${lineNumber2ndLine}`;
+                    }
+                }
+            }
         } else {
-            [, , , lineNumber] = stackDetailsCatchLine;
+            filename = '';
+            lineNumber = '';
         }
     }
     return {
