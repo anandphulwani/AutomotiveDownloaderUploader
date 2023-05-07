@@ -225,6 +225,7 @@ function addIndividualTransportErrorFileWinston() {
     if (!isIndividualTransportErrorFileWinstonEnabled) {
         errorFileWinston.add(
             new transports.File({
+                handleExceptions: true,
                 ...fileTransportOptions,
                 name: 'error',
                 filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_error.log`,
@@ -240,6 +241,7 @@ function addIndividualTransportWarnFileWinston() {
     if (!isIndividualTransportWarnFileWinstonEnabled) {
         warnFileWinston.add(
             new transports.File({
+                handleExceptions: true,
                 ...fileTransportOptions,
                 name: 'warn',
                 filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_warn.log`,
@@ -255,6 +257,7 @@ function addIndividualTransportInfoFileWinston() {
     if (!isIndividualTransportInfoFileWinstonEnabled) {
         infoFileWinston.add(
             new transports.File({
+                handleExceptions: true,
                 ...fileTransportOptions,
                 name: 'info',
                 filename: `.\\logs\\${todaysDate}\\${todaysDateWithTime}_info.log`,
