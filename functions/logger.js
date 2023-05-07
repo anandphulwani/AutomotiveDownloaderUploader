@@ -204,10 +204,10 @@ const infoConsoleWinston = createLogger({
 /* #endregion Console loggers: catcherror, error, warn, info : End */
 
 /* #region addIndividualTransport Functions : Begin */
-let isIndividualTransportCatcherrorConsoleWinstonEnabled = false;
-function addIndividualTransportCatcherrorConsoleWinston() {
-    if (!isIndividualTransportCatcherrorConsoleWinstonEnabled) {
-        catcherrorConsoleWinston.add(
+let isIndividualTransportCatcherrorFileWinstonEnabled = false;
+function addIndividualTransportCatcherrorFileWinston() {
+    if (!isIndividualTransportCatcherrorFileWinstonEnabled) {
+        catcherrorFileWinston.add(
             new transports.File({
                 handleExceptions: true,
                 ...fileTransportOptions,
@@ -216,14 +216,14 @@ function addIndividualTransportCatcherrorConsoleWinston() {
                 level: 'catcherror',
             })
         );
-        isIndividualTransportCatcherrorConsoleWinstonEnabled = true;
+        isIndividualTransportCatcherrorFileWinstonEnabled = true;
     }
 }
 
-let isIndividualTransportErrorConsoleWinstonEnabled = false;
-function addIndividualTransportErrorConsoleWinston() {
-    if (!isIndividualTransportErrorConsoleWinstonEnabled) {
-        errorConsoleWinston.add(
+let isIndividualTransportErrorFileWinstonEnabled = false;
+function addIndividualTransportErrorFileWinston() {
+    if (!isIndividualTransportErrorFileWinstonEnabled) {
+        errorFileWinston.add(
             new transports.File({
                 ...fileTransportOptions,
                 name: 'error',
@@ -231,14 +231,14 @@ function addIndividualTransportErrorConsoleWinston() {
                 level: 'error',
             })
         );
-        isIndividualTransportErrorConsoleWinstonEnabled = true;
+        isIndividualTransportErrorFileWinstonEnabled = true;
     }
 }
 
-let isIndividualTransportWarnConsoleWinstonEnabled = false;
-function addIndividualTransportWarnConsoleWinston() {
-    if (!isIndividualTransportWarnConsoleWinstonEnabled) {
-        warnConsoleWinston.add(
+let isIndividualTransportWarnFileWinstonEnabled = false;
+function addIndividualTransportWarnFileWinston() {
+    if (!isIndividualTransportWarnFileWinstonEnabled) {
+        warnFileWinston.add(
             new transports.File({
                 ...fileTransportOptions,
                 name: 'warn',
@@ -246,14 +246,14 @@ function addIndividualTransportWarnConsoleWinston() {
                 level: 'warn',
             })
         );
-        isIndividualTransportWarnConsoleWinstonEnabled = true;
+        isIndividualTransportWarnFileWinstonEnabled = true;
     }
 }
 
-let isIndividualTransportInfoConsoleWinstonEnabled = false;
-function addIndividualTransportInfoConsoleWinston() {
-    if (!isIndividualTransportInfoConsoleWinstonEnabled) {
-        infoConsoleWinston.add(
+let isIndividualTransportInfoFileWinstonEnabled = false;
+function addIndividualTransportInfoFileWinston() {
+    if (!isIndividualTransportInfoFileWinstonEnabled) {
+        infoFileWinston.add(
             new transports.File({
                 ...fileTransportOptions,
                 name: 'info',
@@ -261,7 +261,7 @@ function addIndividualTransportInfoConsoleWinston() {
                 level: 'info',
             })
         );
-        isIndividualTransportInfoConsoleWinstonEnabled = true;
+        isIndividualTransportInfoFileWinstonEnabled = true;
     }
 }
 /* #endregion addIndividualTransport Functions : End */
@@ -299,10 +299,10 @@ loggerConsole.level = process.env.LOG_LEVEL || 'silly';
 export {
     loggerFile,
     loggerConsole,
-    addIndividualTransportCatcherrorConsoleWinston,
-    addIndividualTransportErrorConsoleWinston,
-    addIndividualTransportWarnConsoleWinston,
-    addIndividualTransportInfoConsoleWinston,
+    addIndividualTransportCatcherrorFileWinston,
+    addIndividualTransportErrorFileWinston,
+    addIndividualTransportWarnFileWinston,
+    addIndividualTransportInfoFileWinston,
 };
 
 // new transports.File(fileTransportOptions('verbose', `${todaysDateWithTime}_verbose.log`)),
