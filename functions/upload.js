@@ -157,6 +157,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // Update bookmark when its done
     // Later: error handling if stuck delete all previous images and start again.
 
+    process.stdout.write(chalk.cyan(` Uploading Files: `));
+
     /* #region: Uploading the files: Begin */
     lgif(`region: Uploading the files: Begin`);
     let firstImage;
@@ -226,6 +228,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // TODO: Verify all files are uploaded in qty, also rename bookmarks by giving quantity while download
     /* #endregion: Uploading the files: End */
 
+    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(6)}`));
+    process.stdout.write(chalk.cyan(` Mark Deletion: `));
+
     /* #region: Mark file to delete the older files so as to replace with the newer files later on: Begin */
     lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: Begin`);
     if (deleteOriginalFromDC) {
@@ -279,6 +284,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: End`);
     /* #endregion: Delete the older files to replace with the newer files: End */
 
+    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(13)}`));
+    process.stdout.write(chalk.cyan(` Move Files To Location: `));
+
     const imageDIVContainer2 = await page.$('.tn-list-container');
     const imageULContainer2 = await imageDIVContainer2.$('.container.tn-list.sortable.deletable.ui-sortable');
     const imageOriginalURLS2 = await imageULContainer2.$$eval('img.tn-car', (el) => el.map((x) => x.getAttribute('originalUrl')));
@@ -322,6 +330,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Move uploaded files on the correct location: End`);
     /* #endregion: Move uploaded files on the correct location: End */
 
+    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(4)}`));
+    process.stdout.write(chalk.cyan(`\n Move Files To Last: `));
+
     /* #region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin */
     lgif(
         `region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin`
@@ -334,6 +345,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         `region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End`
     );
     /* #endregion: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End */
+
+    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(3)}`));
+    process.stdout.write(chalk.cyan(` Lock The Images Checkbox: `));
 
     /* #region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin */
     lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin`);
@@ -351,6 +365,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     }
     lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End`);
     /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */
+
+    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(2)}`));
+    process.stdout.write(chalk.cyan(` Saving Now: `));
 
     /* #region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin */
     lgif(
@@ -387,7 +404,14 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         `region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End`
     );
     /* #endregion: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End */
+
+    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(16)}`));
+    process.stdout.write(chalk.cyan(` Saved: `));
+
     await page.waitForNavigation({ timeout: 300000 });
+
+    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(5)}`));
+
     const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdFolderPath, stockFilePath, false);
     const returnObj = { result: true, bookmarkAppendMesg: '', imagesUploaded: 0, moveSource: moveSource, moveDestination: moveDestination };
     lgif(`fn uploadImagesFromFolder() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
