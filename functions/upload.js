@@ -82,7 +82,24 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     });
     printToLogBuffer.length = 0;
 
+    const startTime = new Date();
     const returnObj = await uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name);
+    const elapsedTimeInSeconds = (new Date().getTime() - startTime.getTime()) / 1000;
+    const minutes = Math.floor(elapsedTimeInSeconds / 60)
+        .toString()
+        .padStart(2, '0');
+    const seconds = Math.floor(elapsedTimeInSeconds % 60)
+        .toString()
+        .padStart(2, '0');
+    const newEndingRow = await getRowPosOnTerminal();
+    if (newEndingRow - 3 !== endingRow) {
+        console.log(chalk.cyan(` (${minutes}:${seconds})`));
+    } else {
+        debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
+        debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
+        debug ? '' : process.stdout.cursorTo(0);
+        process.stdout.write(chalk.cyan(` (${minutes}:${seconds})\n`));
+    }
     lgif(`fn uploadBookmarkURL() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
     return returnObj;
 }
