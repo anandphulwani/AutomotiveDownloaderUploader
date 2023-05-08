@@ -7,6 +7,7 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
+import { lgw } from './functions/loggersupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { gotoURL } from './functions/goto.js';
@@ -63,6 +64,10 @@ Object.keys(config.contractors).forEach((contractor) => {
                     const folderSize = getFolderSizeInBytes(contractorReadyToUploadSubFolderPath);
                     // foldersToShift.push([contractorReadyToUploadSubFolderPath, uniqueId, folderSize]);
                     foldersToShift.push([contractorReadyToUploadSubFolderPath, folderSize]);
+                } else {
+                    lgw(
+                        `Folder in ReadyToUpload but images quantity does not match, Folder: ${contractor}\\000_ReadyToUpload\\${contractorReadyToUploadSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}`
+                    );
                 }
             }
         }
