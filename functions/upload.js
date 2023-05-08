@@ -221,7 +221,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             await fileChooser.accept([path.resolve(firstImagePath)]);
         }
     } catch (error) {
-        console.log(`error01: ${error}`);
+        lgc(`region: Uploading the files, Try Error: `, error);
     }
     await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
     lgif(`region: Uploading the files: End`);
@@ -272,7 +272,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                     );
                     lgif(`deletion set`);
                 } catch (error) {
-                    console.log(`error02: ${error}`);
+                    lgc(`region: Mark file to delete the older files so as to replace with the newer files later on, Try Error: `, error);
                     // eslint-disable-next-line no-continue
                     continue;
                 }
