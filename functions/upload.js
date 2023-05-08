@@ -670,7 +670,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         }
         isSlow ? await waitForSeconds(6, true) : '';
     } catch (error) {
-        lgc('moveImageToPositionNumber Try Error: ', error);
+        lgc('fn moveImageToPositionNumber() Try Error: ', error);
         await waitForSeconds(240, true);
     }
     lgif(`fn moveImageToPositionNumber() : END`);
