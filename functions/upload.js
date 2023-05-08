@@ -110,11 +110,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
 
     if (dealerNameFromDCAsIs !== dealerNameFromPage) {
-        console.log(
-            chalk.white.bgYellow.bold(
-                `\nWARNING: Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`
-            )
-        );
+        lgw(`Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`);
         return { result: false, bookmarkAppendMesg: '', imagesUploaded: 0 };
     }
     /**
@@ -129,18 +125,16 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
 
     if (stockNumberFromBookmark !== stockNumberFromWeb) {
-        console.log(
-            chalk.white.bgYellow.bold(
-                `\nWARNING: Stock Number values mismatch, name from web is '${stockNumberFromWeb}' vs name from bookmark is '${stockNumberFromBookmark}', Continuing.`
-            )
+        lgw(
+            `Stock Number values mismatch, name from web is '${stockNumberFromWeb}' vs name from bookmark is '${stockNumberFromBookmark}', Continuing.`
         );
     }
 
     const { typeOfStockPath, stockFolderPath, stockFilePath } = typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark);
 
     if (typeOfStockPath === 'stockFolder' && !fs.existsSync(stockFolderPath)) {
-        console.log(chalk.white.bgRed.bold(`Unable to upload file/folder for the stock number: ${stockNumberFromBookmark} .`));
-        process.exit(1);
+        lge(`Unable to find file/folder for the stock number: ${stockNumberFromBookmark} on the disk, data does not exist.`);
+        return { result: false, bookmarkAppendMesg: '', imagesUploaded: 0 };
     }
 
     const imageDIVContainer = await page.$('.tn-list-container');
