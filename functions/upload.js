@@ -78,8 +78,9 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     }
     printToLogBuffer.map((value) => {
         lgif(value);
-        return undefined;
+        return value;
     });
+    printToLogBuffer.length = 0;
 
     const returnObj = await uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name);
     lgif(`fn uploadBookmarkURL() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
