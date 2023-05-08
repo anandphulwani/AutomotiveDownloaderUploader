@@ -174,19 +174,31 @@ function generateTempFolderWithRandomText(debug = false) {
 
 function getFileCountRecursively(dirPath) {
     let count = 0;
-    const files = fs.readdirSync(dirPath);
-    // console.log(`files.length${files.length}`);
-    // eslint-disable-next-line no-restricted-syntax
-    for (const file of files) {
-        const filePath = path.join(dirPath, file);
-        const stat = fs.statSync(filePath);
-        if (stat.isFile()) {
-            count++;
-        } else if (stat.isDirectory()) {
-            count += getFileCountRecursively(filePath);
+    if (fs.existsSync(dirPath)) {
+        const files = fs.readdirSync(dirPath);
+        // console.log(`files.length${files.length}`);
+        // eslint-disable-next-line no-restricted-syntax
+        for (const file of files) {
+            const filePath = path.join(dirPath, file);
+            const stat = fs.statSync(filePath);
+            if (stat.isFile()) {
+                count++;
+            } else if (stat.isDirectory()) {
+                count += getFileCountRecursively(filePath);
+            }
         }
     }
     // console.log(`count${count}`);
+    return count;
+}
+
+function getFileCountNonRecursively(dirPath) {
+    let count = 0;
+    if (fs.existsSync(dirPath)) {
+        fs.readdirSync(dirPath).forEach(() => {
+            count++;
+        });
+    }
     return count;
 }
 
@@ -248,6 +260,7 @@ export {
     removeDirAndRemoveParentDirIfEmpty,
     generateTempFolderWithRandomText,
     getFileCountRecursively,
+    getFileCountNonRecursively,
     getListOfSubfoldersStartingWith,
     getFolderSizeInBytes,
 };
