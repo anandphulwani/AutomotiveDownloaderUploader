@@ -216,6 +216,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
         ) {
             lgif(`Uploading a copy now`);
+            const firstImagePath =
+                typeOfStockPath === 'stockFolder' ? path.join(stockFolderPath, firstImage) : path.join(uniqueIdFolderPath, firstImage);
             await page.bringToFront();
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
             await fileChooser.accept([path.resolve(firstImagePath)]);
