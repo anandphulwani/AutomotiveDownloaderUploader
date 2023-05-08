@@ -19,11 +19,16 @@ import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText }
 import { validateConfigFile } from './functions/configvalidation.js';
 import {
     createDirAndMoveFile,
+    getFileCountNonRecursively,
     getFileCountRecursively,
     getFolderSizeInBytes,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
 } from './functions/filesystem.js';
-import { getNumberOfImagesFromAllottedDealerNumberFolder, getUniqueIDFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
+import {
+    getUploadRemainingSummary,
+    getNumberOfImagesFromAllottedDealerNumberFolder,
+    getUniqueIDFromAllottedDealerNumberFolder,
+} from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
 /* eslint-enable import/extensions */
@@ -94,10 +99,14 @@ for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZ
     if (uploadingZoneStat.isDirectory()) {
         // console.log(uploadingZoneSubFolderPath);
         const uniqueId = getUniqueIDFromAllottedDealerNumberFolder(uploadingZoneSubFolderAndFiles);
-        foldersToUpload[uniqueId] = uploadingZoneSubFolderPath;
+        const numberOfImagesAcToFolderName = parseInt(getNumberOfImagesFromAllottedDealerNumberFolder(uploadingZoneSubFolderAndFiles), 10);
+        foldersToUpload[uniqueId] = {
+            path: uploadingZoneSubFolderPath,
+            imagesQty: numberOfImagesAcToFolderName,
+            dealerFolderFilesQty: getFileCountNonRecursively(uploadingZoneSubFolderPath),
+        };
     }
 }
-// console.log(foldersToUpload);
 
 // foldersToShift = foldersToShift.map((folderToShift) => folderToShift.slice(0, -1));
 // const foldersToShiftObj = foldersToShift.reduce((foldersToShiftArr, [value, key]) => {
@@ -213,7 +222,7 @@ if (!allUsernamesBookmarks.length > 0) {
                         const returnObj = await uploadBookmarkURL(
                             page,
                             uniqueIdElement,
-                            foldersToUpload[uniqueIdElement],
+                            foldersToUpload[uniqueIdElement].path,
                             dealerLevelBookmarkName,
                             vehicleBookmark.name,
                             vehicleBookmark.url
@@ -224,6 +233,9 @@ if (!allUsernamesBookmarks.length > 0) {
                         ) {
                             await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(returnObj.moveSource, returnObj.moveDestination, 2);
                         }
+                        foldersToUpload[uniqueIdElement].imagesQty = getFileCountRecursively(foldersToUpload[uniqueIdElement].path);
+                        foldersToUpload[uniqueIdElement].dealerFolderFilesQty = getFileCountNonRecursively(foldersToUpload[uniqueIdElement].path);
+                        console.log(chalk.cyan.bgWhiteBright(getUploadRemainingSummary(foldersToUpload)));
                     }
                 }
             }
