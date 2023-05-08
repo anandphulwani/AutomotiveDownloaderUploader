@@ -45,8 +45,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     let parsedCurrentUrlWOQueryParams = new URLparser(page.url());
     parsedCurrentUrlWOQueryParams = parsedCurrentUrlWOQueryParams.host + parsedCurrentUrlWOQueryParams.pathname;
 
-    lgif(`vehicleBookmarkUrlWOQueryParams: ${vehicleBookmarkUrlWOQueryParams}`);
-    lgif(`parsedCurrentUrlWOQueryParams: ${parsedCurrentUrlWOQueryParams}`);
+    lgif(`vehicleBookmarkUrlWOQueryParams: ${vehicleBookmarkUrlWOQueryParams}, parsedCurrentUrlWOQueryParams: ${parsedCurrentUrlWOQueryParams}`);
     if (parsedCurrentUrlWOQueryParams !== vehicleBookmarkUrlWOQueryParams) {
         await gotoURL(page, URL, debug);
     }
@@ -88,13 +87,16 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
 }
 
 async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, debug = false) {
-    // console.log(uniqueIdElement);
-    // console.log(dealerFolder);
+    lgif(`fn uploadImagesFromFolder: Begin : (${uniqueIdElement}, ${uniqueIdFolderPath}, ${dealerFolder}, ${name}, ${debug})`);
     const imageNumbersToDownloadFromDC = getImageNumbersToDownloadFromDC(dealerFolder);
     const deleteOriginalFromDC = getDeleteOriginalFromDC(dealerFolder);
     const shiftOriginalFirstPositionToLastPositionFromDC = getShiftOriginalFirstPositionToLastPositionFromDC(dealerFolder);
     const putFirstPositionEditedImageInTheLastPositionAlsoFromDC = getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerFolder);
     const lockTheImagesCheckMarkFromDC = getLockTheImagesCheckMarkFromDC(dealerFolder);
+
+    lgif(
+        `Parameters from excel: imageNumbersToDownloadFromDC: ${imageNumbersToDownloadFromDC}, deleteOriginalFromDC: ${deleteOriginalFromDC}, shiftOriginalFirstPositionToLastPositionFromDC: ${shiftOriginalFirstPositionToLastPositionFromDC}, putFirstPositionEditedImageInTheLastPositionAlsoFromDC: ${putFirstPositionEditedImageInTheLastPositionAlsoFromDC}, lockTheImagesCheckMarkFromDC: ${lockTheImagesCheckMarkFromDC},`
+    );
 
     /**
      * Get dealer name from excel and compare it with dealer name in the page: Begin
@@ -150,8 +152,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         await clickOnButton(page, '.vehicle-detail-tab.vehicle-detail-tab-imagery');
         await waitTillCurrentURLEndsWith(page, '#imagery');
     }
-    // console.log(`${uniqueIdFolderPath}\\${stockNumberFromBookmark}`);
-    // console.log(imageNumbersToDownloadFromDC);
+    lgif(`uniqueIdFolderPath\\stockNumberFromBookmark: ${uniqueIdFolderPath}\\${stockNumberFromBookmark}`);
 
     // TODO: Total bookmarks number do not change while writing
     // TODO: Shift images into date folders in all zones
@@ -163,6 +164,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // Later: error handling if stuck delete all previous images and start again.
 
     /* #region: Uploading the files: Begin */
+    lgif(`region: Uploading the files: Begin`);
     let firstImage;
     const imagesToUpload = [];
     // eslint-disable-next-line no-useless-catch
@@ -177,9 +179,13 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             if (firstImage === undefined) {
                 firstImage = stockFolderSubFolderAndFiles;
             }
+            lgif(
+                `stockFolderSubFolderAndFiles: ${stockFolderSubFolderAndFiles}, stockFolderSubFolderAndFilesPath: ${stockFolderSubFolderAndFilesPath}`
+            );
             const stockFolderSubFolderAndFilesStat = fs.statSync(stockFolderSubFolderAndFilesPath);
 
             if (stockFolderSubFolderAndFilesStat.isFile()) {
+                lgif(`It is a stockFile.`);
                 await page.bringToFront();
                 const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
                 await fileChooser.accept([path.resolve(stockFolderSubFolderAndFilesPath)]);
@@ -192,13 +198,28 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             } else {
                 imageNumber = 1;
             }
+            lgif(`imagesToUpload.push(imageNumber: ${imageNumber})`);
             imagesToUpload.push(imageNumber);
         }
         await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
+        lgif(`putFirstPositionEditedImageInTheLastPositionAlsoFromDC: ${putFirstPositionEditedImageInTheLastPositionAlsoFromDC}`);
+        lgif(
+            `imageNumbersToDownloadFromDC.length === 1: ${imageNumbersToDownloadFromDC.length === 1}, imageNumbersToDownloadFromDC.length: ${
+                imageNumbersToDownloadFromDC.length
+            }`
+        );
+        lgif(
+            `imageNumbersToDownloadFromDC.length > 1 ${
+                imageNumbersToDownloadFromDC.length > 1
+            }, firstImage.startsWith('001.'): ${firstImage.startsWith('001.')}, imageNumbersToDownloadFromDC.length ${
+                imageNumbersToDownloadFromDC.length
+            }, firstImage ${firstImage}`
+        );
         if (
             putFirstPositionEditedImageInTheLastPositionAlsoFromDC &&
             (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
         ) {
+            lgif(`Uploading a copy now`);
             await page.bringToFront();
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
             await fileChooser.accept([path.resolve(firstImagePath)]);
@@ -207,14 +228,20 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         console.log(`error01: ${error}`);
     }
     await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
+    lgif(`region: Uploading the files: End`);
     // TODO: Verify all files are uploaded in qty, also rename bookmarks by giving quantity while download
     /* #endregion: Uploading the files: End */
 
-    /* #region: Mark file to delete the older files to replace with the newer files: Begin */
+    /* #region: Mark file to delete the older files so as to replace with the newer files later on: Begin */
+    lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: Begin`);
     if (deleteOriginalFromDC) {
+        lgif(`deleteOriginalFromDC is set to True: ${deleteOriginalFromDC}`);
         // eslint-disable-next-line no-restricted-syntax
         for (const imageToUpload of imagesToUpload) {
             if (shiftOriginalFirstPositionToLastPositionFromDC && imageToUpload === 1) {
+                lgif(
+                    `shiftOriginalFirstPositionToLastPositionFromDC && imageToUpload === 1, continuing for next loop, imageToUpload: ${imageToUpload}`
+                );
                 // eslint-disable-next-line no-continue
                 continue;
             }
@@ -225,8 +252,10 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                         imageToUpload - 1,
                         2
                     )}_Img1`;
+                    lgif(`waiting for enableAndClickOnButton on ${imageToUpload}`);
                     await enableAndClickOnButton(page, deleteId);
 
+                    lgif(`waiting for delete to be set`);
                     await page.waitForFunction(
                         // eslint-disable-next-line no-loop-func
                         (selector, attributeName, expectedValue) => {
@@ -242,6 +271,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                         'title',
                         'click to RESTORE this photo.'
                     );
+                    lgif(`deletion set`);
                 } catch (error) {
                     console.log(`error02: ${error}`);
                     // eslint-disable-next-line no-continue
@@ -251,6 +281,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             }
         }
     }
+    lgif(`imagesToUpload at Delete: ${imagesToUpload}`);
+    lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: End`);
     /* #endregion: Delete the older files to replace with the newer files: End */
 
     const imageDIVContainer2 = await page.$('.tn-list-container');
@@ -259,12 +291,22 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     const imageOriginalURLSLength2 = imageOriginalURLS2.length;
 
     /* #region: Move uploaded files on the correct location: Begin */
+    lgif(`region: Move uploaded files on the correct location: Begin`);
+    lgif(`imagesToUpload before move: ${imagesToUpload}`);
+    lgif(`Moving uploaded files section: Start`);
     // eslint-disable-next-line no-restricted-syntax
     for (let imageToUploadIndex = imagesToUpload.length; imageToUploadIndex > 0; imageToUploadIndex--) {
         if (
             putFirstPositionEditedImageInTheLastPositionAlsoFromDC &&
             (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
         ) {
+            lgif(`Loop 01 If`);
+            lgif(
+                `imageToUploadIndex: ${imageToUploadIndex}, imageToUploadIndex - 1: ${
+                    imageToUploadIndex - 1
+                }, imagesToUpload[imageToUploadIndex - 1]: ${imagesToUpload[imageToUploadIndex - 1]}`
+            );
+            lgif(`Moving image from ${imageOriginalURLSLength2 - 1} To ${imagesToUpload[imageToUploadIndex - 1]}`);
             await moveImageToPositionNumber(
                 page,
                 imageOriginalURLSLength2,
@@ -273,31 +315,53 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 false
             );
         } else {
+            lgif(`Loop 01 Else`);
+            lgif(
+                `imageToUploadIndex: ${imageToUploadIndex}, imageToUploadIndex - 1: ${
+                    imageToUploadIndex - 1
+                }, imagesToUpload[imageToUploadIndex - 1]: ${imagesToUpload[imageToUploadIndex - 1]}`
+            );
+            lgif(`Moving image from ${imageOriginalURLSLength2} To ${imagesToUpload[imageToUploadIndex - 1]}`);
             await moveImageToPositionNumber(page, imageOriginalURLSLength2, imageOriginalURLSLength2, imagesToUpload[imageToUploadIndex - 1], false);
         }
     }
+    lgif(`region: Move uploaded files on the correct location: End`);
     /* #endregion: Move uploaded files on the correct location: End */
 
     /* #region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin */
+    lgif(
+        `region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin`
+    );
     if (shiftOriginalFirstPositionToLastPositionFromDC) {
+        lgif(`Shift Original First Position Moving image from ${imagesToUpload[0] + 1} To ${imageOriginalURLSLength2}`);
         await moveImageToPositionNumber(page, imageOriginalURLSLength2, imagesToUpload[0] + 1, imageOriginalURLSLength2);
     }
+    lgif(
+        `region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End`
+    );
     /* #endregion: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End */
 
     /* #region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin */
+    lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin`);
+
     const ImagesAreLockedFromWeb = await page.evaluate(
         // eslint-disable-next-line no-undef
         (selector) => document.querySelector(selector).checked,
         'input[type="checkbox"].vp[property-name="ImagesAreLocked"]'
     );
-    // console.log(`Current ImagesAreLockedFromWeb: ${ImagesAreLockedFromWeb}`);
+    lgif(`Current ImagesAreLockedFromWeb: ${ImagesAreLockedFromWeb}`);
 
     if (lockTheImagesCheckMarkFromDC !== null && lockTheImagesCheckMarkFromDC !== ImagesAreLockedFromWeb) {
+        lgif(`clickOnButton: lockTheImagesCheckMarkFromDC: ${lockTheImagesCheckMarkFromDC}, ImagesAreLockedFromWeb: ${ImagesAreLockedFromWeb}`);
         clickOnButton(page, 'input[type="checkbox"].vp[property-name="ImagesAreLocked"]');
     }
+    lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End`);
     /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */
 
-    // Bring save button to focus and move mouse over it.
+    /* #region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin */
+    lgif(
+        `region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin`
+    );
     const saveButtonSelector = `#aspnetForm > div.canvas.standard-canvas.viewport > div.canvas-body.canvas-body-no-padding.container > div > div.vehicle-details-body.container > div.vehicle-actions > ul:nth-child(2) > li:nth-child(3) > a`;
     const saveButtonElement = await page.waitForSelector(saveButtonSelector);
 
@@ -325,10 +389,15 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             steps: 1,
         });
     }
+    lgif(
+        `region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End`
+    );
+    /* #endregion: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End */
     await page.waitForNavigation({ timeout: 300000 });
     const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdFolderPath, stockFilePath, false);
-    fs.appendFileSync(logFile, `returning True\r\n`);
-    return { result: true, bookmarkAppendMesg: '', imagesUploaded: 0, moveSource: moveSource, moveDestination: moveDestination };
+    const returnObj = { result: true, bookmarkAppendMesg: '', imagesUploaded: 0, moveSource: moveSource, moveDestination: moveDestination };
+    lgif(`fn uploadImagesFromFolder() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
+    return returnObj;
 }
 
 async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosition, isSlow = false, debug = true) {
@@ -383,6 +452,11 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
 
         // Making sure that the element is selected and its opacity changes to 0.6, which confirms selected.
         while (true) {
+            lgif(
+                `Moving the image little bit to check opacity: X: ${fromPositionElementRect.x + fromPositionElementRect.width / 2}, Y: ${
+                    fromPositionElementRect.y + fromPositionElementRect.height / 2
+                }`
+            );
             await page.mouse.move(
                 fromPositionElementRect.x + fromPositionElementRect.width / 2,
                 fromPositionElementRect.y + fromPositionElementRect.height / 2,
