@@ -172,7 +172,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         }
     }
     process.stdout.write(
-        chalk.cyan.bgWhiteBright(
+        chalk.whiteBright.bgCyan(
             `\nImages (Downloaded/Requested)  /Available: (${imagesDownloaded}/${imageNumbersToDownload.length})  /${imageOriginalURLS.length}         `
         )
     );

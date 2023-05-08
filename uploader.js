@@ -240,7 +240,7 @@ if (!allUsernamesBookmarks.length > 0) {
                         }
                         foldersToUpload[uniqueIdElement].imagesQty = getFileCountRecursively(foldersToUpload[uniqueIdElement].path);
                         foldersToUpload[uniqueIdElement].dealerFolderFilesQty = getFileCountNonRecursively(foldersToUpload[uniqueIdElement].path);
-                        console.log(chalk.cyan.bgWhiteBright(getUploadRemainingSummary(foldersToUpload)));
+                        console.log(chalk.whiteBright.bgCyan(getUploadRemainingSummary(foldersToUpload)));
                     }
                 }
             }
