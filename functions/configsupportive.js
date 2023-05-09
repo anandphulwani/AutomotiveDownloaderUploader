@@ -57,7 +57,7 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
         }
         const configUserContent = fs.readFileSync(fileToOperateOn, 'utf8');
 
-        const regexString = `(const configUserContent = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+        const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
         const regexExpression = new RegExp(regexString, 'g');
         const newConfigUserContent = configUserContent.replace(regexExpression, `$1$2$3${allottedQty}$5`);
         if (configUserContent === newConfigUserContent) {
@@ -79,7 +79,7 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
 
 function getContractorsCurrentAllotted(contractor) {
     const configUserContent = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
-    const regexString = `(const configUserContent = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+    const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
     const regexExpression = new RegExp(regexString, 'g');
     const match = configUserContent.match(regexExpression);
     const currentAllotted = match[0].match(regexString)[4];
