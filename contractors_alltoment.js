@@ -10,6 +10,7 @@ import cfonts from 'cfonts';
 
 /* eslint-disable import/extensions */
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
+import { lge, lgw, lgif } from './functions/loggersupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
 import { makeDir, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
@@ -22,7 +23,8 @@ import {
 import { doAllotment } from './functions/allotment.js';
 /* eslint-enable import/extensions */
 
-/* #region : Validation section 01 */
+lgif(`region : Validation section 01: BEGIN`);
+/* #region : Validation section 01: BEGIN */
 if (process.argv.length < 3) {
     console.log(
         chalk.white.bgRed.bold(
@@ -44,6 +46,7 @@ if (!Object.keys(config.contractors).length > 0) {
     process.exit(1);
 }
 /* #endregion */
+lgif(`region : Validation section 01: END`);
 
 const lotIndex = parseInt(process.argv[2], 10);
 const lotFolderName = `Lot_${zeroPad(lotIndex, 2)}`;
@@ -61,8 +64,10 @@ const lotHeadingOptions = {
     maxLength: '0', // maximum length of the output (0 = unlimited)
 };
 
+lgif(`Printing Lot number in a bold way`);
 cfonts.say(lotFolderName.replace('_', ' '), lotHeadingOptions);
 
+lgif(`region : Validation section 02: BEGIN`);
 /* #region : Validation section 02 */
 if (!fs.existsSync(lotFolderPath)) {
     console.log(chalk.white.bgRed.bold(`Lot folder path: ${lotFolderPath} does not exist, Please check.`));
@@ -87,6 +92,7 @@ while (!hasLotFirstIndexMatches) {
     }
 }
 /* #endregion */
+lgif(`region : Validation section 02: END`);
 
 let dealerDirectories = await validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs(lotFolderPath);
 if (config.environment === 'production') {
@@ -109,10 +115,8 @@ dealerDirectories.sort((a, b) => {
     return a[1] > b[1] ? -1 : 1;
 });
 
-// console.log(`dealerDirectories: `);
-// console.log(dealerDirectories);
-// console.log(`Object.keys(config.contractors): `);
-// console.log(Object.keys(config.contractors));
+lgif(`dealerDirectories: ${JSON.stringify(dealerDirectories)}`);
+lgif(`Object.keys(config.contractors): ${JSON.stringify(Object.keys(config.contractors))}`);
 
 let contractors = [];
 let totalNoOfNormalThreshold = 0;
@@ -140,8 +144,7 @@ for (const contractor of Object.keys(config.contractors)) {
     contractors.push([contractor, normalThreshold]);
     totalNoOfNormalThreshold += normalThreshold;
 }
-// console.log(`contractors from config: `);
-// console.log(contractors);
+lgif(`contractors from config: ${JSON.stringify(contractors)}`);
 
 contractors.sort((a, b) => {
     if (a[1] === b[1]) {
@@ -149,12 +152,10 @@ contractors.sort((a, b) => {
     }
     return a[1] > b[1] ? -1 : 1;
 });
-// console.log(`contractors sorted: `);
-// console.log(contractors);
+lgif(`contractors sorted: ${JSON.stringify(contractors)}`);
 
 contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, totalNoOfNormalThreshold);
-// console.log(`contractors ratio calculated: `);
-// console.log(contractors);
+lgif(`contractors ratio calculated: ${JSON.stringify(contractors)}`);
 
 /**
  * Reading currentAllotted(ImagesAlloted) from the config, and appending it as the last column to generate `Example01` below.
@@ -191,8 +192,7 @@ contractors.forEach((contractor) => {
         contractor.push(currentAllotted);
     }
 });
-// console.log(`contractors currentAlloted set: `);
-// console.log(contractors);
+lgif(`contractors currentAlloted set: ${JSON.stringify(contractors)}`);
 
 // Lot Configuration
 const lotsMinimumDealerFoldersForEachContractors = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors;
