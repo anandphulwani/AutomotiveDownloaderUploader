@@ -72,7 +72,7 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
         fs.writeFileSync(fileToOperateOn, newConfigUserContent, 'utf8');
         unlockSync(fileToOperateOn);
     } catch (err) {
-        console.log(`${err.message}`);
+        lgc(err);
         process.exit(1);
     }
 }
