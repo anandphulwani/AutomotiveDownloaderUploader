@@ -18,7 +18,7 @@ function getUploadRemainingSummary(foldersToUpload) {
     ).length;
     const totalImagesQty = Object.values(foldersToUpload).reduce((acc, folder) => acc + folder.imagesQty, 0);
     const totalStockFolderFilesQty = Object.values(foldersToUpload).reduce((acc, folder) => acc + folder.dealerFolderFilesQty, 0);
-    const totalTimeInSeconds = totalImagesQty * 7 + totalStockFolderFilesQty * 5;
+    const totalTimeInSeconds = Math.round(totalImagesQty * 7.25 + totalStockFolderFilesQty * 7);
     const hours = Math.floor(totalTimeInSeconds / 3600)
         .toString()
         .padStart(2, '0');
