@@ -26,23 +26,19 @@ import { doAllotment } from './functions/allotment.js';
 lgif(`region : Validation section 01: BEGIN`);
 /* #region : Validation section 01: BEGIN */
 if (process.argv.length < 3) {
-    console.log(
-        chalk.white.bgRed.bold(
-            `Please start the program with right parameter 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD'.`
-        )
+    lge(
+        `Please start the program with right parameter 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD'.`
     );
     process.exit(1);
 }
 if (Number.isNaN(Number(process.argv[2]))) {
-    console.log(
-        chalk.white.bgRed.bold(
-            `Please start the program with proper parameters 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD', The first parameter(lotNoIndex) has to be a number.`
-        )
+    lge(
+        `Please start the program with proper parameters 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD', The first parameter(lotNoIndex) has to be a number.`
     );
     process.exit(1);
 }
 if (!Object.keys(config.contractors).length > 0) {
-    console.log(chalk.white.bgRed.bold(`No contractors available in config or the length is zero, please check config file.`));
+    lge(`No contractors available in config or the length is zero, please check config file.`);
     process.exit(1);
 }
 /* #endregion */
@@ -70,7 +66,7 @@ cfonts.say(lotFolderName.replace('_', ' '), lotHeadingOptions);
 lgif(`region : Validation section 02: BEGIN`);
 /* #region : Validation section 02 */
 if (!fs.existsSync(lotFolderPath)) {
-    console.log(chalk.white.bgRed.bold(`Lot folder path: ${lotFolderPath} does not exist, Please check.`));
+    lge(`Lot folder path: ${lotFolderPath} does not exist, Please check.`);
     process.exit(1);
 }
 
@@ -79,11 +75,7 @@ while (!hasLotFirstIndexMatches) {
     let LotFirstIndex = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
     LotFirstIndex = LotFirstIndex.length > 0 ? parseInt(LotFirstIndex[0].substring(4), 10) : 1;
     if (LotFirstIndex !== lotIndex) {
-        console.log(
-            chalk.white.bgRed.bold(
-                `Please allot earlier lot folders 'Lot_${zeroPad(LotFirstIndex, 2)}', before alloting this lot folder '${lotFolderName}'.`
-            )
-        );
+        lge(`Please allot earlier lot folders 'Lot_${zeroPad(LotFirstIndex, 2)}', before alloting this lot folder '${lotFolderName}'.`);
         if (!keyInYN('Do you want to try again if you alloted to earlier lot folders (press Y), or exit the program entirely (press N)?')) {
             process.exit(0);
         }
@@ -104,7 +96,7 @@ if (config.environment === 'production') {
 dealerDirectories = await returnImageCountFromDealerDirs(dealerDirectories);
 
 if (!dealerDirectories.length > 0) {
-    console.log(chalk.white.bgRed.bold(`Lot folder path: ${lotFolderPath} does not contain any subfolders (dealer Folder), Please check.`));
+    lge(`Lot folder path: ${lotFolderPath} does not contain any subfolders (dealer Folder), Please check.`);
     process.exit(1);
 }
 
@@ -133,6 +125,7 @@ let totalNoOfNormalThreshold = 0;
 for (const contractor of Object.keys(config.contractors)) {
     if (lotIndex === 1) {
         await setContractorsCurrentAllotted(contractor, '0');
+        //  TODO: Remove this foreach
         config.contractors[contractor].processingFolders.forEach(async (processingFolder) => {
             const contractorsProcessingFolder = `${config.contractorsZonePath}\\${contractor}\\${todaysDate}\\${processingFolder}`;
             if (!fs.existsSync(contractorsProcessingFolder)) {
