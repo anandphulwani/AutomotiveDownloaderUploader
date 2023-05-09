@@ -189,11 +189,11 @@ const catcherrorConsoleWinston = createLogger({
     levels: { catcherror: 0, error: 1 },
     defaultMeta: { service: 'log-service' },
     transports: [
-        new transports.Console({
-            ...consoleTransportOptions,
-            name: 'catcherror',
-            level: 'catcherror',
-        }),
+        // new transports.Console({
+        //     ...consoleTransportOptions,
+        //     name: 'catcherror',
+        //     level: 'catcherror',
+        // }),
         new transports.Console({
             handleExceptions: true,
             ...consoleTransportOptions,
