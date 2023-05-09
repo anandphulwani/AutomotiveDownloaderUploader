@@ -103,12 +103,12 @@ const catcherrorFileWinston = createLogger({
     levels: { catcherror: 0, error: 1 },
     defaultMeta: { service: 'log-service' },
     transports: [
-        new transports.File({
-            ...fileTransportOptions,
-            name: 'all',
-            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
-            level: 'catcherror',
-        }),
+        // new transports.File({
+        //     ...fileTransportOptions,
+        //     name: 'all',
+        //     filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
+        //     level: 'catcherror',
+        // }),
         // To catch the non catched errors
         new transports.File({
             handleExceptions: true,
