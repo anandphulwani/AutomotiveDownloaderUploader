@@ -206,40 +206,68 @@ const getCallerDetails = (...args) => {
     for (const arg of args) {
         if (arg instanceof Error) {
             stackTrace = arg.stack.split('\n');
-            const stackDetailsCatchLine = stackTrace[1].match(/at (.+)\/(.+?):(\d+):(\d+)/);
-            [, , filename, lineNumber] = stackDetailsCatchLine;
+            if (stackTrace[0].match(/^(.*)Error: (.*)/)) {
+                stackTrace.shift();
+            } else {
+                const mesg = `Logger error: Unable to match the first line, it doesnt contain anything like 'Error: ' in the line: \n${stackTrace[0]}.`;
+                console.log(chalk.white.bgRed(mesg));
+                process.exit(1);
+            }
+            while (stackTrace.length > 0 && stackTrace[0].match(/at (.+)\/(.+?):(\d+):(\d+)/) === null) {
+                stackTrace.shift();
+            }
+            if (stackTrace.length > 0) {
+                const stackDetailsCatchLine = stackTrace[0].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+                [, , filename, lineNumber] = stackDetailsCatchLine;
+            } else {
+                const mesg = `Logger error: Unable to get the filename and linenumber from the following stack: \n${arg.stack}.`;
+                console.log(chalk.white.bgRed(mesg));
+                [filename, lineNumber] = { filename: mesg, lineNumber: '' };
+            }
         }
     }
     if (filename === undefined && lineNumber === undefined) {
         stackTrace = new Error().stack.split('\n');
-        if (stackTrace[0].startsWith('Error')) {
+        if (stackTrace[0].match(/^Error: (.*)/)) {
+            stackTrace.shift();
+        } else {
+            const mesg = `Logger error: Unable to match the first line, it doesnt contain 'Error: ' in the line: \n${stackTrace[0]}.`;
+            console.log(chalk.white.bgRed(mesg));
+            process.exit(1);
+        }
+        while (stackTrace.length > 0 && stackTrace[0].match(/at getCallerDetails(.*)/) !== null) {
             stackTrace.shift();
         }
-        if (stackTrace[0].trim().startsWith('at getCallerDetails')) {
-            stackTrace.shift();
-            stackTrace.shift();
-        }
-        const stackDetailsCatchLine = stackTrace[0].match(/at (.+)\/(.+?):(\d+):(\d+)/);
-        if (stackDetailsCatchLine) {
-            let [, fullFilePath] = stackDetailsCatchLine;
-            [, , filename, lineNumber] = stackDetailsCatchLine;
-            fullFilePath += `/${filename}`;
-            if (stackTrace[1] !== undefined) {
-                const stackDetailsErrorLineInTry = stackTrace[1].match(/at (.+)\/(.+?):(\d+):(\d+)/);
-                if (stackDetailsErrorLineInTry) {
-                    let [, fullFilePath2ndLine] = stackDetailsErrorLineInTry;
-                    const [, , filename2ndLine, lineNumber2ndLine] = stackDetailsErrorLineInTry;
-                    fullFilePath2ndLine += `/${filename2ndLine}`;
-                    if (fullFilePath === fullFilePath2ndLine) {
-                        lineNumber += `,${lineNumber2ndLine}`;
+        if (stackTrace.length > 0) {
+            const stackDetailsCatchLine = stackTrace[0].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+            if (stackDetailsCatchLine) {
+                let [, fullFilePath] = stackDetailsCatchLine;
+                [, , filename, lineNumber] = stackDetailsCatchLine;
+                fullFilePath += `/${filename}`;
+                if (stackTrace[1] !== undefined) {
+                    const stackDetailsErrorLineInTry = stackTrace[1].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+                    if (stackDetailsErrorLineInTry) {
+                        let [, fullFilePath2ndLine] = stackDetailsErrorLineInTry;
+                        const [, , filename2ndLine, lineNumber2ndLine] = stackDetailsErrorLineInTry;
+                        fullFilePath2ndLine += `/${filename2ndLine}`;
+                        if (fullFilePath === fullFilePath2ndLine) {
+                            lineNumber += `,${lineNumber2ndLine}`;
+                        }
                     }
                 }
+            } else {
+                const mesg = `Logger error: Unable to get the filename and linenumber from the following line: \n${stackTrace[0]}.`;
+                console.log(chalk.white.bgRed(mesg));
+                filename = mesg;
             }
         } else {
-            filename = '';
-            lineNumber = '';
+            const mesg = `Logger error: Every line in stacktrace is from getCallerDetails().`;
+            console.log(chalk.white.bgRed(mesg));
+            filename = mesg;
         }
     }
+    filename = filename !== undefined ? filename : '';
+    lineNumber = lineNumber !== undefined ? lineNumber : '';
     return {
         filename: filename,
         lineNumber: lineNumber,
