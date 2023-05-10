@@ -250,7 +250,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // TODO: Verify all files are uploaded in qty, also rename bookmarks by giving quantity while download
     /* #endregion: Uploading the files: End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(6)}`));
+    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(3)}`));
     process.stdout.write(chalk.cyan(` Mark Deletion: `));
 
     /* #region: Mark file to delete the older files so as to replace with the newer files later on: Begin */
@@ -368,7 +368,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     /* #endregion: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(3)}`));
+    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(4)}`));
     process.stdout.write(chalk.cyan(` Lock The Images Checkbox: `));
 
     /* #region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin */
