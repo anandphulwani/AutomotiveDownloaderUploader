@@ -175,7 +175,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // Update bookmark when its done
     // Later: error handling if stuck delete all previous images and start again.
 
-    process.stdout.write(chalk.cyan(` Uploading Files: `));
+    process.stdout.write(chalk.cyan(` Uploading Files`));
 
     /* #region: Uploading the files: Begin */
     lgif(`region: Uploading the files: Begin`);
@@ -184,6 +184,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // eslint-disable-next-line no-useless-catch
     try {
         const stockFolderPathList = typeOfStockPath === 'stockFolder' ? fs.readdirSync(stockFolderPath) : [stockFilePath];
+        process.stdout.write(chalk.cyan(`(${zeroPad(stockFolderPathList.length, 2)}): `));
+
         // eslint-disable-next-line no-restricted-syntax
         for (const stockFolderSubFolderAndFiles of stockFolderPathList) {
             const stockFolderSubFolderAndFilesPath =
