@@ -12,7 +12,7 @@ async function waitForElementContainsOrEqualsText(page, selector, elementText, t
         // eslint-disable-next-line no-undef
         // await page.waitForFunction((args) => document.querySelector(args[0]).innerText === args[1], { timeout: 90000 }, [selector, elementText]);
         await page.evaluate(
-            (selectorInner, elementTextInner) =>
+            (selectorInner, elementTextInner, timeoutSecondsInner) =>
                 new Promise((resolve, reject) => {
                     const intervalId = setInterval(() => {
                         // eslint-disable-next-line no-undef
@@ -25,10 +25,11 @@ async function waitForElementContainsOrEqualsText(page, selector, elementText, t
                     setTimeout(() => {
                         clearInterval(intervalId);
                         reject(new Error(`Timeout waiting for element with selector "${selectorInner}" to have exact text "${elementTextInner}"`));
-                    }, timeoutSeconds * 1000);
+                    }, timeoutSecondsInner * 1000);
                 }),
             selector,
-            elementText
+            elementText,
+            timeoutSeconds
         );
     } else {
         // eslint-disable-next-line no-undef
@@ -37,7 +38,7 @@ async function waitForElementContainsOrEqualsText(page, selector, elementText, t
         //     elementText,
         // ]);
         await page.evaluate(
-            (selectorInner, elementTextInner) =>
+            (selectorInner, elementTextInner, timeoutSecondsInner) =>
                 new Promise((resolve, reject) => {
                     const intervalId = setInterval(() => {
                         // eslint-disable-next-line no-undef
@@ -52,10 +53,11 @@ async function waitForElementContainsOrEqualsText(page, selector, elementText, t
                         reject(
                             new Error(`Timeout waiting for element with selector "${selectorInner}" to include(non exact) text "${elementTextInner}"`)
                         );
-                    }, timeoutSeconds * 1000);
+                    }, timeoutSecondsInner * 1000);
                 }),
             selector,
-            elementText
+            elementText,
+            timeoutSeconds
         );
     }
     debug ? console.log(`Waiting for ${elementText} (${selector}) text to show up: Found.`) : '';
@@ -71,7 +73,7 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, t
         // eslint-disable-next-line no-undef
         // await page.waitForFunction((args) => document.querySelector(args[0]).innerHTML === args[1], { timeout: 90000 }, [selector, elementHTML]);
         await page.evaluate(
-            (selectorInner, elementHTMLInner) =>
+            (selectorInner, elementHTMLInner, timeoutSecondsInner) =>
                 new Promise((resolve, reject) => {
                     const intervalId = setInterval(() => {
                         // eslint-disable-next-line no-undef
@@ -84,10 +86,11 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, t
                     setTimeout(() => {
                         clearInterval(intervalId);
                         reject(new Error(`Timeout waiting for element with selector "${selectorInner}" to have exact HTML "${elementHTMLInner}"`));
-                    }, timeoutSeconds * 1000);
+                    }, timeoutSecondsInner * 1000);
                 }),
             selector,
-            elementHTML
+            elementHTML,
+            timeoutSeconds
         );
     } else {
         // eslint-disable-next-line no-undef
@@ -96,7 +99,7 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, t
         //     elementHTML,
         // ]);
         await page.evaluate(
-            (selectorInner, elementHTMLInner) =>
+            (selectorInner, elementHTMLInner, timeoutSecondsInner) =>
                 new Promise((resolve, reject) => {
                     const intervalId = setInterval(() => {
                         // eslint-disable-next-line no-undef
@@ -111,10 +114,11 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, t
                         reject(
                             new Error(`Timeout waiting for element with selector "${selectorInner}" to include(non exact) HTML "${elementHTMLInner}"`)
                         );
-                    }, timeoutSeconds * 1000);
+                    }, timeoutSecondsInner * 1000);
                 }),
             selector,
-            elementHTML
+            elementHTML,
+            timeoutSeconds
         );
     }
     debug ? console.log(`Waiting for ${elementHTML} (${selector}) text to show up: Found.`) : '';
