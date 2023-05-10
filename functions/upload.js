@@ -215,7 +215,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             lgif(`imagesToUpload.push(imageNumber: ${imageNumber})`);
             imagesToUpload.push(imageNumber);
         }
-        await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', imagesToUpload * 30, true);
+        await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', imagesToUpload.length * 30, true);
         lgif(`putFirstPositionEditedImageInTheLastPositionAlsoFromDC: ${putFirstPositionEditedImageInTheLastPositionAlsoFromDC}`);
         lgif(
             `imageNumbersToDownloadFromDC.length === 1: ${imageNumbersToDownloadFromDC.length === 1}, imageNumbersToDownloadFromDC.length: ${
