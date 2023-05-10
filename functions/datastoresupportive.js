@@ -3,7 +3,7 @@ import path from 'path';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
+import { removeDir } from './filesystem.js';
 /* eslint-enable import/extensions */
 
 function autoCleanUpZones(noOfDaysDataToKeep = 5) {
@@ -22,7 +22,7 @@ function autoCleanUpZones(noOfDaysDataToKeep = 5) {
         // eslint-disable-next-line no-restricted-syntax
         for (const folderPathChildrenSubDirToDelete of folderPathChildrenSubDirsToDelete) {
             const directoryPath = path.join(folderToCleanUp, folderPathChildrenSubDirToDelete);
-            removeDirAndRemoveParentDirIfEmpty(directoryPath, undefined, true);
+            removeDir(directoryPath, true);
         }
     }
 }
