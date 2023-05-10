@@ -88,7 +88,7 @@ async function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, 
     debug ? console.log('Moving file from TempDir to Destination : Done.') : '';
 }
 
-async function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, toPath, recursiveDeleteParentLevel = false, debug = false) {
+async function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, toPath, recursiveDeleteParentLevel = 1, debug = false) {
     await createDirAndMoveFile(fromPath, toPath, debug);
     removeParentDirIfEmpty(fromPath, recursiveDeleteParentLevel, debug);
 }
@@ -129,8 +129,8 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
     debug ? console.log('Removing Directory : Done') : '';
 }
 
-function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = false, debug = false) {
-    const recursiveParentLevel = recursiveDeleteParentLevel !== false ? recursiveDeleteParentLevel : 1;
+function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, debug = false) {
+    const recursiveParentLevel = recursiveDeleteParentLevel !== false ? recursiveDeleteParentLevel : 0;
     // Run it so that it just not traverses above 3 directories
     for (let loopIndex = 0; loopIndex < recursiveParentLevel; loopIndex++) {
         const parentDir = path.dirname(dirPath);
@@ -153,10 +153,10 @@ function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = false, deb
     }
 }
 
-function removeDirAndRemoveParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = false, recursiveDelete = false, debug = false) {
+function removeDirAndRemoveParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, recursiveDelete = false, debug = false) {
     debug ? console.log('Removing Directory And Removing Parent Directory If Empty : Executing') : '';
-    removeDir(dirPath, recursiveDelete, true);
-    removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel, true);
+    removeDir(dirPath, recursiveDelete, debug);
+    removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel, debug);
     debug ? console.log('Removing Directory And Removing Parent Directory If Empty : Done') : '';
 }
 
