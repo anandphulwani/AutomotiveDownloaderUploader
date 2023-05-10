@@ -1,3 +1,33 @@
+import fs from 'fs';
+import path from 'path';
+
+/* eslint-disable import/extensions */
+import { config } from '../configs/config.js';
+import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
+/* eslint-enable import/extensions */
+
+function autoCleanUpZones(noOfDaysDataToKeep = 5) {
+    const foldersToCleanUp = [config.downloadPath, config.recordKeepingZonePath, config.finishedUploadingZonePath, config.uploadingZonePath];
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const folderToCleanUp of foldersToCleanUp) {
+        const folderPathChildren = fs.readdirSync(folderToCleanUp);
+        // eslint-disable-next-line no-loop-func
+        const folderPathChildrenSubDirsOnly = folderPathChildren.filter(
+            (file) => fs.lstatSync(path.join(folderToCleanUp, file)).isDirectory() && /^\d{4}-\d{2}-\d{2}$/.test(file)
+        ); // Filter out only subdirectories and subdirectories which match YYYY-MM-DD format using regex
+        folderPathChildrenSubDirsOnly.sort(); // Sort subdirectories by name
+        const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, -noOfDaysDataToKeep); // Delete all but the last 5 subdirectories
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const folderPathChildrenSubDirToDelete of folderPathChildrenSubDirsToDelete) {
+            const directoryPath = path.join(folderToCleanUp, folderPathChildrenSubDirToDelete);
+            removeDirAndRemoveParentDirIfEmpty(directoryPath, undefined, true);
+        }
+    }
+}
+autoCleanUpZones();
+
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
     const regexString = `.*? (\\d+) \\(\\#\\d{5}\\)`;
     const regexExpression = new RegExp(regexString, 'g');
