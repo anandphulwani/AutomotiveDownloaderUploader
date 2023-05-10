@@ -26,6 +26,7 @@ import {
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
 } from './functions/filesystem.js';
 import {
+    autoCleanUpDatastoreZones,
     getUploadRemainingSummary,
     getNumberOfImagesFromAllottedDealerNumberFolder,
     getUniqueIDFromAllottedDealerNumberFolder,
@@ -42,6 +43,7 @@ if (config.environment === 'production') {
     await checkTimeWithNTP();
     printSectionSeperator();
 }
+autoCleanUpDatastoreZones();
 
 const foldersToShift = [];
 Object.keys(config.contractors).forEach((contractor) => {

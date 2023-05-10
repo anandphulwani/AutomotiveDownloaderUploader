@@ -30,6 +30,7 @@ import { validateDealerConfigurationExcelFile } from './functions/excelvalidatio
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
 import { validateConfigFile } from './functions/configvalidation.js';
 import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
+import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 /* eslint-enable import/extensions */
 
 // const {
@@ -46,6 +47,7 @@ if (config.environment === 'production') {
     await checkTimeWithNTP();
     printSectionSeperator();
 }
+autoCleanUpDatastoreZones();
 
 // ONPROJECTFINISH: Remove the unused imports
 // NORMALPRIORITY: Error summary in the end.

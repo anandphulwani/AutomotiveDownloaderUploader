@@ -6,7 +6,7 @@ import { config } from '../configs/config.js';
 import { removeDir } from './filesystem.js';
 /* eslint-enable import/extensions */
 
-function autoCleanUpZones(noOfDaysDataToKeep = 5) {
+function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     const foldersToCleanUp = [config.downloadPath, config.recordKeepingZonePath, config.finishedUploadingZonePath, config.uploadingZonePath];
 
     // eslint-disable-next-line no-restricted-syntax
@@ -26,7 +26,6 @@ function autoCleanUpZones(noOfDaysDataToKeep = 5) {
         }
     }
 }
-autoCleanUpZones();
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
     const regexString = `.*? (\\d+) \\(\\#\\d{5}\\)`;
