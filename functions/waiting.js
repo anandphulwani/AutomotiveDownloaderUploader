@@ -2,7 +2,7 @@
 import { waitForMilliSeconds } from './sleep.js';
 /* eslint-enable import/extensions */
 
-async function waitForElementContainsOrEqualsText(page, selector, elementText, exactMatch = false, debug = false) {
+async function waitForElementContainsOrEqualsText(page, selector, elementText, timeoutSeconds = 30, exactMatch = false, debug = false) {
     debug ? console.log(`Waiting for the ${selector} to load: Executing.`) : '';
     await page.waitForSelector(selector, { timeout: 90000 });
     debug ? console.log(`Waiting for the ${selector} to load: Found.`) : '';
@@ -25,7 +25,7 @@ async function waitForElementContainsOrEqualsText(page, selector, elementText, e
                     setTimeout(() => {
                         clearInterval(intervalId);
                         reject(new Error(`Timeout waiting for element with selector "${selectorInner}" to have exact text "${elementTextInner}"`));
-                    }, 30000);
+                    }, timeoutSeconds * 1000);
                 }),
             selector,
             elementText
@@ -52,7 +52,7 @@ async function waitForElementContainsOrEqualsText(page, selector, elementText, e
                         reject(
                             new Error(`Timeout waiting for element with selector "${selectorInner}" to include(non exact) text "${elementTextInner}"`)
                         );
-                    }, 30000);
+                    }, timeoutSeconds * 1000);
                 }),
             selector,
             elementText
@@ -61,7 +61,7 @@ async function waitForElementContainsOrEqualsText(page, selector, elementText, e
     debug ? console.log(`Waiting for ${elementText} (${selector}) text to show up: Found.`) : '';
 }
 
-async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, exactMatch = false, debug = false) {
+async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, timeoutSeconds = 30, exactMatch = false, debug = false) {
     debug ? console.log(`Waiting for the ${selector} to load: Executing.`) : '';
     await page.waitForSelector(selector, { timeout: 90000 });
     debug ? console.log(`Waiting for the ${selector} to load: Found.`) : '';
@@ -84,7 +84,7 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, e
                     setTimeout(() => {
                         clearInterval(intervalId);
                         reject(new Error(`Timeout waiting for element with selector "${selectorInner}" to have exact HTML "${elementHTMLInner}"`));
-                    }, 30000);
+                    }, timeoutSeconds * 1000);
                 }),
             selector,
             elementHTML
@@ -111,7 +111,7 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, e
                         reject(
                             new Error(`Timeout waiting for element with selector "${selectorInner}" to include(non exact) HTML "${elementHTMLInner}"`)
                         );
-                    }, 30000);
+                    }, timeoutSeconds * 1000);
                 }),
             selector,
             elementHTML

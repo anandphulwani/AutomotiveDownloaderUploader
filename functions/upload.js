@@ -215,7 +215,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             lgif(`imagesToUpload.push(imageNumber: ${imageNumber})`);
             imagesToUpload.push(imageNumber);
         }
-        await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
+        await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', imagesToUpload * 30, true);
         lgif(`putFirstPositionEditedImageInTheLastPositionAlsoFromDC: ${putFirstPositionEditedImageInTheLastPositionAlsoFromDC}`);
         lgif(
             `imageNumbersToDownloadFromDC.length === 1: ${imageNumbersToDownloadFromDC.length === 1}, imageNumbersToDownloadFromDC.length: ${
@@ -243,7 +243,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     } catch (error) {
         lgc(`region: Uploading the files, Try Error: `, error);
     }
-    await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', true);
+    await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', 30, true);
     lgif(`region: Uploading the files: End`);
     // TODO: Verify all files are uploaded in qty, also rename bookmarks by giving quantity while download
     /* #endregion: Uploading the files: End */

@@ -35,7 +35,7 @@ async function loginCredentials(page, credentials) {
     );
     await fillInTextbox(page, '#username', credentials.username);
     await clickOnButton(page, '#signIn', 'Next');
-    await waitForElementContainsOrEqualsText(page, '#returnLink', `← ${credentials.username}`, undefined, false);
+    await waitForElementContainsOrEqualsText(page, '#returnLink', `← ${credentials.username}`, 30, undefined, false);
     await fillInTextbox(page, '#password', credentials.password);
     await clickOnButton(page, '#signIn', 'Sign in');
     await waitTillCurrentURLStartsWith(page, `${getAppDomain()}/dashboard`);
