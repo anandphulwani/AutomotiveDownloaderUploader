@@ -58,4 +58,9 @@ function getUploadRemainingSummary(foldersToUpload) {
     return `Remaining DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, StockFolder/StockFiles: ${totalStockFolderFilesQty}, Time: ${hours}:${minutes}:${seconds}`;
 }
 // eslint-disable-next-line import/prefer-default-export
-export { getNumberOfImagesFromAllottedDealerNumberFolder, getUniqueIDFromAllottedDealerNumberFolder, getUploadRemainingSummary };
+export {
+    autoCleanUpDatastoreZones,
+    getNumberOfImagesFromAllottedDealerNumberFolder,
+    getUniqueIDFromAllottedDealerNumberFolder,
+    getUploadRemainingSummary,
+};
