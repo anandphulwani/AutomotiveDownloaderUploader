@@ -6,11 +6,15 @@ import chalk from 'chalk';
 import path from 'path';
 import randomstring from 'randomstring';
 
+/* eslint-disable import/extensions */
+import { lgc } from './loggersupportive.js';
+/* eslint-enable import/extensions */
+
 async function makeDir(dirPath, debug = false) {
     await new Promise((resolve, reject) => {
         fs.mkdir(dirPath, { recursive: true }, (error) => {
             if (error) {
-                console.log(chalk.white.bgRed.bold(`Unable to create a directory : ${dirPath}`));
+                lgc(`Unable to create a directory : ${dirPath}`, error);
                 process.exit(1);
             } else {
                 debug ? console.log(`Folder path created successfully : ${dirPath}`) : '';
@@ -24,11 +28,7 @@ async function moveFile(fromPath, toPath, debug = false) {
     return new Promise((resolve, reject) => {
         mv(fromPath, toPath, (error) => {
             if (error) {
-                console.log(
-                    chalk.white.bgRed.bold(
-                        `${'Unable to move file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`
-                    )
-                );
+                lgc(`${'Unable to move file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`, error);
                 process.exit(1);
             } else {
                 debug
