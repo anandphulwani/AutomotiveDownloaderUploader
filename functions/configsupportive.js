@@ -81,6 +81,12 @@ function getContractorsCurrentAllotted(contractor) {
     const configUserContent = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
     const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
     const regexExpression = new RegExp(regexString, 'g');
+
+    if (!regexExpression.test(configUserContent)) {
+        lgc('Unable to match regex for fn getContractorsCurrentAllotted()');
+        process.exit(1);
+    }
+
     const match = configUserContent.match(regexExpression);
     const currentAllotted = match[0].match(regexString)[4];
     return currentAllotted;
