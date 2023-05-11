@@ -62,6 +62,11 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         const currentNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',\\r\\n)`;
         const currentNonCatchErrorRegexExpression = new RegExp(currentNonCatchErrorRegexString, 'g');
 
+        if (!currentNonCatchErrorRegexExpression.test(configContent)) {
+            lgc('Unable to match regex for fn generateAndGetNonCatchErrorLogLevels9DigitUniqueId()');
+            process.exit(1);
+        }
+
         nonCatchErrorCode = parseInt(currentNonCatchErrorLogLevels9DigitUniqueId, 10);
         nonCatchErrorCode += 1;
         nonCatchErrorCode = zeroPad(nonCatchErrorCode, 9);
@@ -126,6 +131,11 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
 
         const currentCatchErrorRegexString = `(    catchErrorLogLevels6DigitUniqueId: ')(.*?)(',\\r\\n)`;
         const currentCatchErrorRegexExpression = new RegExp(currentCatchErrorRegexString, 'g');
+
+        if (!currentCatchErrorRegexExpression.test(configContent)) {
+            lgc('Unable to match regex for fn generateAndGetCatchErrorLogLevels6DigitUniqueId()');
+            process.exit(1);
+        }
 
         catchErrorCode = parseInt(currentCatchErrorLogLevels6DigitUniqueId, 10);
         catchErrorCode += 1;
