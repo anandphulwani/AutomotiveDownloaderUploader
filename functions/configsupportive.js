@@ -103,7 +103,7 @@ function getLastLotNumber() {
         process.exit(1);
     }
     const match = configContent.match(lastLotNumberRegexExpression);
-    return match[0].match(lastLotNumberRegexExpression)[2];
+    return match[0].match(lastLotNumberRegexString)[2];
 }
 
 function getLastLotDate() {
@@ -116,7 +116,7 @@ function getLastLotDate() {
         process.exit(1);
     }
     const match = configContent.match(lastLotDateRegexExpression);
-    return match[0].match(lastLotDateRegexExpression)[2];
+    return match[0].match(lastLotDateRegexString)[2];
 }
 
 async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
