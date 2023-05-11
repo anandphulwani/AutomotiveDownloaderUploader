@@ -1,6 +1,6 @@
 import fs from 'fs';
 import mv from 'mv';
-import ncp from 'ncp';
+import copy from 'recursive-copy';
 import os from 'os';
 import chalk from 'chalk';
 import path from 'path';
@@ -43,25 +43,17 @@ async function moveFile(fromPath, toPath, debug = false) {
 }
 
 async function copyDirOrFile(fromPath, toPath, debug = false) {
-    return new Promise((resolve, reject) => {
-        ncp(fromPath, toPath, (error) => {
-            if (error) {
-                console.log(
-                    chalk.white.bgRed.bold(
-                        `${'Unable to copy file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`
-                    )
-                );
-                process.exit(1);
-            } else {
-                debug
-                    ? console.log(
-                          `${'File copied successfully from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
-                      )
-                    : '';
-                resolve();
-            }
-        });
-    });
+    try {
+        const results = await copy(fromPath, toPath);
+        debug
+            ? console.log(
+                  `${'Successfully copied  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
+              )
+            : '';
+    } catch (error) {
+        lgc(`${'Unable to copy file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`, error);
+        process.exit(1);
+    }
 }
 
 async function createDirAndMoveFile(fromPath, toPath, debug = false) {
