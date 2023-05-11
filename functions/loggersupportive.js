@@ -119,7 +119,7 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
         }
     }
 
-    let catchError;
+    let catchErrorCode;
     try {
         const currentCatchErrorLogLevels6DigitUniqueId = getLastCatchErrorLogLevels6DigitUniqueId();
         const configContent = fs.readFileSync(fileToOperateOn, 'utf8');
@@ -127,14 +127,16 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
         const currentCatchErrorRegexString = `(    catchErrorLogLevels6DigitUniqueId: ')(.*?)(',\\r\\n)`;
         const currentCatchErrorRegexExpression = new RegExp(currentCatchErrorRegexString, 'g');
 
-        catchError = parseInt(currentCatchErrorLogLevels6DigitUniqueId, 10);
-        catchError += 1;
-        catchError = zeroPad(catchError, 6);
-        const newConfigContent = configContent.replace(currentCatchErrorRegexExpression, `$1${catchError}$3`);
+        catchErrorCode = parseInt(currentCatchErrorLogLevels6DigitUniqueId, 10);
+        catchErrorCode += 1;
+        catchErrorCode = zeroPad(catchErrorCode, 6);
+        const newConfigContent = configContent.replace(currentCatchErrorRegexExpression, `$1${catchErrorCode}$3`);
 
         if (newConfigContent === undefined) {
             console.log(
-                chalk.white.bgRed.bold(`Unable to set catchErrorLogLevels6DigitUniqueId: '${catchError}'. Serious issue, please contact developer.`)
+                chalk.white.bgRed.bold(
+                    `Unable to set catchErrorLogLevels6DigitUniqueId: '${catchErrorCode}'. Serious issue, please contact developer.`
+                )
             );
             unlockSync(fileToOperateOn);
             process.exit(1);
@@ -145,7 +147,7 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
         console.log(`${err.message}`);
         process.exit(1);
     }
-    return catchError;
+    return catchErrorCode;
 }
 /* #endregion getLastCatchErrorLogLevels6DigitUniqueId(), generateAndGetCatchErrorLogLevels6DigitUniqueId() : End */
 
