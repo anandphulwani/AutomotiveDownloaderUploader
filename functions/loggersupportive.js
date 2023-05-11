@@ -57,7 +57,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
     let nonCatchErrorCode;
     try {
         const currentNonCatchErrorLogLevels9DigitUniqueId = getLastNonCatchErrorLogLevels9DigitUniqueId();
-        const ConfigContent = fs.readFileSync(fileToOperateOn, 'utf8');
+        const configContent = fs.readFileSync(fileToOperateOn, 'utf8');
 
         const currentNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',\\r\\n)`;
         const currentNonCatchErrorRegexExpression = new RegExp(currentNonCatchErrorRegexString, 'g');
@@ -65,7 +65,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         nonCatchErrorCode = parseInt(currentNonCatchErrorLogLevels9DigitUniqueId, 10);
         nonCatchErrorCode += 1;
         nonCatchErrorCode = zeroPad(nonCatchErrorCode, 9);
-        const newConfigContent = ConfigContent.replace(currentNonCatchErrorRegexExpression, `$1${nonCatchErrorCode}$3`);
+        const newConfigContent = configContent.replace(currentNonCatchErrorRegexExpression, `$1${nonCatchErrorCode}$3`);
 
         if (newConfigContent === undefined) {
             console.log(
