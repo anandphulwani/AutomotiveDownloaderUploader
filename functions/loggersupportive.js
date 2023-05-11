@@ -54,7 +54,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         }
     }
 
-    let nonCatchError;
+    let nonCatchErrorCode;
     try {
         const currentNonCatchErrorLogLevels9DigitUniqueId = getLastNonCatchErrorLogLevels9DigitUniqueId();
         const ConfigContent = fs.readFileSync(fileToOperateOn, 'utf8');
@@ -62,15 +62,15 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         const currentNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',\\r\\n)`;
         const currentNonCatchErrorRegexExpression = new RegExp(currentNonCatchErrorRegexString, 'g');
 
-        nonCatchError = parseInt(currentNonCatchErrorLogLevels9DigitUniqueId, 10);
-        nonCatchError += 1;
-        nonCatchError = zeroPad(nonCatchError, 9);
-        const newConfigContent = ConfigContent.replace(currentNonCatchErrorRegexExpression, `$1${nonCatchError}$3`);
+        nonCatchErrorCode = parseInt(currentNonCatchErrorLogLevels9DigitUniqueId, 10);
+        nonCatchErrorCode += 1;
+        nonCatchErrorCode = zeroPad(nonCatchErrorCode, 9);
+        const newConfigContent = ConfigContent.replace(currentNonCatchErrorRegexExpression, `$1${nonCatchErrorCode}$3`);
 
         if (newConfigContent === undefined) {
             console.log(
                 chalk.white.bgRed.bold(
-                    `Unable to set nonCatchErrorLogLevels9DigitUniqueId: '${nonCatchError}'. Serious issue, please contact developer.`
+                    `Unable to set nonCatchErrorLogLevels9DigitUniqueId: '${nonCatchErrorCode}'. Serious issue, please contact developer.`
                 )
             );
             unlockSync(fileToOperateOn);
@@ -82,7 +82,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         console.log(`${err.message}`);
         process.exit(1);
     }
-    return nonCatchError;
+    return nonCatchErrorCode;
 }
 /* #endregion getLastNonCatchErrorLogLevels9DigitUniqueId(), generateAndGetNonCatchErrorLogLevels9DigitUniqueId() : End */
 
