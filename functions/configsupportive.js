@@ -98,6 +98,10 @@ function getLastLotNumber() {
     const lastLotNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\r\\n)`;
     const lastLotNumberRegexExpression = new RegExp(lastLotNumberRegexString, 'g');
 
+    if (!lastLotNumberRegexExpression.test(configContent)) {
+        lgc('Unable to match regex for fn getLastLotNumber()');
+        process.exit(1);
+    }
     const match = configContent.match(lastLotNumberRegexExpression);
     return match[0].match(lastLotNumberRegexExpression)[2];
 }
@@ -107,6 +111,10 @@ function getLastLotDate() {
     const lastLotDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\r\\n)`;
     const lastLotDateRegexExpression = new RegExp(lastLotDateRegexString, 'g');
 
+    if (!lastLotDateRegexExpression.test(configContent)) {
+        lgc('Unable to match regex for fn getLastLotDate()');
+        process.exit(1);
+    }
     const match = configContent.match(lastLotDateRegexExpression);
     return match[0].match(lastLotDateRegexExpression)[2];
 }
