@@ -3,6 +3,7 @@ import path from 'path';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
+import { lgc } from './loggersupportive.js';
 import { removeDir } from './filesystem.js';
 /* eslint-enable import/extensions */
 
@@ -30,6 +31,12 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
     const regexString = `.*? (\\d+) \\(\\#\\d{5}\\)`;
     const regexExpression = new RegExp(regexString, 'g');
+
+    if (!regexExpression.test(folderName)) {
+        lgc('Unable to match regex for fn getNumberOfImagesFromAllottedDealerNumberFolder()');
+        process.exit(1);
+    }
+
     const match = folderName.match(regexExpression);
     return match[0].match(regexString)[1];
 }
@@ -37,6 +44,12 @@ function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
 function getUniqueIDFromAllottedDealerNumberFolder(folderName) {
     const regexString = `.*? (\\d+) \\(\\#(\\d{5})\\)`;
     const regexExpression = new RegExp(regexString, 'g');
+
+    if (!regexExpression.test(folderName)) {
+        lgc('Unable to match regex for fn getUniqueIDFromAllottedDealerNumberFolder()');
+        process.exit(1);
+    }
+
     const match = folderName.match(regexExpression);
     return match[0].match(regexString)[2];
 }
