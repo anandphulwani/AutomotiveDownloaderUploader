@@ -26,6 +26,11 @@ function getLastNonCatchErrorLogLevels9DigitUniqueId() {
     const lastNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',\\r\\n)`;
     const lastNonCatchErrorRegexExpression = new RegExp(lastNonCatchErrorRegexString, 'g');
 
+    if (!lastNonCatchErrorRegexExpression.test(configContent)) {
+        lgc('Unable to match regex for fn getLastNonCatchErrorLogLevels9DigitUniqueId()');
+        process.exit(1);
+    }
+
     const match = configContent.match(lastNonCatchErrorRegexExpression);
     let lastNonCatchErrorLogLevels9DigitUniqueId = match[0].match(lastNonCatchErrorRegexString)[2];
     lastNonCatchErrorLogLevels9DigitUniqueId = lastNonCatchErrorLogLevels9DigitUniqueId !== '' ? lastNonCatchErrorLogLevels9DigitUniqueId : '0';
@@ -96,6 +101,11 @@ function getLastCatchErrorLogLevels6DigitUniqueId() {
     const configContent = fs.readFileSync('.\\configs\\config.js', 'utf8');
     const lastCatchErrorRegexString = `(    catchErrorLogLevels6DigitUniqueId: ')(.*?)(',\\r\\n)`;
     const lastCatchErrorRegexExpression = new RegExp(lastCatchErrorRegexString, 'g');
+
+    if (!lastCatchErrorRegexExpression.test(configContent)) {
+        lgc('Unable to match regex for fn getLastCatchErrorLogLevels6DigitUniqueId()');
+        process.exit(1);
+    }
 
     const match = configContent.match(lastCatchErrorRegexExpression);
     let lastLastCatchErrorLogLevels6DigitUniqueId = match[0].match(lastCatchErrorRegexString)[2];
