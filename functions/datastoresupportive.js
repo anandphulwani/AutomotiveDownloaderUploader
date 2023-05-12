@@ -61,14 +61,23 @@ function getUploadRemainingSummary(foldersToUpload) {
     const totalImagesQty = Object.values(foldersToUpload).reduce((acc, folder) => acc + folder.imagesQty, 0);
     const totalStockFolderFilesQty = Object.values(foldersToUpload).reduce((acc, folder) => acc + folder.dealerFolderFilesQty, 0);
     const totalTimeInSeconds = Math.round(totalImagesQty * 7.25 + totalStockFolderFilesQty * 7);
-    const hours = Math.floor(totalTimeInSeconds / 3600)
+    const durationHours = Math.floor(totalTimeInSeconds / 3600)
         .toString()
         .padStart(2, '0');
-    const minutes = Math.floor((totalTimeInSeconds - hours * 3600) / 60)
+    const durationMinutes = Math.floor((totalTimeInSeconds - durationHours * 3600) / 60)
         .toString()
         .padStart(2, '0');
-    const seconds = (totalTimeInSeconds % 60).toString().padStart(2, '0');
-    return `Remaining DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, StockFolder/StockFiles: ${totalStockFolderFilesQty}, Time: ${hours}:${minutes}:${seconds}`;
+    const durationSeconds = (totalTimeInSeconds % 60).toString().padStart(2, '0');
+
+    const currentTime = new Date(); // Get current time
+    currentTime.setHours(currentTime.getHours() + parseInt(durationHours, 10));
+    currentTime.setMinutes(currentTime.getMinutes() + parseInt(durationMinutes, 10));
+    currentTime.setSeconds(currentTime.getSeconds() + parseInt(durationSeconds, 10));
+
+    const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }; // Format the time in hh:mm:ss tt format
+    const finishedTime = currentTime.toLocaleString('en-US', options);
+
+    return `Remaining DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, StockFolder/StockFiles: ${totalStockFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
 }
 // eslint-disable-next-line import/prefer-default-export
 export {
