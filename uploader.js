@@ -7,7 +7,7 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
-import { lgw } from './functions/loggersupportive.js';
+import { lgw, lge } from './functions/loggersupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { gotoURL } from './functions/goto.js';
@@ -78,19 +78,44 @@ Object.keys(config.contractors).forEach((contractor) => {
 // sleep(15);
 // console.log(foldersToShift);
 
-// eslint-disable-next-line no-restricted-syntax
-for (const folderToShift of foldersToShift) {
-    // foldersToShift.forEach(async (folderToShift) => {
-    const folderSizeAfter10Seconds = getFolderSizeInBytes(folderToShift[0]);
-    if (folderSizeAfter10Seconds !== folderToShift[1]) {
-        foldersToShift.splice(folderToShift);
-    } else {
-        const newUploadingZonePath = `${config.uploadingZonePath}\\${todaysDate}\\${path.basename(folderToShift[0])}`;
-        await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
-        folderToShift[0] = newUploadingZonePath;
+async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
+    let doesDestinationFolderAlreadyExists = false;
+    let hasMovingToUploadZonePrinted = false;
+    const foldersToShiftLength = foldersToShift.length;
+    for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
+        const folderToShift = foldersToShift[cnt];
+        const folderSizeAfter10Seconds = getFolderSizeInBytes(folderToShift[0]);
+        if (folderSizeAfter10Seconds !== folderToShift[1]) {
+            foldersToShift.splice(folderToShift);
+        } else {
+            if (!isDryRun && !hasMovingToUploadZonePrinted) {
+                process.stdout.write(chalk.cyan('Moving folders to UploadingZone: '));
+                hasMovingToUploadZonePrinted = true;
+            }
+            process.stdout.write(chalk.cyan(`${path.basename(folderToShift[0])} ..`));
+            const newUploadingZonePath = `${config.uploadingZonePath}\\${todaysDate}\\${path.basename(folderToShift[0])}`;
+            if (isDryRun) {
+                if (fs.existsSync(`${newUploadingZonePath}`)) {
+                    lge(`Folder: ${newUploadingZonePath} already exists, cannot move ${folderToShift[0]} to its location.`);
+                    doesDestinationFolderAlreadyExists = true;
+                }
+            } else {
+                await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
+                folderToShift[0] = newUploadingZonePath;
+            }
+            if (!isDryRun && cnt !== foldersToShiftLength - 1) {
+                process.stdout.write(chalk.cyan(`..., `));
+            }
+        }
     }
-} // );
-// console.log(foldersToShift);
+    return doesDestinationFolderAlreadyExists;
+}
+
+const doesDestinationFolderAlreadyExists = await moveFilesFromContractorsToUploadingZone(true);
+if (doesDestinationFolderAlreadyExists) {
+    process.exit(0);
+}
+await moveFilesFromContractorsToUploadingZone(false);
 
 if (!fs.existsSync(`${config.uploadingZonePath}\\${todaysDate}`)) {
     console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));
