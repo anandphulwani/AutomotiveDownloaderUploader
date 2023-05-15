@@ -1,11 +1,13 @@
 // ONPROJECTFINISH: Do cleanup
 import chalk from 'chalk';
 import path from 'path';
+import fs from 'fs';
 import { question } from 'readline-sync';
 
 /* eslint-disable import/extensions */
 import { zeroPad } from './stringformatting.js';
 import { config } from '../configs/config.js';
+import { lge } from './loggersupportive.js';
 import { getIndexOfHighestIn2DArrayColumn } from './others.js';
 import { createDirAndCopyFile, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './excelsupportive.js';
@@ -37,6 +39,7 @@ async function doAllotment(
     isDryRun = false,
     isAutomaticAllotment = true
 ) {
+    let doesDestinationFolderAlreadyExists = false;
     if (
         allotmentSystem !== 'allotmentByMinimumDealerFoldersForEachContractors' &&
         allotmentSystem !== 'allotmentByImagesQty' &&
@@ -169,6 +172,15 @@ async function doAllotment(
 
                 await createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
                 await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
+            } else {
+                if (fs.existsSync(`${destinationRecordKeepingPath}`)) {
+                    lge(`Folder: ${destinationRecordKeepingPath} already exists, cannot copy ${dealerFolderPath} to its location.`);
+                    doesDestinationFolderAlreadyExists = true;
+                }
+                if (fs.existsSync(`${destinationPath}`)) {
+                    lge(`Folder: ${destinationPath} already exists, cannot move ${dealerFolderPath} to its location.`);
+                    doesDestinationFolderAlreadyExists = true;
+                }
             }
             console.log(
                 chalk.bgCyan.bold(
@@ -202,7 +214,7 @@ async function doAllotment(
             )
         );
     }
-    return [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted];
+    return [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted, doesDestinationFolderAlreadyExists];
 }
 
 // eslint-disable-next-line import/prefer-default-export

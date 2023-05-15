@@ -197,17 +197,22 @@ let dryRunImagesQtyAllotedInCurrentLot = 0;
 let dryRunFoldersAlloted = 0;
 let dryRunDealerDirectories = [...dealerDirectories];
 let dryRunContractors = contractors.map((contractor) => [...contractor]);
-[dryRunDealerDirectories, dryRunContractors, dryRunImagesQtyAllotedInCurrentLot, dryRunFoldersAlloted] = await doAllotment(
-    'allotmentByMinimumDealerFoldersForEachContractors',
-    lotsMinimumDealerFoldersForEachContractors,
-    undefined,
-    dryRunDealerDirectories,
-    dryRunContractors,
-    lotIndex,
-    dryRunImagesQtyAllotedInCurrentLot,
-    dryRunFoldersAlloted,
-    true
-);
+let doesDestinationFolderAlreadyExists;
+[dryRunDealerDirectories, dryRunContractors, dryRunImagesQtyAllotedInCurrentLot, dryRunFoldersAlloted, doesDestinationFolderAlreadyExists] =
+    await doAllotment(
+        'allotmentByMinimumDealerFoldersForEachContractors',
+        lotsMinimumDealerFoldersForEachContractors,
+        undefined,
+        dryRunDealerDirectories,
+        dryRunContractors,
+        lotIndex,
+        dryRunImagesQtyAllotedInCurrentLot,
+        dryRunFoldersAlloted,
+        true
+    );
+if (doesDestinationFolderAlreadyExists) {
+    process.exit(1);
+}
 // console.log(`dryRunImagesQtyAllotedInCurrentLot:`);
 // console.log(dryRunImagesQtyAllotedInCurrentLot);
 // console.log(`dryRunFoldersAlloted:`);
@@ -222,17 +227,21 @@ let dryRunContractors = contractors.map((contractor) => [...contractor]);
 // console.log(`contractors:`);
 // console.log(contractors);
 
-[dryRunDealerDirectories, dryRunContractors, dryRunImagesQtyAllotedInCurrentLot, dryRunFoldersAlloted] = await doAllotment(
-    'allotmentByImagesQty',
-    undefined,
-    lotsImagesQty,
-    dryRunDealerDirectories,
-    dryRunContractors,
-    lotIndex,
-    dryRunImagesQtyAllotedInCurrentLot,
-    dryRunFoldersAlloted,
-    true
-);
+[dryRunDealerDirectories, dryRunContractors, dryRunImagesQtyAllotedInCurrentLot, dryRunFoldersAlloted, doesDestinationFolderAlreadyExists] =
+    await doAllotment(
+        'allotmentByImagesQty',
+        undefined,
+        lotsImagesQty,
+        dryRunDealerDirectories,
+        dryRunContractors,
+        lotIndex,
+        dryRunImagesQtyAllotedInCurrentLot,
+        dryRunFoldersAlloted,
+        true
+    );
+if (doesDestinationFolderAlreadyExists) {
+    process.exit(1);
+}
 
 let imagesQtyAllotedInCurrentLot = 0;
 let foldersAlloted = 0;
@@ -245,7 +254,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
      */
     /* #region: CodeAbstract */
 
-    [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted] = await doAllotment(
+    [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted, doesDestinationFolderAlreadyExists] = await doAllotment(
         'allotmentByMinimumDealerFoldersForEachContractors',
         lotsMinimumDealerFoldersForEachContractors,
         undefined,
@@ -281,7 +290,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
      */
     /* #endregion */
     /* #region: CodeAbstract */
-    [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted] = await doAllotment(
+    [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted, doesDestinationFolderAlreadyExists] = await doAllotment(
         'allotmentByImagesQty',
         undefined,
         lotsImagesQty,
