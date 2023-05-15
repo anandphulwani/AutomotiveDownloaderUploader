@@ -23,7 +23,7 @@ const logFormatFile = printf(({ level, message, timestamp: ts, stack, [Symbol.fo
         logMesg.push(`${message} (${filename}:${lineNumber})`);
     }
     logMesg = logMesg.join(' ');
-    if (stack && !logMesg.includes(stack)) {
+    if (stack !== undefined && !logMesg.includes(stack)) {
         logMesg = `${logMesg}\n${stack}`;
     }
     return logMesg;
