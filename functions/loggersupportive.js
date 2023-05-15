@@ -235,11 +235,11 @@ const getCallerDetails = (...args) => {
                 console.log(chalk.white.bgRed(mesg));
                 process.exit(1);
             }
-            while (stackTrace.length > 0 && stackTrace[0].match(/at (.+)\/(.+?):(\d+):(\d+)/) === null) {
+            while (stackTrace.length > 0 && stackTrace[0].match(/at (.+)[\\/](.+?):(\d+):(\d+)/) === null) {
                 stackTrace.shift();
             }
             if (stackTrace.length > 0) {
-                const stackDetailsCatchLine = stackTrace[0].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+                const stackDetailsCatchLine = stackTrace[0].match(/at (.+)[\\/](.+?):(\d+):(\d+)/);
                 [, , filename, lineNumber] = stackDetailsCatchLine;
             } else {
                 const mesg = `Logger error: Unable to get the filename and linenumber from the following stack: \n${arg.stack}.`;
@@ -261,13 +261,13 @@ const getCallerDetails = (...args) => {
             stackTrace.shift();
         }
         if (stackTrace.length > 0) {
-            const stackDetailsCatchLine = stackTrace[0].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+            const stackDetailsCatchLine = stackTrace[0].match(/at (.+)[\\/](.+?):(\d+):(\d+)/);
             if (stackDetailsCatchLine) {
                 let [, fullFilePath] = stackDetailsCatchLine;
                 [, , filename, lineNumber] = stackDetailsCatchLine;
                 fullFilePath += `/${filename}`;
                 if (stackTrace[1] !== undefined) {
-                    const stackDetailsErrorLineInTry = stackTrace[1].match(/at (.+)\/(.+?):(\d+):(\d+)/);
+                    const stackDetailsErrorLineInTry = stackTrace[1].match(/at (.+)[\\/](.+?):(\d+):(\d+)/);
                     if (stackDetailsErrorLineInTry) {
                         let [, fullFilePath2ndLine] = stackDetailsErrorLineInTry;
                         const [, , filename2ndLine, lineNumber2ndLine] = stackDetailsErrorLineInTry;
