@@ -279,12 +279,12 @@ const getCallerDetails = (...args) => {
                 }
             } else {
                 const mesg = `Logger error: Unable to get the filename and linenumber from the following line: \n${stackTrace[0]}.`;
-                console.log(chalk.white.bgRed(mesg));
+                lgcf(mesg); // TODO: Change it to logger error section, which you have to create parallely to lge, lgw, lgi
                 filename = mesg;
             }
         } else {
             const mesg = `Logger error: Every line in stacktrace is from getCallerDetails().`;
-            console.log(chalk.white.bgRed(mesg));
+            lgcf(mesg); // TODO: Change it to logger error section, which you have to create parallely to lge, lgw, lgi
             filename = mesg;
         }
     }
