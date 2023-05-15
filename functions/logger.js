@@ -39,7 +39,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     }
     if (stack !== undefined && stack.length > 0) {
         const stackArray = stack.split('\n');
-        const errorString = stackArray[0].replace(/^[a-zA-z]*Error:/, '').trim();
+        const errorString = stackArray[0].replace(/^[a-zA-Z]*Error:/, '').trim();
         message = message.replace(errorString, `\n${errorString}`);
     }
     let levelToPrint = '';
