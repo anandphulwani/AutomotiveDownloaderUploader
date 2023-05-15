@@ -231,8 +231,8 @@ const getCallerDetails = (...args) => {
             if (stackTrace[0].match(/^[a-zA-Z]*Error:/) || stackTrace[0] === 'Error') {
                 stackTrace.shift();
             } else {
-                const mesg = `Logger error: Unable to match the first line, it doesnt contain anything like 'Error: ' in the line: \n${stackTrace[0]}.`;
-                console.log(chalk.white.bgRed(mesg));
+                const mesg = `Logger error: Unable to match the first line, it doesnt contain anything like 'Error: ' in the line: \n${stackTrace[0]}\nError Stack:\n${arg.stack}`;
+                lgcf(mesg);
                 process.exit(1);
             }
             while (stackTrace.length > 0 && stackTrace[0].match(/at (.+)[\\/](.+?):(\d+):(\d+)/) === null) {
@@ -243,7 +243,7 @@ const getCallerDetails = (...args) => {
                 [, , filename, lineNumber] = stackDetailsCatchLine;
             } else {
                 const mesg = `Logger error: Unable to get the filename and linenumber from the following stack: \n${arg.stack}.`;
-                console.log(chalk.white.bgRed(mesg));
+                lgcf(mesg);
                 [filename, lineNumber] = { filename: mesg, lineNumber: '' };
             }
         }
@@ -253,7 +253,9 @@ const getCallerDetails = (...args) => {
         if (stackTrace[0].match(/^[a-zA-Z]*Error:/) || stackTrace[0] === 'Error') {
             stackTrace.shift();
         } else {
-            const mesg = `Logger error: Unable to match the first line, it doesnt contain 'Error: ' in the line: \n${stackTrace[0]}.`;
+            const mesg = `Logger error: Unable to match the first line, it doesnt contain 'Error: ' in the line: \n${
+                stackTrace[0]
+            }\nRemaining Error Stack:\n${stackTrace.join('\n')}`;
             console.log(chalk.white.bgRed(mesg));
             process.exit(1);
         }
