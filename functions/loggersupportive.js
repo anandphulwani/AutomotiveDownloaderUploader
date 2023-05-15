@@ -228,7 +228,7 @@ const getCallerDetails = (...args) => {
     for (const arg of args) {
         if (arg instanceof Error) {
             stackTrace = arg.stack.split('\n');
-            if (stackTrace[0].match(/^(.*)Error: (.*)/)) {
+            if (stackTrace[0].match(/^[a-zA-Z]*Error:/) || stackTrace[0] === 'Error') {
                 stackTrace.shift();
             } else {
                 const mesg = `Logger error: Unable to match the first line, it doesnt contain anything like 'Error: ' in the line: \n${stackTrace[0]}.`;
@@ -250,7 +250,7 @@ const getCallerDetails = (...args) => {
     }
     if (filename === undefined && lineNumber === undefined) {
         stackTrace = new Error().stack.split('\n');
-        if (stackTrace[0].match(/^Error: (.*)/)) {
+        if (stackTrace[0].match(/^[a-zA-Z]*Error:/) || stackTrace[0] === 'Error') {
             stackTrace.shift();
         } else {
             const mesg = `Logger error: Unable to match the first line, it doesnt contain 'Error: ' in the line: \n${stackTrace[0]}.`;
