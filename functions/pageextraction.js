@@ -47,6 +47,15 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         )
     );
 
+    if (!/^[a-zA-Z0-9]{2,}$/.test(stockNumber)) {
+        console.log(
+            chalk.white.bgYellow.bold(
+                `\nWARNING: Found an invalid stock number: ${stockNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`
+            )
+        );
+        return { result: false, bookmarkAppendMesg: 'Ignoring (Invalid Stock Number, Format Unknown)', imagesDownloaded: 0 };
+    }
+
     const imageDIVContainer = await page.$('.tn-list-container');
     const imageULContainer = await imageDIVContainer.$('.container.tn-list.sortable.deletable.ui-sortable');
     const imageOriginalURLS = await imageULContainer.$$eval('img.tn-car', (el) => el.map((x) => x.getAttribute('originalUrl')));
