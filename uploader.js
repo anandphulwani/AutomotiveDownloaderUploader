@@ -55,20 +55,23 @@ Object.keys(config.contractors).forEach((contractor) => {
             const contractorReadyToUploadStat = fs.statSync(contractorReadyToUploadSubFolderPath);
 
             if (contractorReadyToUploadStat.isDirectory()) {
-                // console.log(contractorReadyToUploadSubFolderPath);
-                const numberOfImagesAcToFolderName = parseInt(
-                    getNumberOfImagesFromAllottedDealerNumberFolder(contractorReadyToUploadSubFolderAndFiles),
-                    10
-                );
-                const numberOfImagesAcToFileCount = getFileCountRecursively(contractorReadyToUploadSubFolderPath);
-                // const uniqueId = getUniqueIDFromAllottedDealerNumberFolder(contractorReadyToUploadSubFolderAndFiles);
-                if (numberOfImagesAcToFolderName === numberOfImagesAcToFileCount) {
-                    const folderSize = getFolderSizeInBytes(contractorReadyToUploadSubFolderPath);
-                    // foldersToShift.push([contractorReadyToUploadSubFolderPath, uniqueId, folderSize]);
-                    foldersToShift.push([contractorReadyToUploadSubFolderPath, folderSize]);
+                if (/^.* (([^\s]* )*)[^\s]+ \d{1,3} \(#\d{5}\)$/.test(contractorReadyToUploadSubFolderAndFiles)) {
+                    const numberOfImagesAcToFolderName = parseInt(
+                        getNumberOfImagesFromAllottedDealerNumberFolder(contractorReadyToUploadSubFolderAndFiles),
+                        10
+                    );
+                    const numberOfImagesAcToFileCount = getFileCountRecursively(contractorReadyToUploadSubFolderPath);
+                    if (numberOfImagesAcToFolderName === numberOfImagesAcToFileCount) {
+                        const folderSize = getFolderSizeInBytes(contractorReadyToUploadSubFolderPath);
+                        foldersToShift.push([contractorReadyToUploadSubFolderPath, folderSize]);
+                    } else {
+                        lgw(
+                            `Folder in ReadyToUpload but images quantity does not match, Folder: ${contractor}\\000_ReadyToUpload\\${contractorReadyToUploadSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
+                        );
+                    }
                 } else {
                     lgw(
-                        `Folder in ReadyToUpload but images quantity does not match, Folder: ${contractor}\\000_ReadyToUpload\\${contractorReadyToUploadSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}`
+                        `Folder in ReadyToUpload but is not in a proper format, Folder: ${contractor}\\000_ReadyToUpload\\${contractorReadyToUploadSubFolderAndFiles}, Ignoring.`
                     );
                 }
             }
