@@ -37,6 +37,11 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     if (level === 'catcherror' || level === 'unreachable') {
         uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
     }
+    if (stack !== undefined && stack.length > 0) {
+        const stackArray = stack.split('\n');
+        const errorString = stackArray[0].replace(/^[a-zA-z]*Error:/, '').trim();
+        message = message.replace(errorString, `\n${errorString}`);
+    }
     let levelToPrint = '';
     if (level === 'warn') {
         levelToPrint = 'warning';
