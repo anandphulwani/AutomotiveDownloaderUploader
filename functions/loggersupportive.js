@@ -244,7 +244,7 @@ const getCallerDetails = (...args) => {
             } else {
                 const mesg = `Logger error: Unable to get the filename and linenumber from the following stack: \n${arg.stack}.`;
                 lgcf(mesg);
-                [filename, lineNumber] = { filename: mesg, lineNumber: '' };
+                [filename, lineNumber] = [mesg, ''];
             }
         }
     }
