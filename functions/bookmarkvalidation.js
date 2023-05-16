@@ -32,6 +32,7 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
         setCurrentDealerConfiguration(usernameBookmark.name);
         const allDealerNumbers = getAllDealerNumbers();
         const dealerLevelBookmarks = usernameBookmark.children;
+        const dealerLevelBookmarkNames = [];
         // eslint-disable-next-line no-restricted-syntax
         for (const dealerLevelBookmark of dealerLevelBookmarks) {
             const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
@@ -42,6 +43,16 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
                         `ERROR: Unable to find dealer folder: '${dealerLevelBookmarkName}' for the Username: '${usernameBookmark.name}', it is not present in the excel.`
                     )
                 );
+            }
+            if (dealerLevelBookmarkNames.includes(dealerLevelBookmarkName)) {
+                validationStatus = 'error';
+                console.log(
+                    chalk.white.bgRed.bold(
+                        `ERROR: Duplicate Dealer level bookmark name found, a folder ${dealerLevelBookmarkName} is already present.`
+                    )
+                );
+            } else {
+                dealerLevelBookmarkNames.push(dealerLevelBookmarkName);
             }
         }
     }
