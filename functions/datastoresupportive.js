@@ -8,17 +8,28 @@ import { removeDir } from './filesystem.js';
 /* eslint-enable import/extensions */
 
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
-    const foldersToCleanUp = [config.downloadPath, config.recordKeepingZonePath, config.finishedUploadingZonePath, config.uploadingZonePath];
+    const foldersToCleanUp = [
+        config.downloadPath,
+        config.recordKeepingZonePath,
+        config.uploadingZonePath,
+        config.finishedUploadingZonePath,
+        `${config.finishedUploadingZonePath}\\DeletedUrls`,
+        `.\\logs`, // Static delete after 120 days
+    ];
 
     // eslint-disable-next-line no-restricted-syntax
     for (const folderToCleanUp of foldersToCleanUp) {
+        if (!fs.existsSync(folderToCleanUp)) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
         const folderPathChildren = fs.readdirSync(folderToCleanUp);
         // eslint-disable-next-line no-loop-func
         const folderPathChildrenSubDirsOnly = folderPathChildren.filter(
             (file) => fs.lstatSync(path.join(folderToCleanUp, file)).isDirectory() && /^\d{4}-\d{2}-\d{2}$/.test(file)
         ); // Filter out only subdirectories and subdirectories which match YYYY-MM-DD format using regex
         folderPathChildrenSubDirsOnly.sort(); // Sort subdirectories by name
-        const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, -noOfDaysDataToKeep); // Delete all but the last 5 subdirectories
+        const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, folderToCleanUp !== `.\\logs` ? -noOfDaysDataToKeep : -120); // Delete all but the last 5 subdirectories
 
         // eslint-disable-next-line no-restricted-syntax
         for (const folderPathChildrenSubDirToDelete of folderPathChildrenSubDirsToDelete) {
