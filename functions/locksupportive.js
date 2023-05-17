@@ -12,11 +12,11 @@ import { copyDirOrFile } from './filesystem.js';
 /* eslint-enable import/extensions */
 
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
-const todaysDateWithTime = date.format(new Date(), 'YYYYMMDD-HHmmss');
+const currentTime = date.format(new Date(), 'HHmmss');
 
 function attainLock(fileToOperateOn, takeBackup = false, debug = false) {
     if (takeBackup) {
-        copyDirOrFile(fileToOperateOn, `${config.recordKeepingZonePath}\\${todaysDate}\\${fileToOperateOn}_${todaysDateWithTime}`);
+        copyDirOrFile(fileToOperateOn, `${config.lockingBackupsZonePath}\\${todaysDate}\\${fileToOperateOn}_${currentTime}`);
     }
     for (let lockTryIndex = 0; lockTryIndex <= 30; lockTryIndex++) {
         if (lockTryIndex === 30) {
