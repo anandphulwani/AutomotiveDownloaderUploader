@@ -58,6 +58,7 @@ const configBasic = {
     uploadingZonePath: '.\\datastore\\UploadingZone',
     finishedUploadingZonePath: '.\\datastore\\FinishedUploadingZone',
     recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
+    lockingBackupsZonePath: '.\\datastore\\LockingBackupsZone',
     automaticClickSaveButtonOnUpload: true,
     contractors: {
         // ram: {
