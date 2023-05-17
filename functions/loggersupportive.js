@@ -17,6 +17,8 @@ import {
     addIndividualTransportWarnFileWinston,
     addIndividualTransportInfoFileWinston,
 } from './logger.js';
+// eslint-disable-next-line import/no-cycle
+import { attainLock, releaseLock } from './locksupportive.js';
 /* eslint-enable import/extensions */
 
 // ONPROJECTFINISH: Check if all codes are present in log files which are generated because winston is found to not log in files just before process.exit(1)
@@ -39,25 +41,7 @@ function getLastNonCatchErrorLogLevels9DigitUniqueId() {
 
 function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
     const fileToOperateOn = '.\\configs\\config.js';
-    for (let lockTryIndex = 0; lockTryIndex <= 30; lockTryIndex++) {
-        if (lockTryIndex === 5) {
-            console.log(`Unable to get the lock`);
-            process.exit(1);
-        }
-        try {
-            const checkLock = checkSync(fileToOperateOn);
-            if (checkLock) {
-                msleep(50 + lockTryIndex * 3);
-                // eslint-disable-next-line no-continue
-                continue;
-            }
-            lockSync(fileToOperateOn);
-            break;
-        } catch (error) {
-            console.log(`${error.message}`);
-            console.log(`This piece of code should be unreachable.`);
-        }
-    }
+    attainLock(fileToOperateOn, true);
 
     let nonCatchErrorCode;
     try {
@@ -83,11 +67,11 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
                     `Unable to set nonCatchErrorLogLevels9DigitUniqueId: '${nonCatchErrorCode}'. Serious issue, please contact developer.`
                 )
             );
-            unlockSync(fileToOperateOn);
+            releaseLock(fileToOperateOn);
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
-        unlockSync(fileToOperateOn);
+        releaseLock(fileToOperateOn);
     } catch (err) {
         console.log(`${err.message}`);
         process.exit(1);
@@ -115,24 +99,7 @@ function getLastCatchErrorLogLevels6DigitUniqueId() {
 
 function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
     const fileToOperateOn = '.\\configs\\config.js';
-    for (let lockTryIndex = 0; lockTryIndex <= 30; lockTryIndex++) {
-        if (lockTryIndex === 5) {
-            process.exit(1);
-        }
-        try {
-            const checkLock = checkSync(fileToOperateOn);
-            if (checkLock) {
-                msleep(50 + lockTryIndex * 3, true);
-                // eslint-disable-next-line no-continue
-                continue;
-            }
-            lockSync(fileToOperateOn);
-            break;
-        } catch (error) {
-            console.log(`${error.message}`);
-            console.log(`This piece of code should be unreachable.`);
-        }
-    }
+    attainLock(fileToOperateOn, true);
 
     let catchErrorCode;
     try {
@@ -158,11 +125,11 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
                     `Unable to set catchErrorLogLevels6DigitUniqueId: '${catchErrorCode}'. Serious issue, please contact developer.`
                 )
             );
-            unlockSync(fileToOperateOn);
+            releaseLock(fileToOperateOn);
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
-        unlockSync(fileToOperateOn);
+        releaseLock(fileToOperateOn);
     } catch (err) {
         console.log(`${err.message}`);
         process.exit(1);
@@ -173,20 +140,7 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
 
 fs.writeFile(`.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}`, '', (err) => {});
 const fileToOperateOn = `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}`;
-for (let lockTryIndex = 0; lockTryIndex <= 30; lockTryIndex++) {
-    if (lockTryIndex === 30) {
-        console.log(`Unable to get the lock`);
-        process.exit(1);
-    }
-    const checkLock = checkSync(fileToOperateOn);
-    if (checkLock) {
-        await waitForMilliSeconds(50 + lockTryIndex * 3);
-        // eslint-disable-next-line no-continue
-        continue;
-    }
-    lockSync(fileToOperateOn);
-    break;
-}
+attainLock(fileToOperateOn, false);
 
 // eslint-disable-next-line no-restricted-syntax
 for (const dateDir of fs.readdirSync('.\\logs\\')) {
