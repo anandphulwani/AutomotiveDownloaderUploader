@@ -1,10 +1,10 @@
 import fs from 'fs';
 import mv from 'mv';
-import copy from 'recursive-copy';
 import os from 'os';
 import chalk from 'chalk';
 import path from 'path';
 import randomstring from 'randomstring';
+import { copySync, moveSync } from 'fs-extra';
 
 /* eslint-disable import/extensions */
 import { lgc } from './loggersupportive.js';
@@ -42,9 +42,9 @@ async function moveFile(fromPath, toPath, debug = false) {
     });
 }
 
-async function copyDirOrFile(fromPath, toPath, debug = false) {
+function copyDirOrFile(fromPath, toPath, debug = false) {
     try {
-        const results = await copy(fromPath, toPath);
+        const results = copySync(fromPath, toPath, { overwrite: false, errorOnExist: true });
         debug
             ? console.log(
                   `${'Successfully copied  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
@@ -71,7 +71,7 @@ async function createDirAndCopyFile(fromPath, toPath, debug = false) {
         await makeDir(`${path.dirname(toPath)}/`, debug);
         debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
     }
-    await copyDirOrFile(fromPath, toPath, debug);
+    copyDirOrFile(fromPath, toPath, debug);
 }
 
 async function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, destinationPath, debug = false) {
