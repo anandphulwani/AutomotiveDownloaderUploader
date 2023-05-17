@@ -9,6 +9,7 @@ import { removeDir } from './filesystem.js';
 
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     const foldersToCleanUp = [
+        config.lockingBackupsZonePath,
         config.downloadPath,
         config.recordKeepingZonePath,
         config.uploadingZonePath,
