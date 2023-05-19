@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { getCredentialsForUsername } from './configsupportive.js';
+import { getAllUsernamesBookmarks } from './bookmarksupportive.js';
 import { setCurrentDealerConfiguration, getAllDealerNumbers } from './excelsupportive.js';
 import { checkForSpaceInBeginOrEnd, checkForMultipleSpacesInMiddle, allTrimString, trimMultipleSpacesInMiddleIntoOne } from './stringformatting.js';
 /* eslint-enable import/extensions */
@@ -11,22 +11,7 @@ import { checkForSpaceInBeginOrEnd, checkForMultipleSpacesInMiddle, allTrimStrin
 function validateBookmarksAndCheckCredentialsPresent(debug = false) {
     let validationStatus = 'success';
     debug ? console.log(`Validating bookmarks and checking if credentials are present: Executing.`) : '';
-    const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
-    const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
-
-    const bookmarksBarData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
-    if (!bookmarksBarData.length > 0) {
-        console.log(chalk.white.bgRed.bold(`ERROR: Bookmarks section doesn't contain bookmarks bar.`));
-    }
-    const bookmarksBarDataChildren = bookmarksBarData[0].children;
-
-    const allUsernamesFromConfig = config.credentials.map((item) => item.username);
-    const allUsernamesBookmarks = bookmarksBarDataChildren.filter((usernameLevelBookmark) =>
-        allUsernamesFromConfig.includes(usernameLevelBookmark.name)
-    );
-    if (!allUsernamesBookmarks.length > 0) {
-        console.log(chalk.white.bgRed.bold(`ERROR: Bookmarks bar doesn't contain folders of the usernames available in the config.`));
-    }
+    const allUsernamesBookmarks = getAllUsernamesBookmarks();
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
         setCurrentDealerConfiguration(usernameBookmark.name);

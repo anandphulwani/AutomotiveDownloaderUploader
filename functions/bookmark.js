@@ -364,6 +364,13 @@ function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
     const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
     const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
     let filteredData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
+    if (filteredData.length > 1) {
+        filteredData = filteredData.reduce((earliest, current) => {
+            const earliestDateAdded = parseInt(earliest.date_added, 10);
+            const currentDateAdded = parseInt(current.date_added, 10);
+            return earliestDateAdded < currentDateAdded ? earliest : current;
+        });
+    }
     // eslint-disable-next-line prefer-destructuring
     filteredData = filteredData[0].children;
     filteredData = filteredData.filter(
@@ -387,6 +394,13 @@ function getBookmarkUsernameFolderFromUniqueId(uniqueId) {
     const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
     const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
     let filteredData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
+    if (filteredData.length > 1) {
+        filteredData = filteredData.reduce((earliest, current) => {
+            const earliestDateAdded = parseInt(earliest.date_added, 10);
+            const currentDateAdded = parseInt(current.date_added, 10);
+            return earliestDateAdded < currentDateAdded ? earliest : current;
+        });
+    }
     // eslint-disable-next-line prefer-destructuring
     filteredData = filteredData[0].children;
 

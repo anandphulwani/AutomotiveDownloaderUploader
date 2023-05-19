@@ -4,7 +4,6 @@ import date from 'date-and-time';
 import killChrome from 'kill-chrome';
 import puppeteer from 'puppeteer';
 import { exec, spawn } from 'child_process';
-import { getChromeBookmark } from 'chrome-bookmark-reader';
 import { keyInYN } from 'readline-sync';
 import { URL as URLparser } from 'url';
 
@@ -15,6 +14,7 @@ import { zeroPad } from './functions/stringformatting.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
+import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
 import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitForElementContainsOrEqualsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
@@ -102,22 +102,7 @@ for (const LotIndexEle of LotIndexArray) {
 /**
  * Read chrome bookmarks from chrome browser
  */
-const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
-const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
-
-const bookmarksBarData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
-if (!bookmarksBarData.length > 0) {
-    console.log(chalk.white.bgRed.bold(`Bookmarks section doesn't contain bookmarks bar.`));
-    process.exit(1);
-}
-const bookmarksBarDataChildren = bookmarksBarData[0].children;
-
-const allUsernamesFromConfig = config.credentials.map((item) => item.username);
-const allUsernamesBookmarks = bookmarksBarDataChildren.filter((usernameLevelBookmark) => allUsernamesFromConfig.includes(usernameLevelBookmark.name));
-if (!allUsernamesBookmarks.length > 0) {
-    console.log(chalk.white.bgRed.bold(`Bookmarks bar doesn't contain folders of the usernames available in the config.`));
-    process.exit(1);
-}
+const allUsernamesBookmarks = getAllUsernamesBookmarks();
 
 // Create a set of all completed bookmarks to compare for duplicates
 let urlsDownloaded = [];

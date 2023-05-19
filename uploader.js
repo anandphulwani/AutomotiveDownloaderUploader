@@ -3,13 +3,13 @@ import fs from 'fs';
 import path from 'path';
 import date from 'date-and-time';
 import { URL } from 'url';
-import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
 import { lgw, lge } from './functions/loggersupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
+import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
 import { gotoURL } from './functions/goto.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { getUniqueIdPairsFromDealerBookmarkName } from './functions/bookmark.js';
@@ -176,22 +176,7 @@ if (
 /**
  * Read chrome bookmarks from chrome browser
  */
-const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
-const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
-
-const bookmarksBarData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
-if (!bookmarksBarData.length > 0) {
-    console.log(chalk.white.bgRed.bold(`Bookmarks section doesn't contain bookmarks bar.`));
-    process.exit(1);
-}
-const bookmarksBarDataChildren = bookmarksBarData[0].children;
-
-const allUsernamesFromConfig = config.credentials.map((item) => item.username);
-const allUsernamesBookmarks = bookmarksBarDataChildren.filter((usernameLevelBookmark) => allUsernamesFromConfig.includes(usernameLevelBookmark.name));
-if (!allUsernamesBookmarks.length > 0) {
-    console.log(chalk.white.bgRed.bold(`Bookmarks bar doesn't contain folders of the usernames available in the config.`));
-    process.exit(1);
-}
+const allUsernamesBookmarks = getAllUsernamesBookmarks();
 
 (async () => {
     let page = false;
