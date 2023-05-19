@@ -23,6 +23,7 @@ import { gotoURL } from './goto.js';
 import { getAppDomain } from './configsupportive.js';
 import { waitForElementContainsOrEqualsHTML, waitTillCurrentURLEndsWith } from './waiting.js';
 import { zeroPad } from './stringformatting.js';
+import { perImageTimeToUpload } from './datastoresupportive.js';
 import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 /* eslint-enable import/extensions */
 
@@ -84,21 +85,35 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
 
     const startTime = new Date();
     const returnObj = await uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name);
-    const elapsedTimeInSeconds = (new Date().getTime() - startTime.getTime()) / 1000;
-    const minutes = Math.floor(elapsedTimeInSeconds / 60)
-        .toString()
-        .padStart(2, '0');
-    const seconds = Math.floor(elapsedTimeInSeconds % 60)
-        .toString()
-        .padStart(2, '0');
-    const newEndingRow = await getRowPosOnTerminal();
-    if (newEndingRow - 3 !== endingRow) {
-        console.log(chalk.cyan(` (${minutes}:${seconds})`));
-    } else {
-        debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
-        debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
-        debug ? '' : process.stdout.cursorTo(0);
-        process.stdout.write(chalk.cyan(` (${minutes}:${seconds})\n`));
+    if (returnObj.result === true) {
+        const elapsedTimeInSeconds = (new Date().getTime() - startTime.getTime()) / 1000;
+        const minutes = Math.floor(elapsedTimeInSeconds / 60)
+            .toString()
+            .padStart(2, '0');
+        const seconds = Math.floor(elapsedTimeInSeconds % 60)
+            .toString()
+            .padStart(2, '0');
+        const newEndingRow = await getRowPosOnTerminal();
+        let currentColor;
+        const totalTimeEstimatedInSeconds = Math.round(perImageTimeToUpload * returnObj.imagesUploaded);
+        const diffInEstimate = Math.round((elapsedTimeInSeconds / totalTimeEstimatedInSeconds) * 10) / 10;
+        if (diffInEstimate > 3) {
+            currentColor = chalk.bgRed.white;
+        } else if (diffInEstimate > 2) {
+            currentColor = chalk.red.bold;
+        } else if (diffInEstimate > 1.5) {
+            currentColor = chalk.yellow.bold;
+        } else {
+            currentColor = chalk.cyan;
+        }
+        if (newEndingRow - 3 !== endingRow) {
+            console.log(currentColor(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`));
+        } else {
+            debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
+            debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
+            debug ? '' : process.stdout.cursorTo(0);
+            process.stdout.write(currentColor(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}\n`));
+        }
     }
     lgif(`fn uploadBookmarkURL() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
     return returnObj;
@@ -446,7 +461,13 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(5)}`));
 
     const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdFolderPath, stockFilePath, false);
-    const returnObj = { result: true, bookmarkAppendMesg: '', imagesUploaded: 0, moveSource: moveSource, moveDestination: moveDestination };
+    const returnObj = {
+        result: true,
+        bookmarkAppendMesg: '',
+        imagesUploaded: stockFolderPathList.length,
+        moveSource: moveSource,
+        moveDestination: moveDestination,
+    };
     lgif(`fn uploadImagesFromFolder() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
     return returnObj;
 }
