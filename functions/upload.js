@@ -35,8 +35,8 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         `fn uploadBookmarkURL() : BEGIN, Params: page: OBJECT, uniqueIdElement: ${uniqueIdElement}, uniqueIdFolderPath: ${uniqueIdFolderPath}, dealerFolder: ${dealerFolder}, name: ${name}, URL: ${URL}, debug: ${debug}`
     );
     const startingRow = await getRowPosOnTerminal();
-    process.stdout.write(chalk.cyan(`\t${name} : ${URL}\n`));
-    printToLogBuffer.push(`\${name} : \${URL}  :   ${name} : ${URL}`);
+    process.stdout.write(chalk.cyan.bold(`\t${dealerFolder}/`) + chalk.cyan(`${name} : ${URL}\n`));
+    printToLogBuffer.push(`\${dealerFolder}/\${name} : \${URL}  :   ${dealerFolder}/${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
 
