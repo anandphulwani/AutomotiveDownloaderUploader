@@ -261,7 +261,8 @@ if (!allUsernamesBookmarks.length > 0) {
                             foldersToUpload[uniqueIdElement].path,
                             dealerLevelBookmarkName,
                             vehicleBookmark.name,
-                            vehicleBookmark.url
+                            vehicleBookmark.url,
+                            userLoggedIn
                         );
                         if (
                             returnObj.result === true ||

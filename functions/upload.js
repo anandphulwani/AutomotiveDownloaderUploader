@@ -30,13 +30,13 @@ import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesy
 const printToLogBuffer = [];
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 
-async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, URL, debug = false) {
+async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, URL, userLoggedIn, debug = false) {
     lgif(
         `fn uploadBookmarkURL() : BEGIN, Params: page: OBJECT, uniqueIdElement: ${uniqueIdElement}, uniqueIdFolderPath: ${uniqueIdFolderPath}, dealerFolder: ${dealerFolder}, name: ${name}, URL: ${URL}, debug: ${debug}`
     );
     const startingRow = await getRowPosOnTerminal();
-    process.stdout.write(chalk.cyan.bold(`\t${dealerFolder}/`) + chalk.cyan(`${name} : ${URL}\n`));
-    printToLogBuffer.push(`\${dealerFolder}/\${name} : \${URL}  :   ${dealerFolder}/${name} : ${URL}`);
+    process.stdout.write(chalk.cyan(`\t${userLoggedIn}/`) + chalk.cyan.bold(`${dealerFolder}/`) + chalk.cyan(`${name} : ${URL}\n`));
+    printToLogBuffer.push(`\${userLoggedIn}/\${dealerFolder}/\${name} : \${URL}  :   ${userLoggedIn}/${dealerFolder}/${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
 
