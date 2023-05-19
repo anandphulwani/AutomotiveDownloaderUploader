@@ -23,7 +23,7 @@ import { gotoURL } from './goto.js';
 import { getAppDomain } from './configsupportive.js';
 import { waitForElementContainsOrEqualsHTML, waitTillCurrentURLEndsWith } from './waiting.js';
 import { zeroPad } from './stringformatting.js';
-import { perImageTimeToUpload } from './datastoresupportive.js';
+import { perImageTimeToUpload, perStockTimeToUpload } from './datastoresupportive.js';
 import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 /* eslint-enable import/extensions */
 
@@ -95,7 +95,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             .padStart(2, '0');
         const newEndingRow = await getRowPosOnTerminal();
         let currentColor;
-        const totalTimeEstimatedInSeconds = Math.round(perImageTimeToUpload * returnObj.imagesUploaded);
+        const totalTimeEstimatedInSeconds = Math.round(perImageTimeToUpload * returnObj.imagesUploaded + perStockTimeToUpload);
         const diffInEstimate = Math.round((elapsedTimeInSeconds / totalTimeEstimatedInSeconds) * 10) / 10;
         if (diffInEstimate > 3) {
             currentColor = chalk.bgRed.white;
