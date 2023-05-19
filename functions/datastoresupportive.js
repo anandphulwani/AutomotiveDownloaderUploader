@@ -7,6 +7,9 @@ import { lgc } from './loggersupportive.js';
 import { removeDir } from './filesystem.js';
 /* eslint-enable import/extensions */
 
+const perImageTimeToUpload = 7.25;
+const perStockTimeToUpload = 7;
+
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     const foldersToCleanUp = [
         config.lockingBackupsZonePath,
@@ -72,7 +75,7 @@ function getUploadRemainingSummary(foldersToUpload) {
     ).length;
     const totalImagesQty = Object.values(foldersToUpload).reduce((acc, folder) => acc + folder.imagesQty, 0);
     const totalStockFolderFilesQty = Object.values(foldersToUpload).reduce((acc, folder) => acc + folder.dealerFolderFilesQty, 0);
-    const totalTimeInSeconds = Math.round(totalImagesQty * 7.25 + totalStockFolderFilesQty * 7);
+    const totalTimeInSeconds = Math.round(totalImagesQty * perImageTimeToUpload + totalStockFolderFilesQty * perStockTimeToUpload);
     const durationHours = Math.floor(totalTimeInSeconds / 3600)
         .toString()
         .padStart(2, '0');
@@ -93,6 +96,8 @@ function getUploadRemainingSummary(foldersToUpload) {
 }
 // eslint-disable-next-line import/prefer-default-export
 export {
+    perImageTimeToUpload,
+    perStockTimeToUpload,
     autoCleanUpDatastoreZones,
     getNumberOfImagesFromAllottedDealerNumberFolder,
     getUniqueIDFromAllottedDealerNumberFolder,
