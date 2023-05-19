@@ -234,6 +234,7 @@ if (!allUsernamesBookmarks.length > 0) {
                         vehicleBookmark.url += '#imagery';
                     }
                     if (vehicleBookmark.name.includes(' |#| ') && !vehicleBookmark.name.split(' |#| ')[1].startsWith('Ignoring')) {
+                        console.log(chalk.whiteBright.bgCyan(getUploadRemainingSummary(foldersToUpload)));
                         if (typeof page === 'boolean' && !page) {
                             ({ page, browser } = await initBrowserAndGetPage('upload'));
                         }
@@ -270,7 +271,6 @@ if (!allUsernamesBookmarks.length > 0) {
                         }
                         foldersToUpload[uniqueIdElement].imagesQty = getFileCountRecursively(foldersToUpload[uniqueIdElement].path);
                         foldersToUpload[uniqueIdElement].dealerFolderFilesQty = getFileCountNonRecursively(foldersToUpload[uniqueIdElement].path);
-                        console.log(chalk.whiteBright.bgCyan(getUploadRemainingSummary(foldersToUpload)));
                     }
                 }
             }
