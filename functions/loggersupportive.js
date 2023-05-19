@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-import { lockSync, unlockSync, checkSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { zeroPad } from './stringformatting.js';
+import { attainLock, releaseLock } from './locksupportive.js';
 import { msleep, sleep, waitForMilliSeconds, waitForSeconds } from './sleep.js';
 import {
     todaysDateForLogger,
@@ -17,8 +17,6 @@ import {
     addIndividualTransportWarnFileWinston,
     addIndividualTransportInfoFileWinston,
 } from './logger.js';
-// eslint-disable-next-line import/no-cycle
-import { attainLock, releaseLock } from './locksupportive.js';
 /* eslint-enable import/extensions */
 
 // ONPROJECTFINISH: Check if all codes are present in log files which are generated because winston is found to not log in files just before process.exit(1)
