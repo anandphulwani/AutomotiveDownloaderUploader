@@ -370,6 +370,7 @@ function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
             const currentDateAdded = parseInt(current.date_added, 10);
             return earliestDateAdded < currentDateAdded ? earliest : current;
         });
+        filteredData = [filteredData];
     }
     // eslint-disable-next-line prefer-destructuring
     filteredData = filteredData[0].children;
@@ -400,6 +401,7 @@ function getBookmarkUsernameFolderFromUniqueId(uniqueId) {
             const currentDateAdded = parseInt(current.date_added, 10);
             return earliestDateAdded < currentDateAdded ? earliest : current;
         });
+        filteredData = [filteredData];
     }
     // eslint-disable-next-line prefer-destructuring
     filteredData = filteredData[0].children;

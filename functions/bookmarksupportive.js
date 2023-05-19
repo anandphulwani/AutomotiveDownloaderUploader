@@ -19,6 +19,7 @@ function getAllUsernamesBookmarks() {
             const currentDateAdded = parseInt(current.date_added, 10);
             return earliestDateAdded < currentDateAdded ? earliest : current;
         });
+        bookmarksBarData = [bookmarksBarData];
     }
     const bookmarksBarDataChildren = bookmarksBarData[0].children;
     const allUsernamesFromConfig = config.credentials.map((item) => item.username);
@@ -29,6 +30,7 @@ function getAllUsernamesBookmarks() {
         console.log(chalk.white.bgRed.bold(`ERROR: Bookmarks bar doesn't contain folders of the usernames available in the config.`));
         process.exit(1);
     }
+    return allUsernamesBookmarks;
 }
 
 // eslint-disable-next-line import/prefer-default-export
