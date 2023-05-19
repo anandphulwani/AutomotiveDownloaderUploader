@@ -1,22 +1,33 @@
+import path from 'path';
 import date from 'date-and-time';
-import { copySync, moveSync } from 'fs-extra';
+import fsExtra from 'fs-extra';
 import { checkSync, lockSync, unlockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { msleep } from './sleep.js';
-/* eslint-disable import/no-cycle */
-import { lgc } from './loggersupportive.js';
-import { copyDirOrFile } from './filesystem.js';
-/* eslint-enable import/no-cycle */
 /* eslint-enable import/extensions */
 
 const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
-const currentTime = date.format(new Date(), 'HHmmss');
 
 function attainLock(fileToOperateOn, takeBackup = false, debug = false) {
+    const currentTime = date.format(new Date(), 'HHmmssSSS');
+    const randomNumer = Math.floor(Math.random() * (999 - 100 + 1) + 100);
     if (takeBackup) {
-        copyDirOrFile(fileToOperateOn, `${config.lockingBackupsZonePath}\\${todaysDate}\\${fileToOperateOn}_${currentTime}`);
+        const fromPath = fileToOperateOn;
+        const toPath = `${config.lockingBackupsZonePath}\\${todaysDate}\\${path.basename(fileToOperateOn)}_${currentTime}(${randomNumer})`;
+        try {
+            const results = fsExtra.copySync(fromPath, toPath, { overwrite: false, errorOnExist: true });
+            debug
+                ? console.log(
+                      `${'Successfully copied  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
+                  )
+                : '';
+        } catch (error) {
+            console.log(`${'Unable to create backup from file \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`);
+            // throw error;
+            process.exit(1);
+        }
     }
     for (let lockTryIndex = 0; lockTryIndex <= 30; lockTryIndex++) {
         if (lockTryIndex === 30) {
@@ -35,13 +46,14 @@ function attainLock(fileToOperateOn, takeBackup = false, debug = false) {
             break;
         } catch (error) {
             console.log(`${error.message}`);
-            console.log(`attainLock(fileToOperateOn): This piece of code should be unreachable.`);
+            console.log(`attainLock(${fileToOperateOn}): This piece of code should be unreachable.`);
+            process.exit(1);
         }
     }
 }
 
 function releaseLock(fileToOperateOn) {
-    console.log('releasing lock here');
+    // console.log(`releasing lock here: ${fileToOperateOn}`);
     unlockSync(fileToOperateOn);
 }
 
