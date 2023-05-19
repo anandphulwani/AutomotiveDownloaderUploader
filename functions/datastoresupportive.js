@@ -33,7 +33,10 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
             (file) => fs.lstatSync(path.join(folderToCleanUp, file)).isDirectory() && /^\d{4}-\d{2}-\d{2}$/.test(file)
         ); // Filter out only subdirectories and subdirectories which match YYYY-MM-DD format using regex
         folderPathChildrenSubDirsOnly.sort(); // Sort subdirectories by name
-        const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, folderToCleanUp !== `.\\logs` ? -noOfDaysDataToKeep : -120); // Delete all but the last 5 subdirectories
+        let overrideNoOfDaysToKeep = noOfDaysDataToKeep;
+        overrideNoOfDaysToKeep = folderToCleanUp === `.\\logs` ? 120 : overrideNoOfDaysToKeep;
+        overrideNoOfDaysToKeep = folderToCleanUp === config.lockingBackupsZonePath ? 2 : overrideNoOfDaysToKeep;
+        const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, -overrideNoOfDaysToKeep); // Delete all but the last 5 subdirectories
 
         // eslint-disable-next-line no-restricted-syntax
         for (const folderPathChildrenSubDirToDelete of folderPathChildrenSubDirsToDelete) {
