@@ -47,7 +47,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         )
     );
 
-    if (!/^[a-zA-Z0-9]{2,}$/.test(stockNumber)) {
+    if (!/^[a-zA-Z0-9]{1,}$/.test(stockNumber)) {
         console.log(
             chalk.white.bgYellow.bold(
                 `\nWARNING: Found an invalid stock number: ${stockNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`
