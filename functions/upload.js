@@ -8,7 +8,7 @@ import { URL as URLparser } from 'url';
 /* eslint-disable import/extensions */
 import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif } from './loggersupportive.js';
 import { config } from '../configs/config.js';
-import { sleep, msleep, waitForSeconds } from './sleep.js';
+import { sleep, msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
 import {
     getDealerNameFromDCAsIs,
@@ -175,15 +175,17 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // Update bookmark when its done
     // Later: error handling if stuck delete all previous images and start again.
 
+    const startingRow = await getRowPosOnTerminal();
     process.stdout.write(chalk.cyan(` Uploading Files`));
 
     /* #region: Uploading the files: Begin */
     lgif(`region: Uploading the files: Begin`);
     let firstImage;
     const imagesToUpload = [];
+    let stockFolderPathList;
     // eslint-disable-next-line no-useless-catch
     try {
-        const stockFolderPathList = typeOfStockPath === 'stockFolder' ? fs.readdirSync(stockFolderPath) : [stockFilePath];
+        stockFolderPathList = typeOfStockPath === 'stockFolder' ? fs.readdirSync(stockFolderPath) : [stockFilePath];
         process.stdout.write(chalk.cyan(`(${zeroPad(stockFolderPathList.length, 2)}): `));
 
         // eslint-disable-next-line no-restricted-syntax
@@ -217,7 +219,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             lgif(`imagesToUpload.push(imageNumber: ${imageNumber})`);
             imagesToUpload.push(imageNumber);
         }
-        await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', imagesToUpload.length * 30, true);
+        await showUploadFilesAndPercentages(page, startingRow, stockFolderPathList.length, false);
+        await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', 30, true);
         lgif(`putFirstPositionEditedImageInTheLastPositionAlsoFromDC: ${putFirstPositionEditedImageInTheLastPositionAlsoFromDC}`);
         lgif(
             `imageNumbersToDownloadFromDC.length === 1: ${imageNumbersToDownloadFromDC.length === 1}, imageNumbersToDownloadFromDC.length: ${
@@ -241,15 +244,23 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             await page.bringToFront();
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
             await fileChooser.accept([path.resolve(firstImagePath)]);
+
+            await showUploadFilesAndPercentages(page, startingRow, stockFolderPathList.length, true);
+            await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', 30, true);
         }
     } catch (error) {
         lgc(`region: Uploading the files, Try Error: `, error);
     }
-    await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', 30, true);
     lgif(`region: Uploading the files: End`);
     // TODO: Verify all files are uploaded in qty, also rename bookmarks by giving quantity while download
     /* #endregion: Uploading the files: End */
 
+    const endingRow = await getRowPosOnTerminal();
+    const diffInRows = endingRow - startingRow;
+    process.stdout.moveCursor(0, -diffInRows); // up one line
+    process.stdout.clearLine(diffInRows); // from cursor to end
+    process.stdout.cursorTo(0);
+    process.stdout.write(chalk.cyan(` Uploading Files(${zeroPad(stockFolderPathList.length, 2)}): `));
     process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(3)}`));
     process.stdout.write(chalk.cyan(` Mark Deletion: `));
 
@@ -729,6 +740,60 @@ function getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdF
     }
     lgif(`fn getSourceAndDestinationFrom() : END, Returning: moveSource: ${moveSource}, moveDestination: ${moveDestination}`);
     return { moveSource: moveSource, moveDestination: moveDestination };
+}
+
+async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles, isAdditionalFile) {
+    let currentQueueContent;
+    let previousQueueContent;
+    let loopCountOfQueueContent = 0;
+    while (loopCountOfQueueContent <= 410) {
+        const uploadifiveFileInputQueueEle = await page.$('#uploadifive-fileInput-queue');
+        currentQueueContent = await page.$eval('#uploadifive-fileInput-queue', (element) => element.innerHTML);
+        if (currentQueueContent !== '' && previousQueueContent === currentQueueContent) {
+            loopCountOfQueueContent++;
+            lgif(`loopCountOfQueueContent : ${loopCountOfQueueContent}`);
+        } else if (currentQueueContent !== '') {
+            const countOfComplete = await uploadifiveFileInputQueueEle.$$eval('.complete', (elements) => elements.length);
+            // lgif(`currentQueueContent: ${currentQueueContent}`);
+            lgif(`countOfComplete : ${countOfComplete}`);
+            const endingRow = await getRowPosOnTerminal();
+            const diffInRows = endingRow - startingRow;
+            process.stdout.moveCursor(0, -diffInRows); // up one line
+            process.stdout.clearLine(diffInRows); // from cursor to end
+            process.stdout.cursorTo(0);
+            process.stdout.write(chalk.cyan(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `));
+            for (let cnt = 1; cnt <= (isAdditionalFile ? totalUploadFiles + countOfComplete : countOfComplete); cnt++) {
+                if (isAdditionalFile && cnt > totalUploadFiles) {
+                    process.stdout.write(chalk.cyan(`, `));
+                }
+                process.stdout.write(chalk.cyan(`${zeroPad(cnt, 2)}.`) + chalk.green.bold(`${logSymbols.success} `));
+            }
+
+            const regexString = `<span class="fileinfo"> - (\\d{1,3}%)</span>`;
+            const regexExpression = new RegExp(regexString, 'g');
+            if (regexExpression.test(currentQueueContent)) {
+                if (isAdditionalFile) {
+                    process.stdout.write(chalk.cyan(`, `));
+                }
+                // lgcf(`01: currentQueueContent.match(regexExpression) : ${currentQueueContent.match(regexExpression)}`);
+                const percentage = currentQueueContent.match(regexExpression)[0].match(regexString)[1];
+                // lgcf(`percentage: ${percentage}`);
+                process.stdout.write(chalk.cyan(`  ${zeroPad(countOfComplete + 1, 2)}.`));
+                process.stdout.write(chalk.cyan.bold(` ${percentage}`));
+            }
+            loopCountOfQueueContent = 0;
+        } else {
+            break;
+        }
+        if (loopCountOfQueueContent === 411) {
+            lgif('ERROR: Upload process stuck while uploading files.');
+            process.exit(1);
+        }
+        // await waitForSeconds(2);
+        await waitForMilliSeconds(30);
+        previousQueueContent = currentQueueContent;
+    }
+    lgif('showUploadFilesAndPercentages: Out of the loop');
 }
 
 // eslint-disable-next-line import/prefer-default-export
