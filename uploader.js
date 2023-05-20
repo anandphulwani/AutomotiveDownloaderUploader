@@ -92,10 +92,16 @@ async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
             foldersToShift.splice(folderToShift);
         } else {
             if (!isDryRun && !hasMovingToUploadZonePrinted) {
-                process.stdout.write(chalk.cyan('Moving folders to UploadingZone: '));
+                process.stdout.write(chalk.cyan('Moving folders to UploadingZone: \n'));
                 hasMovingToUploadZonePrinted = true;
             }
-            process.stdout.write(chalk.cyan(`${path.basename(folderToShift[0])} ..`));
+            if (!isDryRun) {
+                const folderNameToPrint = `  ${path.basename(folderToShift[0])} `;
+                process.stdout.write(chalk.cyan(folderNameToPrint));
+                for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
+                    process.stdout.write(chalk.cyan(`.`));
+                }
+            }
             const newUploadingZonePath = `${config.uploadingZonePath}\\${todaysDate}\\${path.basename(folderToShift[0])}`;
             if (isDryRun) {
                 if (fs.existsSync(`${newUploadingZonePath}`)) {
@@ -106,8 +112,12 @@ async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
                 await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
                 folderToShift[0] = newUploadingZonePath;
             }
-            if (!isDryRun && cnt !== foldersToShiftLength - 1) {
-                process.stdout.write(chalk.cyan(`..., `));
+            if (!isDryRun) {
+                if (cnt !== foldersToShiftLength - 1) {
+                    process.stdout.write(chalk.cyan(`, `));
+                } else {
+                    process.stdout.write(chalk.cyan(`\n`));
+                }
             }
         }
     }
