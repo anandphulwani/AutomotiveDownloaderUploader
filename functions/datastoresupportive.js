@@ -21,6 +21,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         `.\\logs`, // Static delete after 120 days
     ];
 
+    /* #region: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
     // eslint-disable-next-line no-restricted-syntax
     for (const folderToCleanUp of foldersToCleanUp) {
         if (!fs.existsSync(folderToCleanUp)) {
@@ -44,6 +45,8 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
             removeDir(directoryPath, true);
         }
     }
+    /* #endregion: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
+
 }
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
