@@ -73,6 +73,77 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     }
     /* #endregion: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
 
+    /* #region: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
+    const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
+    const lockingBackupsDirWithTodaysDate = `${config.lockingBackupsZonePath}\\${todaysDate}`;
+    if (fs.existsSync(lockingBackupsDirWithTodaysDate)) {
+        const lockingBackupsFiles = fs.readdirSync(lockingBackupsDirWithTodaysDate);
+        const ignoreFilesStartWith = ['Bookmarks'];
+
+        // Step 1: Group files by their prefix
+        const groups = {};
+        lockingBackupsFiles.forEach((fileName) => {
+            const prefix = fileName.split('_')[0];
+            if (!groups[prefix]) {
+                groups[prefix] = [];
+            }
+            groups[prefix].push(fileName);
+        });
+
+        // Step 2: Sort files in each group by timestamp in descending order
+        Object.keys(groups).forEach((prefix) => {
+            groups[prefix].sort((a, b) => {
+                const timestampA = parseInt(a.substring(a.lastIndexOf('_') + 1), 10);
+                const timestampB = parseInt(b.substring(b.lastIndexOf('_') + 1), 10);
+                return timestampB - timestampA;
+            });
+        });
+
+        // Step 3: Remove the latest 30 files in each group, so that they are not deleted
+        Object.keys(groups).forEach((prefix) => {
+            groups[prefix] = groups[prefix].slice(30);
+        });
+        ignoreFilesStartWith.forEach((key) => {
+            if (Object.prototype.hasOwnProperty.call(groups, key)) {
+                delete groups[key];
+            }
+        });
+        // console.log(groups);
+
+        // Step 4: Identify unique "filename_HHmm" patterns from remaining files
+        const remainingFiles = Object.values(groups).flat();
+        // console.log(remainingFiles);
+
+        const uniquePatterns = Array.from(new Set(remainingFiles.map((fileName) => fileName.substr(0, fileName.length - 10))));
+        // console.log(uniquePatterns);
+
+        // Step 5: Sort remaining files by timestamp in descending order
+        remainingFiles.sort((a, b) => {
+            const timestampA = parseInt(a.substring(a.lastIndexOf('_') + 1), 10);
+            const timestampB = parseInt(b.substring(b.lastIndexOf('_') + 1), 10);
+            return timestampB - timestampA;
+        });
+        // console.log(remainingFiles);
+
+        // Step 6: Keep only the first file for each unique "filename_HHmm" pattern
+        const finalFiles = [];
+        uniquePatterns.forEach((pattern) => {
+            const matchingFiles = remainingFiles.filter((fileName) => fileName.startsWith(pattern));
+            if (matchingFiles.length > 0) {
+                matchingFiles.shift();
+                finalFiles.push(...matchingFiles);
+            }
+        });
+
+        finalFiles.forEach((filePath) => {
+            try {
+                fs.unlinkSync(path.join(lockingBackupsDirWithTodaysDate, filePath));
+            } catch (error) {
+                console.error(`Failed to delete file: ${filePath}`, error);
+            }
+        });
+    }
+    /* #endregion: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
 }
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
