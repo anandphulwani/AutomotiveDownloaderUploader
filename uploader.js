@@ -126,7 +126,7 @@ async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
 
 const doesDestinationFolderAlreadyExists = await moveFilesFromContractorsToUploadingZone(true);
 if (doesDestinationFolderAlreadyExists) {
-    process.exit(0);
+    process.exit(1);
 }
 await moveFilesFromContractorsToUploadingZone(false);
 
