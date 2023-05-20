@@ -47,6 +47,32 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     }
     /* #endregion: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
 
+    /* #region: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
+    if (fs.existsSync(config.lockingBackupsZonePath)) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const dateDir of fs.readdirSync(config.lockingBackupsZonePath)) {
+            const datePath = path.join(config.lockingBackupsZonePath, dateDir);
+            if (fs.statSync(datePath).isDirectory()) {
+                const dateDirFilesAndFolders = fs.readdirSync(datePath);
+                // Filter only the files that are not in lockDirectories
+                const zeroSizeFiles = dateDirFilesAndFolders.filter((file) => {
+                    const filePath = path.join(datePath, file);
+                    const statSync = fs.statSync(filePath);
+                    const isDirectory = statSync.isDirectory();
+                    const isSizeZero = statSync.size === 0;
+                    return !isDirectory && isSizeZero;
+                });
+
+                // eslint-disable-next-line no-restricted-syntax
+                for (const file of zeroSizeFiles) {
+                    const filePath = path.join(datePath, file);
+                    fs.unlinkSync(filePath);
+                }
+            }
+        }
+    }
+    /* #endregion: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
+
 }
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
