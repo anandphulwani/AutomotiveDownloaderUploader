@@ -148,7 +148,7 @@ async function enableAndClickOnButton(page, selector, buttonText = false, debug 
         const element = document.querySelector(selectorToEnable);
         element.style.display = 'block';
     }, selector);
-    clickOnButton(page, selector, buttonText, debug);
+    await clickOnButton(page, selector, buttonText, debug);
 }
 
 export { fillInTextbox, clickOnButton, enableAndClickOnButton };
