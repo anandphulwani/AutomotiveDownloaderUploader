@@ -409,7 +409,15 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
 
     if (lockTheImagesCheckMarkFromDC !== null && lockTheImagesCheckMarkFromDC !== ImagesAreLockedFromWeb) {
         lgif(`clickOnButton: lockTheImagesCheckMarkFromDC: ${lockTheImagesCheckMarkFromDC}, ImagesAreLockedFromWeb: ${ImagesAreLockedFromWeb}`);
-        clickOnButton(page, 'input[type="checkbox"].vp[property-name="ImagesAreLocked"]');
+        let currImagesAreLockedFromWeb = ImagesAreLockedFromWeb;
+        while (ImagesAreLockedFromWeb === currImagesAreLockedFromWeb) {
+            await clickOnButton(page, 'input[type="checkbox"].vp[property-name="ImagesAreLocked"]', undefined, true);
+            currImagesAreLockedFromWeb = await page.evaluate(
+                // eslint-disable-next-line no-undef, no-loop-func
+                (selector) => document.querySelector(selector).checked,
+                'input[type="checkbox"].vp[property-name="ImagesAreLocked"]'
+            );
+        }
     }
     lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End`);
     /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */

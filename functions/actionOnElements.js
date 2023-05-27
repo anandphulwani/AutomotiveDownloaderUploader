@@ -68,7 +68,7 @@ async function fillInTextbox(page, selector, textToFill, debug = false) {
     debug ? console.log(`Checking if ${selector} value matches filled: Done.`) : '';
 }
 
-async function clickOnButton(page, selector, buttonText = false, debug = false) {
+async function clickOnButton(page, selector, buttonText = false, isMouseClick = false, debug = false) {
     debug ? console.log(`Waiting for the ${selector} to load: Executing.`) : '';
     await page.waitForSelector(selector, { timeout: 90000 });
     debug ? console.log(`Waiting for the ${selector} to load: Found.`) : '';
@@ -103,13 +103,38 @@ async function clickOnButton(page, selector, buttonText = false, debug = false) 
 
     debug ? console.log(`Clicking the ${selector} button: Executing.`) : '';
     // await page.click(selector);
-    await page.evaluate((selectorString) => {
-        // eslint-disable-next-line no-undef
-        const element = document.querySelector(selectorString);
-        if (element) {
-            element.click();
+    const elementToClick = await page.$(selector);
+    if (elementToClick) {
+        if (!isMouseClick) {
+            await page.evaluate((element) => {
+                if (element) {
+                    element.click();
+                }
+            }, elementToClick);
+        } else {
+            // lgif(`Moving to the fromPositionElement: ${fromPositionElement}`);
+            await page.evaluate((element) => element.scrollIntoView(), elementToClick);
+            // lgif(`Confirming the fromPositionElement is in the browser viewport.`);
+            await page.waitForFunction(
+                (element) => {
+                    const { top, bottom } = element.getBoundingClientRect();
+                    // eslint-disable-next-line no-undef
+                    const viewportHeight = window.innerHeight;
+                    return top >= 0 && bottom <= viewportHeight;
+                },
+                {},
+                elementToClick
+            );
+            const elementRect = await page.evaluate((el) => {
+                const { x, y, width, height } = el.getBoundingClientRect();
+                return { x, y, width, height };
+            }, elementToClick);
+            await page.mouse.move(elementRect.x + elementRect.width / 2, elementRect.y + elementRect.height / 2, { steps: 1 });
+            await page.mouse.click(elementRect.x + elementRect.width / 2, elementRect.y + elementRect.height / 2);
         }
-    }, selector);
+    } else {
+        throw new Error(`Element to click '${selector}' does not exist`);
+    }
     debug ? console.log(`Clicking the ${selector} button: Done.`) : '';
 }
 
