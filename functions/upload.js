@@ -400,17 +400,17 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     /* #region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin */
     lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin`);
 
-    const ImagesAreLockedFromWeb = await page.evaluate(
+    const imagesAreLockedFromWeb = await page.evaluate(
         // eslint-disable-next-line no-undef
         (selector) => document.querySelector(selector).checked,
         'input[type="checkbox"].vp[property-name="ImagesAreLocked"]'
     );
-    lgif(`Current ImagesAreLockedFromWeb: ${ImagesAreLockedFromWeb}`);
+    lgif(`Current ImagesAreLockedFromWeb: ${imagesAreLockedFromWeb}`);
 
-    if (lockTheImagesCheckMarkFromDC !== null && lockTheImagesCheckMarkFromDC !== ImagesAreLockedFromWeb) {
-        lgif(`clickOnButton: lockTheImagesCheckMarkFromDC: ${lockTheImagesCheckMarkFromDC}, ImagesAreLockedFromWeb: ${ImagesAreLockedFromWeb}`);
-        let currImagesAreLockedFromWeb = ImagesAreLockedFromWeb;
-        while (ImagesAreLockedFromWeb === currImagesAreLockedFromWeb) {
+    if (lockTheImagesCheckMarkFromDC !== null && lockTheImagesCheckMarkFromDC !== imagesAreLockedFromWeb) {
+        lgif(`clickOnButton: lockTheImagesCheckMarkFromDC: ${lockTheImagesCheckMarkFromDC}, imagesAreLockedFromWeb : ${imagesAreLockedFromWeb}`);
+        let currImagesAreLockedFromWeb = imagesAreLockedFromWeb;
+        while (imagesAreLockedFromWeb === currImagesAreLockedFromWeb) {
             await clickOnButton(page, 'input[type="checkbox"].vp[property-name="ImagesAreLocked"]', undefined, true);
             currImagesAreLockedFromWeb = await page.evaluate(
                 // eslint-disable-next-line no-undef, no-loop-func
