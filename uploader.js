@@ -6,7 +6,7 @@ import { URL } from 'url';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
-import { lgw, lge } from './functions/loggersupportive.js';
+import { lgw, lge, lgc } from './functions/loggersupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
@@ -77,6 +77,16 @@ Object.keys(config.contractors).forEach((contractor) => {
             }
         }
     }
+});
+foldersToShift.sort((a, b) => {
+    const regex = /(\d+)/;
+    if (!regex.test(path.basename(a[0])) || !regex.test(path.basename(b[0]))) {
+        lgc('Unable to match regex of `foldersToShift` while sorting.');
+        return 0;
+    }
+    const numA = Number(path.basename(a[0]).match(regex)[0]);
+    const numB = Number(path.basename(b[0]).match(regex)[0]);
+    return numA - numB;
 });
 // sleep(15);
 // console.log(foldersToShift);
