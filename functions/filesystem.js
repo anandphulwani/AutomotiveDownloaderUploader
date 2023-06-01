@@ -1,27 +1,23 @@
 import fs from 'fs';
+import fsExtra from 'fs-extra';
 import mv from 'mv';
 import os from 'os';
 import chalk from 'chalk';
 import path from 'path';
 import randomstring from 'randomstring';
-import { copySync, moveSync } from 'fs-extra';
 
 /* eslint-disable import/extensions */
 import { lgc } from './loggersupportive.js';
 /* eslint-enable import/extensions */
 
-async function makeDir(dirPath, debug = false) {
-    await new Promise((resolve, reject) => {
-        fs.mkdir(dirPath, { recursive: true }, (error) => {
-            if (error) {
-                lgc(`Unable to create a directory : ${dirPath}`, error);
-                process.exit(1);
-            } else {
-                debug ? console.log(`Folder path created successfully : ${dirPath}`) : '';
-                resolve();
-            }
-        });
-    });
+function makeDir(dirPath, debug = false) {
+    try {
+        fs.mkdirSync(dirPath, { recursive: true });
+        debug ? console.log(`Folder path created successfully : ${dirPath}`) : '';
+    } catch (error) {
+        lgc(`Unable to create a directory : ${dirPath}`, error);
+        process.exit(1);
+    }
 }
 
 async function moveFile(fromPath, toPath, debug = false) {
@@ -44,7 +40,7 @@ async function moveFile(fromPath, toPath, debug = false) {
 
 function copyDirOrFile(fromPath, toPath, debug = false) {
     try {
-        const results = copySync(fromPath, toPath, { overwrite: false, errorOnExist: true });
+        const results = fsExtra.copySync(fromPath, toPath, { overwrite: false, errorOnExist: true });
         debug
             ? console.log(
                   `${'Successfully copied  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
@@ -59,16 +55,16 @@ function copyDirOrFile(fromPath, toPath, debug = false) {
 async function createDirAndMoveFile(fromPath, toPath, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
         debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
-        await makeDir(`${path.dirname(toPath)}/`, debug);
+        makeDir(`${path.dirname(toPath)}/`, debug);
         debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
     }
     await moveFile(fromPath, toPath, debug);
 }
 
-async function createDirAndCopyFile(fromPath, toPath, debug = false) {
+function createDirAndCopyFile(fromPath, toPath, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
         debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
-        await makeDir(`${path.dirname(toPath)}/`, debug);
+        makeDir(`${path.dirname(toPath)}/`, debug);
         debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
     }
     copyDirOrFile(fromPath, toPath, debug);

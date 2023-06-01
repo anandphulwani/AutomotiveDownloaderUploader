@@ -129,7 +129,7 @@ for (const contractor of Object.keys(config.contractors)) {
         config.contractors[contractor].processingFolders.forEach(async (processingFolder) => {
             const contractorsProcessingFolder = `${config.contractorsZonePath}\\${contractor}\\${todaysDate}\\${processingFolder}`;
             if (!fs.existsSync(contractorsProcessingFolder)) {
-                await makeDir(contractorsProcessingFolder);
+                makeDir(contractorsProcessingFolder);
             }
         });
     }
