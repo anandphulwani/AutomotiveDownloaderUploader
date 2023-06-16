@@ -50,6 +50,10 @@ async function downloadBookmarksFromSourceToProcessing() {
                  */
                 const downloadedRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
                 const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
+                if (!downloadedRegexExpression.test(processingJSONString)) {
+                    lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 1');
+                    process.exit(1);
+                }
                 const downloadedBookmarkBlockMatches = processingJSONString.match(downloadedRegexExpression);
 
                 if (downloadedBookmarkBlockMatches !== null) {
@@ -70,6 +74,10 @@ async function downloadBookmarksFromSourceToProcessing() {
                         const GUIDRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
                         const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
 
+                        if (!GUIDRegexExpression.test(sourceJSONString)) {
+                            lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 2');
+                            process.exit(1);
+                        }
                         const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
                         if (GUIDBookmarkBlockMatches !== null) {
                             const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
@@ -98,6 +106,10 @@ async function downloadBookmarksFromSourceToProcessing() {
                  */
                 const allotedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
                 const allotedFolderRegexExpression = new RegExp(allotedFolderRegexString, 'g');
+                if (!allotedFolderRegexExpression.test(processingJSONString)) {
+                    lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 3');
+                    process.exit(1);
+                }
                 const allotedFolderBookmarkBlockMatches = processingJSONString.match(allotedFolderRegexExpression);
 
                 if (allotedFolderBookmarkBlockMatches !== null) {
@@ -118,6 +130,10 @@ async function downloadBookmarksFromSourceToProcessing() {
                         const GUIDRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"(?:(?!"guid": )[\\s|\\S])*?"type": "folder"`;
                         const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
 
+                        if (!GUIDRegexExpression.test(sourceJSONString)) {
+                            lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 4');
+                            process.exit(1);
+                        }
                         const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
                         if (GUIDBookmarkBlockMatches !== null) {
                             const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
