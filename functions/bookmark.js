@@ -1,14 +1,16 @@
 import fs from 'fs';
 import chalk from 'chalk';
 import logSymbols from 'log-symbols';
-import { lockSync, unlockSync, checkSync } from 'proper-lockfile';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
 import { URL as URLparser } from 'url';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { waitForMilliSeconds, waitForSeconds } from './sleep.js';
+import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
+import { lgc } from './loggersupportive.js';
+import { attainLock, releaseLock } from './locksupportive.js';
+import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
 import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
@@ -19,166 +21,188 @@ const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
 
 async function downloadBookmarksFromSourceToProcessing() {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
-    for (let lockTryIndex = 0; lockTryIndex <= 10; lockTryIndex++) {
-        try {
-            if (lockTryIndex === 10) {
-                throw new Error('Unable to get lock for the file after 10 retries.');
+    attainLock(sourceBookmarkPath, true);
+    attainLock(processingBookmarkPathWithoutSync, true);
+
+    try {
+        // Read the contents of both JSON files into memory
+        const sourceContents = fs.readFileSync(sourceBookmarkPath, 'utf8');
+        const processingContents = fs.readFileSync(processingBookmarkPathWithoutSync, 'utf8');
+
+        // Parse the contents of both JSON files into JavaScript objects
+        const sourceObj = JSON.parse(sourceContents);
+        const processingObj = JSON.parse(processingContents);
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const key in sourceObj.roots) {
+            if (key !== 'bookmark_bar') {
+                delete sourceObj.roots[key];
             }
-            const checkLockSourceBookmarkPath = checkSync(sourceBookmarkPath);
-            const checkLockProcessingBookmarkPathWithoutSync = checkSync(processingBookmarkPathWithoutSync);
-            if (checkLockSourceBookmarkPath && checkLockProcessingBookmarkPathWithoutSync) {
-                await waitForMilliSeconds(200);
-            } else {
-                lockSync(sourceBookmarkPath);
-                lockSync(processingBookmarkPathWithoutSync);
+        }
 
-                // Read the contents of both JSON files into memory
-                const sourceContents = fs.readFileSync(sourceBookmarkPath, 'utf8');
-                const processingContents = fs.readFileSync(processingBookmarkPathWithoutSync, 'utf8');
+        let sourceJSONString = JSON.stringify(sourceObj, null, 3);
+        const processingJSONString = JSON.stringify(processingObj, null, 3);
 
-                // Parse the contents of both JSON files into JavaScript objects
-                const sourceObj = JSON.parse(sourceContents);
-                const processingObj = JSON.parse(processingContents);
+        const initalSourceJSONString = sourceJSONString;
+        const initalLineCount = sourceJSONString.split(/\r\n|\r|\n/).length;
 
-                let sourceJSONString = JSON.stringify(sourceObj, null, 3);
-                const initalSourceJSONString = sourceJSONString;
-                const initalLineCount = sourceJSONString.split(/\r\n|\r|\n/).length;
-                const processingJSONString = JSON.stringify(processingObj, null, 3);
+        /**
+         * Copying the names of bookmarks which are done
+         */
+        const downloadedRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
+        const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
+        if (downloadedRegexExpression.test(processingJSONString)) {
+            // lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 1');
+            // process.exit(1);
 
-                /**
-                 * Copying the names of bookmarks which are done
-                 */
-                const downloadedRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
-                const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
-                if (!downloadedRegexExpression.test(processingJSONString)) {
-                    lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 1');
-                    process.exit(1);
+            const downloadedBookmarkBlockMatches = processingJSONString.match(downloadedRegexExpression);
+            console.log(`Found downloadedBookmarkBlockMatches: ${downloadedBookmarkBlockMatches.length}`);
+
+            if (downloadedBookmarkBlockMatches !== null) {
+                const doneBookmarksInSource = {};
+                for (let i = 0; i < downloadedBookmarkBlockMatches.length; i++) {
+                    const match = downloadedBookmarkBlockMatches[i];
+
+                    if (match.split(/\r\n|\r|\n/).length > 15) {
+                        console.log(match);
+                        releaseLock(processingBookmarkPathWithoutSync, true);
+                        releaseLock(sourceBookmarkPath, true);
+                        process.exit(0);
+                    }
+
+                    const guid = match.match(/"guid": "(.*?)"/)[1];
+                    // console.log(`Found bookmark with GUID: ${guid}`);
+                    doneBookmarksInSource[guid] = match;
                 }
-                const downloadedBookmarkBlockMatches = processingJSONString.match(downloadedRegexExpression);
+                console.log(`Total doneBookmarksInSource: ${Object.keys(doneBookmarksInSource).length}`);
 
-                if (downloadedBookmarkBlockMatches !== null) {
-                    const doneBookmarksInSource = [];
-                    downloadedBookmarkBlockMatches.forEach((match) => {
-                        if (match.split(/\r\n|\r|\n/).length > 15) {
-                            console.log(match);
-                            unlockSync(processingBookmarkPathWithoutSync);
-                            unlockSync(sourceBookmarkPath);
-                            process.exit(0);
-                        }
-                        const guid = match.match(/"guid": "(.*?)"/)[1];
-                        // console.log(`Found bookmark with GUID: ${guid}`);
-                        doneBookmarksInSource[guid] = match;
-                    });
+                const doneBookmarksInSourceKeys = Object.keys(doneBookmarksInSource);
+                for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
+                    const guid = doneBookmarksInSourceKeys[i];
 
-                    Object.keys(doneBookmarksInSource).forEach((guid) => {
-                        const GUIDRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
-                        const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
+                    const GUIDRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
+                    const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
 
-                        if (!GUIDRegexExpression.test(sourceJSONString)) {
-                            lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 2');
-                            process.exit(1);
-                        }
+                    if (GUIDRegexExpression.test(sourceJSONString)) {
+                        // lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 2');
+                        // process.exit(1);
                         const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
                         if (GUIDBookmarkBlockMatches !== null) {
                             const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
+                            const nameInGUIDMatch = GUIDBookmarkBlockMatch.match(/"name": "(.*?)"/)[1];
+                            doneBookmarksInSource[guid] = doneBookmarksInSource[guid].replace(
+                                /("name": ")(.*?)( \|#\|.*")/,
+                                `$1${nameInGUIDMatch}$3`
+                            );
+                            // console.log(`Doing replacement for GUID: ${guid}`);
                             sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarksInSource[guid]);
                         }
-                        // console.log(guid, doneBookmarksInSource[guid]);
-                    });
+                    }
                 }
-                sourceJSONString = JSON.parse(sourceJSONString);
-                sourceJSONString = removeChecksumFromBookmarksObj(sourceJSONString);
-                sourceJSONString = JSON.stringify(sourceJSONString, null, 3);
+            }
+        }
+        sourceJSONString = JSON.parse(sourceJSONString);
+        sourceJSONString = removeChecksumFromBookmarksObj(sourceJSONString);
+        sourceJSONString = JSON.stringify(sourceJSONString, null, 3);
 
-                if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
-                    console.log(initalSourceJSONString);
-                    console.log(`${'-'.repeat(70)}`);
-                    console.log(sourceJSONString);
-                    console.log(`${'-'.repeat(70)}`);
-                    console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
-                    unlockSync(processingBookmarkPathWithoutSync);
-                    unlockSync(sourceBookmarkPath);
-                    process.exit(0);
+        if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
+            console.log(initalSourceJSONString);
+            console.log(`${'-'.repeat(70)}`);
+            console.log(sourceJSONString);
+            console.log(`${'-'.repeat(70)}`);
+            console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
+            releaseLock(processingBookmarkPathWithoutSync, true);
+            releaseLock(sourceBookmarkPath, true);
+            process.exit(0);
+        }
+
+        /**
+         * Copying the names of bookmarks folders which are done
+         */
+        const allotedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
+        const allotedFolderRegexExpression = new RegExp(allotedFolderRegexString, 'g');
+        if (allotedFolderRegexExpression.test(processingJSONString)) {
+            // lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 3');
+            // process.exit(1);
+
+            const allotedFolderBookmarkBlockMatches = processingJSONString.match(allotedFolderRegexExpression);
+
+            if (allotedFolderBookmarkBlockMatches !== null) {
+                const doneBookmarkFoldersInSource = {};
+                // allotedFolderBookmarkBlockMatches.forEach((match) => {
+                for (let i = 0; i < allotedFolderBookmarkBlockMatches.length; i++) {
+                    const match = allotedFolderBookmarkBlockMatches[i];
+
+                    if (match.split(/\r\n|\r|\n/).length > 9) {
+                        console.log(match);
+                        releaseLock(processingBookmarkPathWithoutSync, true);
+                        releaseLock(sourceBookmarkPath, true);
+                        process.exit(0);
+                    }
+                    const guid = match.match(/"guid": "(.*?)"/)[1];
+                    // console.log(`Found bookmark with GUID: ${guid}`);
+                    doneBookmarkFoldersInSource[guid] = match;
                 }
+                // });
 
-                /**
-                 * Copying the names of bookmarks folders which are done
-                 */
-                const allotedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
-                const allotedFolderRegexExpression = new RegExp(allotedFolderRegexString, 'g');
-                if (!allotedFolderRegexExpression.test(processingJSONString)) {
-                    lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 3');
-                    process.exit(1);
-                }
-                const allotedFolderBookmarkBlockMatches = processingJSONString.match(allotedFolderRegexExpression);
+                const doneBookmarksInSourceKeys = Object.keys(doneBookmarkFoldersInSource);
+                for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
+                    const guid = doneBookmarksInSourceKeys[i];
+                    const GUIDRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"(?:(?!"guid": )[\\s|\\S])*?"type": "folder"`;
+                    const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
 
-                if (allotedFolderBookmarkBlockMatches !== null) {
-                    const doneBookmarkFoldersInSource = [];
-                    allotedFolderBookmarkBlockMatches.forEach((match) => {
-                        if (match.split(/\r\n|\r|\n/).length > 9) {
-                            console.log(match);
-                            unlockSync(processingBookmarkPathWithoutSync);
-                            unlockSync(sourceBookmarkPath);
-                            process.exit(0);
-                        }
-                        const guid = match.match(/"guid": "(.*?)"/)[1];
-                        // console.log(`Found bookmark with GUID: ${guid}`);
-                        doneBookmarkFoldersInSource[guid] = match;
-                    });
+                    if (GUIDRegexExpression.test(sourceJSONString)) {
+                        // lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 4');
+                        // process.exit(1);
 
-                    Object.keys(doneBookmarkFoldersInSource).forEach((guid) => {
-                        const GUIDRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"(?:(?!"guid": )[\\s|\\S])*?"type": "folder"`;
-                        const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
-
-                        if (!GUIDRegexExpression.test(sourceJSONString)) {
-                            lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 4');
-                            process.exit(1);
-                        }
                         const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
                         if (GUIDBookmarkBlockMatches !== null) {
                             const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
+                            const nameInGUIDMatch = GUIDBookmarkBlockMatch.match(/"name": "(.*?)"/)[1];
+                            // console.log(doneBookmarkFoldersInSource[guid]);
+                            doneBookmarkFoldersInSource[guid] = doneBookmarkFoldersInSource[guid].replace(
+                                /("name": ")(.*?)( \|#\|.*")/,
+                                `$1${nameInGUIDMatch}$3`
+                            );
+                            // console.log(doneBookmarkFoldersInSource[guid]);
                             sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarkFoldersInSource[guid]);
                         }
-                        // console.log(guid, doneBookmarksInSource[guid]);
-                    });
-                }
-                sourceJSONString = JSON.parse(sourceJSONString);
-                sourceJSONString = removeChecksumFromBookmarksObj(sourceJSONString);
-                sourceJSONString = JSON.stringify(sourceJSONString, null, 3);
-
-                if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
-                    console.log(initalSourceJSONString);
-                    console.log(`${'-'.repeat(70)}`);
-                    console.log(sourceJSONString);
-                    console.log(`${'-'.repeat(70)}`);
-                    console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
-                    unlockSync(processingBookmarkPathWithoutSync);
-                    unlockSync(sourceBookmarkPath);
-                    process.exit(0);
-                }
-
-                fs.writeFileSync(processingBookmarkPathWithoutSync, sourceJSONString, (err) => {
-                    if (err) {
-                        console.log(err);
-                        unlockSync(processingBookmarkPathWithoutSync);
-                        unlockSync(sourceBookmarkPath);
-                        process.exit(1);
                     }
-                });
-                unlockSync(processingBookmarkPathWithoutSync);
-                unlockSync(sourceBookmarkPath);
-                break;
+                    // console.log(guid, doneBookmarksInSource[guid]);
+                }
             }
-        } catch (err) {
-            console.log(`${err.message}`);
-            if (checkSync(processingBookmarkPathWithoutSync)) {
-                unlockSync(processingBookmarkPathWithoutSync);
-            }
-            if (checkSync(sourceBookmarkPath)) {
-                unlockSync(sourceBookmarkPath);
-            }
-            process.exit(1);
         }
+        sourceJSONString = JSON.parse(sourceJSONString);
+        sourceJSONString = removeChecksumFromBookmarksObj(sourceJSONString);
+        sourceJSONString = JSON.stringify(sourceJSONString, null, 3);
+
+        if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
+            console.log(initalSourceJSONString);
+            console.log(`${'-'.repeat(70)}`);
+            console.log(sourceJSONString);
+            console.log(`${'-'.repeat(70)}`);
+            console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
+            releaseLock(processingBookmarkPathWithoutSync, true);
+            releaseLock(sourceBookmarkPath, true);
+            process.exit(0);
+        }
+
+        console.log('Writing bookmarks file');
+        fs.writeFileSync(processingBookmarkPathWithoutSync, sourceJSONString, (err) => {
+            if (err) {
+                console.log(err);
+                releaseLock(processingBookmarkPathWithoutSync, true);
+                releaseLock(sourceBookmarkPath, true);
+                process.exit(1);
+            }
+        });
+        releaseLock(processingBookmarkPathWithoutSync, true);
+        releaseLock(sourceBookmarkPath, true);
+    } catch (err) {
+        console.log(`${err.message}`);
+        releaseLock(processingBookmarkPathWithoutSync, true);
+        releaseLock(sourceBookmarkPath, true);
+        process.exit(1);
     }
 }
 

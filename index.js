@@ -59,10 +59,11 @@ autoCleanUpDatastoreZones();
 // Non-shortcircuiting and: [f1(), f2()].every(i => i)
 // Non-shortcircuiting or: [f1(), f2()].some(i => i)
 
+await downloadBookmarksFromSourceToProcessing();
+
 if (
     !(
         true && // validateConfigFile()
-        true && // await downloadBookmarksFromSourceToProcessing()
         // // TODO: validateBookmarksAndCheckCredentialsPresent() => Dealer Name space in the middle gives validation error which it shoudl not
         [validateDealerConfigurationExcelFile() !== 'error', validateBookmarksAndCheckCredentialsPresent() !== 'error'].every((i) => i)
     )

@@ -40,8 +40,8 @@ const configBasic = {
         ],
     },
     // sourceBookmarkPath Or processingBookmarkPathWithoutSync: '/path/to/Chrome/Bookmark' OR '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks'
-    sourceBookmarkPath: '.\\datastore\\Bookmarks',
-    processingBookmarkPathWithoutSync: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
+    sourceBookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
+    processingBookmarkPathWithoutSync: '.\\datastore\\Bookmarks',
     bookmarkOptions: {
         shouldIncludeFolders: true,
     },
