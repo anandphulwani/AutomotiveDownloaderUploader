@@ -2,13 +2,13 @@
 /* #region : Supporting functions */ /* #endregion */
 import chalk from 'chalk';
 import fs from 'fs';
-import date from 'date-and-time';
 
 import { exec } from 'child_process';
 import { keyInYN } from 'readline-sync';
 import cfonts from 'cfonts';
 
 /* eslint-disable import/extensions */
+import { instanceRunDateFormatted } from './functions/datetime.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { lge, lgw, lgif } from './functions/loggersupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
@@ -46,9 +46,9 @@ lgif(`region : Validation section 01: END`);
 
 const lotIndex = parseInt(process.argv[2], 10);
 const lotFolderName = `Lot_${zeroPad(lotIndex, 2)}`;
-const todaysDate = process.argv[3] !== undefined ? process.argv[3] : date.format(new Date(), 'YYYY-MM-DD');
+const lotTodaysDate = process.argv[3] !== undefined ? process.argv[3] : instanceRunDateFormatted;
 const { downloadPath } = config;
-const lotFolderPath = `${downloadPath}\\${todaysDate}\\${lotFolderName}`; // ${config.downloadPath}/${todaysDate}/Lot_${zeroPad(lotIndex, 2)}/${usernameTrimmed}/${dealerFolder}/${stockNumber}/
+const lotFolderPath = `${downloadPath}\\${lotTodaysDate}\\${lotFolderName}`; // ${config.downloadPath}/${lotTodaysDate}/Lot_${zeroPad(lotIndex, 2)}/${usernameTrimmed}/${dealerFolder}/${stockNumber}/
 const lotHeadingOptions = {
     font: 'block', // font to use for the output
     align: 'center', // alignment of the output
@@ -72,7 +72,7 @@ if (!fs.existsSync(lotFolderPath)) {
 
 let hasLotFirstIndexMatches = false;
 while (!hasLotFirstIndexMatches) {
-    let LotFirstIndex = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
+    let LotFirstIndex = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${lotTodaysDate}`, 'Lot_');
     LotFirstIndex = LotFirstIndex.length > 0 ? parseInt(LotFirstIndex[0].substring(4), 10) : 1;
     if (LotFirstIndex !== lotIndex) {
         lge(`Please allot earlier lot folders 'Lot_${zeroPad(LotFirstIndex, 2)}', before alloting this lot folder '${lotFolderName}'.`);
@@ -127,7 +127,7 @@ for (const contractor of Object.keys(config.contractors)) {
         await setContractorsCurrentAllotted(contractor, '0');
         //  TODO: Remove this foreach
         config.contractors[contractor].processingFolders.forEach(async (processingFolder) => {
-            const contractorsProcessingFolder = `${config.contractorsZonePath}\\${contractor}\\${todaysDate}\\${processingFolder}`;
+            const contractorsProcessingFolder = `${config.contractorsZonePath}\\${contractor}\\${lotTodaysDate}\\${processingFolder}`;
             if (!fs.existsSync(contractorsProcessingFolder)) {
                 makeDir(contractorsProcessingFolder);
             }
@@ -300,7 +300,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
         imagesQtyAllotedInCurrentLot,
         foldersAlloted
     );
-    setLastLotNumberAndDate(lotFolderName, todaysDate);
+    setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
     /* #endregion */
 } else if (keyInYN('To use manual allotment system press Y, to exit from this process press N.')) {
     console.log('');
@@ -316,7 +316,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
         false,
         false
     );
-    setLastLotNumberAndDate(lotFolderName, todaysDate);
+    setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
 }
 
 /* #endregion */

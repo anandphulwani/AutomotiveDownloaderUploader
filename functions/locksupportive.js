@@ -1,5 +1,4 @@
 import path from 'path';
-import date from 'date-and-time';
 import fs from 'fs';
 import { checkSync, lockSync, unlockSync } from 'proper-lockfile';
 

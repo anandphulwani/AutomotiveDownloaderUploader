@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import date from 'date-and-time';
 import fsExtra from 'fs-extra';
 
 /* eslint-disable import/extensions */
+import { instanceRunDateFormatted, currentTimeFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
 import { lge, lgc } from './loggersupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
@@ -76,8 +76,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     /* #endregion: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
 
     /* #region: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
-    const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
-    const lockingBackupsDirWithTodaysDate = `${config.lockingBackupsZonePath}\\${todaysDate}`;
+    const lockingBackupsDirWithTodaysDate = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}`;
     if (fs.existsSync(lockingBackupsDirWithTodaysDate)) {
         const lockingBackupsFiles = fs.readdirSync(lockingBackupsDirWithTodaysDate);
         const ignoreFilesStartWith = ['Bookmarks'];
@@ -200,14 +199,16 @@ function getUploadRemainingSummary(foldersToUpload) {
     return `Remaining DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, StockFolder/StockFiles: ${totalStockFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
 }
 
-const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {
-    const currentTime = date.format(new Date(), 'HHmmssSSS');
     const randomNumer = Math.floor(Math.random() * (999 - 100 + 1) + 100);
 
     const fromPath = fileToOperateOn;
-    const toPath = `${config.lockingBackupsZonePath}\\${todaysDate}\\${path.basename(fileToOperateOn)}_${currentTime}(${randomNumer})`;
-    const toPathToWrite = `${config.lockingBackupsZonePath}\\${todaysDate}\\Backup\\${path.basename(fileToOperateOn)}_${currentTime}(${randomNumer})`;
+    const toPath = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}\\${path.basename(
+        fileToOperateOn
+    )}_${currentTimeFormatted}(${randomNumer})`;
+    const toPathToWrite = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}\\Backup\\${path.basename(
+        fileToOperateOn
+    )}_${currentTimeFormatted}(${randomNumer})`;
     createDirAndCopyFile(fromPath, toPath);
     if (path.basename(fileToOperateOn) === 'Bookmarks') {
         makeDir(path.dirname(toPathToWrite));

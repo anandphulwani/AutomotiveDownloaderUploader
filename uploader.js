@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-import date from 'date-and-time';
 import { URL } from 'url';
 
 /* eslint-disable import/extensions */
+import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
 import { lgw, lge, lgc } from './functions/loggersupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
@@ -35,7 +35,6 @@ import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './funct
 import { uploadBookmarkURL } from './functions/upload.js';
 /* eslint-enable import/extensions */
 
-const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 if (config.environment === 'production') {
     checkTimezone();
     printSectionSeperator();
@@ -47,7 +46,7 @@ autoCleanUpDatastoreZones();
 
 const foldersToShift = [];
 Object.keys(config.contractors).forEach((contractor) => {
-    const contractorReadyToUploadDir = `${config.contractorsZonePath}\\${contractor}\\${todaysDate}\\000_ReadyToUpload`;
+    const contractorReadyToUploadDir = `${config.contractorsZonePath}\\${contractor}\\${instanceRunDateFormatted}\\000_ReadyToUpload`;
     if (fs.existsSync(contractorReadyToUploadDir)) {
         // eslint-disable-next-line no-restricted-syntax
         for (const contractorReadyToUploadSubFolderAndFiles of fs.readdirSync(contractorReadyToUploadDir)) {
@@ -112,7 +111,7 @@ async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
                     process.stdout.write(chalk.cyan(`.`));
                 }
             }
-            const newUploadingZonePath = `${config.uploadingZonePath}\\${todaysDate}\\${path.basename(folderToShift[0])}`;
+            const newUploadingZonePath = `${config.uploadingZonePath}\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
             if (isDryRun) {
                 if (fs.existsSync(`${newUploadingZonePath}`)) {
                     lge(`Folder: ${newUploadingZonePath} already exists, cannot move ${folderToShift[0]} to its location.`);
@@ -140,15 +139,15 @@ if (doesDestinationFolderAlreadyExists) {
 }
 await moveFilesFromContractorsToUploadingZone(false);
 
-if (!fs.existsSync(`${config.uploadingZonePath}\\${todaysDate}`)) {
+if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
     console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));
     process.exit(0);
 }
 
 const foldersToUpload = {};
 // eslint-disable-next-line no-restricted-syntax
-for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZonePath}\\${todaysDate}`)) {
-    const uploadingZoneSubFolderPath = path.join(`${config.uploadingZonePath}\\${todaysDate}`, uploadingZoneSubFolderAndFiles);
+for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
+    const uploadingZoneSubFolderPath = path.join(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`, uploadingZoneSubFolderAndFiles);
     const uploadingZoneStat = fs.statSync(uploadingZoneSubFolderPath);
 
     if (uploadingZoneStat.isDirectory()) {

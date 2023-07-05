@@ -1,11 +1,11 @@
 import fs from 'fs';
-import date from 'date-and-time';
 import chalk from 'chalk';
 import path from 'path';
 import logSymbols from 'log-symbols';
 import { URL as URLparser } from 'url';
 
 /* eslint-disable import/extensions */
+import { instanceRunDateFormatted } from './datetime.js';
 import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif } from './loggersupportive.js';
 import { config } from '../configs/config.js';
 import { sleep, msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
@@ -28,7 +28,6 @@ import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesy
 /* eslint-enable import/extensions */
 
 const printToLogBuffer = [];
-const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 
 async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, URL, userLoggedIn, debug = false) {
     lgif(
@@ -757,15 +756,15 @@ function getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdF
     if (typeOfStockPath === 'stockFolder') {
         lgif('typeOfStockPath is stockFolder');
         moveSource = `${stockFolderPath}\\`;
-        moveDestination = `${config.finishedUploadingZonePath}\\${isURLDoesNotExist ? 'DeletedURLs\\' : ''}${todaysDate}\\${path.basename(
-            path.dirname(stockFolderPath)
-        )}\\${path.basename(stockFolderPath)}`;
+        moveDestination = `${config.finishedUploadingZonePath}\\${
+            isURLDoesNotExist ? 'DeletedURLs\\' : ''
+        }${instanceRunDateFormatted}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(stockFolderPath)}`;
     } else {
         lgif('typeOfStockPath IS NOT stockFolder');
         moveSource = `${uniqueIdFolderPath}\\${stockFilePath}`;
-        moveDestination = `${config.finishedUploadingZonePath}\\${isURLDoesNotExist ? 'DeletedURLs\\' : ''}${todaysDate}\\${path.basename(
-            uniqueIdFolderPath
-        )}\\${stockFilePath}`;
+        moveDestination = `${config.finishedUploadingZonePath}\\${
+            isURLDoesNotExist ? 'DeletedURLs\\' : ''
+        }${instanceRunDateFormatted}\\${path.basename(uniqueIdFolderPath)}\\${stockFilePath}`;
     }
     lgif(`fn getSourceAndDestinationFrom() : END, Returning: moveSource: ${moveSource}, moveDestination: ${moveDestination}`);
     return { moveSource: moveSource, moveDestination: moveDestination };

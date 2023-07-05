@@ -2,9 +2,10 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import logSymbols from 'log-symbols';
-import date from 'date-and-time';
 import { decode } from 'html-entities';
+
 /* eslint-disable import/extensions */
+import { instanceRunDateFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
 import { zeroPad } from './stringformatting.js';
 import { waitForSeconds } from './sleep.js';
@@ -13,8 +14,6 @@ import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesyst
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
 import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './excelsupportive.js';
 /* eslint-enable import/extensions */
-
-const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 
 async function getImagesFromContent(page, lotIndex, username, dealerFolder, debug = false) {
     const usernameTrimmed = username.includes('@') ? username.split('@')[0] : username;
@@ -138,7 +137,10 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     imageOriginalURLS[imageNumberToDownload - 1],
                     file,
                     tempPath,
-                    `${config.downloadPath}/${todaysDate}/Lot_${zeroPad(lotIndex, 2)}/${usernameTrimmed}/${dealerFolder}/${stockNumber}/`,
+                    `${config.downloadPath}/${instanceRunDateFormatted}/Lot_${zeroPad(
+                        lotIndex,
+                        2
+                    )}/${usernameTrimmed}/${dealerFolder}/${stockNumber}/`,
                     imageNumbersToDownload.length === 1,
                     hashAlgo,
                     checksumOfFile,

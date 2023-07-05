@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import fs from 'fs';
-import date from 'date-and-time';
 import killChrome from 'kill-chrome';
 import puppeteer from 'puppeteer';
 import { exec, spawn } from 'child_process';
@@ -8,6 +7,7 @@ import { keyInYN } from 'readline-sync';
 import { URL as URLparser } from 'url';
 
 /* eslint-disable import/extensions */
+import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
 import { getCredentialsForUsername, getAppDomain } from './functions/configsupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
@@ -39,7 +39,6 @@ import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 // console.log(`${host}:${port}/${name}`);
 // console.log(config);
 
-const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
 if (config.environment === 'production') {
     checkTimezone();
     printSectionSeperator();
@@ -78,10 +77,10 @@ if (
 //     includingMainProcess: true,
 // });
 
-const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${todaysDate}`, 'Lot_');
+const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${instanceRunDateFormatted}`, 'Lot_');
 let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
 if (LotLastIndex === null) {
-    if (config.lotLastRunDate === todaysDate) {
+    if (config.lotLastRunDate === instanceRunDateFormatted) {
         LotLastIndex = parseInt(config.lotLastRunNumber.substring(4), 10) + 1;
     } else {
         LotLastIndex = 1;
@@ -92,9 +91,9 @@ LotIndexArray.pop();
 // eslint-disable-next-line no-restricted-syntax
 for (const LotIndexEle of LotIndexArray) {
     const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
-    if (fs.existsSync(`${config.downloadPath}\\${todaysDate}\\${LotIndexEle}`)) {
+    if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\${LotIndexEle}`)) {
         exec(
-            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndexToAllot} ${todaysDate} && pause && pause && exit"`
+            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndexToAllot} ${instanceRunDateFormatted} && pause && pause && exit"`
         );
     }
     sleep(3);
@@ -149,9 +148,9 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                 (minDealerFolders === false || dealerFolderCntInLot >= minDealerFolders) &&
                 (config.lot[lotIndex - 1].imagesQty === 0 || imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty)
             ) {
-                if (fs.existsSync(`${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(lotIndex, 2)}`)) {
+                if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
                     exec(
-                        `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${todaysDate} && pause && pause && exit"`
+                        `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
                     );
                 }
                 dealerFolderCntInLot = 0;
@@ -227,7 +226,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                 }
             }
             const usernameTrimmed = usernameBookmark.name.includes('@') ? usernameBookmark.name.split('@')[0] : usernameBookmark.name;
-            const dealerLevelPath = `${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(
+            const dealerLevelPath = `${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(
                 lotIndex,
                 2
             )}\\${usernameTrimmed}\\${dealerLevelBookmarkName}`;
@@ -237,10 +236,10 @@ for (const usernameBookmark of allUsernamesBookmarks) {
             }
         }
     }
-    if (fs.existsSync(`${config.downloadPath}\\${todaysDate}\\Lot_${zeroPad(lotIndex, 2)}`)) {
+    if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
         if (!keyInYN('Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?')) {
             exec(
-                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${todaysDate} && pause && pause && exit"`
+                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
             );
         }
     }
