@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import date from 'date-and-time';
+import fsExtra from 'fs-extra';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { lgc } from './loggersupportive.js';
-import { removeDir } from './filesystem.js';
+import { lge, lgc } from './loggersupportive.js';
+import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 /* eslint-enable import/extensions */
 
 const perImageTimeToUpload = 7.25;
@@ -198,6 +199,21 @@ function getUploadRemainingSummary(foldersToUpload) {
 
     return `Remaining DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, StockFolder/StockFiles: ${totalStockFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
 }
+
+const todaysDate = date.format(new Date(), 'YYYY-MM-DD');
+function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {
+    const currentTime = date.format(new Date(), 'HHmmssSSS');
+    const randomNumer = Math.floor(Math.random() * (999 - 100 + 1) + 100);
+
+    const fromPath = fileToOperateOn;
+    const toPath = `${config.lockingBackupsZonePath}\\${todaysDate}\\${path.basename(fileToOperateOn)}_${currentTime}(${randomNumer})`;
+    const toPathToWrite = `${config.lockingBackupsZonePath}\\${todaysDate}\\Backup\\${path.basename(fileToOperateOn)}_${currentTime}(${randomNumer})`;
+    createDirAndCopyFile(fromPath, toPath);
+    if (path.basename(fileToOperateOn) === 'Bookmarks') {
+        makeDir(path.dirname(toPathToWrite));
+        fs.writeFileSync(toPathToWrite, dataToBeWritten);
+    }
+}
 // eslint-disable-next-line import/prefer-default-export
 export {
     perImageTimeToUpload,
@@ -206,4 +222,5 @@ export {
     getNumberOfImagesFromAllottedDealerNumberFolder,
     getUniqueIDFromAllottedDealerNumberFolder,
     getUploadRemainingSummary,
+    createBackupOfFile,
 };

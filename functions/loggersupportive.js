@@ -65,11 +65,11 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
                     `Unable to set nonCatchErrorLogLevels9DigitUniqueId: '${nonCatchErrorCode}'. Serious issue, please contact developer.`
                 )
             );
-            releaseLock(fileToOperateOn);
+            releaseLock(fileToOperateOn, true);
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
-        releaseLock(fileToOperateOn);
+        releaseLock(fileToOperateOn, true);
     } catch (err) {
         console.log(`${err.message}`);
         process.exit(1);
@@ -123,11 +123,11 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
                     `Unable to set catchErrorLogLevels6DigitUniqueId: '${catchErrorCode}'. Serious issue, please contact developer.`
                 )
             );
-            releaseLock(fileToOperateOn);
+            releaseLock(fileToOperateOn, true);
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
-        releaseLock(fileToOperateOn);
+        releaseLock(fileToOperateOn, true);
     } catch (err) {
         console.log(`${err.message}`);
         process.exit(1);
@@ -138,7 +138,7 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
 
 fs.writeFile(`.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}`, '', (err) => {});
 const fileToOperateOn = `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}`;
-attainLock(fileToOperateOn, false);
+attainLock(fileToOperateOn, true);
 
 // eslint-disable-next-line no-restricted-syntax
 for (const dateDir of fs.readdirSync('.\\logs\\')) {
