@@ -75,6 +75,12 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         logMesg = chalk.white.bgYellow.bold(logMesg);
     } else if (level === 'info') {
         logMesg = chalk.cyan(logMesg);
+    } else if (level === 'verbose') {
+        logMesg = chalk.white.bgGreenBright.bold(logMesg);
+    } else if (level === 'debug') {
+        logMesg = chalk.white.bgMagentaBright.bold(logMesg);
+    } else if (level === 'silly') {
+        logMesg = chalk.bgWhite.bold(logMesg);
     } else {
         logMesg = chalk.inverse(logMesg);
     }
@@ -188,6 +194,45 @@ const infoFileWinston = createLogger({
         }),
     ],
 });
+
+const verboseFileWinston = createLogger({
+    level: 'verbose',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'all',
+            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
+            level: 'verbose',
+        }),
+    ],
+});
+
+const debugFileWinston = createLogger({
+    level: 'debug',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'all',
+            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
+            level: 'debug',
+        }),
+    ],
+});
+
+const sillyFileWinston = createLogger({
+    level: 'silly',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.File({
+            ...fileTransportOptions,
+            name: 'all',
+            filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}.log`,
+            level: 'silly',
+        }),
+    ],
+});
 /* #endregion File loggers: catcherror, error, warn, info : End */
 
 /* #region Console loggers: catcherror, error, warn, info : Begin */
@@ -257,6 +302,42 @@ const infoConsoleWinston = createLogger({
             ...consoleTransportOptions,
             name: 'info',
             level: 'info',
+        }),
+    ],
+});
+
+const verboseConsoleWinston = createLogger({
+    level: 'verbose',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'verbose',
+            level: 'verbose',
+        }),
+    ],
+});
+
+const debugConsoleWinston = createLogger({
+    level: 'debug',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'debug',
+            level: 'debug',
+        }),
+    ],
+});
+
+const sillyConsoleWinston = createLogger({
+    level: 'silly',
+    defaultMeta: { service: 'log-service' },
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'silly',
+            level: 'silly',
         }),
     ],
 });
@@ -337,6 +418,51 @@ function addIndividualTransportInfoFileWinston() {
         isIndividualTransportInfoFileWinstonEnabled = true;
     }
 }
+
+let isIndividualTransportVerboseFileWinstonEnabled = false;
+function addIndividualTransportVerboseFileWinston() {
+    if (!isIndividualTransportVerboseFileWinstonEnabled) {
+        verboseFileWinston.add(
+            new transports.File({
+                ...fileTransportOptions,
+                name: 'verbose',
+                filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}_verbose.log`,
+                level: 'verbose',
+            })
+        );
+        isIndividualTransportVerboseFileWinstonEnabled = true;
+    }
+}
+
+let isIndividualTransportDebugFileWinstonEnabled = false;
+function addIndividualTransportDebugFileWinston() {
+    if (!isIndividualTransportDebugFileWinstonEnabled) {
+        debugFileWinston.add(
+            new transports.File({
+                ...fileTransportOptions,
+                name: 'debug',
+                filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}_debug.log`,
+                level: 'debug',
+            })
+        );
+        isIndividualTransportDebugFileWinstonEnabled = true;
+    }
+}
+
+let isIndividualTransportSillyFileWinstonEnabled = false;
+function addIndividualTransportSillyFileWinston() {
+    if (!isIndividualTransportSillyFileWinstonEnabled) {
+        sillyFileWinston.add(
+            new transports.File({
+                ...fileTransportOptions,
+                name: 'silly',
+                filename: `.\\logs\\${todaysDateForLogger}\\${todaysDateWithTimeForLogger}_silly.log`,
+                level: 'silly',
+            })
+        );
+        isIndividualTransportSillyFileWinstonEnabled = true;
+    }
+}
 /* #endregion addIndividualTransport Functions : End */
 
 /* #region Main logger functions: loggerFile, loggerConsole : Begin */
@@ -361,6 +487,18 @@ const loggerFile = {
         // console.log('Logger File Info');
         infoFileWinston.info(...args);
     },
+    verbose: (...args) => {
+        // console.log('Logger File Verbose');
+        verboseFileWinston.verbose(...args);
+    },
+    debug: (...args) => {
+        // console.log('Logger File Debug');
+        debugFileWinston.debug(...args);
+    },
+    silly: (...args) => {
+        // console.log('Logger File Silly');
+        sillyFileWinston.silly(...args);
+    },
 };
 
 const loggerConsole = {
@@ -383,6 +521,18 @@ const loggerConsole = {
     info: (...args) => {
         // console.log('Logger Console Info');
         infoConsoleWinston.info(...args);
+    },
+    verbose: (...args) => {
+        // console.log('Logger Console Verbose');
+        verboseConsoleWinston.verbose(...args);
+    },
+    debug: (...args) => {
+        // console.log('Logger Console Debug');
+        debugConsoleWinston.debug(...args);
+    },
+    silly: (...args) => {
+        // console.log('Logger Console Silly');
+        sillyConsoleWinston.silly(...args);
     },
 };
 /* #endregion Main logger functions: loggerFile, loggerConsole : End */
@@ -411,8 +561,7 @@ export {
     addIndividualTransportErrorFileWinston,
     addIndividualTransportWarnFileWinston,
     addIndividualTransportInfoFileWinston,
+    addIndividualTransportVerboseFileWinston,
+    addIndividualTransportDebugFileWinston,
+    addIndividualTransportSillyFileWinston,
 };
-
-// new transports.File(fileTransportOptions('verbose', `${todaysDateWithTimeForLogger}_verbose.log`)),
-// new transports.File(fileTransportOptions('debug', `${todaysDateWithTimeForLogger}_debug.log`)),
-// new transports.File(fileTransportOptions('silly', `${todaysDateWithTimeForLogger}_silly.log`)),
