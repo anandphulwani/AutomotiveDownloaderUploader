@@ -324,9 +324,11 @@ async function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendTex
     }
 }
 
-async function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
+async function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, appendText, useLockingMechanism = true) {
     const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-    attainLock(fileToOperateOn, true);
+    if (useLockingMechanism) {
+        attainLock(fileToOperateOn, true);
+    }
 
     try {
         const processingContents = fs.readFileSync(fileToOperateOn, 'utf8');
@@ -358,12 +360,16 @@ async function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, app
         fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksObj, null, 3), (err) => {
             if (err) {
                 console.log(err);
-                releaseLock(fileToOperateOn, true);
+                if (useLockingMechanism) {
+                    releaseLock(fileToOperateOn, true);
+                }
                 process.exit(1);
             }
         });
         createBackupOfFile(fileToOperateOn, JSON.stringify(bookmarksObj, null, 3));
-        releaseLock(fileToOperateOn, true);
+        if (useLockingMechanism) {
+            releaseLock(fileToOperateOn, true);
+        }
         return bookmarksObj;
     } catch (err) {
         console.log(`${err.message}`);
