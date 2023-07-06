@@ -19,6 +19,7 @@ import {
     getDealerFolderContractorsZonePath,
     getDealerFolderRecordKeepingZonePath,
 } from './allotmentsupportive.js';
+import { attainLock, releaseLock } from './locksupportive.js';
 /* eslint-enable import/extensions */
 
 let earlierLoopUsernameFolder = '';
@@ -62,6 +63,9 @@ async function doAllotment(
         if (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors') {
             minDealerFolders = lotsMinimumDealerFoldersForEachContractors * contractorsNames.length;
         }
+        const fileToOperateOn = config.processingBookmarkPathWithoutSync;
+        attainLock(fileToOperateOn, true);
+
         for (
             let index = 0;
             (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors' && index < minDealerFolders && dealerDirectories.length > 0) ||
@@ -168,7 +172,7 @@ async function doAllotment(
 
             if (!isDryRun) {
                 const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(usernameFolder, path.basename(dealerFolderPath));
-                await replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(bookmarkFolderGUID, uniqueIdOfFolder);
+                await replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(bookmarkFolderGUID, uniqueIdOfFolder, false);
 
                 createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
                 await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
@@ -202,6 +206,7 @@ async function doAllotment(
             // console.log(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted: `);
             // console.log(contractors);
         }
+        releaseLock(fileToOperateOn, true);
     } else if (
         (allotmentSystem === 'allotmentByImagesQty' || allotmentSystem === 'allotmentByManual') &&
         lotsImagesQty > 0 &&
