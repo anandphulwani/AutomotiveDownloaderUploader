@@ -3,14 +3,19 @@ import path from 'path';
 import fsExtra from 'fs-extra';
 
 /* eslint-disable import/extensions */
-import { instanceRunDateFormatted, currentTimeFormatted } from './datetime.js';
+import { instanceRunDateFormatted, instanceRunDateTimeWOMSFormatted, currentTimeFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
 import { lge, lgc } from './loggersupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
+import { attainLock, releaseLock } from './locksupportive.js';
 /* eslint-enable import/extensions */
 
 const perImageTimeToUpload = 7.25;
 const perStockTimeToUpload = 7;
+
+fs.writeFile(`.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}`, '', (err) => {});
+const instanceRunLogFileToAvoidDeletingSelfRunCreatedBlankFilesForItself = `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}`;
+attainLock(instanceRunLogFileToAvoidDeletingSelfRunCreatedBlankFilesForItself, true);
 
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     const foldersToCleanUp = [
@@ -145,6 +150,35 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         });
     }
     /* #endregion: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const dateDir of fs.readdirSync('.\\logs\\')) {
+        const entryPath = path.join('.\\logs\\', dateDir);
+        if (fs.statSync(entryPath).isDirectory()) {
+            const dateDirFilesAndFolders = fs.readdirSync(entryPath);
+            let lockDirectories = dateDirFilesAndFolders.filter((filesAndFolders) => {
+                const filePath = path.join(entryPath, filesAndFolders);
+                return fs.statSync(filePath).isDirectory() && filesAndFolders.endsWith('.lock');
+            });
+            lockDirectories = lockDirectories.map((dir) => dir.replace(/\.lock$/, ''));
+
+            // Filter only the files that are not in lockDirectories
+            const nonLockFiles = dateDirFilesAndFolders.filter((file) => {
+                const filePath = path.join(entryPath, file);
+                const statSync = fs.statSync(filePath);
+                const isDirectory = statSync.isDirectory();
+                const isNotLocked = !lockDirectories.some((lockDir) => file.startsWith(lockDir));
+                const isSizeZero = statSync.size === 0;
+                return !isDirectory && isNotLocked && isSizeZero;
+            });
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const file of nonLockFiles) {
+                const filePath = path.join(entryPath, file);
+                fs.unlinkSync(filePath);
+            }
+        }
+    }
 }
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
