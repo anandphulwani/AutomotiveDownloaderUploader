@@ -201,25 +201,27 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                         await replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
                     } else {
                         console.log('Bookmark not appended!');
-                        try {
-                            // TODO: Check this
-                            fs.appendFileSync(
-                                './logs/test.txt',
-                                '--------------------------------------------------------------------------------------------------'
-                            );
-                            fs.appendFileSync(
-                                './logs/test.txt',
-                                `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, vehicleBookmark.name: ${vehicleBookmark.name}, vehicleBookmark.url: ${vehicleBookmark.url}`
-                            );
+                        if (config.updateBookmarksOnceDone) {
+                            try {
+                                fs.appendFileSync(
+                                    './logs/bookmarksNotAppend.txt',
+                                    '--------------------------------------------------------------------------------------------------'
+                                );
+                                fs.appendFileSync(
+                                    './logs/bookmarksNotAppend.txt',
+                                    `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, vehicleBookmark.name: ${vehicleBookmark.name}, vehicleBookmark.url: ${vehicleBookmark.url}`
+                                );
 
-                            fs.appendFileSync('./logs/test.txt', `vehicleBookmark.guid: ${vehicleBookmark.guid}`);
-                            fs.appendFileSync('./logs/test.txt', `returnObj: ${returnObj}`);
-                            fs.appendFileSync(
-                                './logs/test.txt',
-                                '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
-                            );
-                        } catch (err) {
-                            console.error(err);
+                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `vehicleBookmark.guid: ${vehicleBookmark.guid}`);
+                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}`);
+                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `returnObj: ${returnObj}`);
+                                fs.appendFileSync(
+                                    './logs/bookmarksNotAppend.txt',
+                                    '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+                                );
+                            } catch (err) {
+                                console.error(err);
+                            }
                         }
                     }
                     await waitForSeconds(0);
