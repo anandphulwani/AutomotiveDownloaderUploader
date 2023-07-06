@@ -296,9 +296,6 @@ async function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendTex
         bookmarkBlockObj.name = `${bookmarkBlockObj.name} |#| ${appendText}`;
         const bookmarkBlockNewText = JSON.stringify(bookmarkBlockObj);
 
-        fs.appendFileSync('./logs/Bookmarks_URL_lockFile.txt', '-----START-------------------------------\n');
-        fs.appendFileSync('./logs/Bookmarks_URL_lockFile.txt', `${bookmarkBlockNewText}\n`);
-        fs.appendFileSync('./logs/Bookmarks_URL_lockFile.txt', '-----END---------------------------------\n');
         bookmarkText = bookmarkText.replace(bookmarkBlockText, bookmarkBlockNewText);
         bookmarksJSONObj = JSON.parse(bookmarkText);
         if (Math.abs(initalLineCount - JSON.stringify(bookmarksJSONObj, null, 3).split(/\r\n|\r|\n/).length) > 1) {
@@ -356,9 +353,6 @@ async function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, app
             newBookmarkBlockText = bookmarkBlockText.replace(nameRegexExpression, `"name": "$1,${appendText}"`);
         }
 
-        fs.appendFileSync('./logs/Bookmarks_Folder_lockFile.txt', '-----START-------------------------------\n');
-        fs.appendFileSync('./logs/Bookmarks_Folder_lockFile.txt', `${newBookmarkBlockText}\n`);
-        fs.appendFileSync('./logs/Bookmarks_Folder_lockFile.txt', '-----END---------------------------------\n');
         bookmarkText = bookmarkText.replace(bookmarkBlockText, newBookmarkBlockText);
         bookmarksObj = JSON.parse(bookmarkText);
         fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksObj, null, 3), (err) => {
