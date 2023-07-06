@@ -170,7 +170,7 @@ async function doAllotment(
                 const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(usernameFolder, path.basename(dealerFolderPath));
                 await replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(bookmarkFolderGUID, uniqueIdOfFolder);
 
-                await createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
+                createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
                 await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
             } else {
                 if (fs.existsSync(`${destinationRecordKeepingPath}`)) {
