@@ -23,7 +23,7 @@ import {
     downloadBookmarksFromSourceToProcessing,
     handleBookmarkURL,
     removeChecksumFromBookmarksObj,
-    replaceBookmarksNameOnGUIDAndWriteToBookmarksFile,
+    replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper,
 } from './functions/bookmark.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
@@ -198,7 +198,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                     );
                     urlsDownloaded = returnObj.urlsDownloaded;
                     if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
-                        await replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
+                        replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper(vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
                     } else {
                         console.log('Bookmark not appended!');
                         if (config.updateBookmarksOnceDone) {
