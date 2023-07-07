@@ -290,7 +290,7 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
 
         if (!regexExpression.test(bookmarkText)) {
             lgc('Unable to match regex for fn replaceBookmarksNameOnGUIDAndWriteToBookmarksFile()');
-            process.exit(1);
+            return { exit: true, exitCode: 1 };
         }
 
         const initalBookmarkTest = bookmarkText;
@@ -310,13 +310,14 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
             console.log(
                 `initalLineCount: ${initalLineCount}, finalLineCount: ${JSON.stringify(bookmarksJSONObj, null, 3).split(/\r\n|\r|\n/).length}`
             );
-            process.exit(0);
+            return { exit: true, exitCode: 0 };
         }
         fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksJSONObj, null, 3));
         createBackupOfFile(fileToOperateOn, JSON.stringify(bookmarksJSONObj, null, 3));
+        return { exit: false, exitCode: null };
     } catch (err) {
         console.log(`${err.message}`);
-        process.exit(1);
+        return { exit: true, exitCode: 1 };
     }
 }
 
