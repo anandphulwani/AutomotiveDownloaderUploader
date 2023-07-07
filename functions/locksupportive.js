@@ -63,9 +63,10 @@ function attainLock(fileToOperateOn, writeToFile = false, debug = false) {
 
 function releaseLock(fileToOperateOn, writeToFile = false) {
     const errorToGetCaller = new Error();
-    const callerFunctionName = errorToGetCaller.stack.split('\n')[2].trim().split(' ')[1];
     const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTimeFormatted}/${path.basename(fileToOperateOn)}`;
+    let callerFunctionName = '';
     try {
+        [, callerFunctionName] = errorToGetCaller.stack.split('\n')[2].trim().split(' ');
         fs.mkdirSync(logPath, { recursive: true });
         if (checkSync(fileToOperateOn)) {
             const filename = `${logPath}/${currentTimeFormatted}_ReleasedLock_${callerFunctionName}.txt`;
