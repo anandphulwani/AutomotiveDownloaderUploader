@@ -276,7 +276,7 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper(guid, appendTe
     }
 }
 
-async function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
+function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
     const fileToOperateOn = config.processingBookmarkPathWithoutSync;
     attainLock(fileToOperateOn, true);
 
