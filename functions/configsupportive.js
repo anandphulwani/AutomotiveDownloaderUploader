@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import fs from 'fs';
-import { lockSync, unlockSync, checkSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { lgc } from './loggersupportive.js';
