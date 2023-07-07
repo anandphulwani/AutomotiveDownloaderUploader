@@ -188,14 +188,7 @@ async function downloadBookmarksFromSourceToProcessing() {
         }
 
         console.log('Writing bookmarks file');
-        fs.writeFileSync(processingBookmarkPathWithoutSync, sourceJSONString, (err) => {
-            if (err) {
-                console.log(err);
-                releaseLock(processingBookmarkPathWithoutSync, true);
-                releaseLock(sourceBookmarkPath, true);
-                process.exit(1);
-            }
-        });
+        fs.writeFileSync(processingBookmarkPathWithoutSync, sourceJSONString);
         releaseLock(processingBookmarkPathWithoutSync, true);
         releaseLock(sourceBookmarkPath, true);
     } catch (err) {
@@ -309,13 +302,7 @@ async function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendTex
             releaseLock(fileToOperateOn, true);
             process.exit(0);
         }
-        fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksJSONObj, null, 3), (err) => {
-            if (err) {
-                releaseLock(fileToOperateOn, true);
-                console.log(err);
-                process.exit(1);
-            }
-        });
+        fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksJSONObj, null, 3));
         createBackupOfFile(fileToOperateOn, JSON.stringify(bookmarksJSONObj, null, 3));
         releaseLock(fileToOperateOn, true);
     } catch (err) {
@@ -357,15 +344,7 @@ async function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, app
 
         bookmarkText = bookmarkText.replace(bookmarkBlockText, newBookmarkBlockText);
         bookmarksObj = JSON.parse(bookmarkText);
-        fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksObj, null, 3), (err) => {
-            if (err) {
-                console.log(err);
-                if (useLockingMechanism) {
-                    releaseLock(fileToOperateOn, true);
-                }
-                process.exit(1);
-            }
-        });
+        fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksObj, null, 3));
         createBackupOfFile(fileToOperateOn, JSON.stringify(bookmarksObj, null, 3));
         if (useLockingMechanism) {
             releaseLock(fileToOperateOn, true);
