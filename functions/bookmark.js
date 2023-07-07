@@ -277,9 +277,8 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper(guid, appendTe
 }
 
 function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
-    const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-
     try {
+        const fileToOperateOn = config.processingBookmarkPathWithoutSync;
         const bookmarksText = fs.readFileSync(fileToOperateOn);
         let bookmarksJSONObj = JSON.parse(bookmarksText);
         bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
