@@ -278,7 +278,6 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper(guid, appendTe
 
 function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
     const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-    attainLock(fileToOperateOn, true);
 
     try {
         const bookmarksText = fs.readFileSync(fileToOperateOn);
@@ -311,12 +310,10 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
             console.log(
                 `initalLineCount: ${initalLineCount}, finalLineCount: ${JSON.stringify(bookmarksJSONObj, null, 3).split(/\r\n|\r|\n/).length}`
             );
-            releaseLock(fileToOperateOn, true);
             process.exit(0);
         }
         fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksJSONObj, null, 3));
         createBackupOfFile(fileToOperateOn, JSON.stringify(bookmarksJSONObj, null, 3));
-        releaseLock(fileToOperateOn, true);
     } catch (err) {
         console.log(`${err.message}`);
         process.exit(1);
