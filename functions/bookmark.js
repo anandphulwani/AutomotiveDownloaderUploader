@@ -431,7 +431,7 @@ export {
     downloadBookmarksFromSourceToProcessing,
     handleBookmarkURL,
     removeChecksumFromBookmarksObj,
-    replaceBookmarksNameOnGUIDAndWriteToBookmarksFile,
+    replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper,
     replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile,
     getBookmarkFolderGUIDFromUsernameDealerNumber,
     getBookmarkUsernameFolderFromUniqueId,
