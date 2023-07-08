@@ -9,7 +9,7 @@ import { lgccyclicdependency } from './loggercyclicdependency.js';
 /* eslint-enable import/extensions */
 
 // Attemp to attainLock, retrying multiple times in a duration of 30 to 60 seconds, before timing out
-function attainLock(fileToOperateOn, debug = false) {
+function attainLock(fileToOperateOn, stale = 10000, debug = false) {
     const errorToGetCaller = new Error();
     const callerFunctionName = errorToGetCaller.stack.split('\n')[2].trim().split(' ')[1];
     const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTimeFormatted}/${path.basename(fileToOperateOn)}`;
@@ -61,7 +61,7 @@ function attainLock(fileToOperateOn, debug = false) {
     }
 }
 
-function releaseLock(fileToOperateOn, debug = false) {
+function releaseLock(fileToOperateOn, stale = 10000, debug = false) {
     const errorToGetCaller = new Error();
     const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTimeFormatted}/${path.basename(fileToOperateOn)}`;
     let callerFunctionName = '';
