@@ -26,7 +26,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
                 }
                 process.exit(1);
             }
-            if (checkSync(fileToOperateOn)) {
+            if (checkSync(fileToOperateOn, { stale: stale })) {
                 if (debug) {
                     fs.appendFileSync(
                         `${logPath}/${currentTimeFormatted}_.....LockAlready-caller_${callerFunctionName}.txt`,
@@ -38,7 +38,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
                 // eslint-disable-next-line no-continue
                 continue;
             }
-            lockSync(fileToOperateOn);
+            lockSync(fileToOperateOn, { stale: stale });
             if (debug) {
                 fs.appendFileSync(
                     `${logPath}/${currentTimeFormatted}_AttainedLock_${callerFunctionName}.txt`,
@@ -68,7 +68,7 @@ function releaseLock(fileToOperateOn, stale = 300000, debug = false) {
     try {
         [, callerFunctionName] = errorToGetCaller.stack.split('\n')[2].trim().split(' ');
         fs.mkdirSync(logPath, { recursive: true });
-        if (checkSync(fileToOperateOn)) {
+        if (checkSync(fileToOperateOn, { stale: stale })) {
             const filename = `${logPath}/${currentTimeFormatted}_ReleasedLock_${callerFunctionName}.txt`;
             unlockSync(fileToOperateOn);
             if (debug) {
