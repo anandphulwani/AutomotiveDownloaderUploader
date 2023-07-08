@@ -21,8 +21,8 @@ const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
 
 async function downloadBookmarksFromSourceToProcessing() {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
-    attainLock(sourceBookmarkPath, undefined, true);
-    attainLock(processingBookmarkPathWithoutSync, undefined, true);
+    attainLock(sourceBookmarkPath, 600000, true);
+    attainLock(processingBookmarkPathWithoutSync, 600000, true);
 
     try {
         // Read the contents of both JSON files into memory
@@ -65,8 +65,8 @@ async function downloadBookmarksFromSourceToProcessing() {
 
                     if (match.split(/\r\n|\r|\n/).length > 15) {
                         console.log(match);
-                        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
-                        releaseLock(sourceBookmarkPath, undefined, true);
+                        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
+                        releaseLock(sourceBookmarkPath, 600000, true);
                         process.exit(0);
                     }
 
@@ -111,8 +111,8 @@ async function downloadBookmarksFromSourceToProcessing() {
             console.log(sourceJSONString);
             console.log(`${'-'.repeat(70)}`);
             console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
-            releaseLock(processingBookmarkPathWithoutSync, undefined, true);
-            releaseLock(sourceBookmarkPath, undefined, true);
+            releaseLock(processingBookmarkPathWithoutSync, 600000, true);
+            releaseLock(sourceBookmarkPath, 600000, true);
             process.exit(0);
         }
 
@@ -135,8 +135,8 @@ async function downloadBookmarksFromSourceToProcessing() {
 
                     if (match.split(/\r\n|\r|\n/).length > 9) {
                         console.log(match);
-                        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
-                        releaseLock(sourceBookmarkPath, undefined, true);
+                        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
+                        releaseLock(sourceBookmarkPath, 600000, true);
                         process.exit(0);
                     }
                     const guid = match.match(/"guid": "(.*?)"/)[1];
@@ -182,19 +182,19 @@ async function downloadBookmarksFromSourceToProcessing() {
             console.log(sourceJSONString);
             console.log(`${'-'.repeat(70)}`);
             console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
-            releaseLock(processingBookmarkPathWithoutSync, undefined, true);
-            releaseLock(sourceBookmarkPath, undefined, true);
+            releaseLock(processingBookmarkPathWithoutSync, 600000, true);
+            releaseLock(sourceBookmarkPath, 600000, true);
             process.exit(0);
         }
 
         console.log('Writing bookmarks file');
         fs.writeFileSync(processingBookmarkPathWithoutSync, sourceJSONString);
-        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
-        releaseLock(sourceBookmarkPath, undefined, true);
+        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
+        releaseLock(sourceBookmarkPath, 600000, true);
     } catch (err) {
         console.log(`${err.message}`);
-        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
-        releaseLock(sourceBookmarkPath, undefined, true);
+        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
+        releaseLock(sourceBookmarkPath, 600000, true);
         process.exit(1);
     }
 }
