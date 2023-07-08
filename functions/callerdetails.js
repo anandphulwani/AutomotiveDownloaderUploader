@@ -27,7 +27,7 @@ const getCallerDetails = (...args) => {
             }
             if (stackTrace.length > 0) {
                 const stackDetailsCatchLine = stackTrace[0].match(/at ([^\\/]+ )?\(?(.+)[\\/](.+?):(\d+):(\d+)\)?/);
-                [functionName, pathToFile, filename, lineNumber, columnNumber] = stackDetailsCatchLine;
+                [, functionName, pathToFile, filename, lineNumber, columnNumber] = stackDetailsCatchLine;
             } else {
                 const mesg = `Logger error: Unable to get the filename and linenumber from the following stack: \n${arg.stack}.`;
                 lgccyclicdependency(mesg);
@@ -51,11 +51,11 @@ const getCallerDetails = (...args) => {
         if (stackTrace.length > 0) {
             const stackDetailsCatchLine = stackTrace[0].match(/at ([^\\/]+ )?\(?(.+)[\\/](.+?):(\d+):(\d+)\)?/);
             if (stackDetailsCatchLine) {
-                [functionName, pathToFile, filename, lineNumber, columnNumber] = stackDetailsCatchLine;
+                [, functionName, pathToFile, filename, lineNumber, columnNumber] = stackDetailsCatchLine;
                 if (stackTrace[1] !== undefined) {
                     const stackDetailsErrorLineInTry = stackTrace[1].match(/at ([^\\/]+ )?\(?(.+)[\\/](.+?):(\d+):(\d+)\)?/);
                     if (stackDetailsErrorLineInTry) {
-                        const [, pathToFile2ndLine, filename2ndLine, lineNumber2ndLine] = stackDetailsErrorLineInTry;
+                        const [, , pathToFile2ndLine, filename2ndLine, lineNumber2ndLine] = stackDetailsErrorLineInTry;
                         if (pathToFile === pathToFile2ndLine && filename === filename2ndLine) {
                             lineNumber += `,${lineNumber2ndLine}`;
                         }
