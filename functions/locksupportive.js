@@ -9,7 +9,7 @@ import { lgccyclicdependency } from './loggercyclicdependency.js';
 /* eslint-enable import/extensions */
 
 // Attemp to attainLock, retrying multiple times in a duration of 30 to 60 seconds, before timing out
-function attainLock(fileToOperateOn, writeToFile = false, debug = false) {
+function attainLock(fileToOperateOn, debug = false) {
     const errorToGetCaller = new Error();
     const callerFunctionName = errorToGetCaller.stack.split('\n')[2].trim().split(' ')[1];
     const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTimeFormatted}/${path.basename(fileToOperateOn)}`;
@@ -18,7 +18,7 @@ function attainLock(fileToOperateOn, writeToFile = false, debug = false) {
         for (let lockTryIndex = 0; lockTryIndex <= 12000; lockTryIndex++) {
             if (lockTryIndex === 12000) {
                 console.log(`Unable to get the lock`);
-                if (writeToFile) {
+                if (debug) {
                     fs.appendFileSync(
                         `${logPath}/00_${currentTimeFormatted}_UNABLE_TO_GET_A_LOCK-caller_${callerFunctionName}.txt`,
                         `Unable to get the lock on '${fileToOperateOn}', caller: ${callerFunctionName}.\n`
@@ -27,7 +27,7 @@ function attainLock(fileToOperateOn, writeToFile = false, debug = false) {
                 process.exit(1);
             }
             if (checkSync(fileToOperateOn)) {
-                if (writeToFile) {
+                if (debug) {
                     fs.appendFileSync(
                         `${logPath}/${currentTimeFormatted}_.....LockAlready-caller_${callerFunctionName}.txt`,
                         `....... Lock on '${fileToOperateOn}' is already with someone, Waiting and trying again, caller: ${callerFunctionName}.\n`
@@ -39,7 +39,7 @@ function attainLock(fileToOperateOn, writeToFile = false, debug = false) {
                 continue;
             }
             lockSync(fileToOperateOn);
-            if (writeToFile) {
+            if (debug) {
                 fs.appendFileSync(
                     `${logPath}/${currentTimeFormatted}_AttainedLock_${callerFunctionName}.txt`,
                     `Got A Lock On '${fileToOperateOn}', caller: ${callerFunctionName}.\n`
@@ -51,7 +51,7 @@ function attainLock(fileToOperateOn, writeToFile = false, debug = false) {
         lgccyclicdependency(`attainLock(${fileToOperateOn}) section catch block called.`, error);
         console.log(error.message);
         console.log(`attainLock(${fileToOperateOn}): This piece of code should be unreachable, caller: ${callerFunctionName}.\n`);
-        if (writeToFile) {
+        if (debug) {
             fs.appendFileSync(
                 `${logPath}/00_${currentTimeFormatted}_CatchError_${callerFunctionName}.txt`,
                 `fn attainLock(${fileToOperateOn}): ${error.message}\n\n caller: ${callerFunctionName}.\n`
@@ -61,7 +61,7 @@ function attainLock(fileToOperateOn, writeToFile = false, debug = false) {
     }
 }
 
-function releaseLock(fileToOperateOn, writeToFile = false) {
+function releaseLock(fileToOperateOn, debug = false) {
     const errorToGetCaller = new Error();
     const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTimeFormatted}/${path.basename(fileToOperateOn)}`;
     let callerFunctionName = '';
@@ -71,7 +71,7 @@ function releaseLock(fileToOperateOn, writeToFile = false) {
         if (checkSync(fileToOperateOn)) {
             const filename = `${logPath}/${currentTimeFormatted}_ReleasedLock_${callerFunctionName}.txt`;
             unlockSync(fileToOperateOn);
-            if (writeToFile) {
+            if (debug) {
                 fs.appendFileSync(filename, `Released A Lock On '${fileToOperateOn}', caller: ${callerFunctionName}.\n`);
             }
         }
@@ -79,7 +79,7 @@ function releaseLock(fileToOperateOn, writeToFile = false) {
         lgccyclicdependency(`releaseLock(${fileToOperateOn}) section catch block called.`, error);
         console.log(error.message);
         console.log(`releaseLock(${fileToOperateOn}): This piece of code should be unreachable, caller: ${callerFunctionName}.\n`);
-        if (writeToFile) {
+        if (debug) {
             fs.appendFileSync(
                 `${logPath}/00_${currentTimeFormatted}_CatchError_${callerFunctionName}.txt`,
                 `fn releaseLock(${fileToOperateOn}): ${error.message}\n\n caller: ${callerFunctionName}.\n`
