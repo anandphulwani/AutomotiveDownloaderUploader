@@ -21,8 +21,8 @@ const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
 
 async function downloadBookmarksFromSourceToProcessing() {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
-    attainLock(sourceBookmarkPath, true);
-    attainLock(processingBookmarkPathWithoutSync, true);
+    attainLock(sourceBookmarkPath, undefined, true);
+    attainLock(processingBookmarkPathWithoutSync, undefined, true);
 
     try {
         // Read the contents of both JSON files into memory
@@ -65,8 +65,8 @@ async function downloadBookmarksFromSourceToProcessing() {
 
                     if (match.split(/\r\n|\r|\n/).length > 15) {
                         console.log(match);
-                        releaseLock(processingBookmarkPathWithoutSync, true);
-                        releaseLock(sourceBookmarkPath, true);
+                        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+                        releaseLock(sourceBookmarkPath, undefined, true);
                         process.exit(0);
                     }
 
@@ -111,8 +111,8 @@ async function downloadBookmarksFromSourceToProcessing() {
             console.log(sourceJSONString);
             console.log(`${'-'.repeat(70)}`);
             console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
-            releaseLock(processingBookmarkPathWithoutSync, true);
-            releaseLock(sourceBookmarkPath, true);
+            releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+            releaseLock(sourceBookmarkPath, undefined, true);
             process.exit(0);
         }
 
@@ -135,8 +135,8 @@ async function downloadBookmarksFromSourceToProcessing() {
 
                     if (match.split(/\r\n|\r|\n/).length > 9) {
                         console.log(match);
-                        releaseLock(processingBookmarkPathWithoutSync, true);
-                        releaseLock(sourceBookmarkPath, true);
+                        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+                        releaseLock(sourceBookmarkPath, undefined, true);
                         process.exit(0);
                     }
                     const guid = match.match(/"guid": "(.*?)"/)[1];
@@ -182,19 +182,19 @@ async function downloadBookmarksFromSourceToProcessing() {
             console.log(sourceJSONString);
             console.log(`${'-'.repeat(70)}`);
             console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
-            releaseLock(processingBookmarkPathWithoutSync, true);
-            releaseLock(sourceBookmarkPath, true);
+            releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+            releaseLock(sourceBookmarkPath, undefined, true);
             process.exit(0);
         }
 
         console.log('Writing bookmarks file');
         fs.writeFileSync(processingBookmarkPathWithoutSync, sourceJSONString);
-        releaseLock(processingBookmarkPathWithoutSync, true);
-        releaseLock(sourceBookmarkPath, true);
+        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+        releaseLock(sourceBookmarkPath, undefined, true);
     } catch (err) {
         console.log(`${err.message}`);
-        releaseLock(processingBookmarkPathWithoutSync, true);
-        releaseLock(sourceBookmarkPath, true);
+        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+        releaseLock(sourceBookmarkPath, undefined, true);
         process.exit(1);
     }
 }
@@ -266,11 +266,11 @@ function removeChecksumFromBookmarksObj(bookmarksObj) {
 
 function replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper(guid, appendText) {
     const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-    attainLock(fileToOperateOn, true);
+    attainLock(fileToOperateOn, undefined, true);
 
     const returnObj = replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText);
 
-    releaseLock(fileToOperateOn, true);
+    releaseLock(fileToOperateOn, undefined, true);
     if (returnObj.exit) {
         process.exit(returnObj.exit);
     }
@@ -323,7 +323,7 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
 async function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, appendText, useLockingMechanism = true) {
     const fileToOperateOn = config.processingBookmarkPathWithoutSync;
     if (useLockingMechanism) {
-        attainLock(fileToOperateOn, true);
+        attainLock(fileToOperateOn, undefined, true);
     }
 
     try {
@@ -356,7 +356,7 @@ async function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, app
         fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksObj, null, 3));
         createBackupOfFile(fileToOperateOn, JSON.stringify(bookmarksObj, null, 3));
         if (useLockingMechanism) {
-            releaseLock(fileToOperateOn, true);
+            releaseLock(fileToOperateOn, undefined, true);
         }
         return bookmarksObj;
     } catch (err) {

@@ -30,12 +30,12 @@ function getAppDomain() {
 
 async function setContractorsCurrentAllotted(contractor, allottedQty) {
     const fileToOperateOn = '.\\configs\\config-user.js';
-    attainLock(fileToOperateOn, true);
+    attainLock(fileToOperateOn, undefined, true);
 
     try {
         const currentAllotted = getContractorsCurrentAllotted(contractor);
         if (currentAllotted === allottedQty) {
-            releaseLock(fileToOperateOn, true);
+            releaseLock(fileToOperateOn, undefined, true);
             return;
         }
         const configUserContent = fs.readFileSync(fileToOperateOn, 'utf8');
@@ -49,12 +49,12 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
                     `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
                 )
             );
-            releaseLock(fileToOperateOn, true);
+            releaseLock(fileToOperateOn, undefined, true);
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newConfigUserContent, 'utf8');
         createBackupOfFile(fileToOperateOn, newConfigUserContent);
-        releaseLock(fileToOperateOn, true);
+        releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         lgc(err);
         process.exit(1);
@@ -111,13 +111,13 @@ function getLastLotDate() {
 
 async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
     const fileToOperateOn = '.\\configs\\config.js';
-    attainLock(fileToOperateOn, true);
+    attainLock(fileToOperateOn, undefined, true);
 
     try {
         const currentLotLastRunNumber = getLastLotNumber();
         const currentLotLastRunDate = getLastLotDate();
         if (currentLotLastRunNumber === lastLotNumber && currentLotLastRunDate === lastLotDate) {
-            releaseLock(fileToOperateOn, true);
+            releaseLock(fileToOperateOn, undefined, true);
             return;
         }
         let configContent = fs.readFileSync(fileToOperateOn, 'utf8');
@@ -129,7 +129,7 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
             newConfigContent = configContent.replace(lastRunNumberRegexExpression, `$1${lastLotNumber}$3`);
             if (configContent === newConfigContent) {
                 console.log(chalk.white.bgRed.bold(`Unable to set lastLotNumber: '${lastLotNumber}'. Serious issue, please contact developer.`));
-                releaseLock(fileToOperateOn, true);
+                releaseLock(fileToOperateOn, undefined, true);
                 process.exit(1);
             }
             configContent = newConfigContent;
@@ -141,13 +141,13 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
             newConfigContent = configContent.replace(lastRunDateRegexExpression, `$1${lastLotDate}$3`);
             if (configContent === newConfigContent) {
                 console.log(chalk.white.bgRed.bold(`Unable to set lastLotDate: '${lastLotDate}'. Serious issue, please contact developer.`));
-                releaseLock(fileToOperateOn, true);
+                releaseLock(fileToOperateOn, undefined, true);
                 process.exit(1);
             }
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
         createBackupOfFile(fileToOperateOn, newConfigContent);
-        releaseLock(fileToOperateOn, true);
+        releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         console.log(`${err.message}`);
         process.exit(1);

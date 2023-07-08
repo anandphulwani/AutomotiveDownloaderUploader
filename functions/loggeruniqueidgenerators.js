@@ -27,7 +27,7 @@ function getLastNonCatchErrorLogLevels9DigitUniqueId() {
 
 function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
     const fileToOperateOn = '.\\configs\\config.js';
-    attainLock(fileToOperateOn, true);
+    attainLock(fileToOperateOn, undefined, true);
 
     let nonCatchErrorCode;
     try {
@@ -53,11 +53,11 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
                     `Unable to set nonCatchErrorLogLevels9DigitUniqueId: '${nonCatchErrorCode}'. Serious issue, please contact developer.`
                 )
             );
-            releaseLock(fileToOperateOn, true);
+            releaseLock(fileToOperateOn, undefined, true);
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
-        releaseLock(fileToOperateOn, true);
+        releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         console.log(`${err.message}`);
         process.exit(1);
@@ -85,7 +85,7 @@ function getLastCatchErrorLogLevels6DigitUniqueId() {
 
 function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
     const fileToOperateOn = '.\\configs\\config.js';
-    attainLock(fileToOperateOn, true);
+    attainLock(fileToOperateOn, undefined, true);
 
     let catchErrorCode;
     try {
@@ -111,11 +111,11 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
                     `Unable to set catchErrorLogLevels6DigitUniqueId: '${catchErrorCode}'. Serious issue, please contact developer.`
                 )
             );
-            releaseLock(fileToOperateOn, true);
+            releaseLock(fileToOperateOn, undefined, true);
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
-        releaseLock(fileToOperateOn, true);
+        releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         console.log(`${err.message}`);
         process.exit(1);

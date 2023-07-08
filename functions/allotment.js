@@ -64,7 +64,7 @@ async function doAllotment(
             minDealerFolders = lotsMinimumDealerFoldersForEachContractors * contractorsNames.length;
         }
         const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-        attainLock(fileToOperateOn, true);
+        attainLock(fileToOperateOn, undefined, true);
 
         for (
             let index = 0;
@@ -206,7 +206,7 @@ async function doAllotment(
             // console.log(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted: `);
             // console.log(contractors);
         }
-        releaseLock(fileToOperateOn, true);
+        releaseLock(fileToOperateOn, undefined, true);
     } else if (
         (allotmentSystem === 'allotmentByImagesQty' || allotmentSystem === 'allotmentByManual') &&
         lotsImagesQty > 0 &&

@@ -15,7 +15,7 @@ const perStockTimeToUpload = 7;
 
 fs.writeFile(`.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}`, '', (err) => {});
 const instanceRunLogFileToAvoidDeletingSelfRunCreatedBlankFilesForItself = `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}`;
-attainLock(instanceRunLogFileToAvoidDeletingSelfRunCreatedBlankFilesForItself, true);
+attainLock(instanceRunLogFileToAvoidDeletingSelfRunCreatedBlankFilesForItself, undefined, true);
 
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     const foldersToCleanUp = [
