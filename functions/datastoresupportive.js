@@ -239,10 +239,10 @@ function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {
     const fromPath = fileToOperateOn;
     const toPath = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}\\${path.basename(
         fileToOperateOn
-    )}_${currentTimeFormatted}(${randomNumer})`;
+    )}_${currentTimeFormatted()}(${randomNumer})`;
     const toPathToWrite = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}\\Backup\\${path.basename(
         fileToOperateOn
-    )}_${currentTimeFormatted}(${randomNumer})`;
+    )}_${currentTimeFormatted()}(${randomNumer})`;
     createDirAndCopyFile(fromPath, toPath);
     if (path.basename(fileToOperateOn) === 'Bookmarks') {
         makeDir(path.dirname(toPathToWrite));
