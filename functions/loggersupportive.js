@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 /* eslint-disable import/extensions */
+import { getCallerDetails } from './callerdetails.js';
 import {
     loggerFile,
     loggerConsole,
