@@ -30,7 +30,5 @@ IF "%ERRORLEVEL%"=="0" (
 REM InstallNewVersion.exe is not running, so we can replace it
 echo InstallNewVersion.exe is not running, replacing it...
 move /Y "%TEMP%\InstallNewVersion.exe" ".\InstallNewVersion.exe"
-echo CreateObject("Wscript.Shell").Run """" & WScript.Arguments(0) & """", 0, False > "%TEMP%\hidden.vbs"
-start /B cmd /c cscript //nologo "%TEMP%\hidden.vbs" "timeout /t 3 && del /Q /F ""%~f0"""
-del /Q /F "%TEMP%\hidden.vbs"
+start cmd /c "timeout /t 2 && del /Q /F ""%~f0"""
 exit /b
