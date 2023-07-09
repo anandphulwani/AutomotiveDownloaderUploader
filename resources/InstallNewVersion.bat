@@ -50,7 +50,7 @@ copy /Y "..\%lastDir%\configs\config-user.js" ".\configs\"
 
 echo ewogICAicm9vdHMiOiB7CiAgICAgICJib29rbWFya19iYXIiOiB7CiAgICAgICAgICJjaGlsZHJlbiI6IFtdLAogICAgICAgICAiZGF0ZV9hZGRlZCI6ICIxMzMyMTA5NzE4MzQ2NTgzNCIsCiAgICAgICAgICJkYXRlX2xhc3RfdXNlZCI6ICIwIiwKICAgICAgICAgImRhdGVfbW9kaWZpZWQiOiAiMTMzMjg5NjA4Mjc3Nzc1NTEiLAogICAgICAgICAiZ3VpZCI6ICIwYmM1ZDEzZi0yY2JhLTVkNzQtOTUxZi0zZjIzM2ZlNmM5MDgiLAogICAgICAgICAiaWQiOiAiMSIsCiAgICAgICAgICJuYW1lIjogIkJvb2ttYXJrcyBiYXIiLAogICAgICAgICAidHlwZSI6ICJmb2xkZXIiCiAgICAgIH0KICAgfSwKICAgInZlcnNpb24iOiAxCn0= | certutil -decode -f - > .\datastore\Bookmarks
 copy /Y ".\resources\InstallNewVersion.exe" "%TEMP%\InstallNewVersion.exe"
-copy /Y ".\resources\InstallNewVersion_Replacer.exe" "%TEMP%\InstallNewVersion_Replacer.exe"
+copy /Y ".\resources\InstallNewVersionReplacer.exe" "%TEMP%\InstallNewVersionReplacer.exe"
 
 rmdir /s /q resources
 call npm i -y || echo npm i resulted in non zero status, continuing...
@@ -78,9 +78,9 @@ cd ..
 @ echo on
 REM Check if both files exist in the temp directory
 IF EXIST "%TEMP%\InstallNewVersion.exe" (
-    IF EXIST "%TEMP%\InstallNewVersion_Replacer.exe" (
-        REM Launch InstallNewVersion_Replacer.exe without waiting
-        start "" /D "%~dp0" "%TEMP%\InstallNewVersion_Replacer.exe"
+    IF EXIST "%TEMP%\InstallNewVersionReplacer.exe" (
+        REM Launch InstallNewVersionReplacer.exe without waiting
+        start "" /D "%~dp0" "%TEMP%\InstallNewVersionReplacer.exe"
     )
 )
 pause
