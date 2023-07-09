@@ -29,4 +29,6 @@ IF "%ERRORLEVEL%"=="0" (
 
 REM InstallNewVersion.exe is not running, so we can replace it
 echo InstallNewVersion.exe is not running, replacing it...
-copy /Y "%TEMP%\InstallNewVersion.exe" ".\InstallNewVersion.exe"
+move /Y "%TEMP%\InstallNewVersion.exe" ".\InstallNewVersion.exe"
+start cmd /c "timeout /t 3 && del /Q /F ""%~f0"""
+exit /b
