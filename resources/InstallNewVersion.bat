@@ -75,7 +75,7 @@ for %%F in (RunDownloader.exe RunUploader.exe) do (
 )
 endlocal
 cd ..
-@ echo on
+
 REM Check if both files exist in the temp directory
 IF EXIST "%TEMP%\InstallNewVersion.exe" (
     IF EXIST "%TEMP%\InstallNewVersionReplacer.exe" (
@@ -83,4 +83,3 @@ IF EXIST "%TEMP%\InstallNewVersion.exe" (
         start "" /D "%~dp0" "%TEMP%\InstallNewVersionReplacer.exe"
     )
 )
-pause
