@@ -12,3 +12,4 @@ IF "%ERRORLEVEL%"=="0" (
 REM InstallNewVersion.exe is not running, so we can replace it
 echo InstallNewVersion.exe is not running, replacing it...
 copy /Y "%TEMP%\InstallNewVersion.exe" ".\InstallNewVersion.exe" 
+pause
