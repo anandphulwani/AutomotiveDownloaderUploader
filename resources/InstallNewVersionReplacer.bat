@@ -7,7 +7,7 @@ REM BFCPEICONINDEX=1
 REM BFCPEEMBEDDISPLAY=0
 REM BFCPEEMBEDDELETE=1
 REM BFCPEADMINEXE=1
-REM BFCPEINVISEXE=0
+REM BFCPEINVISEXE=1
 REM BFCPEVERINCLUDE=0
 REM BFCPEVERVERSION=1.0.0.0
 REM BFCPEVERPRODUCT=Product Name
@@ -30,5 +30,7 @@ IF "%ERRORLEVEL%"=="0" (
 REM InstallNewVersion.exe is not running, so we can replace it
 echo InstallNewVersion.exe is not running, replacing it...
 move /Y "%TEMP%\InstallNewVersion.exe" ".\InstallNewVersion.exe"
-start cmd /c "timeout /t 3 && del /Q /F ""%~f0"""
+echo CreateObject("Wscript.Shell").Run """" & WScript.Arguments(0) & """", 0, False > "%TEMP%\hidden.vbs"
+start /B cmd /c cscript //nologo "%TEMP%\hidden.vbs" "timeout /t 3 && del /Q /F ""%~f0"""
+del /Q /F "%TEMP%\hidden.vbs"
 exit /b
