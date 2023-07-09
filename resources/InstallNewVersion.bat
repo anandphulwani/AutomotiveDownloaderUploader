@@ -45,11 +45,11 @@ mkdir .\datastore\RecordKeepingZone
 mkdir .\datastore\UploadingZone
 
 rem Copy required files from last directory
-copy "..\%lastDir%\configs\config.js" ".\configs\"
-copy "..\%lastDir%\configs\config-user.js" ".\configs\"
+copy /Y "..\%lastDir%\configs\config.js" ".\configs\"
+copy /Y "..\%lastDir%\configs\config-user.js" ".\configs\"
 
 echo ewogICAicm9vdHMiOiB7CiAgICAgICJib29rbWFya19iYXIiOiB7CiAgICAgICAgICJjaGlsZHJlbiI6IFtdLAogICAgICAgICAiZGF0ZV9hZGRlZCI6ICIxMzMyMTA5NzE4MzQ2NTgzNCIsCiAgICAgICAgICJkYXRlX2xhc3RfdXNlZCI6ICIwIiwKICAgICAgICAgImRhdGVfbW9kaWZpZWQiOiAiMTMzMjg5NjA4Mjc3Nzc1NTEiLAogICAgICAgICAiZ3VpZCI6ICIwYmM1ZDEzZi0yY2JhLTVkNzQtOTUxZi0zZjIzM2ZlNmM5MDgiLAogICAgICAgICAiaWQiOiAiMSIsCiAgICAgICAgICJuYW1lIjogIkJvb2ttYXJrcyBiYXIiLAogICAgICAgICAidHlwZSI6ICJmb2xkZXIiCiAgICAgIH0KICAgfSwKICAgInZlcnNpb24iOiAxCn0= | certutil -decode -f - > .\datastore\Bookmarks
-cp resources/InstallNewVersion.exe ../InstallNewVersion.exe
+copy /Y "..\resources\InstallNewVersion.exe" "..\InstallNewVersion.exe"
 rmdir /s /q resources
 call npm i -y || echo npm i resulted in non zero status, continuing...
 set /p runCount="Enter the number of runs (1-100, default is 1): "
