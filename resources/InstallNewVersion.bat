@@ -26,6 +26,14 @@ if exist %folder% (
     echo Folder %folder% already exists. Exiting...
     exit /b
 )
+
+rem Fetch the last directory starting with AutomotiveDownloaderUploader
+for /F "delims=" %%A in ('dir /b /ad /o-n AutomotiveDownloaderUploader*') do (
+    set "lastDir=%%A"
+    goto continue
+)
+:continue
+
 mkdir %folder%
 cd %folder%
 git clone https://github.com/anandphulwani/AutomotiveDownloaderUploader .
@@ -35,6 +43,11 @@ mkdir .\datastore\FinishedUploadingZone
 mkdir .\datastore\LockingBackupsZone
 mkdir .\datastore\RecordKeepingZone
 mkdir .\datastore\UploadingZone
+
+rem Copy required files from last directory
+copy "..\%lastDir%\FileToCopy1" .\
+copy "..\%lastDir%\FileToCopy2" .\
+
 echo ewogICAicm9vdHMiOiB7CiAgICAgICJib29rbWFya19iYXIiOiB7CiAgICAgICAgICJjaGlsZHJlbiI6IFtdLAogICAgICAgICAiZGF0ZV9hZGRlZCI6ICIxMzMyMTA5NzE4MzQ2NTgzNCIsCiAgICAgICAgICJkYXRlX2xhc3RfdXNlZCI6ICIwIiwKICAgICAgICAgImRhdGVfbW9kaWZpZWQiOiAiMTMzMjg5NjA4Mjc3Nzc1NTEiLAogICAgICAgICAiZ3VpZCI6ICIwYmM1ZDEzZi0yY2JhLTVkNzQtOTUxZi0zZjIzM2ZlNmM5MDgiLAogICAgICAgICAiaWQiOiAiMSIsCiAgICAgICAgICJuYW1lIjogIkJvb2ttYXJrcyBiYXIiLAogICAgICAgICAidHlwZSI6ICJmb2xkZXIiCiAgICAgIH0KICAgfSwKICAgInZlcnNpb24iOiAxCn0= | certutil -decode -f - > .\datastore\Bookmarks
 cp resources/InstallNewVersion.exe ../InstallNewVersion.exe
 rmdir /s /q resources
