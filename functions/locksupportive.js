@@ -39,7 +39,16 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
                 // eslint-disable-next-line no-continue
                 continue;
             }
-            lockSync(fileToOperateOn, { stale: stale });
+            try {
+                lockSync(fileToOperateOn, { stale: stale });
+            } catch (error) {
+                if (error.message.trim() === 'Lock file is already being held') {
+                    // eslint-disable-next-line no-continue
+                    continue;
+                } else {
+                    throw error;
+                }
+            }
             if (debug) {
                 fs.appendFileSync(
                     `${logPath}/${currentTimeFormatted()}_AttainedLock_${callerFunctionName}.txt`,
