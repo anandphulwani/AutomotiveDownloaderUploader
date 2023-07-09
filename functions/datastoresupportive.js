@@ -155,26 +155,25 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     for (const dateDir of fs.readdirSync('.\\logs\\')) {
         const entryPath = path.join('.\\logs\\', dateDir);
         if (fs.statSync(entryPath).isDirectory()) {
-            const dateDirFilesAndFolders = fs.readdirSync(entryPath);
-            let lockDirectories = dateDirFilesAndFolders.filter((filesAndFolders) => {
-                const filePath = path.join(entryPath, filesAndFolders);
-                return fs.statSync(filePath).isDirectory() && filesAndFolders.endsWith('.lock');
-            });
+            const dateDirFilesAndFolders = fs.readdirSync(entryPath, { withFileTypes: true });
+            let lockDirectories = dateDirFilesAndFolders
+                .filter((dirent) => dirent.isDirectory() && dirent.name.endsWith('.lock'))
+                .map((dirent) => path.join(entryPath, dirent.name));
             lockDirectories = lockDirectories.map((dir) => dir.replace(/\.lock$/, ''));
 
             // Filter only the files that are not in lockDirectories
-            const nonLockFiles = dateDirFilesAndFolders.filter((file) => {
-                const filePath = path.join(entryPath, file);
+            const nonLockFiles = dateDirFilesAndFolders.filter((dirent) => {
+                const filePath = path.join(entryPath, dirent.name);
                 const statSync = fs.statSync(filePath);
                 const isDirectory = statSync.isDirectory();
-                const isNotLocked = !lockDirectories.some((lockDir) => file.startsWith(lockDir));
+                const isNotLocked = !lockDirectories.some((lockDir) => dirent.name.startsWith(lockDir));
                 const isSizeZero = statSync.size === 0;
                 return !isDirectory && isNotLocked && isSizeZero;
             });
 
             // eslint-disable-next-line no-restricted-syntax
             for (const file of nonLockFiles) {
-                const filePath = path.join(entryPath, file);
+                const filePath = path.join(entryPath, file.name);
                 fs.unlinkSync(filePath);
             }
         }
