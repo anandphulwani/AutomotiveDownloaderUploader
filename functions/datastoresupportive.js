@@ -170,7 +170,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
                 try {
                     isSizeZero = fs.statSync(filePath).size === 0;
                 } catch (error) {
-                    if (error.message.trim().startsWith === 'EPERM: operation not permitted, open ') {
+                    if (error.message.trim().startsWith('EPERM: operation not permitted, ')) {
                         isSizeZero = false;
                     } else {
                         throw error;
