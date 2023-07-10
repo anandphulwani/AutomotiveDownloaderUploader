@@ -164,10 +164,18 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
             // Filter only the files that are not in lockDirectories
             const nonLockFiles = dateDirFilesAndFolders.filter((dirent) => {
                 const filePath = path.join(entryPath, dirent.name);
-                const statSync = fs.statSync(filePath);
                 const isDirectory = dirent.isDirectory();
                 const isNotLocked = !lockDirectories.some((lockDir) => dirent.name.startsWith(lockDir));
-                const isSizeZero = statSync.size === 0;
+                let isSizeZero;
+                try {
+                    isSizeZero = fs.statSync(filePath).size === 0;
+                } catch (error) {
+                    if (error.message.trim().startsWith === 'EPERM: operation not permitted, open ') {
+                        isSizeZero = false;
+                    } else {
+                        throw error;
+                    }
+                }
                 return !isDirectory && isNotLocked && isSizeZero;
             });
 
