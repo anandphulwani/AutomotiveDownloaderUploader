@@ -43,6 +43,7 @@ mkdir .\datastore\FinishedUploadingZone
 mkdir .\datastore\LockingBackupsZone
 mkdir .\datastore\RecordKeepingZone
 mkdir .\datastore\UploadingZone
+mkdir .\datastore\Reports
 
 rem Copy required files from last directory
 copy /Y "..\%lastDir%\configs\config.js" ".\configs\"
