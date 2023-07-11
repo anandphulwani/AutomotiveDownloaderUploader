@@ -17,15 +17,6 @@ const configBasic = {
     appDomain: 'https://www.homenetiol.com',
     timezone: 'Asia/Calcutta',
     timeOffsetInMinutesToAvoid: 2,
-    app: {
-        port: 3000,
-        name: 'myapp',
-    },
-    db: {
-        host: 'localhost',
-        port: 27017,
-        name: 'db',
-    },
     browserArgs: {
         headless: false,
         defaultViewport: null,
@@ -59,6 +50,7 @@ const configBasic = {
     finishedUploadingZonePath: '.\\datastore\\FinishedUploadingZone',
     recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
     lockingBackupsZonePath: '.\\datastore\\LockingBackupsZone',
+    reportsPath: '.\\datastore\\Reports',
     automaticClickSaveButtonOnUpload: true,
     contractors: {
         // ram: {
