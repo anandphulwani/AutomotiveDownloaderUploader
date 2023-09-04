@@ -41,7 +41,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
      * Get dealer name from excel and compare it with dealer name in the page: End
      */
     const stockNumber = String(
-        await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_StockNumber', (el) =>
+        await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_VIN', (el) =>
             el.map((x) => x.getAttribute('value'))
         )
     );
