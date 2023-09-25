@@ -11,7 +11,7 @@ import { attainLock, releaseLock } from './locksupportive.js';
 /* eslint-enable import/extensions */
 
 const perImageTimeToUpload = 7.25;
-const perStockTimeToUpload = 7;
+const perVINTimeToUpload = 7;
 
 fs.writeFile(`.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}`, '', (err) => {});
 const instanceRunLogFileToAvoidDeletingSelfRunCreatedBlankFilesForItself = `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}`;
@@ -219,8 +219,8 @@ function getUploadRemainingSummary(foldersToUpload) {
         (key) => foldersToUpload[key].imagesQty !== 0 && foldersToUpload[key].dealerFolderFilesQty !== 0
     ).length;
     const totalImagesQty = Object.values(foldersToUpload).reduce((acc, folder) => acc + folder.imagesQty, 0);
-    const totalStockFolderFilesQty = Object.values(foldersToUpload).reduce((acc, folder) => acc + folder.dealerFolderFilesQty, 0);
-    const totalTimeInSeconds = Math.round(totalImagesQty * perImageTimeToUpload + totalStockFolderFilesQty * perStockTimeToUpload);
+    const totalVINFolderFilesQty = Object.values(foldersToUpload).reduce((acc, folder) => acc + folder.dealerFolderFilesQty, 0);
+    const totalTimeInSeconds = Math.round(totalImagesQty * perImageTimeToUpload + totalVINFolderFilesQty * perVINTimeToUpload);
     const durationHours = Math.floor(totalTimeInSeconds / 3600)
         .toString()
         .padStart(2, '0');
@@ -237,7 +237,7 @@ function getUploadRemainingSummary(foldersToUpload) {
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }; // Format the time in hh:mm:ss tt format
     const finishedTime = currentTime.toLocaleString('en-US', options);
 
-    return `Remaining DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, StockFolder/StockFiles: ${totalStockFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
+    return `Remaining DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, VINFolder/VINFiles: ${totalVINFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
 }
 
 function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {
@@ -259,7 +259,7 @@ function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {
 // eslint-disable-next-line import/prefer-default-export
 export {
     perImageTimeToUpload,
-    perStockTimeToUpload,
+    perVINTimeToUpload,
     autoCleanUpDatastoreZones,
     getNumberOfImagesFromAllottedDealerNumberFolder,
     getUniqueIDFromAllottedDealerNumberFolder,

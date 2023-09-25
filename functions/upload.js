@@ -23,7 +23,7 @@ import { gotoURL } from './goto.js';
 import { getAppDomain } from './configsupportive.js';
 import { waitForElementContainsOrEqualsHTML, waitTillCurrentURLEndsWith } from './waiting.js';
 import { zeroPad } from './stringformatting.js';
-import { perImageTimeToUpload, perStockTimeToUpload } from './datastoresupportive.js';
+import { perImageTimeToUpload, perVINTimeToUpload } from './datastoresupportive.js';
 import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 /* eslint-enable import/extensions */
 
@@ -56,15 +56,9 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         printToLogBuffer.pop();
         lgef(`${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
         process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
-        const stockNumberFromBookmark = name.split(' |#| ')[1].trim();
-        const { typeOfStockPath, stockFolderPath, stockFilePath } = typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark);
-        const { moveSource, moveDestination } = getSourceAndDestinationFrom(
-            typeOfStockPath,
-            stockFolderPath,
-            uniqueIdFolderPath,
-            stockFilePath,
-            true
-        );
+        const VINNumberFromBookmark = name.split(' |#| ')[1].trim();
+        const { typeOfVINPath, VINFolderPath, VINFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
+        const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, true);
         await waitForSeconds(5);
         const returnObj = {
             result: false,
@@ -94,7 +88,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             .padStart(2, '0');
         const newEndingRow = await getRowPosOnTerminal();
         let currentColor;
-        const totalTimeEstimatedInSeconds = Math.round(perImageTimeToUpload * returnObj.imagesUploaded + perStockTimeToUpload);
+        const totalTimeEstimatedInSeconds = Math.round(perImageTimeToUpload * returnObj.imagesUploaded + perVINTimeToUpload);
         const diffInEstimate = Math.round((elapsedTimeInSeconds / totalTimeEstimatedInSeconds) * 10) / 10;
         if (diffInEstimate > 3) {
             currentColor = chalk.bgRed.white;
@@ -149,23 +143,21 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
      * Get dealer name from excel and compare it with dealer name in the page: End
      */
 
-    const stockNumberFromBookmark = name.split(' |#| ')[1].trim();
-    const stockNumberFromWeb = String(
         await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_StockNumber', (el) =>
             el.map((x) => x.getAttribute('value'))
         )
+    const VINNumberFromBookmark = name.split(' |#| ')[1].trim();
+    const VINNumberFromWeb = String(
     );
 
-    if (stockNumberFromBookmark !== stockNumberFromWeb) {
-        lgw(
-            `Stock Number values mismatch, name from web is '${stockNumberFromWeb}' vs name from bookmark is '${stockNumberFromBookmark}', Continuing.`
-        );
+    if (VINNumberFromBookmark !== VINNumberFromWeb) {
+        lgw(`VIN Number values mismatch, name from web is '${VINNumberFromWeb}' vs name from bookmark is '${VINNumberFromBookmark}', Continuing.`);
     }
 
-    const { typeOfStockPath, stockFolderPath, stockFilePath } = typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark);
+    const { typeOfVINPath, VINFolderPath, VINFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
 
-    if (typeOfStockPath === 'stockFolder' && !fs.existsSync(stockFolderPath)) {
-        lge(`Unable to find file/folder for the stock number: ${stockNumberFromBookmark} on the disk, data does not exist.`);
+    if (typeOfVINPath === 'VINFolder' && !fs.existsSync(VINFolderPath)) {
+        lge(`Unable to find file/folder for the VIN number: ${VINNumberFromBookmark} on the disk, data does not exist.`);
         return { result: false, bookmarkAppendMesg: '', imagesUploaded: 0 };
     }
 
@@ -178,14 +170,14 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         await clickOnButton(page, '.vehicle-detail-tab.vehicle-detail-tab-imagery');
         await waitTillCurrentURLEndsWith(page, '#imagery');
     }
-    lgif(`uniqueIdFolderPath\\stockNumberFromBookmark: ${uniqueIdFolderPath}\\${stockNumberFromBookmark}`);
+    lgif(`uniqueIdFolderPath\\VINNumberFromBookmark: ${uniqueIdFolderPath}\\${VINNumberFromBookmark}`);
 
     // TODO: Total bookmarks number do not change while writing
     // TODO: Shift images into date folders in all zones
     // TODO: Get all the folders which have codein ReadyToUpload, pull them only in the UploadingZone, also give warning for folders which do not satisy this criteeria also give warning when imageQty doesnt matches
     // TODO: For bookmarks which are done or not found give warning and move forward
     // Done: Change variable for old images to just stay as there to be introduced in excel (No change required, if files are set to not delete, then keep files at the same place, only if shift paramater is there, shift 1st file to down, keep rest there itself.)
-    // Done: Single image which is not in stock folder (use the path system rather than image number parseIntsystem)
+    // Done: Single image which is not in VIN folder (use the path system rather than image number parseIntsystem)
     // Update bookmark when its done
     // Later: error handling if stuck delete all previous images and start again.
 
@@ -196,36 +188,34 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Uploading the files: Begin`);
     let firstImage;
     const imagesToUpload = [];
-    let stockFolderPathList;
+    let VINFolderPathList;
     // eslint-disable-next-line no-useless-catch
     try {
-        stockFolderPathList = typeOfStockPath === 'stockFolder' ? fs.readdirSync(stockFolderPath) : [stockFilePath];
-        process.stdout.write(chalk.cyan(`(${zeroPad(stockFolderPathList.length, 2)}): `));
+        VINFolderPathList = typeOfVINPath === 'VINFolder' ? fs.readdirSync(VINFolderPath) : [VINFilePath];
+        process.stdout.write(chalk.cyan(`(${zeroPad(VINFolderPathList.length, 2)}): `));
 
         // eslint-disable-next-line no-restricted-syntax
-        for (const stockFolderSubFolderAndFiles of stockFolderPathList) {
-            const stockFolderSubFolderAndFilesPath =
-                typeOfStockPath === 'stockFolder'
-                    ? path.join(stockFolderPath, stockFolderSubFolderAndFiles)
-                    : path.join(uniqueIdFolderPath, stockFolderSubFolderAndFiles);
+        for (const VINFolderSubFolderAndFiles of VINFolderPathList) {
+            const VINFolderSubFolderAndFilesPath =
+                typeOfVINPath === 'VINFolder'
+                    ? path.join(VINFolderPath, VINFolderSubFolderAndFiles)
+                    : path.join(uniqueIdFolderPath, VINFolderSubFolderAndFiles);
             if (firstImage === undefined) {
-                firstImage = stockFolderSubFolderAndFiles;
+                firstImage = VINFolderSubFolderAndFiles;
             }
-            lgif(
-                `stockFolderSubFolderAndFiles: ${stockFolderSubFolderAndFiles}, stockFolderSubFolderAndFilesPath: ${stockFolderSubFolderAndFilesPath}`
-            );
-            const stockFolderSubFolderAndFilesStat = fs.statSync(stockFolderSubFolderAndFilesPath);
+            lgif(`VINFolderSubFolderAndFiles: ${VINFolderSubFolderAndFiles}, VINFolderSubFolderAndFilesPath: ${VINFolderSubFolderAndFilesPath}`);
+            const VINFolderSubFolderAndFilesStat = fs.statSync(VINFolderSubFolderAndFilesPath);
 
-            if (stockFolderSubFolderAndFilesStat.isFile()) {
-                lgif(`It is a stockFile.`);
+            if (VINFolderSubFolderAndFilesStat.isFile()) {
+                lgif(`It is a VINFile.`);
                 await page.bringToFront();
                 const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
-                await fileChooser.accept([path.resolve(stockFolderSubFolderAndFilesPath)]);
+                await fileChooser.accept([path.resolve(VINFolderSubFolderAndFilesPath)]);
             }
             // TODO: Folder still exists after picking from 000_ReadyToUpload, was a user fault earlier, but have to create a system to create a failsafe.
             let imageNumber;
-            if (typeOfStockPath === 'stockFolder') {
-                const fileNameWOExt = stockFolderSubFolderAndFiles.split('.')[0];
+            if (typeOfVINPath === 'VINFolder') {
+                const fileNameWOExt = VINFolderSubFolderAndFiles.split('.')[0];
                 imageNumber = parseInt(fileNameWOExt, 10);
             } else {
                 imageNumber = 1;
@@ -233,7 +223,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             lgif(`imagesToUpload.push(imageNumber: ${imageNumber})`);
             imagesToUpload.push(imageNumber);
         }
-        await showUploadFilesAndPercentages(page, startingRow, stockFolderPathList.length, false);
+        await showUploadFilesAndPercentages(page, startingRow, VINFolderPathList.length, false);
         await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', 30, true);
         lgif(`putFirstPositionEditedImageInTheLastPositionAlsoFromDC: ${putFirstPositionEditedImageInTheLastPositionAlsoFromDC}`);
         lgif(
@@ -253,13 +243,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
         ) {
             lgif(`Uploading a copy now`);
-            const firstImagePath =
-                typeOfStockPath === 'stockFolder' ? path.join(stockFolderPath, firstImage) : path.join(uniqueIdFolderPath, firstImage);
+            const firstImagePath = typeOfVINPath === 'VINFolder' ? path.join(VINFolderPath, firstImage) : path.join(uniqueIdFolderPath, firstImage);
             await page.bringToFront();
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
             await fileChooser.accept([path.resolve(firstImagePath)]);
 
-            await showUploadFilesAndPercentages(page, startingRow, stockFolderPathList.length, true);
+            await showUploadFilesAndPercentages(page, startingRow, VINFolderPathList.length, true);
             await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', 30, true);
         }
     } catch (error) {
@@ -274,7 +263,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     process.stdout.moveCursor(0, -diffInRows); // up one line
     process.stdout.clearLine(diffInRows); // from cursor to end
     process.stdout.cursorTo(0);
-    process.stdout.write(chalk.cyan(` Uploading Files(${zeroPad(stockFolderPathList.length, 2)}): `));
+    process.stdout.write(chalk.cyan(` Uploading Files(${zeroPad(VINFolderPathList.length, 2)}): `));
     process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(3)}`));
     process.stdout.write(chalk.cyan(` Mark Deletion: `));
 
@@ -467,11 +456,11 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
 
     process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(5)}`));
 
-    const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdFolderPath, stockFilePath, false);
+    const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, false);
     const returnObj = {
         result: true,
         bookmarkAppendMesg: '',
-        imagesUploaded: stockFolderPathList.length,
+        imagesUploaded: VINFolderPathList.length,
         moveSource: moveSource,
         moveDestination: moveDestination,
     };
@@ -733,38 +722,38 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
     lgif(`fn moveImageToPositionNumber() : END`);
 }
 
-function typeOfStockPathAndOtherVars(uniqueIdFolderPath, stockNumberFromBookmark) {
+function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
     lgif(
-        `fn typeOfStockPathAndOtherVars() : BEGIN, Params: uniqueIdFolderPath: ${uniqueIdFolderPath}, stockNumberFromBookmark: ${stockNumberFromBookmark}`
+        `fn typeOfVINPathAndOtherVars() : BEGIN, Params: uniqueIdFolderPath: ${uniqueIdFolderPath}, VINNumberFromBookmark: ${VINNumberFromBookmark}`
     );
-    const stockFolderPath = `${uniqueIdFolderPath}\\${stockNumberFromBookmark}`;
-    let stockFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${stockNumberFromBookmark}.`));
-    stockFilePath = stockFilePath.length === 1 ? stockFilePath[0] : undefined;
-    const typeOfStockPath = stockFilePath === undefined ? 'stockFolder' : 'stockFile';
+    const VINFolderPath = `${uniqueIdFolderPath}\\${VINNumberFromBookmark}`;
+    let VINFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${VINNumberFromBookmark}.`));
+    VINFilePath = VINFilePath.length === 1 ? VINFilePath[0] : undefined;
+    const typeOfVINPath = VINFilePath === undefined ? 'VINFolder' : 'VINFile';
     lgif(
-        `fn typeOfStockPathAndOtherVars() : END, Returning: typeOfStockPath: ${typeOfStockPath}, stockFolderPath: ${stockFolderPath}, stockFilePath: ${stockFilePath}`
+        `fn typeOfVINPathAndOtherVars() : END, Returning: typeOfVINPath: ${typeOfVINPath}, VINFolderPath: ${VINFolderPath}, VINFilePath: ${VINFilePath}`
     );
-    return { typeOfStockPath: typeOfStockPath, stockFolderPath: stockFolderPath, stockFilePath: stockFilePath };
+    return { typeOfVINPath: typeOfVINPath, VINFolderPath: VINFolderPath, VINFilePath: VINFilePath };
 }
 
-function getSourceAndDestinationFrom(typeOfStockPath, stockFolderPath, uniqueIdFolderPath, stockFilePath, isURLDoesNotExist) {
+function getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, isURLDoesNotExist) {
     lgif(
-        `fn getSourceAndDestinationFrom() : BEGIN, Params: typeOfStockPath: ${typeOfStockPath}, stockFolderPath: ${stockFolderPath}, uniqueIdFolderPath: ${uniqueIdFolderPath}, stockFilePath: ${stockFilePath}, isURLDoesNotExist: ${isURLDoesNotExist}`
+        `fn getSourceAndDestinationFrom() : BEGIN, Params: typeOfVINPath: ${typeOfVINPath}, VINFolderPath: ${VINFolderPath}, uniqueIdFolderPath: ${uniqueIdFolderPath}, VINFilePath: ${VINFilePath}, isURLDoesNotExist: ${isURLDoesNotExist}`
     );
     let moveSource;
     let moveDestination;
-    if (typeOfStockPath === 'stockFolder') {
-        lgif('typeOfStockPath is stockFolder');
-        moveSource = `${stockFolderPath}\\`;
+    if (typeOfVINPath === 'VINFolder') {
+        lgif('typeOfVINPath is VINFolder');
+        moveSource = `${VINFolderPath}\\`;
         moveDestination = `${config.finishedUploadingZonePath}\\${
             isURLDoesNotExist ? 'DeletedURLs\\' : ''
-        }${instanceRunDateFormatted}\\${path.basename(path.dirname(stockFolderPath))}\\${path.basename(stockFolderPath)}`;
+        }${instanceRunDateFormatted}\\${path.basename(path.dirname(VINFolderPath))}\\${path.basename(VINFolderPath)}`;
     } else {
-        lgif('typeOfStockPath IS NOT stockFolder');
-        moveSource = `${uniqueIdFolderPath}\\${stockFilePath}`;
+        lgif('typeOfVINPath IS NOT VINFolder');
+        moveSource = `${uniqueIdFolderPath}\\${VINFilePath}`;
         moveDestination = `${config.finishedUploadingZonePath}\\${
             isURLDoesNotExist ? 'DeletedURLs\\' : ''
-        }${instanceRunDateFormatted}\\${path.basename(uniqueIdFolderPath)}\\${stockFilePath}`;
+        }${instanceRunDateFormatted}\\${path.basename(uniqueIdFolderPath)}\\${VINFilePath}`;
     }
     lgif(`fn getSourceAndDestinationFrom() : END, Returning: moveSource: ${moveSource}, moveDestination: ${moveDestination}`);
     return { moveSource: moveSource, moveDestination: moveDestination };

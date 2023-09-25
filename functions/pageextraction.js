@@ -40,19 +40,17 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     /**
      * Get dealer name from excel and compare it with dealer name in the page: End
      */
-    const stockNumber = String(
-        await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_VIN', (el) =>
-            el.map((x) => x.getAttribute('value'))
-        )
+    const VINNumber = String(
+        await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_VIN', (el) => el.map((x) => x.getAttribute('value')))
     );
 
-    if (!/^[a-zA-Z0-9\-_ ]{1,}$/.test(stockNumber)) {
+    if (!/^[a-zA-Z0-9\-_ ]{1,}$/.test(VINNumber)) {
         console.log(
             chalk.white.bgYellow.bold(
-                `\nWARNING: Found an invalid stock number: ${stockNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`
+                `\nWARNING: Found an invalid VIN number: ${VINNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`
             )
         );
-        return { result: false, bookmarkAppendMesg: 'Ignoring (Invalid Stock Number, Format Unknown)', imagesDownloaded: 0 };
+        return { result: false, bookmarkAppendMesg: 'Ignoring (Invalid VIN Number, Format Unknown)', imagesDownloaded: 0 };
     }
 
     const imageDIVContainer = await page.$('.tn-list-container');
@@ -70,7 +68,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         if (imageNumberToDownload > imageOriginalURLS.length) {
             process.stdout.write(
                 chalk.white.bgYellow.bold(
-                    `\nWARNING: Under ${dealerFolder}/${stockNumber}, Unable to find image number: ${imageNumberToDownload}, Total images under page: ${imageOriginalURLS.length}.`
+                    `\nWARNING: Under ${dealerFolder}/${VINNumber}, Unable to find image number: ${imageNumberToDownload}, Total images under page: ${imageOriginalURLS.length}.`
                 )
             );
             // eslint-disable-next-line no-continue
@@ -82,9 +80,9 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
 
         let shortFilename = '';
         if (imageNumbersToDownload.length === 1) {
-            shortFilename = `${dealerFolder}/${stockNumber}${path.extname(path.basename(file.path))}`;
+            shortFilename = `${dealerFolder}/${VINNumber}${path.extname(path.basename(file.path))}`;
         } else {
-            shortFilename = `${dealerFolder}/${stockNumber}/${path.basename(file.path)}`;
+            shortFilename = `${dealerFolder}/${VINNumber}/${path.basename(file.path)}`;
         }
         debug ? '' : process.stdout.write(chalk.white(`${shortFilename} »`));
         const shortFilenameTextLength = shortFilename.length + 2;
@@ -137,10 +135,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     imageOriginalURLS[imageNumberToDownload - 1],
                     file,
                     tempPath,
-                    `${config.downloadPath}/${instanceRunDateFormatted}/Lot_${zeroPad(
-                        lotIndex,
-                        2
-                    )}/${usernameTrimmed}/${dealerFolder}/${stockNumber}/`,
+                    `${config.downloadPath}/${instanceRunDateFormatted}/Lot_${zeroPad(lotIndex, 2)}/${usernameTrimmed}/${dealerFolder}/${VINNumber}/`,
                     imageNumbersToDownload.length === 1,
                     hashAlgo,
                     checksumOfFile,
@@ -190,7 +185,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     debug ? '' : process.stdout.write('\n');
     // LOWPRIORITY:  Make sure this removeDir runs properly
     removeDir(tempPath, true, debug);
-    return { result: true, bookmarkAppendMesg: stockNumber, imagesDownloaded: imagesDownloaded };
+    return { result: true, bookmarkAppendMesg: VINNumber, imagesDownloaded: imagesDownloaded };
 }
 
 // eslint-disable-next-line import/prefer-default-export
