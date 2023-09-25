@@ -149,7 +149,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
 
     if (VINNumberFromBookmark !== VINNumberFromWeb) {
-        lgw(`VIN Number values mismatch, name from web is '${VINNumberFromWeb}' vs name from bookmark is '${VINNumberFromBookmark}', Continuing.`);
+        lge(`VIN Number values mismatch, name from web is '${VINNumberFromWeb}' vs name from bookmark is '${VINNumberFromBookmark}', Continuing.`);
     }
 
     const { typeOfVINPath, VINFolderPath, VINFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
