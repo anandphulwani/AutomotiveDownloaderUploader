@@ -143,11 +143,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
      * Get dealer name from excel and compare it with dealer name in the page: End
      */
 
-        await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_StockNumber', (el) =>
-            el.map((x) => x.getAttribute('value'))
-        )
     const VINNumberFromBookmark = name.split(' |#| ')[1].trim();
     const VINNumberFromWeb = String(
+        await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_VIN', (el) => el.map((x) => x.getAttribute('value')))
     );
 
     if (VINNumberFromBookmark !== VINNumberFromWeb) {
