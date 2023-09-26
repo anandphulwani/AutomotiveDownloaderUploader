@@ -37,6 +37,11 @@ for /F "delims=" %%A in ('dir /b /ad /o-n AutomotiveDownloaderUploader*') do (
 mkdir %folder%
 cd %folder%
 git clone https://github.com/anandphulwani/AutomotiveDownloaderUploader .
+echo.
+echo.
+echo Please run `git checkout ^<branchname^>` now, if any, then press Enter to continue.
+echo.
+pause
 mkdir .\datastore\ContractorsZone
 mkdir .\datastore\Downloads
 mkdir .\datastore\FinishedUploadingZone
