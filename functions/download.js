@@ -71,7 +71,7 @@ async function downloadFileAndCompareWithChecksum(
                         ? console.log(chalk.green.bold(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`))
                         : process.stdout.write(
                               chalk.green.bold(
-                                  ` ${logSymbols.success}${' '.repeat(28 - shortFilenameTextLength > 0 ? 28 - shortFilenameTextLength : 0)}`
+                                  ` ${logSymbols.success}${' '.repeat(38 - shortFilenameTextLength > 0 ? 38 - shortFilenameTextLength : 0)}`
                               )
                           );
                 }
