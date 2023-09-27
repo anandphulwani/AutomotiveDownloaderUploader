@@ -17,7 +17,7 @@ import { makeDir, getListOfSubfoldersStartingWith } from './functions/filesystem
 import { setContractorsCurrentAllotted, setLastLotNumberAndDate } from './functions/configsupportive.js';
 import {
     recalculateRatioOfThreshHoldWithOtherContractors,
-    validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs,
+    validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs,
     returnImageCountFromDealerDirs,
 } from './functions/allotmentsupportive.js';
 import { doAllotment } from './functions/allotment.js';
@@ -48,7 +48,7 @@ const lotIndex = parseInt(process.argv[2], 10);
 const lotFolderName = `Lot_${zeroPad(lotIndex, 2)}`;
 const lotTodaysDate = process.argv[3] !== undefined ? process.argv[3] : instanceRunDateFormatted;
 const { downloadPath } = config;
-const lotFolderPath = `${downloadPath}\\${lotTodaysDate}\\${lotFolderName}`; // ${config.downloadPath}/${lotTodaysDate}/Lot_${zeroPad(lotIndex, 2)}/${usernameTrimmed}/${dealerFolder}/${stockNumber}/
+const lotFolderPath = `${downloadPath}\\${lotTodaysDate}\\${lotFolderName}`; // ${config.downloadPath}/${lotTodaysDate}/Lot_${zeroPad(lotIndex, 2)}/${usernameTrimmed}/${dealerFolder}/${VINNumber}/
 const lotHeadingOptions = {
     font: 'block', // font to use for the output
     align: 'center', // alignment of the output
@@ -86,7 +86,7 @@ while (!hasLotFirstIndexMatches) {
 /* #endregion */
 lgif(`region : Validation section 02: END`);
 
-let dealerDirectories = await validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs(lotFolderPath);
+let dealerDirectories = await validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFolderPath);
 if (config.environment === 'production') {
     exec(`explorer.exe ${process.cwd()}\\${lotFolderPath}"`);
     while (!keyInYN('Please review your lot folders, to remove any unneccesary photos, press Y to continue?')) {

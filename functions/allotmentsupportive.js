@@ -177,14 +177,14 @@ function getDealerFolderRecordKeepingZonePath(sourcePath, additionalText) {
 
 /**
  * 005
- * Check whether LotFolder / Username / StockFolder / At least a single file{type:jpg} exists.
- * If no files exist and stockFolder is empty, remove the stockFolder if it is empty
- * Also remove the parents of stockFolder recursively if they are empty.
+ * Check whether LotFolder / Username / VINFolder / At least a single file{type:jpg} exists.
+ * If no files exist and VINFolder is empty, remove the VINFolder if it is empty
+ * Also remove the parents of VINFolder recursively if they are empty.
  * Also make sure one dealerDirectory with single file exists in the lot
  * Return all dealerDirs with an additional column of '0', later to be used to put image count
  */
-/* #region : validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs (lotFldrPath, debug = false) {...} */
-async function validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs(lotFldrPath, debug = false) {
+/* #region : validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs (lotFldrPath, debug = false) {...} */
+async function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFldrPath, debug = false) {
     let doesLotFolderPathContainsFiles = false;
     const dealerDirs = [];
     // eslint-disable-next-line no-restricted-syntax
@@ -199,16 +199,16 @@ async function validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealer
 
                 if (fs.statSync(dealerFolderPath).isDirectory()) {
                     // eslint-disable-next-line no-restricted-syntax
-                    for (const stockFolder of fs.readdirSync(dealerFolderPath)) {
-                        const stockFolderPath = path.join(dealerFolderPath, stockFolder);
+                    for (const VINFolder of fs.readdirSync(dealerFolderPath)) {
+                        const VINFolderPath = path.join(dealerFolderPath, VINFolder);
 
-                        if (fs.statSync(stockFolderPath).isDirectory()) {
-                            const stockFolderLength = fs.readdirSync(stockFolderPath).length;
-                            debug ? console.log(`stockFolderPath: ${stockFolderPath}     stockFolderLength: ${stockFolderLength}`) : '';
-                            if (stockFolderLength > 0) {
+                        if (fs.statSync(VINFolderPath).isDirectory()) {
+                            const VINFolderLength = fs.readdirSync(VINFolderPath).length;
+                            debug ? console.log(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : '';
+                            if (VINFolderLength > 0) {
                                 doesLotFolderPathContainsFiles = true;
                             } else {
-                                removeDirAndRemoveParentDirIfEmpty(stockFolderPath, 3, true);
+                                removeDirAndRemoveParentDirIfEmpty(VINFolderPath, 3, true);
                             }
                         } else {
                             doesLotFolderPathContainsFiles = true;
@@ -231,7 +231,7 @@ async function validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealer
 
 /**
  * 006
- * Get total image count from a dealer directory, which includes stock folders and stock files
+ * Get total image count from a dealer directory, which includes VIN folders and VIN files
  */
 /* #region : returnImageCountFromDealerDirs (lotFldrPath, debug = false) {...} */
 async function returnImageCountFromDealerDirs(dealerDirs, debug = false) {
@@ -240,17 +240,17 @@ async function returnImageCountFromDealerDirs(dealerDirs, debug = false) {
         if (fs.existsSync(dealerDir[0])) {
             let totalNoOfDealerFolderFiles = 0;
             // eslint-disable-next-line no-restricted-syntax
-            for (const stockFolder of fs.readdirSync(dealerDir[0])) {
-                const stockFolderPath = path.join(dealerDir[0], stockFolder);
-                const stockFolderStat = fs.statSync(stockFolderPath);
+            for (const VINFolder of fs.readdirSync(dealerDir[0])) {
+                const VINFolderPath = path.join(dealerDir[0], VINFolder);
+                const VINFolderStat = fs.statSync(VINFolderPath);
 
-                if (stockFolderStat.isDirectory()) {
-                    const stockFolderLength = fs.readdirSync(stockFolderPath).length;
-                    debug ? console.log(`stockFolderPath: ${stockFolderPath}     stockFolderLength: ${stockFolderLength}`) : '';
-                    if (stockFolderLength > 0) {
-                        totalNoOfDealerFolderFiles += stockFolderLength;
+                if (VINFolderStat.isDirectory()) {
+                    const VINFolderLength = fs.readdirSync(VINFolderPath).length;
+                    debug ? console.log(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : '';
+                    if (VINFolderLength > 0) {
+                        totalNoOfDealerFolderFiles += VINFolderLength;
                     } else {
-                        removeDirAndRemoveParentDirIfEmpty(stockFolderPath, 3, true);
+                        removeDirAndRemoveParentDirIfEmpty(VINFolderPath, 3, true);
                     }
                 } else {
                     totalNoOfDealerFolderFiles += 1;
@@ -270,6 +270,6 @@ export {
     recalculateAllotmentPriority,
     getDealerFolderContractorsZonePath,
     getDealerFolderRecordKeepingZonePath,
-    validateLotFolderAndRemoveStockFolderIfEmptyAndReturnListOfDealerDirs,
+    validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs,
     returnImageCountFromDealerDirs,
 };
