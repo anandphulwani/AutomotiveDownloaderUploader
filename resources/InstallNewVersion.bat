@@ -82,6 +82,11 @@ for %%F in (RunDownloader.exe RunUploader.exe) do (
 )
 endlocal
 cd ..
+echo.
+echo.
+echo Please check whether config.js or config-user.js has introduced new options, as we have already overwritten these files from the previous version, use `git diff` to check for changes.
+echo.
+pause
 
 REM Check if both files exist in the temp directory
 IF EXIST "%TEMP%\InstallNewVersion.exe" (
