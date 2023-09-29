@@ -1,9 +1,8 @@
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
 /* eslint-disable import/extensions */
-import { lgc } from './loggersupportive.js';
+import { lgc, lge } from './loggersupportive.js';
 import { config } from '../configs/config.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 // import { createBackupOfFile } from './datastoresupportive.js';
@@ -66,7 +65,8 @@ function addUploadingToReport(uploadingDetail) {
     const reportJSONFilePath = path.join(config.reportsPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
     try {
         if (!fs.existsSync(reportJSONFilePath)) {
-            // TODO: Show error here
+            lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Exiting.`);
+            process.exit(1);
         }
         // createBackupOfFile(fileToOperateOn, newConfigUserContent);
         attainLock(reportJSONFilePath, undefined, true);
@@ -88,7 +88,10 @@ function addUploadingToReport(uploadingDetail) {
                 },
             };
         } else {
-            // TODO: Show error here
+            lge(
+                `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${allotmentId}', which should have been created while allotment, Exiting.`
+            );
+            process.exit(1);
         }
         const updatedReportJSONObj = JSON.stringify(reportJSONObj, null, 3);
         fs.writeFileSync(reportJSONFilePath, updatedReportJSONObj, 'utf8');
