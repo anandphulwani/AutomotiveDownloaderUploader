@@ -12,6 +12,7 @@ import { getIndexOfHighestIn2DArrayColumn } from './others.js';
 import { createDirAndCopyFile, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './excelsupportive.js';
 import { addToContractorsCurrentAllotted } from './configsupportive.js';
+import { addAllotmentToReport } from './reportsupportive.js';
 import { getBookmarkFolderGUIDFromUsernameDealerNumber, replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile } from './bookmark.js';
 import {
     recalculateRatioOfImagesAlloted,
@@ -65,6 +66,7 @@ async function doAllotment(
         }
         const { processingBookmarkPathWithoutSync } = config;
         attainLock(processingBookmarkPathWithoutSync, undefined, true);
+        const allotmentDetailsForReport = [];
 
         for (
             let index = 0;
@@ -73,6 +75,7 @@ async function doAllotment(
             (allotmentSystem === 'allotmentByManual' && dealerDirectories.length > 0);
             index++
         ) {
+            const allotmentDetailForReport = [];
             // console.log(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`);
             const dealerFolderPath = dealerDirectories[0][0];
             const dealerFolderFilesCount = dealerDirectories[0][1];
@@ -196,6 +199,11 @@ async function doAllotment(
             );
             if (!isDryRun) {
                 await addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
+                allotmentDetailForReport[0] = `#${uniqueIdOfFolder}`;
+                allotmentDetailForReport[1] = sourceDealerFolderName;
+                allotmentDetailForReport[2] = contractorAlloted;
+                allotmentDetailForReport[3] = dealerFolderFilesCount;
+                allotmentDetailsForReport.push(allotmentDetailForReport);
             }
             foldersAlloted++;
 
@@ -207,6 +215,9 @@ async function doAllotment(
             // console.log(contractors);
         }
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+        if (!isDryRun) {
+            addAllotmentToReport(allotmentDetailsForReport);
+        }
     } else if (
         (allotmentSystem === 'allotmentByImagesQty' || allotmentSystem === 'allotmentByManual') &&
         lotsImagesQty > 0 &&
