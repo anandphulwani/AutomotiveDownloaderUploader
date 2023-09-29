@@ -17,6 +17,7 @@ import { getCredentialsForUsername } from './functions/configsupportive.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
+import { addUploadingToReport } from './functions/reportsupportive.js';
 import { validateConfigFile } from './functions/configvalidation.js';
 import {
     createDirAndMoveFile,
@@ -54,15 +55,33 @@ Object.keys(config.contractors).forEach((contractor) => {
             const contractorReadyToUploadStat = fs.statSync(contractorReadyToUploadSubFolderPath);
 
             if (contractorReadyToUploadStat.isDirectory()) {
-                if (/^.* (([^\s]* )*)[^\s]+ \d{1,3} \(#\d{5}\)$/.test(contractorReadyToUploadSubFolderAndFiles)) {
+                const regexToMatchFolderName = /^.* (([^\s]* )*)[^\s]+ \d{1,3} \((#\d{5})\)$/;
+                if (regexToMatchFolderName.test(contractorReadyToUploadSubFolderAndFiles)) {
+                    const matches = contractorReadyToUploadSubFolderAndFiles.match(regexToMatchFolderName);
+                    const uniqueCode = matches[matches.length - 1];
                     const numberOfImagesAcToFolderName = parseInt(
                         getNumberOfImagesFromAllottedDealerNumberFolder(contractorReadyToUploadSubFolderAndFiles),
                         10
                     );
                     const numberOfImagesAcToFileCount = getFileCountRecursively(contractorReadyToUploadSubFolderPath);
                     if (numberOfImagesAcToFolderName === numberOfImagesAcToFileCount) {
-                        const folderSize = getFolderSizeInBytes(contractorReadyToUploadSubFolderPath);
-                        foldersToShift.push([contractorReadyToUploadSubFolderPath, folderSize]);
+                        let contractorDoneBy = null;
+                        // eslint-disable-next-line no-restricted-syntax
+                        for (const contractorInSubLoop of Object.keys(config.contractors)) {
+                            const contractorDoneSubFolderDir = `${config.contractorsZonePath}\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\000_Done\\${contractorReadyToUploadSubFolderAndFiles}`;
+                            if (fs.existsSync(contractorDoneSubFolderDir)) {
+                                contractorDoneBy = contractorInSubLoop;
+                                break;
+                            }
+                        }
+                        if (contractorDoneBy != null) {
+                            const folderSize = getFolderSizeInBytes(contractorReadyToUploadSubFolderPath);
+                            foldersToShift.push([contractorReadyToUploadSubFolderPath, folderSize, uniqueCode, contractor, contractorDoneBy]);
+                        } else {
+                            lgw(
+                                `Folder present in 'ReadyToUpload' but not present in 'Done' folder for reporting, Folder: ${contractor}\\000_ReadyToUpload\\${contractorReadyToUploadSubFolderAndFiles}, Ignoring.`
+                            );
+                        }
                     } else {
                         lgw(
                             `Folder in ReadyToUpload but images quantity does not match, Folder: ${contractor}\\000_ReadyToUpload\\${contractorReadyToUploadSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
@@ -118,6 +137,7 @@ async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
                     doesDestinationFolderAlreadyExists = true;
                 }
             } else {
+                addUploadingToReport([folderToShift[2], folderToShift[3], folderToShift[4]]);
                 await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
                 folderToShift[0] = newUploadingZonePath;
             }
