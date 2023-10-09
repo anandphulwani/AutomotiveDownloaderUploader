@@ -115,7 +115,7 @@ if (missingDates.length > 0) {
         missingDatesString += missingDate;
         missingDatesString += ` ${' '.repeat(11 - missingDate.length > 0 ? 11 - missingDate.length : 0)}`;
     }
-    lgw(missingDatesString);
+    lgw(`${missingDatesString}\r\n`);
 }
 
 // eslint-disable-next-line no-restricted-syntax
@@ -237,7 +237,7 @@ for (let username of allUsernamesFromConfig) {
                         )}`;
                     }
                 }
-                lgw(allotmentAndUploadedMismatchString);
+                lgw(`${allotmentAndUploadedMismatchString}\r\n`);
             }
         }
         /* #endregion */
@@ -266,7 +266,7 @@ for (let username of allUsernamesFromConfig) {
                     )}`;
                 }
             }
-            lgw(remainingUnconsumedFoldersString);
+            lgw(`${remainingUnconsumedFoldersString}\r\n`);
         }
         /* #endregion */
     }
