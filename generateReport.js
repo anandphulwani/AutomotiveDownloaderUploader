@@ -229,9 +229,12 @@ for (let username of allUsernamesFromConfig) {
                 // eslint-disable-next-line no-restricted-syntax
                 for (const key in allotmentAndUploadedMismatchJSONObj) {
                     if (Object.prototype.hasOwnProperty.call(allotmentAndUploadedMismatchJSONObj, key)) {
-                        const allotedFolderName = allotmentAndUploadedMismatchJSONObj[key].folderName;
-                        allotmentAndUploadedMismatchString += allotedFolderName;
-                        allotmentAndUploadedMismatchString += ` ${' '.repeat(59 - allotedFolderName.length > 0 ? 59 - allotedFolderName.length : 0)}`;
+                        const allotedFolderName = allotmentAndUploadedMismatchJSONObj[key].allotmentFolderName;
+                        const usernameWithAllotedFolderName = `${username}/${allotedFolderName}`;
+                        allotmentAndUploadedMismatchString += usernameWithAllotedFolderName;
+                        allotmentAndUploadedMismatchString += ` ${' '.repeat(
+                            59 - usernameWithAllotedFolderName.length > 0 ? 59 - usernameWithAllotedFolderName.length : 0
+                        )}`;
                     }
                 }
                 lgw(allotmentAndUploadedMismatchString);
@@ -255,9 +258,12 @@ for (let username of allUsernamesFromConfig) {
             // eslint-disable-next-line no-restricted-syntax
             for (const key in reportJSONObj) {
                 if (Object.prototype.hasOwnProperty.call(reportJSONObj, key)) {
-                    const allotedFolderName = reportJSONObj[key].folderName;
-                    remainingUnconsumedFoldersString += allotedFolderName;
-                    remainingUnconsumedFoldersString += ` ${' '.repeat(59 - allotedFolderName.length > 0 ? 59 - allotedFolderName.length : 0)}`;
+                    const allotedFolderName = reportJSONObj[key].allotmentFolderName;
+                    const usernameWithAllotedFolderName = `${username}/${allotedFolderName}`;
+                    remainingUnconsumedFoldersString += usernameWithAllotedFolderName;
+                    remainingUnconsumedFoldersString += ` ${' '.repeat(
+                        59 - usernameWithAllotedFolderName.length > 0 ? 59 - usernameWithAllotedFolderName.length : 0
+                    )}`;
                 }
             }
             lgw(remainingUnconsumedFoldersString);
