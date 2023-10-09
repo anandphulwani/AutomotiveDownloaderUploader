@@ -203,6 +203,7 @@ async function doAllotment(
                 allotmentDetailForReport[1] = sourceDealerFolderName;
                 allotmentDetailForReport[2] = contractorAlloted;
                 allotmentDetailForReport[3] = dealerFolderFilesCount;
+                allotmentDetailForReport[4] = path.basename(destinationDealerFolderName);
                 allotmentDetailsForReport.push(allotmentDetailForReport);
             }
             foldersAlloted++;

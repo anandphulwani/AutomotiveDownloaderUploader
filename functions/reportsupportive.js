@@ -42,10 +42,12 @@ function addAllotmentToReport(allotmentDetails) {
 
             const allotedTo = allotmentDetail[2];
             const qty = allotmentDetail[3];
+            const allotmentFolderName = allotmentDetail[4];
             reportJSONObj[allotmentId] = {
                 isAlloted: true,
                 username: username,
                 folderName: folderName,
+                allotmentFolderName: allotmentFolderName,
                 dealerName: dealerName,
                 allotedTo: allotedTo,
                 qty: qty,
