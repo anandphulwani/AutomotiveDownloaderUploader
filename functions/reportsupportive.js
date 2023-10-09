@@ -103,4 +103,26 @@ function addUploadingToReport(uploadingDetail) {
     }
 }
 
+/**
+ *
+ * Function to add a blank column with the "Additional Images" heading, alternatively ( to write in excel)
+ *
+ */
+function addAdditionalImagesColumnAlternatively(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = arr[i].length; j > 0; j--) {
+            // Insert an empty string between elements
+            if (j !== 1) {
+                if (i === 1) {
+                    arr[i].splice(j, 0, arr[i][j - 1]);
+                } else if (i === 2) {
+                    arr[i].splice(j, 0, 'Additional Images');
+                } else {
+                    // arr[i].splice(j, 0, ''); // ' '
+                }
+            }
+        }
+    }
+}
+
 export { addAllotmentToReport, addUploadingToReport };
