@@ -283,4 +283,29 @@ const styleOfAdditionalImagesTotalHeading = {
     alignment: { wrapText: true, horizontal: 'center' },
 };
 
-export { addAllotmentToReport, addUploadingToReport, addAdditionalImagesColumnAlternatively };
+export {
+    addAllotmentToReport,
+    addUploadingToReport,
+    addAdditionalImagesColumnAlternatively,
+    styleOfDateHeading,
+    centerAlign,
+    rightAlign,
+    normalFont,
+    styleOfAdditionalImagesDataEven,
+    styleOfAdditionalImagesDataOdd,
+    styleOfGrandTotalOnBottomRight,
+    styleOfDealerTotal,
+    styleOfAdditionalImagesTotalEven,
+    styleOfAdditionalImagesTotalOdd,
+    // Bottom part of the sheet
+    styleOfTotalInventory,
+    styleOfFTPOrAdditionalImagesTotal,
+    styleOfGrandTotal,
+    styleOfDifference,
+    //
+    styleOfFTPDealerNameHeading,
+    styleOfDailyInventoryHeading,
+    styleOfAdditionalImagesTotalHeading,
+    styleOfDealerNameHeadingEven,
+    styleOfDealerNameHeadingOdd,
+};
