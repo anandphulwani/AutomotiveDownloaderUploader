@@ -101,7 +101,7 @@ const missingDates = [];
 for (let i = 0; i < dates.length; i++) {
     const rowsDate = dates[i];
     const formattedDate = formatDate(rowsDate, 'DD-MMM-YYYY__YYYY-MM-DD');
-    const reportJSONFilePath = path.join(config.reportsPath, `${year}-${month}`, `${formattedDate}_report.json`);
+    const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', `${year}-${month}`, `${formattedDate}_report.json`);
     if (!fs.existsSync(reportJSONFilePath)) {
         const dateWithDayOfWeek = formatDate(rowsDate, 'DD-MMM-YYYY__DD(EEE)');
         missingDates.push(dateWithDayOfWeek);
@@ -165,7 +165,7 @@ for (let username of allUsernamesFromConfig) {
         }
         const rowsDate = transposedData[i][0];
         const formattedDate = formatDate(rowsDate, 'DD-MMM-YYYY__YYYY-MM-DD');
-        const reportJSONFilePath = path.join(config.reportsPath, `${year}-${month}`, `${formattedDate}_report.json`);
+        const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', `${year}-${month}`, `${formattedDate}_report.json`);
         if (!fs.existsSync(reportJSONFilePath)) {
             // eslint-disable-next-line no-continue
             continue;
