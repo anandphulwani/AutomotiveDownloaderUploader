@@ -125,4 +125,162 @@ function addAdditionalImagesColumnAlternatively(arr) {
     }
 }
 
+/**
+ *
+ * Styling constants for usage in excel exporting
+ *
+ */
+const styleOfDateHeading = {
+    font: { name: 'Arial', sz: 12, color: { rgb: 'FFFFFF' } },
+    fill: { fgColor: { rgb: '3366ff' } }, // Background color
+    alignment: { wrapText: true, horizontal: 'center' },
+};
+
+const styleOfDealerNameHeadingEven = {
+    font: { name: 'Arial', sz: 12 },
+    fill: { fgColor: { rgb: '3ba0bb' } }, // Background color
+    alignment: { wrapText: true, horizontal: 'center' },
+    border: {
+        top: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        bottom: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        left: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        right: { style: 'thin', color: { rgb: 'a6a6a6' } },
+    },
+};
+
+const styleOfDealerNameHeadingOdd = {
+    font: { name: 'Arial', sz: 12 },
+    fill: { fgColor: { rgb: 'c4d79b' } }, // Background color
+    alignment: { wrapText: true, horizontal: 'center' },
+    border: {
+        top: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        bottom: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        left: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        right: { style: 'thin', color: { rgb: 'a6a6a6' } },
+    },
+};
+
+const centerAlign = {
+    alignment: { horizontal: 'center' },
+};
+
+const rightAlign = {
+    alignment: { horizontal: 'right' },
+};
+
+const normalFont = {
+    font: { name: 'Arial', sz: 11 },
+    alignment: { horizontal: 'center' },
+};
+
+const styleOfAdditionalImagesDataEven = {
+    font: { name: 'Arial', sz: 11 },
+    fill: { fgColor: { rgb: 'daeef3' } }, // Background color
+    alignment: { wrapText: true, horizontal: 'center' },
+    border: {
+        top: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        bottom: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        left: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        right: { style: 'thin', color: { rgb: 'a6a6a6' } },
+    },
+};
+
+const styleOfAdditionalImagesDataOdd = {
+    font: { name: 'Arial', sz: 11 },
+    fill: { fgColor: { rgb: 'ebf1de' } }, // Background color
+    alignment: { wrapText: true, horizontal: 'center' },
+    border: {
+        top: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        bottom: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        left: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        right: { style: 'thin', color: { rgb: 'a6a6a6' } },
+    },
+};
+
+const styleOfDealerTotal = {
+    font: { name: 'Arial', sz: 12 },
+    fill: { fgColor: { rgb: '99ccff' } }, // Background color
+    alignment: { horizontal: 'center' },
+};
+
+const styleOfAdditionalImagesTotalEven = {
+    font: { name: 'Arial', sz: 12 },
+    fill: { fgColor: { rgb: 'daeef3' } }, // Background color
+    alignment: { wrapText: true, horizontal: 'center' },
+    border: {
+        top: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        bottom: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        left: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        right: { style: 'thin', color: { rgb: 'a6a6a6' } },
+    },
+};
+
+const styleOfAdditionalImagesTotalOdd = {
+    font: { name: 'Arial', sz: 12 },
+    fill: { fgColor: { rgb: 'ebf1de' } }, // Background color
+    alignment: { wrapText: true, horizontal: 'center' },
+    border: {
+        top: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        bottom: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        left: { style: 'thin', color: { rgb: 'a6a6a6' } },
+        right: { style: 'thin', color: { rgb: 'a6a6a6' } },
+    },
+};
+
+const styleOfGrandTotalOnBottomRight = {
+    font: { name: 'Arial', sz: 12, color: { rgb: 'FFFFFF' } },
+    fill: { fgColor: { rgb: '1f487d' } }, // Background color
+    alignment: { horizontal: 'center' },
+    // font: { name: 'Arial', sz: 12 },
+    // fill: { fgColor: { rgb: '5D90C3' } }, // Background color
+    // alignment: { horizontal: 'center' },
+};
+
+const styleOfTotalInventory = {
+    font: { name: 'Arial', sz: 12 } /** , color: { rgb: 'FFFFFF' } */,
+    fill: { fgColor: { rgb: 'E4BE9E' } }, // Background color
+    alignment: { horizontal: 'center' },
+};
+
+const styleOfFTPOrAdditionalImagesTotal = {
+    font: { name: 'Arial', sz: 12 } /** , color: { rgb: 'FFFFFF' } */,
+    fill: { fgColor: { rgb: 'D9D2B6' } }, // Background color
+    alignment: { horizontal: 'center' },
+};
+
+const styleOfGrandTotal = {
+    font: { name: 'Arial', sz: 12, color: { rgb: 'FFFFFF' } },
+    fill: { fgColor: { rgb: '3366ff' } }, // Background color
+    alignment: { horizontal: 'center' },
+};
+
+const styleOfDifference = {
+    font: { name: 'Arial', sz: 12, color: { rgb: 'eb4034' }, bold: true },
+    alignment: { horizontal: 'center' },
+};
+
+const styleOfFTPDealerNameHeading = {
+    font: { name: 'Arial', sz: 12 },
+    fill: { fgColor: { rgb: 'B7DEE8' } }, // Background color
+    alignment: { horizontal: 'center' },
+    border: {
+        top: { style: 'thin', color: { rgb: '000000' } },
+        bottom: { style: 'thin', color: { rgb: '000000' } },
+        left: { style: 'thin', color: { rgb: '000000' } },
+        right: { style: 'thin', color: { rgb: '000000' } },
+    },
+};
+
+const styleOfDailyInventoryHeading = {
+    font: { name: 'Arial', sz: 12, color: { rgb: 'FFFFFF' } },
+    fill: { fgColor: { rgb: '1f487d' } }, // Background color
+    alignment: { horizontal: 'center' },
+};
+
+const styleOfAdditionalImagesTotalHeading = {
+    font: { name: 'Arial', sz: 12, color: { rgb: 'FFFFFF' } },
+    fill: { fgColor: { rgb: 'A8577E' } }, // Background color C8C2AE
+    alignment: { wrapText: true, horizontal: 'center' },
+};
+
 export { addAllotmentToReport, addUploadingToReport, addAdditionalImagesColumnAlternatively };
