@@ -125,4 +125,4 @@ function addAdditionalImagesColumnAlternatively(arr) {
     }
 }
 
-export { addAllotmentToReport, addUploadingToReport };
+export { addAllotmentToReport, addUploadingToReport, addAdditionalImagesColumnAlternatively };
