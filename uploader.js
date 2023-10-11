@@ -4,7 +4,7 @@ import path from 'path';
 import { URL } from 'url';
 
 /* eslint-disable import/extensions */
-import { instanceRunDateFormatted } from './functions/datetime.js';
+import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
 import { lgw, lge, lgc } from './functions/loggersupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
@@ -34,6 +34,7 @@ import {
 } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
+import { attainLock, releaseLock } from './functions/locksupportive.js';
 /* eslint-enable import/extensions */
 
 if (config.environment === 'production') {
@@ -44,6 +45,24 @@ if (config.environment === 'production') {
     printSectionSeperator();
 }
 autoCleanUpDatastoreZones();
+
+const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
+let reportJSONObj;
+try {
+    if (!fs.existsSync(reportJSONFilePath)) {
+        lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Exiting.`);
+        process.exit(1);
+    }
+    // createBackupOfFile(fileToOperateOn, newConfigUserContent);
+    attainLock(reportJSONFilePath, undefined, true);
+    const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+    reportJSONObj = JSON.parse(reportJSONContents);
+    releaseLock(reportJSONFilePath, undefined, true);
+} catch (err) {
+    lgc(err);
+    releaseLock(reportJSONFilePath, undefined, true);
+    process.exit(1);
+}
 
 const foldersToShift = [];
 Object.keys(config.contractors).forEach((contractor) => {
@@ -75,8 +94,24 @@ Object.keys(config.contractors).forEach((contractor) => {
                             }
                         }
                         if (contractorDoneBy != null) {
-                            const folderSize = getFolderSizeInBytes(contractorReadyToUploadSubFolderPath);
-                            foldersToShift.push([contractorReadyToUploadSubFolderPath, folderSize, uniqueCode, contractor, contractorDoneBy]);
+                            if (reportJSONObj[uniqueCode]) {
+                                if (path.basename(contractorReadyToUploadSubFolderPath) === reportJSONObj[uniqueCode].allotmentFolderName) {
+                                    const folderSize = getFolderSizeInBytes(contractorReadyToUploadSubFolderPath);
+                                    foldersToShift.push([contractorReadyToUploadSubFolderPath, folderSize, uniqueCode, contractor, contractorDoneBy]);
+                                } else {
+                                    lgw(
+                                        `The allotment folder name '${
+                                            reportJSONObj[uniqueCode].allotmentFolderName
+                                        }' does not match folder name coming back for uploading '${path.basename(
+                                            contractorReadyToUploadSubFolderPath
+                                        )}', probably some contractor has modified the folder name, Exiting.`
+                                    );
+                                }
+                            } else {
+                                lgw(
+                                    `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${uniqueCode}', which should have been created while allotment, Exiting.`
+                                );
+                            }
                         } else {
                             lgw(
                                 `Folder present in 'ReadyToUpload' but not present in 'Done' folder for reporting, Folder: ${contractor}\\000_ReadyToUpload\\${contractorReadyToUploadSubFolderAndFiles}, Ignoring.`
@@ -137,7 +172,7 @@ async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
                     doesDestinationFolderAlreadyExists = true;
                 }
             } else {
-                addUploadingToReport(folderToShift[0], [folderToShift[2], folderToShift[3], folderToShift[4]]);
+                addUploadingToReport([path.basename(folderToShift[0]), folderToShift[2], folderToShift[3], folderToShift[4]]);
                 await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
                 folderToShift[0] = newUploadingZonePath;
             }
