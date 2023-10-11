@@ -76,13 +76,13 @@ function addUploadingToReport(uploadingDetail) {
         const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
         const reportJSONObj = JSON.parse(reportJSONContents);
 
-        const allotedFolderName = uploadingDetail[0];
+        const allotmentFolderName = uploadingDetail[0];
         const allotmentId = uploadingDetail[1];
         const finishedBy = uploadingDetail[2];
         const doneBy = uploadingDetail[3];
 
         if (reportJSONObj[allotmentId]) {
-            if (allotedFolderName === reportJSONObj[allotmentId].allotedFolderName) {
+            if (allotmentFolderName === reportJSONObj[allotmentId].allotmentFolderName) {
                 reportJSONObj[allotmentId] = {
                     ...reportJSONObj[allotmentId],
                     ...{
@@ -93,7 +93,7 @@ function addUploadingToReport(uploadingDetail) {
                 };
             } else {
                 lge(
-                    `The alloted folder name '${reportJSONObj[allotmentId].allotedFolderName}' does not match folder name coming back for uploading '${allotedFolderName}', probably some contractor has modified the folder name, Exiting.`
+                    `The allotment folder name '${reportJSONObj[allotmentId].allotmentFolderName}' does not match folder name coming back for uploading '${allotmentFolderName}', probably some contractor has modified the folder name, Exiting.`
                 );
                 process.exit(1);
             }
