@@ -116,8 +116,10 @@ function addAdditionalImagesColumnAlternatively(arr) {
             // Insert an empty string between elements
             if (j !== 1) {
                 if (i === 1) {
+                    // If it is the first row, copy the text from the previous cell
                     arr[i].splice(j, 0, arr[i][j - 1]);
                 } else if (i === 2) {
+                    // If it is the second row, put heading of Additional Images
                     arr[i].splice(j, 0, 'Additional Images');
                 } else {
                     // arr[i].splice(j, 0, ''); // ' '
