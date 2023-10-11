@@ -122,7 +122,7 @@ function addAdditionalImagesColumnAlternatively(arr) {
                     // If it is the second row, put heading of Additional Images
                     arr[i].splice(j, 0, 'Additional Images');
                 } else {
-                    // arr[i].splice(j, 0, ''); // ' '
+                    arr[i].splice(j, 0, undefined);
                 }
             }
         }
