@@ -76,22 +76,30 @@ function addUploadingToReport(uploadingDetail) {
         const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
         const reportJSONObj = JSON.parse(reportJSONContents);
 
-        const allotmentId = uploadingDetail[0];
-        const finishedBy = uploadingDetail[1];
-        const doneBy = uploadingDetail[2];
+        const allotedFolderName = uploadingDetail[0];
+        const allotmentId = uploadingDetail[1];
+        const finishedBy = uploadingDetail[2];
+        const doneBy = uploadingDetail[3];
 
-        if (reportJSONObj[allotmentId]) {
-            reportJSONObj[allotmentId] = {
-                ...reportJSONObj[allotmentId],
-                ...{
-                    isFinished: true,
-                    doneBy: doneBy,
-                    finishedBy: finishedBy,
-                },
-            };
+        if (allotedFolderName === reportJSONObj[allotmentId][allotedFolderName]) {
+            if (reportJSONObj[allotmentId]) {
+                reportJSONObj[allotmentId] = {
+                    ...reportJSONObj[allotmentId],
+                    ...{
+                        isFinished: true,
+                        doneBy: doneBy,
+                        finishedBy: finishedBy,
+                    },
+                };
+            } else {
+                lge(
+                    `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${allotmentId}', which should have been created while allotment, Exiting.`
+                );
+                process.exit(1);
+            }
         } else {
             lge(
-                `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${allotmentId}', which should have been created while allotment, Exiting.`
+                `The alloted folder name '${reportJSONObj[allotmentId][allotedFolderName]}' does not match folder name coming back for uploading '${allotedFolderName}', probably some contractor has modified the folder name, Exiting.`
             );
             process.exit(1);
         }

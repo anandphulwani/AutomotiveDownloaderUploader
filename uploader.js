@@ -137,7 +137,7 @@ async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
                     doesDestinationFolderAlreadyExists = true;
                 }
             } else {
-                addUploadingToReport([folderToShift[2], folderToShift[3], folderToShift[4]]);
+                addUploadingToReport(folderToShift[0], [folderToShift[2], folderToShift[3], folderToShift[4]]);
                 await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
                 folderToShift[0] = newUploadingZonePath;
             }
