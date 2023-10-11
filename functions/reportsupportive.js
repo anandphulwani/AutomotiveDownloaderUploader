@@ -81,8 +81,8 @@ function addUploadingToReport(uploadingDetail) {
         const finishedBy = uploadingDetail[2];
         const doneBy = uploadingDetail[3];
 
-        if (allotedFolderName === reportJSONObj[allotmentId][allotedFolderName]) {
-            if (reportJSONObj[allotmentId]) {
+        if (reportJSONObj[allotmentId]) {
+            if (allotedFolderName === reportJSONObj[allotmentId].allotedFolderName) {
                 reportJSONObj[allotmentId] = {
                     ...reportJSONObj[allotmentId],
                     ...{
@@ -93,13 +93,13 @@ function addUploadingToReport(uploadingDetail) {
                 };
             } else {
                 lge(
-                    `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${allotmentId}', which should have been created while allotment, Exiting.`
+                    `The alloted folder name '${reportJSONObj[allotmentId].allotedFolderName}' does not match folder name coming back for uploading '${allotedFolderName}', probably some contractor has modified the folder name, Exiting.`
                 );
                 process.exit(1);
             }
         } else {
             lge(
-                `The alloted folder name '${reportJSONObj[allotmentId][allotedFolderName]}' does not match folder name coming back for uploading '${allotedFolderName}', probably some contractor has modified the folder name, Exiting.`
+                `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${allotmentId}', which should have been created while allotment, Exiting.`
             );
             process.exit(1);
         }
