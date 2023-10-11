@@ -1,8 +1,8 @@
 @ECHO OFF
 REM BFCPEOPTIONSTART
 REM Advanced BAT to EXE Converter www.BatToExeConverter.com
-REM BFCPEEXE=C:\Users\Administrator\Desktop\AutomotiveDownloaderUploader\resources\InstallNewVersion.exe
-REM BFCPEICON=C:\Program Files (x86)\Advanced BAT to EXE Converter PRO v2.91\ab2econv291pro\icons\icon11.ico
+REM BFCPEEXE=.\InstallNewVersion.exe
+REM BFCPEICON=.\ExecutableGear.ico
 REM BFCPEICONINDEX=1
 REM BFCPEEMBEDDISPLAY=0
 REM BFCPEEMBEDDELETE=1
@@ -49,11 +49,14 @@ mkdir .\datastore\LockingBackupsZone
 mkdir .\datastore\RecordKeepingZone
 mkdir .\datastore\UploadingZone
 mkdir .\datastore\Reports
+mkdir .\datastore\Reports\jsondata
+mkdir .\datastore\Reports\generated
 
 rem Copy required files from last directory
 copy /Y "..\%lastDir%\configs\config.js" ".\configs\"
 copy /Y "..\%lastDir%\configs\config-user.js" ".\configs\"
 xcopy /E /I /Y "..\%lastDir%\configs\DealerConfiguration\*.*" ".\configs\DealerConfiguration"
+xcopy /E /I /Y "..\%lastDir%\datastore\Reports\*.*" ".\datastore\Reports"
 
 echo ewogICAicm9vdHMiOiB7CiAgICAgICJib29rbWFya19iYXIiOiB7CiAgICAgICAgICJjaGlsZHJlbiI6IFtdLAogICAgICAgICAiZGF0ZV9hZGRlZCI6ICIxMzMyMTA5NzE4MzQ2NTgzNCIsCiAgICAgICAgICJkYXRlX2xhc3RfdXNlZCI6ICIwIiwKICAgICAgICAgImRhdGVfbW9kaWZpZWQiOiAiMTMzMjg5NjA4Mjc3Nzc1NTEiLAogICAgICAgICAiZ3VpZCI6ICIwYmM1ZDEzZi0yY2JhLTVkNzQtOTUxZi0zZjIzM2ZlNmM5MDgiLAogICAgICAgICAiaWQiOiAiMSIsCiAgICAgICAgICJuYW1lIjogIkJvb2ttYXJrcyBiYXIiLAogICAgICAgICAidHlwZSI6ICJmb2xkZXIiCiAgICAgIH0KICAgfSwKICAgInZlcnNpb24iOiAxCn0= > %TEMP%\temp.b64 && certutil -decode -f %TEMP%\temp.b64 .\datastore\Bookmarks && del %TEMP%\temp.b64
 move /Y ".\resources\InstallNewVersion.exe" "%TEMP%\InstallNewVersion.exe"
