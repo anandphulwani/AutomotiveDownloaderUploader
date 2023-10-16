@@ -78,17 +78,18 @@ function addUploadingToReport(uploadingDetail) {
 
         const allotmentFolderName = uploadingDetail[0];
         const allotmentId = uploadingDetail[1];
-        const finishedBy = uploadingDetail[2];
-        const doneBy = uploadingDetail[3];
+        const cutter = uploadingDetail[2];
+        const finisher = uploadingDetail[3];
 
         if (reportJSONObj[allotmentId]) {
             if (allotmentFolderName === reportJSONObj[allotmentId].allotmentFolderName) {
+                // TODO: Replace doneBy and finishedBy to cutter and finisher
                 reportJSONObj[allotmentId] = {
                     ...reportJSONObj[allotmentId],
                     ...{
                         isFinished: true,
-                        doneBy: doneBy,
-                        finishedBy: finishedBy,
+                        doneBy: cutter,
+                        finishedBy: finisher,
                     },
                 };
             } else {
