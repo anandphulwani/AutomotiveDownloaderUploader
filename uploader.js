@@ -24,6 +24,7 @@ import {
     getFileCountRecursively,
     getFolderSizeInBytes,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
+    createDirAndCopyFile,
 } from './functions/filesystem.js';
 import {
     autoCleanUpDatastoreZones,
@@ -45,38 +46,72 @@ if (config.environment === 'production') {
 autoCleanUpDatastoreZones();
 
 const foldersToShift = [];
-Object.keys(config.contractors).forEach((contractor) => {
-    const contractorReadyToUploadDir = `${config.contractorsZonePath}\\${contractor}\\${instanceRunDateFormatted}\\000_ReadyToUpload`;
-    if (fs.existsSync(contractorReadyToUploadDir)) {
-        // eslint-disable-next-line no-restricted-syntax
-        for (const contractorReadyToUploadSubFolderAndFiles of fs.readdirSync(contractorReadyToUploadDir)) {
-            const contractorReadyToUploadSubFolderPath = path.join(contractorReadyToUploadDir, contractorReadyToUploadSubFolderAndFiles);
-            const contractorReadyToUploadStat = fs.statSync(contractorReadyToUploadSubFolderPath);
+const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
 
-            if (contractorReadyToUploadStat.isDirectory()) {
-                if (/^.* (([^\s]* )*)[^\s]+ \d{1,3} \(#\d{5}\)$/.test(contractorReadyToUploadSubFolderAndFiles)) {
-                    const numberOfImagesAcToFolderName = parseInt(
-                        getNumberOfImagesFromAllottedDealerNumberFolder(contractorReadyToUploadSubFolderAndFiles),
-                        10
-                    );
-                    const numberOfImagesAcToFileCount = getFileCountRecursively(contractorReadyToUploadSubFolderPath);
-                    if (numberOfImagesAcToFolderName === numberOfImagesAcToFileCount) {
-                        const folderSize = getFolderSizeInBytes(contractorReadyToUploadSubFolderPath);
-                        foldersToShift.push([contractorReadyToUploadSubFolderPath, folderSize]);
-                    } else {
-                        lgw(
-                            `Folder in ReadyToUpload but images quantity does not match, Folder: ${contractor}\\000_ReadyToUpload\\${contractorReadyToUploadSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
-                        );
-                    }
-                } else {
-                    lgw(
-                        `Folder in ReadyToUpload but is not in a proper format, Folder: ${contractor}\\000_ReadyToUpload\\${contractorReadyToUploadSubFolderAndFiles}, Ignoring.`
-                    );
-                }
+// eslint-disable-next-line no-restricted-syntax
+for (const finisher of finishers) {
+    const finisherReadyToUploadDir = `${config.contractorsZonePath}\\${finisher}\\${instanceRunDateFormatted}\\004_ReadyToUpload`;
+    // Check ReadyToUpload folder exists.
+    if (!fs.existsSync(finisherReadyToUploadDir)) {
+        lgw(`Finisher's ReadyToUpload folder doesn't exist: ${finisherReadyToUploadDir}, Ignoring.`);
+        // eslint-disable-next-line no-continue
+        continue;
+    }
+
+    // Get all the folders which are not holding any locks
+    const unlockedFolders = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const finisherReadyToUploadSubFolderAndFiles of fs.readdirSync(finisherReadyToUploadDir)) {
+        const finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
+        const finisherReadyToUploadStat = fs.statSync(finisherReadyToUploadSubFolderPath);
+        if (finisherReadyToUploadStat.isDirectory()) {
+            try {
+                fs.renameSync(finisherReadyToUploadSubFolderPath, `${finisherReadyToUploadSubFolderPath} `);
+                fs.renameSync(`${finisherReadyToUploadSubFolderPath} `, finisherReadyToUploadSubFolderPath.trim());
+                unlockedFolders.push(finisherReadyToUploadSubFolderAndFiles);
+            } catch (err) {
+                lgw(
+                    `Folder in Finisher's ReadyToUpload locked, maybe a contractor working/moving it, Filename: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
+                );
             }
         }
     }
-});
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const finisherReadyToUploadSubFolderAndFiles of unlockedFolders) {
+        const finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
+        const finisherReadyToUploadStat = fs.statSync(finisherReadyToUploadSubFolderPath);
+        // Check ReadyToUpload item is a folder
+        if (!finisherReadyToUploadStat.isDirectory()) {
+            lgw(
+                `Found a file in Finisher's ReadyToUpload directory, Filename: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
+            );
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        // Check ReadyToUpload folder matches the format
+        if (!/^.* (([^\s]* )*)[^\s]+ \d{1,3} \(#\d{5}\)$/.test(finisherReadyToUploadSubFolderAndFiles)) {
+            lgw(
+                `Folder in ReadyToUpload but is not in a proper format, Folder: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
+            );
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        const numberOfImagesAcToFolderName = parseInt(getNumberOfImagesFromAllottedDealerNumberFolder(finisherReadyToUploadSubFolderAndFiles), 10);
+        const numberOfImagesAcToFileCount = getFileCountRecursively(finisherReadyToUploadSubFolderPath);
+        // Check ReadyToUpload folder filecount matches as mentioned in the folder
+        if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
+            lgw(
+                `Folder in ReadyToUpload but images quantity does not match, Folder: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
+            );
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        const folderSize = getFolderSizeInBytes(finisherReadyToUploadSubFolderPath);
+        foldersToShift.push([finisherReadyToUploadSubFolderPath, finisher, folderSize]);
+    }
+}
+
 foldersToShift.sort((a, b) => {
     const regex = /(\d+)/;
     if (!regex.test(path.basename(a[0])) || !regex.test(path.basename(b[0]))) {
@@ -87,21 +122,23 @@ foldersToShift.sort((a, b) => {
     const numB = Number(path.basename(b[0]).match(regex)[0]);
     return numA - numB;
 });
+// TODO: This sleep was induced to check folderSizeAfter10Seconds functionality, to be removed if the above locking system works properly.
 // sleep(15);
 // console.log(foldersToShift);
 
-async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
+async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isDryRun = true) {
     let doesDestinationFolderAlreadyExists = false;
     let hasMovingToUploadZonePrinted = false;
     const foldersToShiftLength = foldersToShift.length;
     for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
         const folderToShift = foldersToShift[cnt];
+        // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system works properly.
         const folderSizeAfter10Seconds = getFolderSizeInBytes(folderToShift[0]);
-        if (folderSizeAfter10Seconds !== folderToShift[1]) {
+        if (folderSizeAfter10Seconds !== folderToShift[2]) {
             foldersToShift.splice(folderToShift);
         } else {
             if (!isDryRun && !hasMovingToUploadZonePrinted) {
-                process.stdout.write(chalk.cyan('Moving folders to UploadingZone: \n'));
+                process.stdout.write(chalk.cyan('Moving folders to UploadingZone and FinishingAccounting: \n'));
                 hasMovingToUploadZonePrinted = true;
             }
             if (!isDryRun) {
@@ -112,12 +149,20 @@ async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
                 }
             }
             const newUploadingZonePath = `${config.uploadingZonePath}\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
+            const newFinishingAccountingZonePath = `${config.contractorsRecordKeepingPath}\\005_FinishingAccounting\\${
+                folderToShift[1]
+            }\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
             if (isDryRun) {
+                if (fs.existsSync(`${newFinishingAccountingZonePath}`)) {
+                    lge(`Folder: ${newFinishingAccountingZonePath} already exists, cannot move ${folderToShift[0]} to its location.`);
+                    doesDestinationFolderAlreadyExists = true;
+                }
                 if (fs.existsSync(`${newUploadingZonePath}`)) {
                     lge(`Folder: ${newUploadingZonePath} already exists, cannot move ${folderToShift[0]} to its location.`);
                     doesDestinationFolderAlreadyExists = true;
                 }
             } else {
+                createDirAndCopyFile(folderToShift[0], newFinishingAccountingZonePath);
                 await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
                 folderToShift[0] = newUploadingZonePath;
             }
@@ -133,11 +178,11 @@ async function moveFilesFromContractorsToUploadingZone(isDryRun = true) {
     return doesDestinationFolderAlreadyExists;
 }
 
-const doesDestinationFolderAlreadyExists = await moveFilesFromContractorsToUploadingZone(true);
+const doesDestinationFolderAlreadyExists = await moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(true);
 if (doesDestinationFolderAlreadyExists) {
     process.exit(1);
 }
-await moveFilesFromContractorsToUploadingZone(false);
+await moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(false);
 
 if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
     console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));
