@@ -19,6 +19,7 @@
     "chrome-bookmark-reader": "^0.4.0",
     "cp": "^0.2.0",
     "date-and-time": "^2.4.2",
+    "date-fns": "^2.30.0",
     "fs-extra": "^11.1.1",
     "get-cursor-position": "^2.0.0",
     "html-entities": "^2.3.3",
@@ -35,7 +36,8 @@
     "readline-sync": "^1.4.10",
     "sleep": "^6.3.0",
     "winston": "^3.8.2",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "xlsx-js-style": "^1.2.0"
   },
   "devDependencies": {
     "eslint": "^8.2.0",
