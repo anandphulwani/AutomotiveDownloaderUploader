@@ -19,6 +19,8 @@ REM BFCPEOPTIONEND
 @echo off
 cd "%~dp0"
 cls
+start node contractors_folderTransferer.js
+cls
 set "runCount=%~1"
 set /a runCount=%runCount% 2>nul
 set "error="
