@@ -46,6 +46,7 @@ const configBasic = {
     dealerConfigurationFolder: '.\\configs\\DealerConfiguration',
     downloadPath: '.\\datastore\\Downloads',
     contractorsZonePath: '.\\datastore\\ContractorsZone',
+    contractorsRecordKeepingPath: '.\\datastore\\ContractorsRecordKeepingZone',
     uploadingZonePath: '.\\datastore\\UploadingZone',
     finishedUploadingZonePath: '.\\datastore\\FinishedUploadingZone',
     recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
@@ -56,12 +57,14 @@ const configBasic = {
         // ram: {
         //     currentAllotted: 0,
         //     normalThreshold: 500,
-        //     processingFolders: ['000_Done', '000_ReadyToUpload'],
+        //     extraProcessingFolders: [],
+        //     finisher: 'karan',
         // },
         // karan: {
         //     currentAllotted: 0,
         //     normalThreshold: 500,
-        //     processingFolders: ['000_Done', '000_ReadyToUpload'],
+        //     extraProcessingFolders: [],
+        //     finisher: 'karan',
         // },
     },
     lot: [
