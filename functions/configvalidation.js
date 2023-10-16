@@ -28,6 +28,8 @@ function validateConfigFile(debug = false) {
     debug ? console.log(`Validating bookmarks and checking if credentials are present: Executing.`) : '';
     validationStatus = 'success';
     // ONPROJECTFINISH: Complete the validation of config file.
+    // Check every contractor has a finisher which exists itself as a contractor.
+    // Check every contractor has all required elements including finisher
     // validationStatus = 'error';
     debug ? console.log(`Validating excel file: Done.`) : '';
     return validationStatus;
