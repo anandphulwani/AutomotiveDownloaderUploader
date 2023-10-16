@@ -7,6 +7,8 @@ import { config } from '../configs/config.js';
 import { waitForMilliSeconds } from './sleep.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
+import { makeDir } from './filesystem.js';
+import { instanceRunDateFormatted } from './datetime.js';
 /* eslint-enable import/extensions */
 
 function getCredentialsForUsername(username) {
@@ -154,6 +156,69 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
     }
 }
 
+/**
+ *
+ * Creating folders according to cutter or finisher(cutter+finisher)
+ * Also creating extraProcessingFolders mentioned in config
+ *
+ * processingFolders: '001_CuttingDoneBuffer' (cutter), '003_FinishingBuffer' (finisher), '004_ReadyToUpload' (finisher)
+ * recordKeepingFolders: '002_TakenForFinishing' (cutter), '005_FinishingDone' (finisher)
+ *
+ */
+function createProcessingAndRecordKeepingFolders(dateToCreate) {
+    const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const contractor of Object.keys(config.contractors)) {
+        /**
+         * Creation of processingFolders
+         */
+        const cutterProcessingFolders = ['001_CuttingDoneBuffer'];
+        const cutterRecordKeepingFolders = ['002_TakenForFinishing'];
+        for (let i = 0; i < cutterProcessingFolders.length; i++) {
+            const cutterProcessingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${cutterProcessingFolders[i]}`;
+            if (!fs.existsSync(cutterProcessingFolderPath)) {
+                makeDir(cutterProcessingFolderPath);
+            }
+        }
+        for (let i = 0; i < cutterRecordKeepingFolders.length; i++) {
+            const cutterRecordKeepingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${cutterRecordKeepingFolders[i]}`;
+            if (!fs.existsSync(cutterRecordKeepingFolderPath)) {
+                makeDir(cutterRecordKeepingFolderPath);
+            }
+        }
+        /**
+         * If contractor is a finisher, then create finisher
+         */
+        if (finishers.includes(contractor)) {
+            const finisherProcessingFolders = ['003_FinishingBuffer', '004_ReadyToUpload'];
+            const finisherRecordKeepingFolders = ['005_FinishingDone'];
+            for (let i = 0; i < finisherProcessingFolders.length; i++) {
+                const finisherProcessingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${finisherProcessingFolders[i]}`;
+                if (!fs.existsSync(finisherProcessingFolderPath)) {
+                    makeDir(finisherProcessingFolderPath);
+                }
+            }
+            for (let i = 0; i < finisherRecordKeepingFolders.length; i++) {
+                const finisherRecordKeepingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${finisherRecordKeepingFolders[i]}`;
+                if (!fs.existsSync(finisherRecordKeepingFolderPath)) {
+                    makeDir(finisherRecordKeepingFolderPath);
+                }
+            }
+        }
+
+        /**
+         * Creation of extraProcessingFolders as mentioned in the config
+         */
+        const { extraProcessingFolders } = config.contractors[contractor];
+        for (let i = 0; i < extraProcessingFolders.length; i++) {
+            const extraProcessingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${extraProcessingFolders[i]}`;
+            if (!fs.existsSync(extraProcessingFolderPath)) {
+                makeDir(extraProcessingFolderPath);
+            }
+        }
+    }
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     getCredentialsForUsername,
@@ -163,4 +228,5 @@ export {
     getContractorsCurrentAllotted,
     addToContractorsCurrentAllotted,
     setLastLotNumberAndDate,
+    createProcessingAndRecordKeepingFolders,
 };

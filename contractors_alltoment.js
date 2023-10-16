@@ -14,7 +14,7 @@ import { lge, lgw, lgif } from './functions/loggersupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
 import { makeDir, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
-import { setContractorsCurrentAllotted, setLastLotNumberAndDate } from './functions/configsupportive.js';
+import { createProcessingAndRecordKeepingFolders, setContractorsCurrentAllotted, setLastLotNumberAndDate } from './functions/configsupportive.js';
 import {
     recalculateRatioOfThreshHoldWithOtherContractors,
     validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs,
@@ -113,25 +113,16 @@ lgif(`Object.keys(config.contractors): ${JSON.stringify(Object.keys(config.contr
 let contractors = [];
 let totalNoOfNormalThreshold = 0;
 
+createProcessingAndRecordKeepingFolders(lotTodaysDate);
 /**
  * Set contractors currentstatus to 0 if lot no is 1
  * Reading all name and normalThreshold to contractors array
  * Adding all normalThreshold to totalNoOfNormalThreshold
- *
- * Also creating folders mentioned in processingFolders for the contractor
- *
  */
 // eslint-disable-next-line no-restricted-syntax
 for (const contractor of Object.keys(config.contractors)) {
     if (lotIndex === 1) {
         await setContractorsCurrentAllotted(contractor, '0');
-        //  TODO: Remove this foreach
-        config.contractors[contractor].processingFolders.forEach(async (processingFolder) => {
-            const contractorsProcessingFolder = `${config.contractorsZonePath}\\${contractor}\\${lotTodaysDate}\\${processingFolder}`;
-            if (!fs.existsSync(contractorsProcessingFolder)) {
-                makeDir(contractorsProcessingFolder);
-            }
-        });
     }
     const { normalThreshold } = config.contractors[contractor];
     contractors.push([contractor, normalThreshold]);
