@@ -110,7 +110,8 @@ for (const finisher of finishers) {
             continue;
         }
         // Check ReadyToUpload folder matches the format
-        if (!/^.* (([^\s]* )*)[^\s]+ \d{1,3} \(#\d{5}\)$/.test(finisherReadyToUploadSubFolderAndFiles)) {
+        const regexToMatchFolderName = /^.* (([^\s]* )*)[^\s]+ \d{1,3} \((#\d{5})\)$/;
+        if (!regexToMatchFolderName.test(finisherReadyToUploadSubFolderAndFiles)) {
             lgw(
                 `Folder in ReadyToUpload but is not in a proper format, Folder: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
             );
@@ -127,20 +128,21 @@ for (const finisher of finishers) {
             // eslint-disable-next-line no-continue
             continue;
         }
-        const matches = contractorReadyToUploadSubFolderAndFiles.match(regexToMatchFolderName);
+        const matches = finisherReadyToUploadSubFolderAndFiles.match(regexToMatchFolderName);
         const uniqueCode = matches[matches.length - 1];
-        let contractorDoneBy = null;
+        let cuttingDoneBy = null;
         // eslint-disable-next-line no-restricted-syntax
         for (const contractorInSubLoop of Object.keys(config.contractors)) {
-            const contractorDoneSubFolderDir = `${config.contractorsZonePath}\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\000_Done\\${contractorReadyToUploadSubFolderAndFiles}`;
+            const contractorDoneSubFolderDir = `${config.contractorsRecordKeepingPath}\\002_CuttingAccounting\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\${finisherReadyToUploadSubFolderAndFiles}`;
+            // const contractorDoneSubFolderDir = `${config.contractorsZonePath}\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\000_Done\\${contractorReadyToUploadSubFolderAndFiles}`;
             if (fs.existsSync(contractorDoneSubFolderDir)) {
-                contractorDoneBy = contractorInSubLoop;
+                cuttingDoneBy = contractorInSubLoop;
                 break;
             }
-        }         
-        if (contractorDoneBy == null) {
+        }
+        if (cuttingDoneBy == null) {
             lgw(
-                `Folder present in 'ReadyToUpload' but not present in 'Done' folder for reporting, Folder: ${contractor}\\000_ReadyToUpload\\${contractorReadyToUploadSubFolderAndFiles}, Ignoring.`
+                `Folder present in 'ReadyToUpload' but not present in 'CuttingAccounting' folder for reporting, Folder: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
             );
             // eslint-disable-next-line no-continue
             continue;
@@ -152,21 +154,19 @@ for (const finisher of finishers) {
             // eslint-disable-next-line no-continue
             continue;
         }
-        if (path.basename(contractorReadyToUploadSubFolderPath) !== reportJSONObj[uniqueCode].allotmentFolderName) {
+        if (path.basename(finisherReadyToUploadSubFolderAndFiles) !== reportJSONObj[uniqueCode].allotmentFolderName) {
             lgw(
                 `The allotment folder name '${
                     reportJSONObj[uniqueCode].allotmentFolderName
                 }' does not match folder name coming back for uploading '${path.basename(
-                    contractorReadyToUploadSubFolderPath
+                    finisherReadyToUploadSubFolderPath
                 )}', probably some contractor has modified the folder name, Exiting.`
             );
             // eslint-disable-next-line no-continue
             continue;
         }
         const folderSize = getFolderSizeInBytes(finisherReadyToUploadSubFolderPath);
-        // TODO: Resolve the problem in merge conflict in the next commit.
-        // foldersToShift.push([finisherReadyToUploadSubFolderPath, finisher, folderSize]);
-        // foldersToShift.push([contractorReadyToUploadSubFolderPath, folderSize, uniqueCode, contractor, contractorDoneBy]);
+        foldersToShift.push([finisherReadyToUploadSubFolderPath, folderSize, uniqueCode, cuttingDoneBy, finisher]);
     }
 }
 
@@ -192,7 +192,7 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
         const folderToShift = foldersToShift[cnt];
         // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system works properly.
         const folderSizeAfter10Seconds = getFolderSizeInBytes(folderToShift[0]);
-        if (folderSizeAfter10Seconds !== folderToShift[2]) {
+        if (folderSizeAfter10Seconds !== folderToShift[1]) {
             foldersToShift.splice(folderToShift);
         } else {
             if (!isDryRun && !hasMovingToUploadZonePrinted) {
@@ -208,7 +208,7 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
             }
             const newUploadingZonePath = `${config.uploadingZonePath}\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
             const newFinishingAccountingZonePath = `${config.contractorsRecordKeepingPath}\\005_FinishingAccounting\\${
-                folderToShift[1]
+                folderToShift[4]
             }\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
             if (isDryRun) {
                 if (fs.existsSync(`${newFinishingAccountingZonePath}`)) {
