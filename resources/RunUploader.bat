@@ -1,8 +1,8 @@
 @ECHO OFF
 REM BFCPEOPTIONSTART
 REM Advanced BAT to EXE Converter www.BatToExeConverter.com
-REM BFCPEEXE=C:\Users\Administrator\Desktop\AutomotiveDownloaderUploader\RunDownloader.exe
-REM BFCPEICON=C:\Users\Administrator\Downloads\Custom-Icon-Design-Flat-Cute-Arrows-Arrow-Up (1).ico
+REM BFCPEEXE=.\RunUploader.exe
+REM BFCPEICON=.\Upload.ico
 REM BFCPEICONINDEX=-1
 REM BFCPEEMBEDDISPLAY=0
 REM BFCPEEMBEDDELETE=1
