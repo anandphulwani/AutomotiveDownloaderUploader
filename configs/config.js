@@ -46,7 +46,7 @@ const configBasic = {
     dealerConfigurationFolder: '.\\configs\\DealerConfiguration',
     downloadPath: '.\\datastore\\Downloads',
     contractorsZonePath: '.\\datastore\\ContractorsZone',
-    contractorsRecordKeepingPath: '.\\datastore\\ContractorsRecordKeepingZone',
+    contractorsRecordKeepingPath: '.\\datastore\\ContractorsRecordKeeping',
     uploadingZonePath: '.\\datastore\\UploadingZone',
     finishedUploadingZonePath: '.\\datastore\\FinishedUploadingZone',
     recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
