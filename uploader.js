@@ -47,6 +47,8 @@ if (config.environment === 'production') {
 }
 autoCleanUpDatastoreZones();
 
+// TODO: validate config file here
+
 // const cuttingDone = config.cutterProcessingFolders[0];
 // const finishingBuffer = config.finisherProcessingFolders[0];
 const readyToUpload = config.finisherProcessingFolders[1];
@@ -173,6 +175,7 @@ for (const finisher of finishers) {
             continue;
         }
         const folderSize = getFolderSizeInBytes(finisherReadyToUploadSubFolderPath);
+        // TODO: Replace by key value pairs
         foldersToShift.push([finisherReadyToUploadSubFolderPath, folderSize, uniqueCode, cuttingDoneBy, finisher]);
     }
 }

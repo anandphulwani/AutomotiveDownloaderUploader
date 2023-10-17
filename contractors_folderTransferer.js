@@ -50,6 +50,7 @@ import { waitForSeconds } from './functions/sleep.js';
  *
  */
 
+// TODO: Copy this to downloader, uploader, genreate excel script as well
 /**
  *
  * Only make a single instance run of the script.
@@ -63,6 +64,8 @@ try {
 } catch (error) {
     process.exit(1);
 }
+// TODO: validate config file here
+
 const cuttingDone = config.cutterProcessingFolders[0];
 const finishingBuffer = config.finisherProcessingFolders[0];
 // const readyToUpload = config.finisherProcessingFolders[1]
