@@ -53,10 +53,10 @@ const configBasic = {
     lockingBackupsZonePath: '.\\datastore\\LockingBackupsZone',
     reportsPath: '.\\datastore\\Reports',
     automaticClickSaveButtonOnUpload: true,
-    cutterProcessingFolders: ['001_CuttingDone'],
-    cutterRecordKeepingFolders: ['002_CuttingAccounting'],
-    finisherProcessingFolders: ['003_FinishingBuffer', '004_ReadyToUpload'],
-    finisherRecordKeepingFolders: ['005_FinishingAccounting'],
+    cutterProcessingFolders: ['001_CuttingDone'], // The index of this array are used to detect the folder types, so check before you change
+    cutterRecordKeepingFolders: ['002_CuttingAccounting'], // The index of this array are used to detect the folder types, so check before you change
+    finisherProcessingFolders: ['003_FinishingBuffer', '004_ReadyToUpload'], // The index of this array are used to detect the folder types, so check before you change
+    finisherRecordKeepingFolders: ['005_FinishingAccounting'], // The index of this array are used to detect the folder types, so check before you change
     contractors: {
         // ram: {
         //     currentAllotted: 0,

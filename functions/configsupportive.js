@@ -161,8 +161,8 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
  * Creating folders according to cutter or finisher(cutter+finisher)
  * Also creating extraProcessingFolders mentioned in config
  *
- * processingFolders: '001_CuttingDoneBuffer' (cutter), '003_FinishingBuffer' (finisher), '004_ReadyToUpload' (finisher)
- * recordKeepingFolders: '002_TakenForFinishing' (cutter), '005_FinishingDone' (finisher)
+ * processingFolders: '001_CuttingDone' (cutter), '003_FinishingBuffer' (finisher), '004_ReadyToUpload' (finisher)
+ * recordKeepingFolders: '002_CuttingAccounting' (cutter), '005_FinishingAccounting' (finisher)
  *
  */
 function createProcessingAndRecordKeepingFolders(dateToCreate) {
@@ -172,8 +172,7 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
         /**
          * Creation of processingFolders
          */
-        const cutterProcessingFolders = ['001_CuttingDoneBuffer'];
-        const cutterRecordKeepingFolders = ['002_TakenForFinishing'];
+        const { cutterProcessingFolders, cutterRecordKeepingFolders } = config;
         for (let i = 0; i < cutterProcessingFolders.length; i++) {
             const cutterProcessingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${cutterProcessingFolders[i]}`;
             if (!fs.existsSync(cutterProcessingFolderPath)) {
@@ -181,7 +180,7 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
             }
         }
         for (let i = 0; i < cutterRecordKeepingFolders.length; i++) {
-            const cutterRecordKeepingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${cutterRecordKeepingFolders[i]}`;
+            const cutterRecordKeepingFolderPath = `${config.contractorsRecordKeepingPath}\\${contractor}\\${cutterRecordKeepingFolders[i]}\\${dateToCreate}`;
             if (!fs.existsSync(cutterRecordKeepingFolderPath)) {
                 makeDir(cutterRecordKeepingFolderPath);
             }
@@ -190,8 +189,7 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
          * If contractor is a finisher, then create finisher
          */
         if (finishers.includes(contractor)) {
-            const finisherProcessingFolders = ['003_FinishingBuffer', '004_ReadyToUpload'];
-            const finisherRecordKeepingFolders = ['005_FinishingDone'];
+            const { finisherProcessingFolders, finisherRecordKeepingFolders } = config;
             for (let i = 0; i < finisherProcessingFolders.length; i++) {
                 const finisherProcessingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${finisherProcessingFolders[i]}`;
                 if (!fs.existsSync(finisherProcessingFolderPath)) {
@@ -199,7 +197,7 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
                 }
             }
             for (let i = 0; i < finisherRecordKeepingFolders.length; i++) {
-                const finisherRecordKeepingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${finisherRecordKeepingFolders[i]}`;
+                const finisherRecordKeepingFolderPath = `${config.contractorsRecordKeepingPath}\\${contractor}\\${finisherRecordKeepingFolders[i]}\\${dateToCreate}`;
                 if (!fs.existsSync(finisherRecordKeepingFolderPath)) {
                     makeDir(finisherRecordKeepingFolderPath);
                 }

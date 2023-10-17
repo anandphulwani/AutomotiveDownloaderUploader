@@ -47,6 +47,13 @@ if (config.environment === 'production') {
 }
 autoCleanUpDatastoreZones();
 
+// const cuttingDone = config.cutterProcessingFolders[0];
+// const finishingBuffer = config.finisherProcessingFolders[0];
+const readyToUpload = config.finisherProcessingFolders[1];
+
+// const cuttingAccounting = config.cutterRecordKeepingFolders[0];
+const finishingAccounting = config.finisherRecordKeepingFolders[0];
+
 const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
 let reportJSONObj;
 try {
@@ -70,7 +77,7 @@ const finishers = [...new Set(Object.values(config.contractors).map((contractor)
 
 // eslint-disable-next-line no-restricted-syntax
 for (const finisher of finishers) {
-    const finisherReadyToUploadDir = `${config.contractorsZonePath}\\${finisher}\\${instanceRunDateFormatted}\\004_ReadyToUpload`;
+    const finisherReadyToUploadDir = `${config.contractorsZonePath}\\${finisher}\\${instanceRunDateFormatted}\\${readyToUpload}`;
     // Check ReadyToUpload folder exists.
     if (!fs.existsSync(finisherReadyToUploadDir)) {
         lgw(`Finisher's ReadyToUpload folder doesn't exist: ${finisherReadyToUploadDir}, Ignoring.`);
@@ -91,7 +98,7 @@ for (const finisher of finishers) {
                 unlockedFolders.push(finisherReadyToUploadSubFolderAndFiles);
             } catch (err) {
                 lgw(
-                    `Folder in Finisher's ReadyToUpload locked, maybe a contractor working/moving it, Filename: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
+                    `Folder in Finisher's ReadyToUpload locked, maybe a contractor working/moving it, Filename: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
                 );
             }
         }
@@ -104,7 +111,7 @@ for (const finisher of finishers) {
         // Check ReadyToUpload item is a folder
         if (!finisherReadyToUploadStat.isDirectory()) {
             lgw(
-                `Found a file in Finisher's ReadyToUpload directory, Filename: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
+                `Found a file in Finisher's ReadyToUpload directory, Filename: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
             );
             // eslint-disable-next-line no-continue
             continue;
@@ -113,7 +120,7 @@ for (const finisher of finishers) {
         const regexToMatchFolderName = /^.* (([^\s]* )*)[^\s]+ \d{1,3} \((#\d{5})\)$/;
         if (!regexToMatchFolderName.test(finisherReadyToUploadSubFolderAndFiles)) {
             lgw(
-                `Folder in ReadyToUpload but is not in a proper format, Folder: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
+                `Folder in ReadyToUpload but is not in a proper format, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
             );
             // eslint-disable-next-line no-continue
             continue;
@@ -123,7 +130,7 @@ for (const finisher of finishers) {
         // Check ReadyToUpload folder filecount matches as mentioned in the folder
         if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
             lgw(
-                `Folder in ReadyToUpload but images quantity does not match, Folder: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
+                `Folder in ReadyToUpload but images quantity does not match, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
             );
             // eslint-disable-next-line no-continue
             continue;
@@ -142,7 +149,7 @@ for (const finisher of finishers) {
         }
         if (cuttingDoneBy == null) {
             lgw(
-                `Folder present in 'ReadyToUpload' but not present in 'CuttingAccounting' folder for reporting, Folder: ${finisher}\\004_ReadyToUpload\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
+                `Folder present in 'ReadyToUpload' but not present in 'CuttingAccounting' folder for reporting, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
             );
             // eslint-disable-next-line no-continue
             continue;
@@ -207,9 +214,9 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
                 }
             }
             const newUploadingZonePath = `${config.uploadingZonePath}\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
-            const newFinishingAccountingZonePath = `${config.contractorsRecordKeepingPath}\\005_FinishingAccounting\\${
+            const newFinishingAccountingZonePath = `${config.contractorsRecordKeepingPath}\\${
                 folderToShift[4]
-            }\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
+            }\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
             if (isDryRun) {
                 if (fs.existsSync(`${newFinishingAccountingZonePath}`)) {
                     lge(`Folder: ${newFinishingAccountingZonePath} already exists, cannot move ${folderToShift[0]} to its location.`);

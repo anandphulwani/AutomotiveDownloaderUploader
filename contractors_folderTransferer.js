@@ -49,6 +49,13 @@ import { waitForSeconds } from './functions/sleep.js';
  *
  */
 
+const cuttingDone = config.cutterProcessingFolders[0];
+const finishingBuffer = config.finisherProcessingFolders[0];
+// const readyToUpload = config.finisherProcessingFolders[1]
+
+const cuttingAccounting = config.cutterRecordKeepingFolders[0];
+// const finishingAccounting = config.finisherRecordKeepingFolders[0];
+
 async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, isDryRun = true) {
     let doesDestinationFolderAlreadyExists = false;
     let hasMovingToUploadZonePrinted = false;
@@ -57,7 +64,7 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
         const folderToShift = foldersToShift[cnt];
         // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system works properly.
         const folderSizeAfter10Seconds = getFolderSizeInBytes(folderToShift[0]);
-        if (folderSizeAfter10Seconds !== folderToShift[3]) {
+        if (folderSizeAfter10Seconds !== folderToShift[1]) {
             foldersToShift.splice(folderToShift);
         } else {
             if (!isDryRun && !hasMovingToUploadZonePrinted) {
@@ -72,11 +79,11 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
                 }
             }
             const newFinishingBufferPath = `${config.contractorsZonePath}\\${
+                folderToShift[3]
+            }\\${instanceRunDateFormatted}\\${finishingBuffer}\\${path.basename(folderToShift[0])}`;
+            const newCuttingAccountingZonePath = `${config.contractorsRecordKeepingPath}\\${
                 folderToShift[2]
-            }\\${instanceRunDateFormatted}\\003_FinishingBuffer\\${path.basename(folderToShift[0])}`;
-            const newCuttingAccountingZonePath = `${config.contractorsRecordKeepingPath}\\002_CuttingAccounting\\${
-                folderToShift[1]
-            }\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
+            }\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
             if (isDryRun) {
                 if (fs.existsSync(`${newFinishingBufferPath}`)) {
                     lge(`Folder: ${newFinishingBufferPath} already exists, cannot move ${folderToShift[0]} to its location.`);
@@ -111,7 +118,7 @@ while (true) {
     // eslint-disable-next-line no-restricted-syntax
     for (const cutter of Object.keys(config.contractors)) {
         const cuttersFinisher = config.contractors[cutter].finisher;
-        const cutterCuttingDoneDir = `${config.contractorsZonePath}\\${cutter}\\${instanceRunDateFormatted}\\001_CuttingDone`;
+        const cutterCuttingDoneDir = `${config.contractorsZonePath}\\${cutter}\\${instanceRunDateFormatted}\\${cuttingDone}`;
         // Check CuttingDone folder exists.
         if (!fs.existsSync(cutterCuttingDoneDir)) {
             lgw(`Cutter's CuttingDone folder doesn't exist: ${cutterCuttingDoneDir}, Ignoring.`);
@@ -132,7 +139,7 @@ while (true) {
                     unlockedFolders.push(cutterCuttingDoneSubFolderAndFiles);
                 } catch (err) {
                     lgw(
-                        `Folder in Cutter's CuttingDone locked, maybe a contractor working/moving it, Filename: ${cutter}\\001_CuttingDone\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
+                        `Folder in Cutter's CuttingDone locked, maybe a contractor working/moving it, Filename: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                     );
                 }
             }
@@ -145,7 +152,7 @@ while (true) {
             // Check ReadyToUpload item is a folder
             if (!cutterCuttingDoneStat.isDirectory()) {
                 lgw(
-                    `Found a file in Cutter's CuttingDone directory, Filename: ${cutter}\\001_CuttingDone\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
+                    `Found a file in Cutter's CuttingDone directory, Filename: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                 );
                 // eslint-disable-next-line no-continue
                 continue;
@@ -153,7 +160,7 @@ while (true) {
             // Check ReadyToUpload folder matches the format
             if (!/^.* (([^\s]* )*)[^\s]+ \d{1,3} \(#\d{5}\)$/.test(cutterCuttingDoneSubFolderAndFiles)) {
                 lgw(
-                    `Folder in CuttingDone but is not in a proper format, Folder: ${cutter}\\001_CuttingDone\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
+                    `Folder in CuttingDone but is not in a proper format, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                 );
                 // eslint-disable-next-line no-continue
                 continue;
@@ -163,7 +170,7 @@ while (true) {
             // Check ReadyToUpload folder filecount matches as mentioned in the folder
             if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
                 lgw(
-                    `Folder in CuttingDone but images quantity does not match, Folder: ${cutter}\\001_CuttingDone\\${cutterCuttingDoneSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
+                    `Folder in CuttingDone but images quantity does not match, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
                 );
                 // eslint-disable-next-line no-continue
                 continue;
