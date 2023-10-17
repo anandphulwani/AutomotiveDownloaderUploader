@@ -43,6 +43,7 @@ echo Please run `git checkout ^<branchname^>` now, if any, then press Enter to c
 echo.
 pause
 mkdir .\datastore\ContractorsZone
+mkdir .\datastore\ContractorsRecordKeeping
 mkdir .\datastore\Downloads
 mkdir .\datastore\FinishedUploadingZone
 mkdir .\datastore\LockingBackupsZone
