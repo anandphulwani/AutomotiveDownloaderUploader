@@ -176,7 +176,7 @@ while (true) {
                 continue;
             }
             const folderSize = getFolderSizeInBytes(cutterCuttingDoneSubFolderPath);
-            foldersToShift.push([cutterCuttingDoneSubFolderPath, cutter, cuttersFinisher, folderSize]);
+            foldersToShift.push([cutterCuttingDoneSubFolderPath, folderSize, cutter, cuttersFinisher]);
         }
     }
 
