@@ -193,6 +193,7 @@ while (true) {
                 continue;
             }
             const folderSize = getFolderSizeInBytes(cutterCuttingDoneSubFolderPath);
+            // TODO: Replace by key value pairs
             foldersToShift.push([cutterCuttingDoneSubFolderPath, folderSize, cutter, cuttersFinisher]);
         }
     }
