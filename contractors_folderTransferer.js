@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
+import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
@@ -49,6 +50,19 @@ import { waitForSeconds } from './functions/sleep.js';
  *
  */
 
+/**
+ *
+ * Only make a single instance run of the script.
+ *
+ */
+try {
+    if (checkSync('contractors_folderTransferer.js', { stale: 43200000 })) {
+        throw new Error('Already has lock');
+    }
+    lockSync('contractors_folderTransferer.js', { stale: 43200000 });
+} catch (error) {
+    process.exit(1);
+}
 const cuttingDone = config.cutterProcessingFolders[0];
 const finishingBuffer = config.finisherProcessingFolders[0];
 // const readyToUpload = config.finisherProcessingFolders[1]
