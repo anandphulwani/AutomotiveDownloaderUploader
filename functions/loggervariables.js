@@ -14,6 +14,10 @@ const debug = true;
  *
  */
 const instanceRunLogFilePrefix = `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeFormatted}`;
+const instanceRunLogFilePrefixDir = path.dirname(instanceRunLogFilePrefix);
+if (!fs.existsSync(instanceRunLogFilePrefixDir)) {
+    fs.mkdirSync(instanceRunLogFilePrefixDir, { recursive: true });
+}
 if (!fs.existsSync(instanceRunLogFilePrefix)) {
     fs.writeFile(instanceRunLogFilePrefix, '', (err) => {});
 }
@@ -34,6 +38,9 @@ if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
     }
     if (debug) {
         const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTimeFormatted}/${path.basename(instanceRunLogFilePrefix)}`;
+        if (!fs.existsSync(logPath)) {
+            fs.mkdirSync(logPath, { recursive: true });
+        }
         fs.appendFileSync(
             `${logPath}/${currentTimeFormatted()}_AttainedLock_loggervariables.js.txt`,
             `Got A Lock On '${instanceRunLogFilePrefix}', caller: loggervariables.js.\n`
