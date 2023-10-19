@@ -53,7 +53,7 @@ autoCleanUpDatastoreZones();
 // const finishingBuffer = config.finisherProcessingFolders[0];
 const readyToUpload = config.finisherProcessingFolders[1];
 
-// const cuttingAccounting = config.cutterRecordKeepingFolders[0];
+const cuttingAccounting = config.cutterRecordKeepingFolders[0];
 const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
 const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
@@ -142,7 +142,7 @@ for (const finisher of finishers) {
         let cuttingDoneBy = null;
         // eslint-disable-next-line no-restricted-syntax
         for (const contractorInSubLoop of Object.keys(config.contractors)) {
-            const contractorDoneSubFolderDir = `${config.contractorsRecordKeepingPath}\\002_CuttingAccounting\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\${finisherReadyToUploadSubFolderAndFiles}`;
+            const contractorDoneSubFolderDir = `${config.contractorsRecordKeepingPath}\\${contractorInSubLoop}\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${finisherReadyToUploadSubFolderAndFiles}`;
             // const contractorDoneSubFolderDir = `${config.contractorsZonePath}\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\000_Done\\${contractorReadyToUploadSubFolderAndFiles}`;
             if (fs.existsSync(contractorDoneSubFolderDir)) {
                 cuttingDoneBy = contractorInSubLoop;
