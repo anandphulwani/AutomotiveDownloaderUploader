@@ -23,14 +23,16 @@ import { waitForSeconds } from './functions/sleep.js';
  *
  * Folder Structure::
  * ContractorFolder:
- *      |--- 001_CuttingDone
- *      |--- 003_FinishingBuffer
- *      |--- 004_ReadyToUpload
+ *      |--- Today's Date
+ *                       |--- 001_CuttingDone
+ *                       |--- 003_FinishingBuffer
+ *                       |--- 004_ReadyToUpload
  *
  * ContractorRecordKeepingFolder:
  *      |--- 002_CuttingAccounting
+ *                       |--- Today's Date
  *      |--- 005_FinishingAccounting
- *
+ *                       |--- Today's Date
  *
  *
  * Process:

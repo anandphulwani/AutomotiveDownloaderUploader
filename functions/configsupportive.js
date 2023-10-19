@@ -161,7 +161,9 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
  * Creating folders according to cutter or finisher(cutter+finisher)
  * Also creating extraProcessingFolders mentioned in config
  *
+ * processingFolderFormat: contractor/date/processingFolder/
  * processingFolders: '001_CuttingDone' (cutter), '003_FinishingBuffer' (finisher), '004_ReadyToUpload' (finisher)
+ * recordKeepingFolderFormat: contractor/recordKeepingFolders/date/
  * recordKeepingFolders: '002_CuttingAccounting' (cutter), '005_FinishingAccounting' (finisher)
  *
  */
