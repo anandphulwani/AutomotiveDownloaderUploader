@@ -1,21 +1,23 @@
 import fs from 'fs';
 import path from 'path';
 import fsExtra from 'fs-extra';
+import { checkSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { instanceRunDateFormatted, instanceRunDateTimeWOMSFormatted, currentTimeFormatted } from './datetime.js';
+import { instanceRunDateFormatted, currentTimeFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
 import { lge, lgc } from './loggersupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 import { attainLock, releaseLock } from './locksupportive.js';
+import { instanceRunLogFilePrefix } from './loggervariables.js';
 /* eslint-enable import/extensions */
 
+/**
+ *  Just to make sure this file is called and a lock is obtained on self files, before doing any clean up.
+ */
+instanceRunLogFilePrefix;
 const perImageTimeToUpload = 7.25;
 const perVINTimeToUpload = 7;
-
-fs.writeFile(`.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}`, '', (err) => {});
-const instanceRunLogFileToAvoidDeletingSelfRunCreatedBlankFilesForItself = `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}`;
-attainLock(instanceRunLogFileToAvoidDeletingSelfRunCreatedBlankFilesForItself, 10800000, true);
 
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     const foldersToCleanUp = [

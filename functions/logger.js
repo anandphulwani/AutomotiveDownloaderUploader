@@ -2,7 +2,8 @@ import chalk from 'chalk';
 import { createLogger, format, transports } from 'winston';
 
 /* eslint-disable import/extensions */
-import { instanceRunDateFormatted, instanceRunDateTimeWOMSFormatted, currentDateTimeReadableFormatted } from './datetime.js';
+import { currentDateTimeReadableFormatted } from './datetime.js';
+import { instanceRunLogFilePrefix } from './loggervariables.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, printf, errors } = format;
@@ -119,7 +120,7 @@ const catcherrorFileWinston = createLogger({
         // new transports.File({
         //     ...fileTransportOptions,
         //     name: 'all',
-        //     filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}.log`,
+        //     filename: `${instanceRunLogFilePrefix}.log`,
         //     level: 'catcherror',
         // }),
         // To catch the non catched errors
@@ -127,14 +128,14 @@ const catcherrorFileWinston = createLogger({
             handleExceptions: true,
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}.log`,
+            filename: `${instanceRunLogFilePrefix}.log`,
             level: 'error',
         }),
         new transports.File({
             handleExceptions: true,
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}_noncatcherror.log`,
+            filename: `${instanceRunLogFilePrefix}_noncatcherror.log`,
             level: 'error',
         }),
     ],
@@ -149,7 +150,7 @@ const unreachableFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}.log`,
+            filename: `${instanceRunLogFilePrefix}.log`,
             level: 'unreachable',
         }),
     ],
@@ -162,7 +163,7 @@ const errorFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}.log`,
+            filename: `${instanceRunLogFilePrefix}.log`,
             level: 'error',
         }),
     ],
@@ -175,7 +176,7 @@ const warnFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}.log`,
+            filename: `${instanceRunLogFilePrefix}.log`,
             level: 'warn',
         }),
     ],
@@ -188,7 +189,7 @@ const infoFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}.log`,
+            filename: `${instanceRunLogFilePrefix}.log`,
             level: 'info',
         }),
     ],
@@ -201,7 +202,7 @@ const verboseFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}.log`,
+            filename: `${instanceRunLogFilePrefix}.log`,
             level: 'verbose',
         }),
     ],
@@ -214,7 +215,7 @@ const debugFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}.log`,
+            filename: `${instanceRunLogFilePrefix}.log`,
             level: 'debug',
         }),
     ],
@@ -227,7 +228,7 @@ const sillyFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}.log`,
+            filename: `${instanceRunLogFilePrefix}.log`,
             level: 'silly',
         }),
     ],
@@ -350,7 +351,7 @@ function addIndividualTransportCatcherrorFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'catcherror',
-                filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}_catcherror.log`,
+                filename: `${instanceRunLogFilePrefix}_catcherror.log`,
                 level: 'catcherror',
             })
         );
@@ -365,7 +366,7 @@ function addIndividualTransportUnreachableFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'unreachable',
-                filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}_unreachable.log`,
+                filename: `${instanceRunLogFilePrefix}_unreachable.log`,
                 level: 'unreachable',
             })
         );
@@ -380,7 +381,7 @@ function addIndividualTransportErrorFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'error',
-                filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}_error.log`,
+                filename: `${instanceRunLogFilePrefix}_error.log`,
                 level: 'error',
             })
         );
@@ -395,7 +396,7 @@ function addIndividualTransportWarnFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'warn',
-                filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}_warn.log`,
+                filename: `${instanceRunLogFilePrefix}_warn.log`,
                 level: 'warn',
             })
         );
@@ -410,7 +411,7 @@ function addIndividualTransportInfoFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'info',
-                filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}_info.log`,
+                filename: `${instanceRunLogFilePrefix}_info.log`,
                 level: 'info',
             })
         );
@@ -425,7 +426,7 @@ function addIndividualTransportVerboseFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'verbose',
-                filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}_verbose.log`,
+                filename: `${instanceRunLogFilePrefix}_verbose.log`,
                 level: 'verbose',
             })
         );
@@ -440,7 +441,7 @@ function addIndividualTransportDebugFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'debug',
-                filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}_debug.log`,
+                filename: `${instanceRunLogFilePrefix}_debug.log`,
                 level: 'debug',
             })
         );
@@ -455,7 +456,7 @@ function addIndividualTransportSillyFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'silly',
-                filename: `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeWOMSFormatted}_silly.log`,
+                filename: `${instanceRunLogFilePrefix}_silly.log`,
                 level: 'silly',
             })
         );
