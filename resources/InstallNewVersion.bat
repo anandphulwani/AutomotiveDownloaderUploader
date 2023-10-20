@@ -88,6 +88,11 @@ endlocal
 cd ..
 echo.
 echo.
+echo Please set config environment to `production`.
+echo.
+pause
+echo.
+echo.
 echo Please check whether config.js or config-user.js has introduced new options, as we have already overwritten these files from the previous version, use `git diff` to check for changes.
 echo.
 pause
