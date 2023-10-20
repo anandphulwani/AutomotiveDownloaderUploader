@@ -4,6 +4,7 @@ const configUser = {
     // timezone: 'Asia/Calcutta',
     // appDomain: 'https://www.homenetiol.com',
     // timeOffsetInMinutesToAvoid: 2,
+    // browserArgs: { headless: false },
     // sourceBookmarkPath: '.\\datastore\\Bookmarks',
     // processingBookmarkPathWithoutSync: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
     // updateBookmarksOnceDone: true,
@@ -38,7 +39,7 @@ const configUser = {
     // recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
     // lockingBackupsZonePath: '.\\datastore\\LockingBackupsZone',
     // reportsPath: '.\\datastore\\Reports',
-    automaticClickSaveButtonOnUpload: false,
+    automaticClickSaveButtonOnUpload: true,
     credentials: [
         {
             username: 'dinesharora80@gmail.com',
@@ -58,58 +59,64 @@ const configUser = {
     ],
     contractors: {
         biswas: {
-            currentAllotted: 0,
-            normalThreshold: 800,
+            currentAllotted: 64,
+            normalThreshold: 550,
             extraProcessingFolders: [],
-            finisher: 'karan',
+            finisher: 'monika',
         },
         saikat: {
-            currentAllotted: 0,
+            currentAllotted: 5,
             normalThreshold: 300,
             extraProcessingFolders: [],
-            finisher: 'karan',
+            finisher: 'rishabh',
         },
         sachin: {
-            currentAllotted: 0,
-            normalThreshold: 450,
+            currentAllotted: 54,
+            normalThreshold: 525,
             extraProcessingFolders: [],
-            finisher: 'karan',
+            finisher: 'sachin',
         },
         shivani: {
-            currentAllotted: 0,
-            normalThreshold: 250,
+            currentAllotted: 17,
+            normalThreshold: 350,
             extraProcessingFolders: [],
-            finisher: 'karan',
+            finisher: 'rishabh',
         },
         rakesh: {
-            currentAllotted: 0,
-            normalThreshold: 200,
+            currentAllotted: 4,
+            normalThreshold: 250,
             extraProcessingFolders: [],
-            finisher: 'karan',
+            finisher: 'rishabh',
         },
         poonam: {
-            currentAllotted: 0,
-            normalThreshold: 100,
+            currentAllotted: 4,
+            normalThreshold: 150,
             extraProcessingFolders: [],
-            finisher: 'karan',
+            finisher: 'monika',
         },
         kalpana: {
-            currentAllotted: 0,
-            normalThreshold: 100,
+            currentAllotted: 1,
+            normalThreshold: 125,
             extraProcessingFolders: [],
-            finisher: 'karan',
+            finisher: 'monika',
         },
+        // bhavna: {
+        //    currentAllotted: 0,
+        //    normalThreshold: 70,
+        //    extraProcessingFolders: [],
+        //    finisher: 'karan',
+        //   },
         rishabh: {
-            currentAllotted: 0,
-            normalThreshold: 0,
+            currentAllotted: 1,
+            normalThreshold: 30,
             extraProcessingFolders: [],
-            finisher: 'karan',
+            finisher: 'rishabh',
         },
         monika: {
-            currentAllotted: 0,
-            normalThreshold: 100,
+            currentAllotted: 4,
+            normalThreshold: 180,
             extraProcessingFolders: [],
-            finisher: 'karan',
+            finisher: 'monika',
         },
         // rohan: {
         //     currentAllotted: 0,
@@ -125,7 +132,19 @@ const configUser = {
         },
         {
             imagesQty: 0,
-            minimumDealerFoldersForEachContractors: 2,
+            minimumDealerFoldersForEachContractors: 1,
+        },
+        {
+            imagesQty: 0,
+            minimumDealerFoldersForEachContractors: 1,
+        },
+        {
+            imagesQty: 300,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 300,
+            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 300,
@@ -136,11 +155,47 @@ const configUser = {
             minimumDealerFoldersForEachContractors: false,
         },
         {
-            imagesQty: 500,
+            imagesQty: 400,
             minimumDealerFoldersForEachContractors: false,
         },
         {
-            imagesQty: 600,
+            imagesQty: 400,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 400,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 400,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 400,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 400,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 400,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 400,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 400,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 400,
+            minimumDealerFoldersForEachContractors: false,
+        },
+        {
+            imagesQty: 400,
             minimumDealerFoldersForEachContractors: false,
         },
         {

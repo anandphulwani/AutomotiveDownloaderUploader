@@ -9,7 +9,10 @@ const configDevelopment = {
     browserArgs: {
         headless: false,
     },
-    updateBookmarksOnceDone: false,
+    updateBookmarksOnceDone: true,
+    automaticClickSaveButtonOnUpload: false,
+    contractorsZonePath: '.\\datastore\\ContractorsZone',
+    contractorsRecordKeepingPath: '.\\datastore\\ContractorsRecordKeeping',
 };
 
 // eslint-disable-next-line import/prefer-default-export

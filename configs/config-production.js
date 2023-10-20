@@ -10,6 +10,10 @@ const configProduction = {
         headless: false, // ONPROJECTFINISH: Change this to 'true' at the end.
     },
     updateBookmarksOnceDone: true,
+    automaticClickSaveButtonOnUpload: true,
+    // contractorsZonePath: 'C:\\Users\\Administrator\\Dropbox\\ContractorsWork',
+    contractorsZonePath: 'C:\\Users\\Administrator\\Dropbox\\contractorsZone',
+    contractorsRecordKeepingPath: 'C:\\Users\\Administrator\\Dropbox\\contractorsRecordKeeping',
 };
 
 // eslint-disable-next-line import/prefer-default-export
