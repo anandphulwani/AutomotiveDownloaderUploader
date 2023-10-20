@@ -19,7 +19,8 @@ REM BFCPEOPTIONEND
 @echo off
 cd "%~dp0"
 cls
-for /L %%i in (1,1,15) do (
+REM TODO: Change 500 to 15 or less number or appropriate number accordingly.
+for /L %%i in (1,1,500) do (
     node contractors_folderTransferer.js
     pause
 )
