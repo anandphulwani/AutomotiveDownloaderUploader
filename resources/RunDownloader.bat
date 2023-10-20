@@ -19,7 +19,8 @@ REM BFCPEOPTIONEND
 @echo off
 cd "%~dp0"
 cls
-start cmd.exe /K "@echo off && cd /D %~dp0 && cls && node contractors_folderTransferer.js && pause && pause && exit"
+REM start cmd.exe /K "@echo off && cd /D %~dp0 && cls && node contractors_folderTransferer.js && pause && pause && exit"
+start "" FolderTransferer.exe
 cls
 set "runCount=%~1"
 set /a runCount=%runCount% 2>nul
