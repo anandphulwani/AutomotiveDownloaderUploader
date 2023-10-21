@@ -113,7 +113,8 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
                     doesDestinationFolderAlreadyExists = true;
                 }
             } else {
-                createDirAndCopyFile(folderToShift[0], newCuttingAccountingZonePath);
+                // TODO: Remove overwrite: true, parameter sent to the below function, this is a temporary workaround.
+                createDirAndCopyFile(folderToShift[0], newCuttingAccountingZonePath, true);
                 await createDirAndMoveFile(folderToShift[0], newFinishingBufferPath);
                 folderToShift[0] = newFinishingBufferPath;
             }

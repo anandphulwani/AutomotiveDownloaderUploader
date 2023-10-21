@@ -231,7 +231,8 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
                 }
             } else {
                 addUploadingToReport([path.basename(folderToShift[0]), folderToShift[2], folderToShift[3], folderToShift[4]]);
-                createDirAndCopyFile(folderToShift[0], newFinishingAccountingZonePath);
+                // TODO: Remove overwrite: true, parameter sent to the below function, this is a temporary workaround.
+                createDirAndCopyFile(folderToShift[0], newFinishingAccountingZonePath, true);
                 await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
                 folderToShift[0] = newUploadingZonePath;
             }
