@@ -79,23 +79,13 @@ function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     }
 }
 
-async function createDirAndMoveFile(fromPath, toPath, debug = false) {
-    if (!fs.existsSync(path.dirname(toPath))) {
-        debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
-        makeDir(`${path.dirname(toPath)}/`, debug);
-        debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
-    }
-    await moveFile(fromPath, toPath, debug);
-}
-
-function createDirAndMoveFile02(fromPath, toPath, overwrite = false, debug = false) {
+function createDirAndMoveFile(fromPath, toPath, overwrite = false, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
         debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
         makeDir(`${path.dirname(toPath)}/`, debug);
         debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
     }
     moveDirOrFile(fromPath, toPath, overwrite, debug);
-    // await moveFile(fromPath, toPath, debug);
 }
 
 function createDirAndCopyFile(fromPath, toPath, overwrite = false, debug = false) {
@@ -279,7 +269,6 @@ export {
     copyDirOrFile,
     createDirAndCopyFile,
     createDirAndMoveFile,
-    createDirAndMoveFile02,
     createDirAndMoveFileFromTempDirToDestination,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
     removeDir,
