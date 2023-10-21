@@ -8,13 +8,7 @@ import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
 import { lgw, lge, lgc } from './functions/loggersupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
-import {
-    createDirAndCopyFile,
-    createDirAndMoveFile,
-    createDirAndMoveFile02,
-    getFileCountRecursively,
-    getFolderSizeInBytes,
-} from './functions/filesystem.js';
+import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 /* eslint-enable import/extensions */
@@ -121,9 +115,7 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
             } else {
                 // TODO: Remove overwrite: true, parameter sent to the below function, this is a temporary workaround.
                 createDirAndCopyFile(folderToShift[0], newCuttingAccountingZonePath, true);
-                // TODO: Check if the second implementation works perfectly, if it does replace current `createDirAndMoveFile` with it.
-                // await createDirAndMoveFile(folderToShift[0], newFinishingBufferPath);
-                createDirAndMoveFile02(folderToShift[0], newFinishingBufferPath);
+                createDirAndMoveFile(folderToShift[0], newFinishingBufferPath);
                 folderToShift[0] = newFinishingBufferPath;
             }
             if (!isDryRun) {
