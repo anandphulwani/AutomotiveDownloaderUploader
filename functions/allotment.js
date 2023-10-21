@@ -178,7 +178,7 @@ async function doAllotment(
                 await replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(bookmarkFolderGUID, uniqueIdOfFolder, false);
 
                 createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
-                await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
+                createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
             } else {
                 if (fs.existsSync(`${destinationRecordKeepingPath}`)) {
                     lge(`Folder: ${destinationRecordKeepingPath} already exists, cannot copy ${dealerFolderPath} to its location.`);
