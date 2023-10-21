@@ -26,6 +26,7 @@ import {
     getFolderSizeInBytes,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
     createDirAndCopyFile,
+    createDirAndMoveFile02,
 } from './functions/filesystem.js';
 import {
     autoCleanUpDatastoreZones,
@@ -233,7 +234,9 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
                 addUploadingToReport([path.basename(folderToShift[0]), folderToShift[2], folderToShift[3], folderToShift[4]]);
                 // TODO: Remove overwrite: true, parameter sent to the below function, this is a temporary workaround.
                 createDirAndCopyFile(folderToShift[0], newFinishingAccountingZonePath, true);
-                await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
+                // TODO: Check if the second implementation works perfectly, if it does replace current `createDirAndMoveFile` with it.
+                // await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
+                createDirAndMoveFile02(folderToShift[0], newUploadingZonePath);
                 folderToShift[0] = newUploadingZonePath;
             }
             if (!isDryRun) {

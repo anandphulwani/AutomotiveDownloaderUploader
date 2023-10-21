@@ -8,6 +8,7 @@ import randomstring from 'randomstring';
 
 /* eslint-disable import/extensions */
 import { lgc } from './loggersupportive.js';
+import { sleep } from './sleep.js';
 /* eslint-enable import/extensions */
 
 function makeDir(dirPath, debug = false) {
@@ -38,6 +39,32 @@ async function moveFile(fromPath, toPath, debug = false) {
     });
 }
 
+function moveDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
+    // If resource is busy or locked, or operation is not permitted, try for 120 seconds before throwing an error.
+    for (let i = 0; i < 30; i++) {
+        try {
+            const results = fsExtra.moveSync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
+            debug
+                ? console.log(
+                      `${'Successfully moved  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
+                  )
+                : '';
+            break;
+        } catch (error) {
+            if (
+                i < 29 &&
+                (error.message.trim().startsWith('EPERM: operation not permitted, ') ||
+                    error.message.trim().startsWith('EBUSY: resource busy or locked, '))
+            ) {
+                sleep(4);
+            } else {
+                lgc(`${'Unable to move file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`, error);
+                process.exit(1);
+            }
+        }
+    }
+}
+
 function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     try {
         const results = fsExtra.copySync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
@@ -59,6 +86,16 @@ async function createDirAndMoveFile(fromPath, toPath, debug = false) {
         debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
     }
     await moveFile(fromPath, toPath, debug);
+}
+
+function createDirAndMoveFile02(fromPath, toPath, overwrite = false, debug = false) {
+    if (!fs.existsSync(path.dirname(toPath))) {
+        debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
+        makeDir(`${path.dirname(toPath)}/`, debug);
+        debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
+    }
+    moveDirOrFile(fromPath, toPath, overwrite, debug);
+    // await moveFile(fromPath, toPath, debug);
 }
 
 function createDirAndCopyFile(fromPath, toPath, overwrite = false, debug = false) {
@@ -242,6 +279,7 @@ export {
     copyDirOrFile,
     createDirAndCopyFile,
     createDirAndMoveFile,
+    createDirAndMoveFile02,
     createDirAndMoveFileFromTempDirToDestination,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
     removeDir,
