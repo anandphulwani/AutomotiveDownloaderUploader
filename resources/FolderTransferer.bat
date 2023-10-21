@@ -19,6 +19,14 @@ REM BFCPEOPTIONEND
 @echo off
 cd "%~dp0"
 cls
+
+SET ExeName=%~nx0
+REM Count the number of instances running
+for /f %%a in ('tasklist ^| findstr /I /C:"%ExeName%" ^| find /C /V ""') do set count=%%a
+if %count% GTR 1 (
+    exit
+)
+
 REM TODO: Change 500 to 15 or less number or appropriate number accordingly.
 for /L %%i in (1,1,500) do (
     node contractors_folderTransferer.js
