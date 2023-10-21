@@ -38,9 +38,9 @@ async function moveFile(fromPath, toPath, debug = false) {
     });
 }
 
-function copyDirOrFile(fromPath, toPath, debug = false) {
+function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     try {
-        const results = fsExtra.copySync(fromPath, toPath, { overwrite: false, errorOnExist: true });
+        const results = fsExtra.copySync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
         debug
             ? console.log(
                   `${'Successfully copied  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
@@ -61,13 +61,13 @@ async function createDirAndMoveFile(fromPath, toPath, debug = false) {
     await moveFile(fromPath, toPath, debug);
 }
 
-function createDirAndCopyFile(fromPath, toPath, debug = false) {
+function createDirAndCopyFile(fromPath, toPath, overwrite = false, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
         debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
         makeDir(`${path.dirname(toPath)}/`, debug);
         debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
     }
-    copyDirOrFile(fromPath, toPath, debug);
+    copyDirOrFile(fromPath, toPath, overwrite, debug);
 }
 
 async function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, destinationPath, debug = false) {
