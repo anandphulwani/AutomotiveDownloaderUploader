@@ -117,7 +117,6 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
                 // TODO: Remove overwrite: true, parameter sent to the below function, this is a temporary workaround.
                 createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath, true);
                 createDirAndMoveFile(dealerImagesFolder, newFinishingBufferPath);
-                dealerImagesFolder = newFinishingBufferPath;
             }
             if (!isDryRun) {
                 if (cnt !== foldersToShiftLength - 1) {

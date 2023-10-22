@@ -239,7 +239,6 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
                 // TODO: Remove overwrite: true, parameter sent to the below function, this is a temporary workaround.
                 createDirAndCopyFile(dealerImagesFolder, newFinishingAccountingZonePath, true);
                 createDirAndMoveFile(dealerImagesFolder, newUploadingZonePath);
-                dealerImagesFolder = newUploadingZonePath;
             }
             if (!isDryRun) {
                 if (cnt !== foldersToShiftLength - 1) {
