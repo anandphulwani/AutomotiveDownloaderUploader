@@ -182,7 +182,7 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
             }
         }
         for (let i = 0; i < cutterRecordKeepingFolders.length; i++) {
-            const cutterRecordKeepingFolderPath = `${config.contractorsRecordKeepingPath}\\${contractor}\\${cutterRecordKeepingFolders[i]}\\${dateToCreate}`;
+            const cutterRecordKeepingFolderPath = `${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\${cutterRecordKeepingFolders[i]}\\${dateToCreate}`;
             if (!fs.existsSync(cutterRecordKeepingFolderPath)) {
                 makeDir(cutterRecordKeepingFolderPath);
             }
@@ -199,7 +199,7 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
                 }
             }
             for (let i = 0; i < finisherRecordKeepingFolders.length; i++) {
-                const finisherRecordKeepingFolderPath = `${config.contractorsRecordKeepingPath}\\${contractor}\\${finisherRecordKeepingFolders[i]}\\${dateToCreate}`;
+                const finisherRecordKeepingFolderPath = `${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\${finisherRecordKeepingFolders[i]}\\${dateToCreate}`;
                 if (!fs.existsSync(finisherRecordKeepingFolderPath)) {
                     makeDir(finisherRecordKeepingFolderPath);
                 }

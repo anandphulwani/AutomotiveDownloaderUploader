@@ -103,7 +103,7 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
             }\\${cuttersFinisher}\\${instanceRunDateFormatted}\\${finishingBuffer}\\${path.basename(dealerImagesFolder)}`;
             const newCuttingAccountingZonePath = `${
                 config.contractorsRecordKeepingPath
-            }\\${cutter}\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+            }\\${cutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             if (isDryRun) {
                 if (fs.existsSync(`${newFinishingBufferPath}`)) {
                     lge(`Folder: ${newFinishingBufferPath} already exists, cannot move ${dealerImagesFolder} to its location.`);

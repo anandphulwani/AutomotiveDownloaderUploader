@@ -142,7 +142,7 @@ for (const finisher of finishers) {
         let cuttingDoneBy = null;
         // eslint-disable-next-line no-restricted-syntax
         for (const contractorInSubLoop of Object.keys(config.contractors)) {
-            const contractorDoneSubFolderDir = `${config.contractorsRecordKeepingPath}\\${contractorInSubLoop}\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${finisherReadyToUploadSubFolderAndFiles}`;
+            const contractorDoneSubFolderDir = `${config.contractorsRecordKeepingPath}\\${contractorInSubLoop}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${finisherReadyToUploadSubFolderAndFiles}`;
             // const contractorDoneSubFolderDir = `${config.contractorsZonePath}\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\000_Done\\${contractorReadyToUploadSubFolderAndFiles}`;
             if (fs.existsSync(contractorDoneSubFolderDir)) {
                 cuttingDoneBy = contractorInSubLoop;
@@ -224,7 +224,7 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
             const newUploadingZonePath = `${config.uploadingZonePath}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             const newFinishingAccountingZonePath = `${
                 config.contractorsRecordKeepingPath
-            }\\${finisher}\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+            }\\${finisher}_Acnt\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             if (isDryRun) {
                 if (fs.existsSync(`${newFinishingAccountingZonePath}`)) {
                     lge(`Folder: ${newFinishingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
