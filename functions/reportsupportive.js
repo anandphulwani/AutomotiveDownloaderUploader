@@ -51,6 +51,7 @@ function addAllotmentToReport(allotmentDetails) {
                 dealerName: dealerName,
                 allotedTo: allotedTo,
                 qty: qty,
+                isFinished: false,
             };
         }
         const updatedReportJSONObj = JSON.stringify(reportJSONObj, null, 3);
