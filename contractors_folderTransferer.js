@@ -67,6 +67,7 @@ try {
     process.exit(1);
 }
 // TODO: validate config file here
+// TODO: Delete accounting folders for last 5 dates only.
 
 const cuttingDone = config.cutterProcessingFolders[0];
 const finishingBuffer = config.finisherProcessingFolders[0];
