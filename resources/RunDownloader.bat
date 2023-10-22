@@ -19,6 +19,20 @@ REM BFCPEOPTIONEND
 @echo off
 cd "%~dp0"
 cls
+
+SET ExeFullPath=%~f0
+SET ExeName=%~nx0
+SET count=0
+REM Count the number of instances running with full path
+for /f "tokens=2 delims=," %%a in ('wmic process where "name='%ExeName%'" get ExecutablePath^,ProcessId /FORMAT:csv ^| findstr /I /C:"%ExeFullPath%"') do (
+    set /a count+=1
+)
+if %count% GTR 1 (
+    REM Two or more instances with the same full path are running
+    echo Another instance with the same full path is running
+    exit
+)
+
 REM start cmd.exe /K "@echo off && cd /D %~dp0 && cls && node contractors_folderTransferer.js && pause && pause && exit"
 start "" FolderTransferer.exe
 cls
