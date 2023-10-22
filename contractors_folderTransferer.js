@@ -114,8 +114,7 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
                     doesDestinationFolderAlreadyExists = true;
                 }
             } else {
-                // TODO: Remove overwrite: true, parameter sent to the below function, this is a temporary workaround.
-                createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath, true);
+                createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath);
                 createDirAndMoveFile(dealerImagesFolder, newFinishingBufferPath);
             }
             if (!isDryRun) {

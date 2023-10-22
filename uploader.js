@@ -236,8 +236,7 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
                 }
             } else {
                 addUploadingToReport([path.basename(dealerImagesFolder), uniqueCode, cuttingDoneBy, finisher]);
-                // TODO: Remove overwrite: true, parameter sent to the below function, this is a temporary workaround.
-                createDirAndCopyFile(dealerImagesFolder, newFinishingAccountingZonePath, true);
+                createDirAndCopyFile(dealerImagesFolder, newFinishingAccountingZonePath);
                 createDirAndMoveFile(dealerImagesFolder, newUploadingZonePath);
             }
             if (!isDryRun) {
