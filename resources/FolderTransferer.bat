@@ -2,7 +2,7 @@
 REM BFCPEOPTIONSTART
 REM Advanced BAT to EXE Converter www.BatToExeConverter.com
 REM BFCPEEXE=.\FolderTransferer.exe
-REM BFCPEICON=.\ExecutableGear.ico
+REM BFCPEICON=.\FolderTransferer.ico
 REM BFCPEICONINDEX=-1
 REM BFCPEEMBEDDISPLAY=0
 REM BFCPEEMBEDDELETE=1
