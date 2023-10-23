@@ -1,5 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import chalk from 'chalk';
+import logSymbols from 'log-symbols';
 import fsExtra from 'fs-extra';
 import { checkSync } from 'proper-lockfile';
 
@@ -10,6 +12,7 @@ import { lge, lgc } from './loggersupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
+
 /* eslint-enable import/extensions */
 
 /**
@@ -20,6 +23,7 @@ const perImageTimeToUpload = 7.25;
 const perVINTimeToUpload = 7;
 
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
+    process.stdout.write(chalk.cyan(`Auto cleaning up the datastore: `));
     const foldersToCleanUp = [
         config.lockingBackupsZonePath,
         config.downloadPath,
@@ -55,6 +59,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         }
     }
     /* #endregion: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
+    process.stdout.write(chalk.cyan(`01:${logSymbols.success} `));
 
     /* #region: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
     if (fs.existsSync(config.lockingBackupsZonePath)) {
@@ -81,6 +86,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         }
     }
     /* #endregion: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
+    process.stdout.write(chalk.cyan(`02:${logSymbols.success} `));
 
     /* #region: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
     const lockingBackupsDirWithTodaysDate = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}`;
@@ -152,6 +158,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         });
     }
     /* #endregion: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
+    process.stdout.write(chalk.cyan(`03:${logSymbols.success} `));
 
     // eslint-disable-next-line no-restricted-syntax
     for (const dateDir of fs.readdirSync('.\\logs\\')) {
@@ -188,6 +195,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
             }
         }
     }
+    process.stdout.write(chalk.cyan(`04:${logSymbols.success}\n`));
 }
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
@@ -258,6 +266,7 @@ function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {
         fs.writeFileSync(toPathToWrite, dataToBeWritten);
     }
 }
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     perImageTimeToUpload,
