@@ -46,6 +46,7 @@ if (config.environment === 'production') {
     printSectionSeperator();
 }
 autoCleanUpDatastoreZones();
+printSectionSeperator();
 
 // TODO: validate config file here
 

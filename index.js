@@ -47,6 +47,7 @@ if (config.environment === 'production') {
     printSectionSeperator();
 }
 autoCleanUpDatastoreZones();
+printSectionSeperator();
 
 // ONPROJECTFINISH: Remove the unused imports
 // NORMALPRIORITY: Error summary in the end.
@@ -59,6 +60,7 @@ autoCleanUpDatastoreZones();
 // Non-shortcircuiting or: [f1(), f2()].some(i => i)
 
 await downloadBookmarksFromSourceToProcessing();
+printSectionSeperator();
 
 if (
     !(

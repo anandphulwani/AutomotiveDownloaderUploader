@@ -11,6 +11,7 @@ import { createProcessingAndRecordKeepingFolders } from './functions/configsuppo
 import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
+import { printSectionSeperator } from './functions/others.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -122,6 +123,7 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
                     process.stdout.write(chalk.cyan(`, `));
                 } else {
                     process.stdout.write(chalk.cyan(`\n`));
+                    printSectionSeperator();
                 }
             }
         }
