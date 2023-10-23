@@ -4,7 +4,7 @@ import { checkSync, lockSync, unlockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { msleep } from './sleep.js';
-import { instanceRunDateFormatted, instanceRunTimeFormatted, currentTimeFormatted } from './datetime.js';
+import { instanceRunDateFormatted, instanceRunTime, currentTimeFormatted } from './datetime.js';
 import { lgccyclicdependency } from './loggercyclicdependency.js';
 import { getCallerDetails } from './callerdetails.js';
 /* eslint-enable import/extensions */
@@ -13,7 +13,7 @@ import { getCallerDetails } from './callerdetails.js';
 function attainLock(fileToOperateOn, stale = 300000, debug = false) {
     const errorToGetCaller = new Error();
     const { functionName: callerFunctionName } = getCallerDetails([errorToGetCaller]);
-    const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTimeFormatted}/${path.basename(fileToOperateOn)}`;
+    const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTime}/${path.basename(fileToOperateOn)}`;
     try {
         fs.mkdirSync(logPath, { recursive: true });
         for (let lockTryIndex = 0; lockTryIndex <= 12000; lockTryIndex++) {
@@ -73,7 +73,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
 
 function releaseLock(fileToOperateOn, stale = 300000, debug = false) {
     const errorToGetCaller = new Error();
-    const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTimeFormatted}/${path.basename(fileToOperateOn)}`;
+    const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTime}/${path.basename(fileToOperateOn)}`;
     let callerFunctionName = '';
     try {
         ({ functionName: callerFunctionName } = getCallerDetails([errorToGetCaller]));

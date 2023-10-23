@@ -2,7 +2,7 @@ import date from 'date-and-time';
 
 const instanceRunDateFormatted = date.format(new Date(), 'YYYY-MM-DD');
 const instanceRunDateWODayFormatted = date.format(new Date(), 'YYYY-MM');
-const instanceRunTimeFormatted = date.format(new Date(), 'HHmmssSSS');
+const instanceRunTime = date.format(new Date(), 'HHmmssSSS');
 const instanceRunDateTimeFormatted = date.format(new Date(), 'YYYYMMDD-HHmmssSSS');
 const instanceRunDateTimeWOMSFormatted = date.format(new Date(), 'YYYYMMDD-HHmmss');
 const instanceRunDateTimeReadableFormatted = date.format(new Date(), 'YYYY-MM-DD HH:mm:ss:SSS');
@@ -63,7 +63,7 @@ function formatDate(inputDate, fromAndTo) {
 export {
     instanceRunDateFormatted,
     instanceRunDateWODayFormatted,
-    instanceRunTimeFormatted,
+    instanceRunTime,
     instanceRunDateTimeFormatted,
     instanceRunDateTimeWOMSFormatted,
     instanceRunDateTimeReadableFormatted,
