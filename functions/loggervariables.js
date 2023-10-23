@@ -3,7 +3,7 @@ import path from 'path';
 import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { currentTimeFormatted, instanceRunDateFormatted, instanceRunDateTimeFormatted, instanceRunTime } from './datetime.js';
+import { currentTimeFormatted, instanceRunDateFormatted, instanceRunDateTimeSeparated, instanceRunTime } from './datetime.js';
 /* eslint-enable import/extensions */
 
 const debug = true;
@@ -13,7 +13,7 @@ const debug = true;
  * of logs files created by same prefix by the current instance itself.
  *
  */
-const instanceRunLogFilePrefix = `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeFormatted}`;
+const instanceRunLogFilePrefix = `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeSeparated}`;
 const instanceRunLogFilePrefixDir = path.dirname(instanceRunLogFilePrefix);
 if (!fs.existsSync(instanceRunLogFilePrefixDir)) {
     fs.mkdirSync(instanceRunLogFilePrefixDir, { recursive: true });

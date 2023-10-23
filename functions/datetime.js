@@ -3,7 +3,7 @@ import date from 'date-and-time';
 const instanceRunDateFormatted = date.format(new Date(), 'YYYY-MM-DD');
 const instanceRunDateWODayFormatted = date.format(new Date(), 'YYYY-MM');
 const instanceRunTime = date.format(new Date(), 'HHmmssSSS');
-const instanceRunDateTimeFormatted = date.format(new Date(), 'YYYYMMDD-HHmmssSSS');
+const instanceRunDateTimeSeparated = date.format(new Date(), 'YYYYMMDD-HHmmssSSS');
 const instanceRunDateTimeWOMSFormatted = date.format(new Date(), 'YYYYMMDD-HHmmss');
 const instanceRunDateTimeReadableFormatted = date.format(new Date(), 'YYYY-MM-DD HH:mm:ss:SSS');
 const instanceRunDateTimeWOMSReadableFormatted = date.format(new Date(), 'YYYY-MM-DD HH:mm:ss');
@@ -64,7 +64,7 @@ export {
     instanceRunDateFormatted,
     instanceRunDateWODayFormatted,
     instanceRunTime,
-    instanceRunDateTimeFormatted,
+    instanceRunDateTimeSeparated,
     instanceRunDateTimeWOMSFormatted,
     instanceRunDateTimeReadableFormatted,
     instanceRunDateTimeWOMSReadableFormatted,
