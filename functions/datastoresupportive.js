@@ -239,13 +239,13 @@ function getUploadRemainingSummary(foldersToUpload) {
         .padStart(2, '0');
     const durationSeconds = (totalTimeInSeconds % 60).toString().padStart(2, '0');
 
-    const currentTime = new Date(); // Get current time
-    currentTime.setHours(currentTime.getHours() + parseInt(durationHours, 10));
-    currentTime.setMinutes(currentTime.getMinutes() + parseInt(durationMinutes, 10));
-    currentTime.setSeconds(currentTime.getSeconds() + parseInt(durationSeconds, 10));
+    const dateTimeObj = new Date(); // Get current time
+    dateTimeObj.setHours(dateTimeObj.getHours() + parseInt(durationHours, 10));
+    dateTimeObj.setMinutes(dateTimeObj.getMinutes() + parseInt(durationMinutes, 10));
+    dateTimeObj.setSeconds(dateTimeObj.getSeconds() + parseInt(durationSeconds, 10));
 
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }; // Format the time in hh:mm:ss tt format
-    const finishedTime = currentTime.toLocaleString('en-US', options);
+    const finishedTime = dateTimeObj.toLocaleString('en-US', options);
 
     return `Remaining DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, VINFolder/VINFiles: ${totalVINFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
 }
