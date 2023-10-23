@@ -3,7 +3,7 @@ import path from 'path';
 import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { currentTimeFormatted, instanceRunDateFormatted, instanceRunDateTimeSeparated, instanceRunTime } from './datetime.js';
+import { currentTime, instanceRunDateFormatted, instanceRunDateTimeSeparated, instanceRunTime } from './datetime.js';
 /* eslint-enable import/extensions */
 
 const debug = true;
@@ -42,7 +42,7 @@ if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
             fs.mkdirSync(logPath, { recursive: true });
         }
         fs.appendFileSync(
-            `${logPath}/${currentTimeFormatted()}_AttainedLock_loggervariables.js.txt`,
+            `${logPath}/${currentTime()}_AttainedLock_loggervariables.js.txt`,
             `Got A Lock On '${instanceRunLogFilePrefix}', caller: loggervariables.js.\n`
         );
     }

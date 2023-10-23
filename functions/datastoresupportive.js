@@ -6,7 +6,7 @@ import fsExtra from 'fs-extra';
 import { checkSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { instanceRunDateFormatted, currentTimeFormatted } from './datetime.js';
+import { instanceRunDateFormatted, currentTime } from './datetime.js';
 import { config } from '../configs/config.js';
 import { lge, lgc } from './loggersupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
@@ -256,10 +256,10 @@ function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {
     const fromPath = fileToOperateOn;
     const toPath = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}\\${path.basename(
         fileToOperateOn
-    )}_${currentTimeFormatted()}(${randomNumer})`;
+    )}_${currentTime()}(${randomNumer})`;
     const toPathToWrite = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}\\Backup\\${path.basename(
         fileToOperateOn
-    )}_${currentTimeFormatted()}(${randomNumer})`;
+    )}_${currentTime()}(${randomNumer})`;
     createDirAndCopyFile(fromPath, toPath);
     if (path.basename(fileToOperateOn) === 'Bookmarks') {
         makeDir(path.dirname(toPathToWrite));

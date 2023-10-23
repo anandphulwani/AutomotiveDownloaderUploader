@@ -4,7 +4,7 @@ import { checkSync, lockSync, unlockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { msleep } from './sleep.js';
-import { instanceRunDateFormatted, instanceRunTime, currentTimeFormatted } from './datetime.js';
+import { instanceRunDateFormatted, instanceRunTime, currentTime } from './datetime.js';
 import { lgccyclicdependency } from './loggercyclicdependency.js';
 import { getCallerDetails } from './callerdetails.js';
 /* eslint-enable import/extensions */
@@ -21,7 +21,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
                 console.log(`Unable to get the lock`);
                 if (debug) {
                     fs.appendFileSync(
-                        `${logPath}/00_${currentTimeFormatted()}_UNABLE_TO_GET_A_LOCK-caller_${callerFunctionName}.txt`,
+                        `${logPath}/00_${currentTime()}_UNABLE_TO_GET_A_LOCK-caller_${callerFunctionName}.txt`,
                         `Unable to get the lock on '${fileToOperateOn}', caller: ${callerFunctionName}.\n`
                     );
                 }
@@ -30,7 +30,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
             if (checkSync(fileToOperateOn, { stale: stale })) {
                 if (debug) {
                     fs.appendFileSync(
-                        `${logPath}/${currentTimeFormatted()}_.....LockAlready-caller_${callerFunctionName}.txt`,
+                        `${logPath}/${currentTime()}_.....LockAlready-caller_${callerFunctionName}.txt`,
                         `....... Lock on '${fileToOperateOn}' is already with someone, Waiting and trying again, caller: ${callerFunctionName}.\n`
                     );
                 }
@@ -51,7 +51,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
             }
             if (debug) {
                 fs.appendFileSync(
-                    `${logPath}/${currentTimeFormatted()}_AttainedLock_${callerFunctionName}.txt`,
+                    `${logPath}/${currentTime()}_AttainedLock_${callerFunctionName}.txt`,
                     `Got A Lock On '${fileToOperateOn}', caller: ${callerFunctionName}.\n`
                 );
             }
@@ -63,7 +63,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
         console.log(`attainLock(${fileToOperateOn}): This piece of code should be unreachable, caller: ${callerFunctionName}.\n`);
         if (debug) {
             fs.appendFileSync(
-                `${logPath}/00_${currentTimeFormatted()}_CatchError_${callerFunctionName}.txt`,
+                `${logPath}/00_${currentTime()}_CatchError_${callerFunctionName}.txt`,
                 `fn attainLock(${fileToOperateOn}): ${error.message}\n\n caller: ${callerFunctionName}.\n`
             );
         }
@@ -79,7 +79,7 @@ function releaseLock(fileToOperateOn, stale = 300000, debug = false) {
         ({ functionName: callerFunctionName } = getCallerDetails([errorToGetCaller]));
         fs.mkdirSync(logPath, { recursive: true });
         if (checkSync(fileToOperateOn, { stale: stale })) {
-            const filename = `${logPath}/${currentTimeFormatted()}_ReleasedLock_${callerFunctionName}.txt`;
+            const filename = `${logPath}/${currentTime()}_ReleasedLock_${callerFunctionName}.txt`;
             unlockSync(fileToOperateOn);
             if (debug) {
                 fs.appendFileSync(filename, `Released A Lock On '${fileToOperateOn}', caller: ${callerFunctionName}.\n`);
@@ -91,7 +91,7 @@ function releaseLock(fileToOperateOn, stale = 300000, debug = false) {
         console.log(`releaseLock(${fileToOperateOn}): This piece of code should be unreachable, caller: ${callerFunctionName}.\n`);
         if (debug) {
             fs.appendFileSync(
-                `${logPath}/00_${currentTimeFormatted()}_CatchError_${callerFunctionName}.txt`,
+                `${logPath}/00_${currentTime()}_CatchError_${callerFunctionName}.txt`,
                 `fn releaseLock(${fileToOperateOn}): ${error.message}\n\n caller: ${callerFunctionName}.\n`
             );
         }
