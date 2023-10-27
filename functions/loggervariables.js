@@ -19,7 +19,7 @@ if (!fs.existsSync(instanceRunLogFilePrefixDir)) {
     fs.mkdirSync(instanceRunLogFilePrefixDir, { recursive: true });
 }
 if (!fs.existsSync(instanceRunLogFilePrefix)) {
-    fs.writeFile(instanceRunLogFilePrefix, '', (err) => {});
+    fs.writeFileSync(instanceRunLogFilePrefix, '', (err) => {});
 }
 if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
     // Stale for 12 hours
