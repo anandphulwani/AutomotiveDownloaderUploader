@@ -10,7 +10,7 @@ import { lgccyclicdependency } from './loggercyclicdependency.js';
 import { getCallerDetails } from './callerdetails.js';
 /* eslint-enable import/extensions */
 
-// Attemp to attainLock, retrying multiple times in a duration of 30 to 60 seconds, before timing out
+// Attemp to attainLock, retrying multiple times in a duration of 5 to 10 mins, before timing out
 function attainLock(fileToOperateOn, stale = 300000, debug = false) {
     const errorToGetCaller = new Error();
     const { functionName: callerFunctionName } = getCallerDetails([errorToGetCaller]);
@@ -19,7 +19,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
         fs.mkdirSync(logPath, { recursive: true });
         for (let lockTryIndex = 0; lockTryIndex <= 12000; lockTryIndex++) {
             if (lockTryIndex === 12000) {
-                console.log(`Unable to get the lock`);
+                lgccyclicdependency(`attainLock(${fileToOperateOn}): Unable to get the lock.`);
                 if (debug) {
                     fs.appendFileSync(
                         `${logPath}/00_${currentTime()}_UNABLE_TO_GET_A_LOCK-caller_${callerFunctionName}.txt`,
