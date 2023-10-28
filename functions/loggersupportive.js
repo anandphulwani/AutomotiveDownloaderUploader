@@ -73,6 +73,10 @@ const lgd = (...args) => {
     loggerFile.debug(...args, { filename, lineNumber, uniqueId });
 };
 
+/**
+ * This function is used for those parts of the code,
+ * which should never be called, or errors that should never generate.
+ */
 const lgs = (...args) => {
     addIndividualTransportSillyFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
