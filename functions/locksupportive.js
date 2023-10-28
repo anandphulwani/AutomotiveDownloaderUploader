@@ -27,7 +27,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
                     );
                 }
                 process.exit(1);
-            } else if (lockTryIndex % 500 === 0) {
+            } else if (lockTryIndex !== 0 && lockTryIndex % 500 === 0) {
                 process.stdout.write(chalk.cyan(` ■`));
             }
             if (checkSync(fileToOperateOn, { stale: stale })) {
