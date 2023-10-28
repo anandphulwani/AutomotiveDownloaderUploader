@@ -108,6 +108,45 @@ function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, toPath
     removeParentDirIfEmpty(fromPath, recursiveDeleteParentLevel, debug);
 }
 
+function writeFileWithVerification(pathOfFile, fileContents, noOfLines = -1, noOfLinesComparison = '=', isTrim = false) {
+    fs.writeFileSync(`${pathOfFile}.tempToVerify`, fileContents);
+    if (fs.existsSync(`${pathOfFile}.tempToVerify`)) {
+        let tempToVerifyContents = fs.readFileSync(`${pathOfFile}.tempToVerify`, 'utf8');
+        if (isTrim) {
+            tempToVerifyContents = tempToVerifyContents.trim();
+        }
+        let comparisonResult = true;
+        if (noOfLines >= 0) {
+            const tempToVerifyNoOfLines = tempToVerifyContents.split(/\r\n|\r|\n/).length;
+            if (noOfLinesComparison === '=') {
+                comparisonResult = tempToVerifyNoOfLines === noOfLines;
+            } else if (noOfLinesComparison === '>') {
+                comparisonResult = tempToVerifyNoOfLines > noOfLines;
+            } else if (noOfLinesComparison === '>=') {
+                comparisonResult = tempToVerifyNoOfLines >= noOfLines;
+            } else if (noOfLinesComparison === '<') {
+                comparisonResult = tempToVerifyNoOfLines < noOfLines;
+            } else if (noOfLinesComparison === '<=') {
+                comparisonResult = tempToVerifyNoOfLines <= noOfLines;
+            }
+        }
+        if (comparisonResult && tempToVerifyContents === fileContents) {
+            fs.renameSync(`${pathOfFile}.tempToVerify`, pathOfFile);
+            if (fs.existsSync(pathOfFile) && !fs.existsSync(`${pathOfFile}.tempToVerify`)) {
+                return true;
+            }
+            return false;
+        }
+        fs.unlinkSync(`${pathOfFile}.tempToVerify`);
+    }
+    return false;
+}
+
+function writeFileWithComparingSameLinesWithOldContents(pathOfFile, fileContents, fileOldContents) {
+    const noOfLinesOldContent = fileOldContents.trim().split(/\r\n|\r|\n/).length;
+    return writeFileWithVerification(pathOfFile, fileContents, noOfLinesOldContent, '=', true);
+}
+
 function removeDir(dirPath, recursiveDelete = false, debug = false) {
     debug ? console.log('Removing Directory : Executing') : '';
     /* #region : Patch to delete a folder when recursiveDelete is false */
@@ -271,6 +310,8 @@ export {
     createDirAndMoveFile,
     createDirAndMoveFileFromTempDirToDestination,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
+    writeFileWithVerification,
+    writeFileWithComparingSameLinesWithOldContents,
     removeDir,
     removeDirAndRemoveParentDirIfEmpty,
     generateTempFolderWithRandomText,
