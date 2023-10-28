@@ -19,6 +19,12 @@ import { trimMultipleSpacesInMiddleIntoOne, allTrimString } from './stringformat
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
 
+function reformatJSONString(contents) {
+    const JSONObj = JSON.parse(contents);
+    const JSONString = JSON.stringify(JSONObj, null, 3);
+    return JSONString;
+}
+
 async function downloadBookmarksFromSourceToProcessing() {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
     attainLock(sourceBookmarkPath, 600000, true);
