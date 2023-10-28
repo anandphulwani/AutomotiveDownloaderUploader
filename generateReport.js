@@ -204,9 +204,9 @@ for (const typeOfExcel of typesOfExcel) {
              */
             if (Object.keys(reportJSONObj).length !== 0) {
                 const allotmentAndUploadedMismatchJSONObj = Object.fromEntries(
-                    Object.entries(reportJSONObj).filter(([, value]) => typeof value.isFinished === 'undefined')
+                    Object.entries(reportJSONObj).filter(([, value]) => value.isFinished === false)
                 );
-                reportJSONObj = Object.fromEntries(Object.entries(reportJSONObj).filter(([, value]) => typeof value.isFinished !== 'undefined'));
+                reportJSONObj = Object.fromEntries(Object.entries(reportJSONObj).filter(([, value]) => value.isFinished === true));
 
                 if (Object.keys(allotmentAndUploadedMismatchJSONObj).length > 0) {
                     let allotmentAndUploadedMismatchString =

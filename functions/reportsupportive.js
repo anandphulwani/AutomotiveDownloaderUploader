@@ -51,6 +51,7 @@ function addAllotmentToReport(allotmentDetails) {
                 dealerName: dealerName,
                 allotedTo: allotedTo,
                 qty: qty,
+                isFinished: false,
             };
         }
         const updatedReportJSONObj = JSON.stringify(reportJSONObj, null, 3);
@@ -83,13 +84,12 @@ function addUploadingToReport(uploadingDetail) {
 
         if (reportJSONObj[allotmentId]) {
             if (allotmentFolderName === reportJSONObj[allotmentId].allotmentFolderName) {
-                // TODO: Replace doneBy and finishedBy to cutter and finisher
                 reportJSONObj[allotmentId] = {
                     ...reportJSONObj[allotmentId],
                     ...{
                         isFinished: true,
-                        doneBy: cutter,
-                        finishedBy: finisher,
+                        cutter: cutter,
+                        finisher: finisher,
                     },
                 };
             } else {
