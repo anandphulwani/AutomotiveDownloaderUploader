@@ -8,13 +8,14 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { lgc } from './loggersupportive.js';
+import { lgc, lgs } from './loggersupportive.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
 import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
 import { trimMultipleSpacesInMiddleIntoOne, allTrimString } from './stringformatting.js';
+import { writeFileWithComparingSameLinesWithOldContents } from './filesystem.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -279,6 +280,82 @@ function replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper(guid, appendTe
     releaseLock(fileToOperateOn, undefined, true);
     if (returnObj.exit) {
         process.exit(returnObj.exit);
+    }
+}
+
+function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, appendText, useLockingMechanism) {
+    const elementsDetails = {
+        name: {
+            blockRegex: `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`,
+            elementRegex: `"name": "(.*)"`,
+            elementSubstitutionValue: `"name": "$1 |#| ${appendText}"`,
+            elementAlreadySubstituedCheckRegex: `"name": .* \\|#\\| .*`,
+            elementAlreadySubstituedSubstitutionValue: `"name": "$1,${appendText}"`,
+        },
+        foldername: {
+            blockRegex: `[ ]*"date_added"[^\\{\\}\\]\\[]*?"guid": "${guid}",[^\\{\\}\\]\\[]*?"type": "folder"`,
+            elementRegex: `"name": "(.*)"`,
+            elementSubstitutionValue: `"name": "$1 |#| ${appendText}"`,
+            elementAlreadySubstituedCheckRegex: `"name": .* \\|#\\br| .*`,
+            elementAlreadySubstituedSubstitutionValue: `"name": "$1,${appendText}"`,
+        },
+    };
+    const fileToOperateOn = config.processingBookmarkPathWithoutSync;
+    if (useLockingMechanism) {
+        attainLock(fileToOperateOn, undefined, true);
+    }
+    try {
+        const fileContents = fs.readFileSync(fileToOperateOn, 'utf8');
+
+        let bookmarksFileJSONObj = JSON.parse(fileContents);
+        bookmarksFileJSONObj = removeChecksumFromBookmarksObj(bookmarksFileJSONObj);
+        let bookmarksFileText = JSON.stringify(bookmarksFileJSONObj, null, 3);
+
+        const blockRegexExpression = new RegExp(elementsDetails[element].blockRegex, 'g');
+        if (!blockRegexExpression.test(bookmarksFileText)) {
+            lgs(
+                [
+                    'Unable to match regex for fn replaceBookmarksElementByGUIDAndWriteToBookmarksFile()',
+                    elementsDetails[element].blockRegex,
+                    '-'.repeat(70) + bookmarksFileText + '-'.repeat(70),
+                ].join('\n')
+            );
+            process.exit(1);
+        }
+        const bookmarkBlockText = bookmarksFileText.match(blockRegexExpression)[0];
+
+        const elementAlreadySubstituedCheckRegexExpression = new RegExp(elementsDetails[element].elementAlreadySubstituedCheckRegex, 'g');
+        const nameRegexExpression = new RegExp(elementsDetails[element].elementRegex, 'g');
+        let bookmarkBlockNewText;
+        if (elementAlreadySubstituedCheckRegexExpression.test(bookmarkBlockText)) {
+            bookmarkBlockNewText = bookmarkBlockText.replace(nameRegexExpression, elementsDetails[element].elementAlreadySubstituedSubstitutionValue);
+        } else {
+            bookmarkBlockNewText = bookmarkBlockText.replace(nameRegexExpression, elementsDetails[element].elementSubstitutionValue);
+        }
+
+        bookmarksFileText = bookmarksFileText.replace(bookmarkBlockText, bookmarkBlockNewText);
+        bookmarksFileText = reformatJSONString(bookmarksFileText);
+        const returnVal = writeFileWithComparingSameLinesWithOldContents(fileToOperateOn, bookmarksFileText, fileContents);
+        if (!returnVal) {
+            lgs(
+                [
+                    `${fileContents}\n${'-'.repeat(70)}`,
+                    `${bookmarksFileText}\n${'-'.repeat(70)}`,
+                    `initalLineCount: ${fileContents.trim().split(/\r\n|\r|\n/).length}, finalLineCount: ${
+                        bookmarksFileText.split(/\r\n|\r|\n/).length
+                    }`,
+                ].join('\n')
+            );
+            process.exit(1);
+        }
+        createBackupOfFile(fileToOperateOn, bookmarksFileText);
+        if (useLockingMechanism) {
+            releaseLock(fileToOperateOn, undefined, true);
+        }
+    } catch (err) {
+        releaseLock(fileToOperateOn, undefined, true);
+        lgs(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block: ${err.message}`);
+        process.exit(1);
     }
 }
 
