@@ -271,18 +271,6 @@ function removeChecksumFromBookmarksObj(bookmarksObj) {
     return JSON.parse(jsonString);
 }
 
-function replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper(guid, appendText) {
-    const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-    attainLock(fileToOperateOn, undefined, true);
-
-    const returnObj = replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText);
-
-    releaseLock(fileToOperateOn, undefined, true);
-    if (returnObj.exit) {
-        process.exit(returnObj.exit);
-    }
-}
-
 function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, appendText, useLockingMechanism) {
     const elementsDetails = {
         name: {
