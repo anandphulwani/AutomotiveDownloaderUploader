@@ -26,7 +26,6 @@ import {
     getFolderSizeInBytes,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
     createDirAndCopyFile,
-    createDirAndMoveFile02,
 } from './functions/filesystem.js';
 import {
     autoCleanUpDatastoreZones,
@@ -143,7 +142,7 @@ for (const finisher of finishers) {
         let cuttingDoneBy = null;
         // eslint-disable-next-line no-restricted-syntax
         for (const contractorInSubLoop of Object.keys(config.contractors)) {
-            const contractorDoneSubFolderDir = `${config.contractorsRecordKeepingPath}\\${contractorInSubLoop}\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${finisherReadyToUploadSubFolderAndFiles}`;
+            const contractorDoneSubFolderDir = `${config.contractorsRecordKeepingPath}\\${contractorInSubLoop}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${finisherReadyToUploadSubFolderAndFiles}`;
             // const contractorDoneSubFolderDir = `${config.contractorsZonePath}\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\000_Done\\${contractorReadyToUploadSubFolderAndFiles}`;
             if (fs.existsSync(contractorDoneSubFolderDir)) {
                 cuttingDoneBy = contractorInSubLoop;
@@ -176,19 +175,24 @@ for (const finisher of finishers) {
             continue;
         }
         const folderSize = getFolderSizeInBytes(finisherReadyToUploadSubFolderPath);
-        // TODO: Replace by key value pairs
-        foldersToShift.push([finisherReadyToUploadSubFolderPath, folderSize, uniqueCode, cuttingDoneBy, finisher]);
+        foldersToShift.push({
+            dealerImagesFolder: finisherReadyToUploadSubFolderPath,
+            folderSize: folderSize,
+            uniqueCode: uniqueCode,
+            cuttingDoneBy: cuttingDoneBy,
+            finisher: finisher,
+        });
     }
 }
 
 foldersToShift.sort((a, b) => {
     const regex = /(\d+)/;
-    if (!regex.test(path.basename(a[0])) || !regex.test(path.basename(b[0]))) {
+    if (!regex.test(path.basename(a.dealerImagesFolder)) || !regex.test(path.basename(b.dealerImagesFolder))) {
         lgc('Unable to match regex of `foldersToShift` while sorting.');
         return 0;
     }
-    const numA = Number(path.basename(a[0]).match(regex)[0]);
-    const numB = Number(path.basename(b[0]).match(regex)[0]);
+    const numA = Number(path.basename(a.dealerImagesFolder).match(regex)[0]);
+    const numB = Number(path.basename(b.dealerImagesFolder).match(regex)[0]);
     return numA - numB;
 });
 // TODO: This sleep was induced to check folderSizeAfter10Seconds functionality, to be removed if the above locking system works properly.
@@ -200,44 +204,40 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
     let hasMovingToUploadZonePrinted = false;
     const foldersToShiftLength = foldersToShift.length;
     for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
-        const folderToShift = foldersToShift[cnt];
+        const { dealerImagesFolder, folderSize, uniqueCode, cuttingDoneBy, finisher } = foldersToShift[cnt];
         // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system works properly.
-        const folderSizeAfter10Seconds = getFolderSizeInBytes(folderToShift[0]);
-        if (folderSizeAfter10Seconds !== folderToShift[1]) {
-            foldersToShift.splice(folderToShift);
+        const folderSizeAfter10Seconds = getFolderSizeInBytes(dealerImagesFolder);
+        if (folderSizeAfter10Seconds !== folderSize) {
+            foldersToShift.splice(foldersToShift[cnt]);
         } else {
             if (!isDryRun && !hasMovingToUploadZonePrinted) {
                 process.stdout.write(chalk.cyan('Moving folders to UploadingZone and FinishingAccounting: \n'));
                 hasMovingToUploadZonePrinted = true;
             }
             if (!isDryRun) {
-                const folderNameToPrint = `  ${path.basename(folderToShift[0])} `;
+                const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
                 process.stdout.write(chalk.cyan(folderNameToPrint));
                 for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
                     process.stdout.write(chalk.cyan(`.`));
                 }
             }
-            const newUploadingZonePath = `${config.uploadingZonePath}\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
-            const newFinishingAccountingZonePath = `${config.contractorsRecordKeepingPath}\\${
-                folderToShift[4]
-            }\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
+            const newUploadingZonePath = `${config.uploadingZonePath}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+            const newFinishingAccountingZonePath = `${
+                config.contractorsRecordKeepingPath
+            }\\${finisher}_Acnt\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             if (isDryRun) {
                 if (fs.existsSync(`${newFinishingAccountingZonePath}`)) {
-                    lge(`Folder: ${newFinishingAccountingZonePath} already exists, cannot move ${folderToShift[0]} to its location.`);
+                    lge(`Folder: ${newFinishingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
                     doesDestinationFolderAlreadyExists = true;
                 }
                 if (fs.existsSync(`${newUploadingZonePath}`)) {
-                    lge(`Folder: ${newUploadingZonePath} already exists, cannot move ${folderToShift[0]} to its location.`);
+                    lge(`Folder: ${newUploadingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
                     doesDestinationFolderAlreadyExists = true;
                 }
             } else {
-                addUploadingToReport([path.basename(folderToShift[0]), folderToShift[2], folderToShift[3], folderToShift[4]]);
-                // TODO: Remove overwrite: true, parameter sent to the below function, this is a temporary workaround.
-                createDirAndCopyFile(folderToShift[0], newFinishingAccountingZonePath, true);
-                // TODO: Check if the second implementation works perfectly, if it does replace current `createDirAndMoveFile` with it.
-                // await createDirAndMoveFile(folderToShift[0], newUploadingZonePath);
-                createDirAndMoveFile02(folderToShift[0], newUploadingZonePath);
-                folderToShift[0] = newUploadingZonePath;
+                addUploadingToReport([path.basename(dealerImagesFolder), uniqueCode, cuttingDoneBy, finisher]);
+                createDirAndCopyFile(dealerImagesFolder, newFinishingAccountingZonePath);
+                createDirAndMoveFile(dealerImagesFolder, newUploadingZonePath);
             }
             if (!isDryRun) {
                 if (cnt !== foldersToShiftLength - 1) {
@@ -390,7 +390,7 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
                             returnObj.result === true ||
                             (returnObj.result === false && returnObj.bookmarkAppendMesg === 'Ignoring (Does not Exist)')
                         ) {
-                            await createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(returnObj.moveSource, returnObj.moveDestination, 2);
+                            createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(returnObj.moveSource, returnObj.moveDestination, 2);
                         }
                         foldersToUpload[uniqueIdElement].imagesQty = getFileCountRecursively(foldersToUpload[uniqueIdElement].path);
                         foldersToUpload[uniqueIdElement].dealerFolderFilesQty = getFileCountNonRecursively(foldersToUpload[uniqueIdElement].path);

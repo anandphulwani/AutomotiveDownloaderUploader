@@ -8,13 +8,7 @@ import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
 import { lgw, lge, lgc } from './functions/loggersupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
-import {
-    createDirAndCopyFile,
-    createDirAndMoveFile,
-    createDirAndMoveFile02,
-    getFileCountRecursively,
-    getFolderSizeInBytes,
-} from './functions/filesystem.js';
+import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 /* eslint-enable import/extensions */
@@ -73,6 +67,7 @@ try {
     process.exit(1);
 }
 // TODO: validate config file here
+// TODO: Delete accounting folders for last 5 dates only.
 
 const cuttingDone = config.cutterProcessingFolders[0];
 const finishingBuffer = config.finisherProcessingFolders[0];
@@ -86,45 +81,41 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
     let hasMovingToUploadZonePrinted = false;
     const foldersToShiftLength = foldersToShift.length;
     for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
-        const folderToShift = foldersToShift[cnt];
-        // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system works properly.
-        const folderSizeAfter10Seconds = getFolderSizeInBytes(folderToShift[0]);
-        if (folderSizeAfter10Seconds !== folderToShift[1]) {
-            foldersToShift.splice(folderToShift);
+        const { dealerImagesFolder, folderSize, cutter, cuttersFinisher } = foldersToShift[cnt];
+        // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system with the message `Folder in Cutter's CuttingDone locked, maybe a contractor working/moving it` works properly.
+        const folderSizeAfter10Seconds = getFolderSizeInBytes(dealerImagesFolder);
+        if (folderSizeAfter10Seconds !== folderSize) {
+            foldersToShift.splice(foldersToShift[cnt]);
         } else {
             if (!isDryRun && !hasMovingToUploadZonePrinted) {
                 process.stdout.write(chalk.cyan('Moving folders to FinishingBuffer and CuttingAccounting: \n'));
                 hasMovingToUploadZonePrinted = true;
             }
             if (!isDryRun) {
-                const folderNameToPrint = `  ${path.basename(folderToShift[0])} `;
+                const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
                 process.stdout.write(chalk.cyan(folderNameToPrint));
                 for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
                     process.stdout.write(chalk.cyan(`.`));
                 }
             }
-            const newFinishingBufferPath = `${config.contractorsZonePath}\\${
-                folderToShift[3]
-            }\\${instanceRunDateFormatted}\\${finishingBuffer}\\${path.basename(folderToShift[0])}`;
-            const newCuttingAccountingZonePath = `${config.contractorsRecordKeepingPath}\\${
-                folderToShift[2]
-            }\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(folderToShift[0])}`;
+            const newFinishingBufferPath = `${
+                config.contractorsZonePath
+            }\\${cuttersFinisher}\\${instanceRunDateFormatted}\\${finishingBuffer}\\${path.basename(dealerImagesFolder)}`;
+            const newCuttingAccountingZonePath = `${
+                config.contractorsRecordKeepingPath
+            }\\${cutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             if (isDryRun) {
                 if (fs.existsSync(`${newFinishingBufferPath}`)) {
-                    lge(`Folder: ${newFinishingBufferPath} already exists, cannot move ${folderToShift[0]} to its location.`);
+                    lge(`Folder: ${newFinishingBufferPath} already exists, cannot move ${dealerImagesFolder} to its location.`);
                     doesDestinationFolderAlreadyExists = true;
                 }
                 if (fs.existsSync(`${newCuttingAccountingZonePath}`)) {
-                    lge(`Folder: ${newCuttingAccountingZonePath} already exists, cannot move ${folderToShift[0]} to its location.`);
+                    lge(`Folder: ${newCuttingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
                     doesDestinationFolderAlreadyExists = true;
                 }
             } else {
-                // TODO: Remove overwrite: true, parameter sent to the below function, this is a temporary workaround.
-                createDirAndCopyFile(folderToShift[0], newCuttingAccountingZonePath, true);
-                // TODO: Check if the second implementation works perfectly, if it does replace current `createDirAndMoveFile` with it.
-                // await createDirAndMoveFile(folderToShift[0], newFinishingBufferPath);
-                createDirAndMoveFile02(folderToShift[0], newFinishingBufferPath);
-                folderToShift[0] = newFinishingBufferPath;
+                createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath);
+                createDirAndMoveFile(dealerImagesFolder, newFinishingBufferPath);
             }
             if (!isDryRun) {
                 if (cnt !== foldersToShiftLength - 1) {
@@ -204,19 +195,23 @@ while (true) {
                 continue;
             }
             const folderSize = getFolderSizeInBytes(cutterCuttingDoneSubFolderPath);
-            // TODO: Replace by key value pairs
-            foldersToShift.push([cutterCuttingDoneSubFolderPath, folderSize, cutter, cuttersFinisher]);
+            foldersToShift.push({
+                dealerImagesFolder: cutterCuttingDoneSubFolderPath,
+                folderSize: folderSize,
+                cutter: cutter,
+                cuttersFinisher: cuttersFinisher,
+            });
         }
     }
 
     foldersToShift.sort((a, b) => {
         const regex = /(\d+)/;
-        if (!regex.test(path.basename(a[0])) || !regex.test(path.basename(b[0]))) {
+        if (!regex.test(path.basename(a.dealerImagesFolder)) || !regex.test(path.basename(b.dealerImagesFolder))) {
             lgc('Unable to match regex of `foldersToShift` while sorting.');
             return 0;
         }
-        const numA = Number(path.basename(a[0]).match(regex)[0]);
-        const numB = Number(path.basename(b[0]).match(regex)[0]);
+        const numA = Number(path.basename(a.dealerImagesFolder).match(regex)[0]);
+        const numB = Number(path.basename(b.dealerImagesFolder).match(regex)[0]);
         return numA - numB;
     });
     // TODO: This sleep was induced to check folderSizeAfter10Seconds functionality, to be removed if the above locking system works properly.

@@ -79,23 +79,13 @@ function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     }
 }
 
-async function createDirAndMoveFile(fromPath, toPath, debug = false) {
-    if (!fs.existsSync(path.dirname(toPath))) {
-        debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
-        makeDir(`${path.dirname(toPath)}/`, debug);
-        debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
-    }
-    await moveFile(fromPath, toPath, debug);
-}
-
-function createDirAndMoveFile02(fromPath, toPath, overwrite = false, debug = false) {
+function createDirAndMoveFile(fromPath, toPath, overwrite = false, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
         debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
         makeDir(`${path.dirname(toPath)}/`, debug);
         debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
     }
     moveDirOrFile(fromPath, toPath, overwrite, debug);
-    // await moveFile(fromPath, toPath, debug);
 }
 
 function createDirAndCopyFile(fromPath, toPath, overwrite = false, debug = false) {
@@ -107,14 +97,14 @@ function createDirAndCopyFile(fromPath, toPath, overwrite = false, debug = false
     copyDirOrFile(fromPath, toPath, overwrite, debug);
 }
 
-async function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, destinationPath, debug = false) {
+function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, destinationPath, debug = false) {
     debug ? console.log('Moving file from TempDir to Destination : Executing.') : '';
-    await createDirAndMoveFile(filePath, filePath.replace(tempPath, destinationPath), debug);
+    createDirAndMoveFile(filePath, filePath.replace(tempPath, destinationPath), debug);
     debug ? console.log('Moving file from TempDir to Destination : Done.') : '';
 }
 
-async function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, toPath, recursiveDeleteParentLevel = 1, debug = false) {
-    await createDirAndMoveFile(fromPath, toPath, debug);
+function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, toPath, recursiveDeleteParentLevel = 1, debug = false) {
+    createDirAndMoveFile(fromPath, toPath, debug);
     removeParentDirIfEmpty(fromPath, recursiveDeleteParentLevel, debug);
 }
 
@@ -279,7 +269,6 @@ export {
     copyDirOrFile,
     createDirAndCopyFile,
     createDirAndMoveFile,
-    createDirAndMoveFile02,
     createDirAndMoveFileFromTempDirToDestination,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
     removeDir,
