@@ -313,12 +313,12 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         const bookmarkBlockText = bookmarksFileText.match(blockRegexExpression)[0];
 
         const elementAlreadySubstituedCheckRegexExpression = new RegExp(elementsDetails[element].elementAlreadySubstituedCheckRegex, 'g');
-        const nameRegexExpression = new RegExp(elementsDetails[element].elementRegex, 'g');
+        const regexExpression = new RegExp(elementsDetails[element].elementRegex, 'g');
         let bookmarkBlockNewText;
         if (elementAlreadySubstituedCheckRegexExpression.test(bookmarkBlockText)) {
-            bookmarkBlockNewText = bookmarkBlockText.replace(nameRegexExpression, elementsDetails[element].elementAlreadySubstituedSubstitutionValue);
+            bookmarkBlockNewText = bookmarkBlockText.replace(regexExpression, elementsDetails[element].elementAlreadySubstituedSubstitutionValue);
         } else {
-            bookmarkBlockNewText = bookmarkBlockText.replace(nameRegexExpression, elementsDetails[element].elementSubstitutionValue);
+            bookmarkBlockNewText = bookmarkBlockText.replace(regexExpression, elementsDetails[element].elementSubstitutionValue);
         }
 
         bookmarksFileText = bookmarksFileText.replace(bookmarkBlockText, bookmarkBlockNewText);
