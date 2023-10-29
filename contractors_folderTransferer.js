@@ -60,10 +60,10 @@ import { printSectionSeperator } from './functions/others.js';
  *
  */
 try {
-    if (checkSync('contractors_folderTransferer.js', { stale: 43200000 })) {
+    if (checkSync('contractors_folderTransferer.js', { stale: 10000 })) {
         throw new Error('Already has lock');
     }
-    lockSync('contractors_folderTransferer.js', { stale: 43200000 });
+    lockSync('contractors_folderTransferer.js', { stale: 10000 });
 } catch (error) {
     process.exit(1);
 }
