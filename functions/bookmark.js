@@ -277,8 +277,6 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
             blockRegex: `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`,
             elementRegex: `"name": "(.*)"`,
             elementSubstitutionValue: `"name": "$1 |#| ${appendText}"`,
-            elementAlreadySubstituedCheckRegex: `"name": .* \\|#\\| .*`,
-            elementAlreadySubstituedSubstitutionValue: `"name": "$1,${appendText}"`,
         },
         foldername: {
             blockRegex: `[ ]*"date_added"[^\\{\\}\\]\\[]*?"guid": "${guid}",[^\\{\\}\\]\\[]*?"type": "folder"`,
