@@ -89,7 +89,7 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
             foldersToShift.splice(foldersToShift[cnt]);
         } else {
             if (!isDryRun && !hasMovingToUploadZonePrinted) {
-                process.stdout.write(chalk.cyan(`[${currentTimeWOSSMSFormatted}] Moving folders to FinishingBuffer and CuttingAccounting: \n`));
+                process.stdout.write(chalk.cyan(`[${currentTimeWOSSMSFormatted()}] Moving folders to FinishingBuffer and CuttingAccounting: \n`));
                 hasMovingToUploadZonePrinted = true;
             }
             if (!isDryRun) {
