@@ -318,7 +318,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
                 bookmarkBlockNewText = bookmarkBlockText.replace(regexExpression, elementsDetails[element].elementAlreadySubstituedSubstitutionValue);
             }
         }
-        if (bookmarkBlockNewText === null) {
+        if (bookmarkBlockNewText === undefined) {
             bookmarkBlockNewText = bookmarkBlockText.replace(regexExpression, elementsDetails[element].elementSubstitutionValue);
         }
 
