@@ -4,7 +4,7 @@ import path from 'path';
 import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { currentTimeWOSSMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
+import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
 import { lgw, lge, lgc } from './functions/loggersupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
@@ -88,7 +88,7 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
             foldersToShift.splice(foldersToShift[cnt]);
         } else {
             if (!isDryRun && !hasMovingToUploadZonePrinted) {
-                process.stdout.write(chalk.cyan(`[${currentTimeWOSSMSFormatted}] Moving folders to FinishingBuffer and CuttingAccounting: \n`));
+                process.stdout.write(chalk.cyan(`[${currentTimeWOMSFormatted}] Moving folders to FinishingBuffer and CuttingAccounting: \n`));
                 hasMovingToUploadZonePrinted = true;
             }
             if (!isDryRun) {
