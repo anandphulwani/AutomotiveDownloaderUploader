@@ -171,7 +171,7 @@ while (true) {
 
         // eslint-disable-next-line no-restricted-syntax
         for (const cutterCuttingDoneSubFolderAndFiles of unlockedFolders) {
-            const cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
+            let cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
             const cutterCuttingDoneStat = fs.statSync(cutterCuttingDoneSubFolderPath);
             // Check CuttingDone item is a folder
             if (!cutterCuttingDoneStat.isDirectory()) {
