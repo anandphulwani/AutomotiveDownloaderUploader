@@ -171,6 +171,7 @@ while (true) {
 
         // eslint-disable-next-line no-restricted-syntax
         for (const cutterCuttingDoneSubFolderAndFiles of unlockedFolders) {
+            let isOverwrite = false;
             let cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
             const cutterCuttingDoneStat = fs.statSync(cutterCuttingDoneSubFolderPath);
             // Check CuttingDone item is a folder
@@ -181,6 +182,22 @@ while (true) {
                 // eslint-disable-next-line no-continue
                 continue;
             }
+
+            // Check CuttingDone folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
+            if (!/^[O|o][K|k]_AlreadyMoved_(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+                const folderWithOkAlreadMovedRemoved = path.basename(cutterCuttingDoneSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
+                const newCutterCuttingDoneSubFolderPath = `${path.dirname(cutterCuttingDoneSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
+                fs.renameSync(cutterCuttingDoneSubFolderPath, newCutterCuttingDoneSubFolderPath);
+                cutterCuttingDoneSubFolderPath = newCutterCuttingDoneSubFolderPath;
+                isOverwrite = true;
+            }
+
+            // Check CuttingDone folder has AlreadyMoved_ prefixed to it, if has ignore the folder
+            if (!/^AlreadyMoved_.*$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+
             // Check CuttingDone folder matches the format
             if (!/^(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
                 currentSetOfWarnings.add(
@@ -205,6 +222,7 @@ while (true) {
                 folderSize: folderSize,
                 cutter: cutter,
                 cuttersFinisher: cuttersFinisher,
+                isOverwrite: isOverwrite,
             });
         }
     }
