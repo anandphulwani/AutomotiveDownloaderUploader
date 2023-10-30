@@ -141,7 +141,7 @@ while (true) {
     const currentSetOfWarnings = new Set();
     createProcessingAndRecordKeepingFolders(instanceRunDateFormatted);
 
-    const foldersToShift = [];
+    let foldersToShift = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const cutter of Object.keys(config.contractors)) {
         const cuttersFinisher = config.contractors[cutter].finisher;
@@ -253,10 +253,7 @@ while (true) {
         }
     }
 
-    const doesDestinationFolderAlreadyExists = moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, true);
-    if (doesDestinationFolderAlreadyExists) {
-        process.exit(1);
-    }
+    foldersToShift = moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, true);
     moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, false);
     await waitForSeconds(30);
 }
