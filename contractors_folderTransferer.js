@@ -118,6 +118,14 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
                     }
                 }
             } else {
+                if (isOverwrite) {
+                    if (fs.existsSync(newFinishingBufferPath)) {
+                        fs.unlinkSync(newFinishingBufferPath);
+                    }
+                    if (fs.existsSync(newCuttingAccountingZonePath)) {
+                        fs.unlinkSync(newCuttingAccountingZonePath);
+                    }
+                }
                 createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath, isOverwrite);
                 createDirAndMoveFile(dealerImagesFolder, newFinishingBufferPath, isOverwrite);
             }
