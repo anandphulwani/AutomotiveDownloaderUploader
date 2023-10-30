@@ -187,7 +187,7 @@ while (true) {
             }
 
             // Check CuttingDone folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
-            if (!/^[O|o][K|k]_AlreadyMoved_(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+            if (/^[O|o][K|k]_AlreadyMoved_(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
                 const folderWithOkAlreadMovedRemoved = path.basename(cutterCuttingDoneSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
                 const newCutterCuttingDoneSubFolderPath = `${path.dirname(cutterCuttingDoneSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
                 fs.renameSync(cutterCuttingDoneSubFolderPath, newCutterCuttingDoneSubFolderPath);
@@ -196,7 +196,7 @@ while (true) {
             }
 
             // Check CuttingDone folder has AlreadyMoved_ prefixed to it, if has ignore the folder
-            if (!/^AlreadyMoved_.*$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+            if (/^AlreadyMoved_.*$/.test(cutterCuttingDoneSubFolderAndFiles)) {
                 // eslint-disable-next-line no-continue
                 continue;
             }
