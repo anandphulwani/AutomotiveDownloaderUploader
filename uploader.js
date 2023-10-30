@@ -120,7 +120,7 @@ for (const finisher of finishers) {
             continue;
         }
         // Check ReadyToUpload folder matches the format
-        const regexToMatchFolderName = /^.* (([^\s]* )*)[^\s]+ \d{1,3} \((#\d{5})\)$/;
+        const regexToMatchFolderName = /^(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/;
         if (!regexToMatchFolderName.test(finisherReadyToUploadSubFolderAndFiles)) {
             lgw(
                 `Folder in ReadyToUpload but is not in a proper format, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
