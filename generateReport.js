@@ -224,7 +224,7 @@ for (const typeOfExcel of typesOfExcel) {
                             )}`;
                         }
                     }
-                    lgw(`${allotmentAndUploadedMismatchString}\r\n`);
+                    typeOfExcel === 'individual' ? lgw(`${allotmentAndUploadedMismatchString}\r\n`) : null;
                 }
             }
             /* #endregion */
@@ -253,7 +253,7 @@ for (const typeOfExcel of typesOfExcel) {
                         )}`;
                     }
                 }
-                lgw(`${remainingUnconsumedFoldersString}\r\n`);
+                typeOfExcel === 'individual' ? lgw(`${remainingUnconsumedFoldersString}\r\n`) : null;
             }
             /* #endregion */
         }
