@@ -78,7 +78,6 @@ const cuttingAccounting = config.cutterRecordKeepingFolders[0];
 // const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
 function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, isDryRun = true) {
-    let doesDestinationFolderAlreadyExists = false;
     let hasMovingToUploadZonePrinted = false;
     const foldersToShiftLength = foldersToShift.length;
     for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
@@ -109,11 +108,9 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
                 if (isOverwrite === false) {
                     if (fs.existsSync(`${newFinishingBufferPath}`)) {
                         lge(`Folder: ${newFinishingBufferPath} already exists, cannot move ${dealerImagesFolder} to its location.`);
-                        doesDestinationFolderAlreadyExists = true;
                     }
                     if (fs.existsSync(`${newCuttingAccountingZonePath}`)) {
                         lge(`Folder: ${newCuttingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
-                        doesDestinationFolderAlreadyExists = true;
                     }
                     if (fs.existsSync(`${newFinishingBufferPath}`) || fs.existsSync(`${newCuttingAccountingZonePath}`)) {
                         fs.renameSync(dealerImagesFolder, `${path.dirname(dealerImagesFolder)}/AlreadyMoved_${path.basename(dealerImagesFolder)}`);
@@ -134,7 +131,7 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
             }
         }
     }
-    return doesDestinationFolderAlreadyExists;
+    return foldersToShift;
 }
 
 const historyOfWarnings = [new Set(), new Set(), new Set()]; // Array of sets for the last three iterations
