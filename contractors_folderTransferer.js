@@ -173,7 +173,7 @@ while (true) {
         for (const cutterCuttingDoneSubFolderAndFiles of unlockedFolders) {
             const cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
             const cutterCuttingDoneStat = fs.statSync(cutterCuttingDoneSubFolderPath);
-            // Check ReadyToUpload item is a folder
+            // Check CuttingDone item is a folder
             if (!cutterCuttingDoneStat.isDirectory()) {
                 currentSetOfWarnings.add(
                     `Found a file in Cutter's CuttingDone directory, Filename: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
@@ -181,7 +181,7 @@ while (true) {
                 // eslint-disable-next-line no-continue
                 continue;
             }
-            // Check ReadyToUpload folder matches the format
+            // Check CuttingDone folder matches the format
             if (!/^(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
                 currentSetOfWarnings.add(
                     `Folder in CuttingDone but is not in a proper format, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
@@ -191,7 +191,7 @@ while (true) {
             }
             const numberOfImagesAcToFolderName = parseInt(getNumberOfImagesFromAllottedDealerNumberFolder(cutterCuttingDoneSubFolderAndFiles), 10);
             const numberOfImagesAcToFileCount = getFileCountRecursively(cutterCuttingDoneSubFolderPath);
-            // Check ReadyToUpload folder filecount matches as mentioned in the folder
+            // Check CuttingDone folder filecount matches as mentioned in the folder
             if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
                 currentSetOfWarnings.add(
                     `Folder in CuttingDone but images quantity does not match, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
