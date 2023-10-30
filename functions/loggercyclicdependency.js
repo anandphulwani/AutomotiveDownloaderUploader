@@ -1,5 +1,5 @@
 /* eslint-disable import/extensions */
-import { loggerFile, loggerConsole, addIndividualTransportCatcherrorFileWinston } from './logger.js';
+import { loggerFile, loggerConsole, addIndividualTransportCatcherrorFileWinston, addIndividualTransportWarnFileWinston } from './logger.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -27,5 +27,15 @@ const lgccyclicdependency = (...args) => {
     loggerFile.catcherror(...args, { filename, lineNumber, uniqueId });
 };
 
+const lgwcyclicdependency = (...args) => {
+    addIndividualTransportWarnFileWinston();
+    // const { filename, lineNumber } = getCallerDetails(...args);
+    const filename = 'loggercyclicdependency.js';
+    const lineNumber = '00';
+    const uniqueId = '######';
+    loggerConsole.warn(...args, { filename, lineNumber, uniqueId });
+    loggerFile.warn(...args, { filename, lineNumber, uniqueId });
+};
+
 // eslint-disable-next-line import/prefer-default-export
-export { lgccyclicdependency };
+export { lgccyclicdependency, lgwcyclicdependency };
