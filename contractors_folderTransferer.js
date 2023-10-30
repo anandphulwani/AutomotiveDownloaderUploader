@@ -106,13 +106,13 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
             }\\${cutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             if (isDryRun) {
                 if (isOverwrite === false) {
-                    if (fs.existsSync(`${newFinishingBufferPath}`)) {
+                    if (fs.existsSync(newFinishingBufferPath)) {
                         lge(`Folder: ${newFinishingBufferPath} already exists, cannot move ${dealerImagesFolder} to its location.`);
                     }
-                    if (fs.existsSync(`${newCuttingAccountingZonePath}`)) {
+                    if (fs.existsSync(newCuttingAccountingZonePath)) {
                         lge(`Folder: ${newCuttingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
                     }
-                    if (fs.existsSync(`${newFinishingBufferPath}`) || fs.existsSync(`${newCuttingAccountingZonePath}`)) {
+                    if (fs.existsSync(newFinishingBufferPath) || fs.existsSync(newCuttingAccountingZonePath)) {
                         fs.renameSync(dealerImagesFolder, `${path.dirname(dealerImagesFolder)}/AlreadyMoved_${path.basename(dealerImagesFolder)}`);
                         foldersToShift.splice(cnt, 1);
                     }
