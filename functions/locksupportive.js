@@ -6,7 +6,7 @@ import { checkSync, lockSync, unlockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { msleep } from './sleep.js';
 import { instanceRunDateFormatted, instanceRunTime, currentTime } from './datetime.js';
-import { lgccyclicdependency } from './loggercyclicdependency.js';
+import { lgccyclicdependency, lgwcyclicdependency } from './loggercyclicdependency.js';
 import { getCallerDetails } from './callerdetails.js';
 /* eslint-enable import/extensions */
 
@@ -28,7 +28,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
                 }
                 process.exit(1);
             } else if (lockTryIndex !== 0 && lockTryIndex % 1500 === 0) {
-                lgccyclicdependency(`Trying to get a lock on: \n${fileToOperateOn}    ......`);
+                lgwcyclicdependency(`Trying to get a lock on: \n${fileToOperateOn}    ......`);
             } else if (lockTryIndex !== 0 && lockTryIndex % 300 === 0) {
                 process.stdout.write(chalk.cyan(` ■`));
             }
