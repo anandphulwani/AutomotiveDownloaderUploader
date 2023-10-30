@@ -173,7 +173,7 @@ while (true) {
         }
 
         // eslint-disable-next-line no-restricted-syntax
-        for (const cutterCuttingDoneSubFolderAndFiles of unlockedFolders) {
+        for (let cutterCuttingDoneSubFolderAndFiles of unlockedFolders) {
             let isOverwrite = false;
             let cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
             const cutterCuttingDoneStat = fs.statSync(cutterCuttingDoneSubFolderPath);
@@ -191,7 +191,8 @@ while (true) {
                 const folderWithOkAlreadMovedRemoved = path.basename(cutterCuttingDoneSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
                 const newCutterCuttingDoneSubFolderPath = `${path.dirname(cutterCuttingDoneSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
                 fs.renameSync(cutterCuttingDoneSubFolderPath, newCutterCuttingDoneSubFolderPath);
-                cutterCuttingDoneSubFolderPath = newCutterCuttingDoneSubFolderPath;
+                cutterCuttingDoneSubFolderAndFiles = folderWithOkAlreadMovedRemoved;
+                cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
                 isOverwrite = true;
             }
 
