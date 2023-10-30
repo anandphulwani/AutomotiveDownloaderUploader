@@ -107,10 +107,10 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
             if (isDryRun) {
                 if (isOverwrite === false) {
                     if (fs.existsSync(newFinishingBufferPath)) {
-                        lge(`Folder: ${newFinishingBufferPath} already exists, cannot move ${dealerImagesFolder} to its location.`);
+                        lgw(`Folder already exists: ${newFinishingBufferPath},\n${dealerImagesFolder}\n cannot be moved to its location.`);
                     }
                     if (fs.existsSync(newCuttingAccountingZonePath)) {
-                        lge(`Folder: ${newCuttingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
+                        lgw(`Folder already exists: ${newCuttingAccountingZonePath},\n${dealerImagesFolder}\n cannot be moved to its location.`);
                     }
                     if (fs.existsSync(newFinishingBufferPath) || fs.existsSync(newCuttingAccountingZonePath)) {
                         fs.renameSync(dealerImagesFolder, `${path.dirname(dealerImagesFolder)}/AlreadyMoved_${path.basename(dealerImagesFolder)}`);
