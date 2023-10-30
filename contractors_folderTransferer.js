@@ -8,7 +8,7 @@ import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/
 import { config } from './configs/config.js';
 import { lgw, lge, lgc } from './functions/loggersupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
-import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes } from './functions/filesystem.js';
+import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes, removeDir } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
@@ -120,10 +120,10 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
             } else {
                 if (isOverwrite) {
                     if (fs.existsSync(newFinishingBufferPath)) {
-                        fs.unlinkSync(newFinishingBufferPath);
+                        removeDir(newFinishingBufferPath, true);
                     }
                     if (fs.existsSync(newCuttingAccountingZonePath)) {
-                        fs.unlinkSync(newCuttingAccountingZonePath);
+                        removeDir(newCuttingAccountingZonePath, true);
                     }
                 }
                 createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath, isOverwrite);
