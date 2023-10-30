@@ -77,7 +77,7 @@ const finishingBuffer = config.finisherProcessingFolders[0];
 const cuttingAccounting = config.cutterRecordKeepingFolders[0];
 // const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
-async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, isDryRun = true) {
+function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, isDryRun = true) {
     let doesDestinationFolderAlreadyExists = false;
     let hasMovingToUploadZonePrinted = false;
     const foldersToShiftLength = foldersToShift.length;
@@ -232,10 +232,10 @@ while (true) {
         }
     }
 
-    const doesDestinationFolderAlreadyExists = await moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, true);
+    const doesDestinationFolderAlreadyExists = moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, true);
     if (doesDestinationFolderAlreadyExists) {
         process.exit(1);
     }
-    await moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, false);
+    moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, false);
     await waitForSeconds(30);
 }
