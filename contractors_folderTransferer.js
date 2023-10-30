@@ -82,7 +82,7 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
     let hasMovingToUploadZonePrinted = false;
     const foldersToShiftLength = foldersToShift.length;
     for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
-        const { dealerImagesFolder, folderSize, cutter, cuttersFinisher } = foldersToShift[cnt];
+        const { dealerImagesFolder, folderSize, cutter, cuttersFinisher, isOverwrite } = foldersToShift[cnt];
         // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system with the message `Folder in Cutter's CuttingDone locked, maybe a contractor working/moving it` works properly.
         const folderSizeAfter10Seconds = getFolderSizeInBytes(dealerImagesFolder);
         if (folderSizeAfter10Seconds !== folderSize) {
@@ -106,17 +106,23 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
                 config.contractorsRecordKeepingPath
             }\\${cutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             if (isDryRun) {
-                if (fs.existsSync(`${newFinishingBufferPath}`)) {
-                    lge(`Folder: ${newFinishingBufferPath} already exists, cannot move ${dealerImagesFolder} to its location.`);
-                    doesDestinationFolderAlreadyExists = true;
-                }
-                if (fs.existsSync(`${newCuttingAccountingZonePath}`)) {
-                    lge(`Folder: ${newCuttingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
-                    doesDestinationFolderAlreadyExists = true;
+                if (isOverwrite === false) {
+                    if (fs.existsSync(`${newFinishingBufferPath}`)) {
+                        lge(`Folder: ${newFinishingBufferPath} already exists, cannot move ${dealerImagesFolder} to its location.`);
+                        doesDestinationFolderAlreadyExists = true;
+                    }
+                    if (fs.existsSync(`${newCuttingAccountingZonePath}`)) {
+                        lge(`Folder: ${newCuttingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
+                        doesDestinationFolderAlreadyExists = true;
+                    }
+                    if (fs.existsSync(`${newFinishingBufferPath}`) || fs.existsSync(`${newCuttingAccountingZonePath}`)) {
+                        fs.renameSync(dealerImagesFolder, `${path.dirname(dealerImagesFolder)}/AlreadyMoved_${path.basename(dealerImagesFolder)}`);
+                        foldersToShift.splice(cnt, 1);
+                    }
                 }
             } else {
-                createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath);
-                createDirAndMoveFile(dealerImagesFolder, newFinishingBufferPath);
+                createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath, isOverwrite);
+                createDirAndMoveFile(dealerImagesFolder, newFinishingBufferPath, isOverwrite);
             }
             if (!isDryRun) {
                 if (cnt !== foldersToShiftLength - 1) {
