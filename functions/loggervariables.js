@@ -3,7 +3,7 @@ import path from 'path';
 import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { currentTimeFormatted, instanceRunDateFormatted, instanceRunDateTimeFormatted, instanceRunTimeFormatted } from './datetime.js';
+import { currentTime, instanceRunDateFormatted, instanceRunDateTimeSeparated, instanceRunTime } from './datetime.js';
 /* eslint-enable import/extensions */
 
 const debug = true;
@@ -13,13 +13,13 @@ const debug = true;
  * of logs files created by same prefix by the current instance itself.
  *
  */
-const instanceRunLogFilePrefix = `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeFormatted}`;
+const instanceRunLogFilePrefix = `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeSeparated}`;
 const instanceRunLogFilePrefixDir = path.dirname(instanceRunLogFilePrefix);
 if (!fs.existsSync(instanceRunLogFilePrefixDir)) {
     fs.mkdirSync(instanceRunLogFilePrefixDir, { recursive: true });
 }
 if (!fs.existsSync(instanceRunLogFilePrefix)) {
-    fs.writeFile(instanceRunLogFilePrefix, '', (err) => {});
+    fs.writeFileSync(instanceRunLogFilePrefix, '', (err) => {});
 }
 if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
     // Stale for 12 hours
@@ -37,12 +37,12 @@ if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
         }
     }
     if (debug) {
-        const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTimeFormatted}/${path.basename(instanceRunLogFilePrefix)}`;
+        const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTime}/${path.basename(instanceRunLogFilePrefix)}`;
         if (!fs.existsSync(logPath)) {
             fs.mkdirSync(logPath, { recursive: true });
         }
         fs.appendFileSync(
-            `${logPath}/${currentTimeFormatted()}_AttainedLock_loggervariables.js.txt`,
+            `${logPath}/${currentTime()}_AttainedLock_loggervariables.js.txt`,
             `Got A Lock On '${instanceRunLogFilePrefix}', caller: loggervariables.js.\n`
         );
     }

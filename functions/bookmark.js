@@ -8,16 +8,23 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { lgc } from './loggersupportive.js';
+import { lgc, lgs } from './loggersupportive.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
 import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
 import { trimMultipleSpacesInMiddleIntoOne, allTrimString } from './stringformatting.js';
+import { writeFileWithComparingSameLinesWithOldContents } from './filesystem.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
+
+function reformatJSONString(contents) {
+    const JSONObj = JSON.parse(contents);
+    const JSONString = JSON.stringify(JSONObj, null, 3);
+    return JSONString;
+}
 
 async function downloadBookmarksFromSourceToProcessing() {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
@@ -264,106 +271,81 @@ function removeChecksumFromBookmarksObj(bookmarksObj) {
     return JSON.parse(jsonString);
 }
 
-function replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper(guid, appendText) {
-    const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-    attainLock(fileToOperateOn, undefined, true);
-
-    const returnObj = replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText);
-
-    releaseLock(fileToOperateOn, undefined, true);
-    if (returnObj.exit) {
-        process.exit(returnObj.exit);
-    }
-}
-
-function replaceBookmarksNameOnGUIDAndWriteToBookmarksFile(guid, appendText) {
-    try {
-        const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-        const bookmarksText = fs.readFileSync(fileToOperateOn);
-        let bookmarksJSONObj = JSON.parse(bookmarksText);
-        bookmarksJSONObj = removeChecksumFromBookmarksObj(bookmarksJSONObj);
-        let bookmarkText = JSON.stringify(bookmarksJSONObj, null, 3);
-
-        const regexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
-        const regexExpression = new RegExp(regexString, 'g');
-
-        if (!regexExpression.test(bookmarkText)) {
-            lgc('Unable to match regex for fn replaceBookmarksNameOnGUIDAndWriteToBookmarksFile()');
-            return { exit: true, exitCode: 1 };
-        }
-
-        const initalBookmarkTest = bookmarkText;
-        const initalLineCount = bookmarkText.split(/\r\n|\r|\n/).length;
-        const bookmarkBlockText = bookmarkText.match(regexExpression)[0];
-        const bookmarkBlockObj = JSON.parse(bookmarkBlockText);
-        bookmarkBlockObj.name = `${bookmarkBlockObj.name} |#| ${appendText}`;
-        const bookmarkBlockNewText = JSON.stringify(bookmarkBlockObj);
-
-        bookmarkText = bookmarkText.replace(bookmarkBlockText, bookmarkBlockNewText);
-        bookmarksJSONObj = JSON.parse(bookmarkText);
-        if (Math.abs(initalLineCount - JSON.stringify(bookmarksJSONObj, null, 3).split(/\r\n|\r|\n/).length) > 1) {
-            console.log(initalBookmarkTest);
-            console.log(`${'-'.repeat(70)}`);
-            console.log(JSON.stringify(bookmarksJSONObj, null, 3));
-            console.log(`${'-'.repeat(70)}`);
-            console.log(
-                `initalLineCount: ${initalLineCount}, finalLineCount: ${JSON.stringify(bookmarksJSONObj, null, 3).split(/\r\n|\r|\n/).length}`
-            );
-            return { exit: true, exitCode: 0 };
-        }
-        fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksJSONObj, null, 3));
-        createBackupOfFile(fileToOperateOn, JSON.stringify(bookmarksJSONObj, null, 3));
-        return { exit: false, exitCode: null };
-    } catch (err) {
-        console.log(`${err.message}`);
-        return { exit: true, exitCode: 1 };
-    }
-}
-
-async function replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(guid, appendText, useLockingMechanism = true) {
+function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, appendText, useLockingMechanism) {
+    const elementsDetails = {
+        name: {
+            blockRegex: `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`,
+            elementRegex: `"name": "(.*)"`,
+            elementSubstitutionValue: `"name": "$1 |#| ${appendText}"`,
+        },
+        foldername: {
+            blockRegex: `[ ]*"date_added"[^\\{\\}\\]\\[]*?"guid": "${guid}",[^\\{\\}\\]\\[]*?"type": "folder"`,
+            elementRegex: `"name": "(.*)"`,
+            elementSubstitutionValue: `"name": "$1 |#| ${appendText}"`,
+            elementAlreadySubstituedCheckRegex: `"name": .* \\|#\\| .*`,
+            elementAlreadySubstituedSubstitutionValue: `"name": "$1,${appendText}"`,
+        },
+    };
     const fileToOperateOn = config.processingBookmarkPathWithoutSync;
     if (useLockingMechanism) {
         attainLock(fileToOperateOn, undefined, true);
     }
-
     try {
-        const processingContents = fs.readFileSync(fileToOperateOn, 'utf8');
-        let bookmarksObj = JSON.parse(processingContents);
-        bookmarksObj = removeChecksumFromBookmarksObj(bookmarksObj);
-        let bookmarkText = JSON.stringify(bookmarksObj, null, 3);
+        const fileContents = fs.readFileSync(fileToOperateOn, 'utf8');
 
-        const regexString = `[ ]*"date_added"[^\\{\\}\\]\\[]*?"guid": "${guid}",[^\\{\\}\\]\\[]*?"type": "folder"`;
-        const regexExpression = new RegExp(regexString, 'g');
+        let bookmarksFileJSONObj = JSON.parse(fileContents);
+        bookmarksFileJSONObj = removeChecksumFromBookmarksObj(bookmarksFileJSONObj);
+        let bookmarksFileText = JSON.stringify(bookmarksFileJSONObj, null, 3);
 
-        if (!regexExpression.test(bookmarkText)) {
-            lgc('Unable to match regex for fn replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile()');
+        const blockRegexExpression = new RegExp(elementsDetails[element].blockRegex, 'g');
+        if (!blockRegexExpression.test(bookmarksFileText)) {
+            lgs(
+                [
+                    'Unable to match regex for fn replaceBookmarksElementByGUIDAndWriteToBookmarksFile()',
+                    elementsDetails[element].blockRegex,
+                    '-'.repeat(70) + bookmarksFileText + '-'.repeat(70),
+                ].join('\n')
+            );
             process.exit(1);
         }
+        const bookmarkBlockText = bookmarksFileText.match(blockRegexExpression)[0];
 
-        const bookmarkBlockText = bookmarkText.match(regexExpression)[0];
-
-        const nameRegexString = `"name": "(.*)"`;
-        const nameRegexExpression = new RegExp(nameRegexString, 'g');
-        let newBookmarkBlockText;
-        if (!/"name": .* \|#\| .*/.test(bookmarkBlockText)) {
-            newBookmarkBlockText = bookmarkBlockText.replace(nameRegexExpression, `"name": "$1 |#| ${appendText}"`);
-        } else {
-            newBookmarkBlockText = bookmarkBlockText.replace(nameRegexExpression, `"name": "$1,${appendText}"`);
+        let bookmarkBlockNewText;
+        const regexExpression = new RegExp(elementsDetails[element].elementRegex, 'g');
+        if (elementsDetails[element].elementAlreadySubstituedCheckRegex) {
+            const elementAlreadySubstituedCheckRegexExpression = new RegExp(elementsDetails[element].elementAlreadySubstituedCheckRegex, 'g');
+            if (elementAlreadySubstituedCheckRegexExpression.test(bookmarkBlockText)) {
+                bookmarkBlockNewText = bookmarkBlockText.replace(regexExpression, elementsDetails[element].elementAlreadySubstituedSubstitutionValue);
+            }
+        }
+        if (bookmarkBlockNewText === undefined) {
+            bookmarkBlockNewText = bookmarkBlockText.replace(regexExpression, elementsDetails[element].elementSubstitutionValue);
         }
 
-        bookmarkText = bookmarkText.replace(bookmarkBlockText, newBookmarkBlockText);
-        bookmarksObj = JSON.parse(bookmarkText);
-        fs.writeFileSync(fileToOperateOn, JSON.stringify(bookmarksObj, null, 3));
-        createBackupOfFile(fileToOperateOn, JSON.stringify(bookmarksObj, null, 3));
+        bookmarksFileText = bookmarksFileText.replace(bookmarkBlockText, bookmarkBlockNewText);
+        bookmarksFileText = reformatJSONString(bookmarksFileText);
+        const returnVal = writeFileWithComparingSameLinesWithOldContents(fileToOperateOn, bookmarksFileText, fileContents);
+        if (!returnVal) {
+            lgs(
+                [
+                    `${fileContents}\n${'-'.repeat(70)}`,
+                    `${bookmarksFileText}\n${'-'.repeat(70)}`,
+                    `initalLineCount: ${fileContents.trim().split(/\r\n|\r|\n/).length}, finalLineCount: ${
+                        bookmarksFileText.split(/\r\n|\r|\n/).length
+                    }`,
+                ].join('\n')
+            );
+            process.exit(1);
+        }
+        createBackupOfFile(fileToOperateOn, bookmarksFileText);
         if (useLockingMechanism) {
             releaseLock(fileToOperateOn, undefined, true);
         }
-        return bookmarksObj;
     } catch (err) {
-        console.log(`${err.message}`);
+        releaseLock(fileToOperateOn, undefined, true);
+        lgs(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block: ${err.message}`);
         process.exit(1);
     }
-    return false;
 }
 
 function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
@@ -431,8 +413,7 @@ export {
     downloadBookmarksFromSourceToProcessing,
     handleBookmarkURL,
     removeChecksumFromBookmarksObj,
-    replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper,
-    replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile,
+    replaceBookmarksElementByGUIDAndWriteToBookmarksFile,
     getBookmarkFolderGUIDFromUsernameDealerNumber,
     getBookmarkUsernameFolderFromUniqueId,
     getUniqueIdPairsFromDealerBookmarkName,

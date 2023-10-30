@@ -1,15 +1,18 @@
 import fs from 'fs';
 import path from 'path';
+import chalk from 'chalk';
+import logSymbols from 'log-symbols';
 import fsExtra from 'fs-extra';
 import { checkSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { instanceRunDateFormatted, currentTimeFormatted } from './datetime.js';
+import { instanceRunDateFormatted, currentTime } from './datetime.js';
 import { config } from '../configs/config.js';
 import { lge, lgc } from './loggersupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
+
 /* eslint-enable import/extensions */
 
 /**
@@ -20,6 +23,7 @@ const perImageTimeToUpload = 7.25;
 const perVINTimeToUpload = 7;
 
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
+    process.stdout.write(chalk.cyan(`Auto cleaning up the datastore: `));
     const foldersToCleanUp = [
         config.lockingBackupsZonePath,
         config.downloadPath,
@@ -55,6 +59,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         }
     }
     /* #endregion: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
+    process.stdout.write(chalk.cyan(`01:${logSymbols.success} `));
 
     /* #region: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
     if (fs.existsSync(config.lockingBackupsZonePath)) {
@@ -81,6 +86,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         }
     }
     /* #endregion: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
+    process.stdout.write(chalk.cyan(`02:${logSymbols.success} `));
 
     /* #region: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
     const lockingBackupsDirWithTodaysDate = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}`;
@@ -152,6 +158,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         });
     }
     /* #endregion: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
+    process.stdout.write(chalk.cyan(`03:${logSymbols.success} `));
 
     // eslint-disable-next-line no-restricted-syntax
     for (const dateDir of fs.readdirSync('.\\logs\\')) {
@@ -188,6 +195,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
             }
         }
     }
+    process.stdout.write(chalk.cyan(`04:${logSymbols.success}\n`));
 }
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
@@ -231,13 +239,13 @@ function getUploadRemainingSummary(foldersToUpload) {
         .padStart(2, '0');
     const durationSeconds = (totalTimeInSeconds % 60).toString().padStart(2, '0');
 
-    const currentTime = new Date(); // Get current time
-    currentTime.setHours(currentTime.getHours() + parseInt(durationHours, 10));
-    currentTime.setMinutes(currentTime.getMinutes() + parseInt(durationMinutes, 10));
-    currentTime.setSeconds(currentTime.getSeconds() + parseInt(durationSeconds, 10));
+    const dateTimeObj = new Date(); // Get current time
+    dateTimeObj.setHours(dateTimeObj.getHours() + parseInt(durationHours, 10));
+    dateTimeObj.setMinutes(dateTimeObj.getMinutes() + parseInt(durationMinutes, 10));
+    dateTimeObj.setSeconds(dateTimeObj.getSeconds() + parseInt(durationSeconds, 10));
 
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }; // Format the time in hh:mm:ss tt format
-    const finishedTime = currentTime.toLocaleString('en-US', options);
+    const finishedTime = dateTimeObj.toLocaleString('en-US', options);
 
     return `Remaining DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, VINFolder/VINFiles: ${totalVINFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
 }
@@ -248,16 +256,17 @@ function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {
     const fromPath = fileToOperateOn;
     const toPath = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}\\${path.basename(
         fileToOperateOn
-    )}_${currentTimeFormatted()}(${randomNumer})`;
+    )}_${currentTime()}(${randomNumer})`;
     const toPathToWrite = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}\\Backup\\${path.basename(
         fileToOperateOn
-    )}_${currentTimeFormatted()}(${randomNumer})`;
+    )}_${currentTime()}(${randomNumer})`;
     createDirAndCopyFile(fromPath, toPath);
     if (path.basename(fileToOperateOn) === 'Bookmarks') {
         makeDir(path.dirname(toPathToWrite));
         fs.writeFileSync(toPathToWrite, dataToBeWritten);
     }
 }
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     perImageTimeToUpload,

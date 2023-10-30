@@ -13,7 +13,7 @@ import { createDirAndCopyFile, createDirAndMoveFileAndDeleteSourceParentFolderIf
 import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './excelsupportive.js';
 import { addToContractorsCurrentAllotted } from './configsupportive.js';
 import { addAllotmentToReport } from './reportsupportive.js';
-import { getBookmarkFolderGUIDFromUsernameDealerNumber, replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile } from './bookmark.js';
+import { getBookmarkFolderGUIDFromUsernameDealerNumber, replaceBookmarksElementByGUIDAndWriteToBookmarksFile } from './bookmark.js';
 import {
     recalculateRatioOfImagesAlloted,
     recalculateAllotmentPriority,
@@ -175,7 +175,7 @@ async function doAllotment(
 
             if (!isDryRun) {
                 const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(usernameFolder, path.basename(dealerFolderPath));
-                await replaceBookmarksFolderNameOnGUIDAndWriteToBookmarksFile(bookmarkFolderGUID, uniqueIdOfFolder, false);
+                replaceBookmarksElementByGUIDAndWriteToBookmarksFile('foldername', bookmarkFolderGUID, uniqueIdOfFolder);
 
                 createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
                 createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);

@@ -2,17 +2,21 @@ import date from 'date-and-time';
 
 const instanceRunDateFormatted = date.format(new Date(), 'YYYY-MM-DD');
 const instanceRunDateWODayFormatted = date.format(new Date(), 'YYYY-MM');
-const instanceRunTimeFormatted = date.format(new Date(), 'HHmmssSSS');
-const instanceRunDateTimeFormatted = date.format(new Date(), 'YYYYMMDD-HHmmssSSS');
-const instanceRunDateTimeWOMSFormatted = date.format(new Date(), 'YYYYMMDD-HHmmss');
+const instanceRunTime = date.format(new Date(), 'HHmmssSSS');
+const instanceRunTimeWOMSFormatted = date.format(new Date(), 'HH:mm:ss');
+const instanceRunTimeWOSSMSFormatted = date.format(new Date(), 'HH:mm');
+const instanceRunDateTimeSeparated = date.format(new Date(), 'YYYYMMDD-HHmmssSSS');
+const instanceRunDateTimeWOMSSeparated = date.format(new Date(), 'YYYYMMDD-HHmmss');
 const instanceRunDateTimeReadableFormatted = date.format(new Date(), 'YYYY-MM-DD HH:mm:ss:SSS');
 const instanceRunDateTimeWOMSReadableFormatted = date.format(new Date(), 'YYYY-MM-DD HH:mm:ss');
 
 const currentDateFormatted = () => date.format(new Date(), 'YYYY-MM-DD');
 const currentDateWODayFormatted = () => date.format(new Date(), 'YYYY-MM');
-const currentTimeFormatted = () => date.format(new Date(), 'HHmmssSSS');
-const currentDateTimeFormatted = () => date.format(new Date(), 'YYYYMMDD-HHmmssSSS');
-const currentDateTimeWOMSFormatted = () => date.format(new Date(), 'YYYYMMDD-HHmmss');
+const currentTime = () => date.format(new Date(), 'HHmmssSSS');
+const currentTimeWOMSFormatted = () => date.format(new Date(), 'HH:mm:ss');
+const currentTimeWOSSMSFormatted = () => date.format(new Date(), 'HH:mm');
+const currentDateTimeSeparated = () => date.format(new Date(), 'YYYYMMDD-HHmmssSSS');
+const currentDateTimeWOMSSeparated = () => date.format(new Date(), 'YYYYMMDD-HHmmss');
 const currentDateTimeReadableFormatted = () => date.format(new Date(), 'YYYY-MM-DD HH:mm:ss:SSS');
 const currentDateTimeWOMSReadableFormatted = () => date.format(new Date(), 'YYYY-MM-DD HH:mm:ss');
 
@@ -63,16 +67,20 @@ function formatDate(inputDate, fromAndTo) {
 export {
     instanceRunDateFormatted,
     instanceRunDateWODayFormatted,
-    instanceRunTimeFormatted,
-    instanceRunDateTimeFormatted,
-    instanceRunDateTimeWOMSFormatted,
+    instanceRunTime,
+    instanceRunTimeWOMSFormatted,
+    instanceRunTimeWOSSMSFormatted,
+    instanceRunDateTimeSeparated,
+    instanceRunDateTimeWOMSSeparated,
     instanceRunDateTimeReadableFormatted,
     instanceRunDateTimeWOMSReadableFormatted,
     currentDateFormatted,
     currentDateWODayFormatted,
-    currentTimeFormatted,
-    currentDateTimeFormatted,
-    currentDateTimeWOMSFormatted,
+    currentTime,
+    currentTimeWOMSFormatted,
+    currentTimeWOSSMSFormatted,
+    currentDateTimeSeparated,
+    currentDateTimeWOMSSeparated,
     currentDateTimeReadableFormatted,
     currentDateTimeWOMSReadableFormatted,
     getCurrentDate,

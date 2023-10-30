@@ -23,7 +23,7 @@ import {
     downloadBookmarksFromSourceToProcessing,
     handleBookmarkURL,
     removeChecksumFromBookmarksObj,
-    replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper,
+    replaceBookmarksElementByGUIDAndWriteToBookmarksFile,
 } from './functions/bookmark.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
@@ -47,6 +47,7 @@ if (config.environment === 'production') {
     printSectionSeperator();
 }
 autoCleanUpDatastoreZones();
+printSectionSeperator();
 
 // ONPROJECTFINISH: Remove the unused imports
 // NORMALPRIORITY: Error summary in the end.
@@ -59,6 +60,7 @@ autoCleanUpDatastoreZones();
 // Non-shortcircuiting or: [f1(), f2()].some(i => i)
 
 await downloadBookmarksFromSourceToProcessing();
+printSectionSeperator();
 
 if (
     !(
@@ -198,7 +200,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                     );
                     urlsDownloaded = returnObj.urlsDownloaded;
                     if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
-                        replaceBookmarksNameOnGUIDAndWriteToBookmarksFileWrapper(vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
+                        replaceBookmarksElementByGUIDAndWriteToBookmarksFile('name', vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
                     } else {
                         console.log('Bookmark not appended!');
                         if (config.updateBookmarksOnceDone) {
