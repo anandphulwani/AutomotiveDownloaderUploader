@@ -131,8 +131,11 @@ async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(folder
     return doesDestinationFolderAlreadyExists;
 }
 
+const historyOfWarnings = [new Set(), new Set(), new Set()]; // Array of sets for the last three iterations
+
 // eslint-disable-next-line no-constant-condition
 while (true) {
+    const currentSetOfWarnings = new Set();
     createProcessingAndRecordKeepingFolders(instanceRunDateFormatted);
 
     const foldersToShift = [];
@@ -159,7 +162,7 @@ while (true) {
                     fs.renameSync(`${cutterCuttingDoneSubFolderPath} `, cutterCuttingDoneSubFolderPath.trim());
                     unlockedFolders.push(cutterCuttingDoneSubFolderAndFiles);
                 } catch (err) {
-                    lgw(
+                    currentSetOfWarnings.add(
                         `Folder in Cutter's CuttingDone locked, maybe a contractor working/moving it, Filename: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                     );
                 }
@@ -172,7 +175,7 @@ while (true) {
             const cutterCuttingDoneStat = fs.statSync(cutterCuttingDoneSubFolderPath);
             // Check ReadyToUpload item is a folder
             if (!cutterCuttingDoneStat.isDirectory()) {
-                lgw(
+                currentSetOfWarnings.add(
                     `Found a file in Cutter's CuttingDone directory, Filename: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                 );
                 // eslint-disable-next-line no-continue
@@ -180,7 +183,7 @@ while (true) {
             }
             // Check ReadyToUpload folder matches the format
             if (!/^.* (([^\s]* )*)[^\s]+ \d{1,3} \(#\d{5}\)$/.test(cutterCuttingDoneSubFolderAndFiles)) {
-                lgw(
+                currentSetOfWarnings.add(
                     `Folder in CuttingDone but is not in a proper format, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                 );
                 // eslint-disable-next-line no-continue
@@ -190,7 +193,7 @@ while (true) {
             const numberOfImagesAcToFileCount = getFileCountRecursively(cutterCuttingDoneSubFolderPath);
             // Check ReadyToUpload folder filecount matches as mentioned in the folder
             if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
-                lgw(
+                currentSetOfWarnings.add(
                     `Folder in CuttingDone but images quantity does not match, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
                 );
                 // eslint-disable-next-line no-continue
@@ -219,6 +222,15 @@ while (true) {
     // TODO: This sleep was induced to check folderSizeAfter10Seconds functionality, to be removed if the above locking system works properly.
     // sleep(15);
     // console.log(foldersToShift);
+
+    historyOfWarnings.shift();
+    historyOfWarnings.push(currentSetOfWarnings);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const warning of currentSetOfWarnings) {
+        if (historyOfWarnings[0].has(warning) && historyOfWarnings[1].has(warning)) {
+            lgw(warning);
+        }
+    }
 
     const doesDestinationFolderAlreadyExists = await moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, true);
     if (doesDestinationFolderAlreadyExists) {
