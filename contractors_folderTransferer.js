@@ -6,7 +6,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc } from './functions/loggersupportive.js';
+import { lgw, lge, lgc, lgi, lgif } from './functions/loggersupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes, removeDir } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
@@ -88,12 +88,13 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
             foldersToShift.splice(foldersToShift[cnt]);
         } else {
             if (!isDryRun && !hasMovingToUploadZonePrinted) {
-                process.stdout.write(chalk.cyan(`[${currentTimeWOMSFormatted}] Moving folders to FinishingBuffer and CuttingAccounting: \n`));
+                lgi(`[${chalk.black.bgWhiteBright(currentTimeWOMSFormatted())}] Moving folders to FinishingBuffer and CuttingAccounting: \n`);
                 hasMovingToUploadZonePrinted = true;
             }
             if (!isDryRun) {
                 const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
                 process.stdout.write(chalk.cyan(folderNameToPrint));
+                lgif(folderNameToPrint);
                 for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
                     process.stdout.write(chalk.cyan(`.`));
                 }
