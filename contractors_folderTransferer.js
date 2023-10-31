@@ -143,7 +143,7 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
     return foldersToShift;
 }
 
-const historyOfWarnings = [new Set(), new Set(), new Set()]; // Array of sets for the last three iterations
+const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set()]; // Array of sets for the last three iterations
 
 // eslint-disable-next-line no-constant-condition
 while (true) {
@@ -258,7 +258,18 @@ while (true) {
     historyOfWarnings.push(currentSetOfWarnings);
     // eslint-disable-next-line no-restricted-syntax
     for (const warning of currentSetOfWarnings) {
-        if (historyOfWarnings[0].has(warning) && historyOfWarnings[1].has(warning)) {
+        if (
+            historyOfWarnings[0].has(warning) &&
+            historyOfWarnings[1].has(warning) &&
+            historyOfWarnings[2].has(warning) &&
+            historyOfWarnings[3].has(warning) &&
+            historyOfWarnings[4].has(warning) &&
+            historyOfWarnings[5].has(warning) &&
+            historyOfWarnings[6].has(warning) &&
+            historyOfWarnings[7].has(warning) &&
+            historyOfWarnings[8].has(warning) &&
+            historyOfWarnings[9].has(warning)
+        ) {
             lgw(warning);
         }
     }
