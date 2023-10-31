@@ -76,7 +76,7 @@ try {
     process.exit(1);
 }
 
-const foldersToShift = [];
+let foldersToShift = [];
 const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
 
 // eslint-disable-next-line no-restricted-syntax
@@ -201,12 +201,8 @@ foldersToShift.sort((a, b) => {
 // sleep(15);
 // console.log(foldersToShift);
 
-
-const doesDestinationFolderAlreadyExists = moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(true);
-if (doesDestinationFolderAlreadyExists) {
-    process.exit(1);
-}
-moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(false);
+foldersToShift = moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersToShift, true);
+moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersToShift, false);
 
 if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
     console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));
