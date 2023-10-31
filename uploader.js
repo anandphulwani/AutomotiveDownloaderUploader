@@ -109,8 +109,9 @@ for (const finisher of finishers) {
     }
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const finisherReadyToUploadSubFolderAndFiles of unlockedFolders) {
-        const finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
+    for (let finisherReadyToUploadSubFolderAndFiles of unlockedFolders) {
+        let isOverwrite = false;
+        let finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
         const finisherReadyToUploadStat = fs.statSync(finisherReadyToUploadSubFolderPath);
         // Check ReadyToUpload item is a folder
         if (!finisherReadyToUploadStat.isDirectory()) {
@@ -120,6 +121,23 @@ for (const finisher of finishers) {
             // eslint-disable-next-line no-continue
             continue;
         }
+
+        // Check ReadyToUpload folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
+        if (/^[O|o][K|k]_AlreadyMoved_(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(finisherReadyToUploadSubFolderAndFiles)) {
+            const folderWithOkAlreadMovedRemoved = path.basename(finisherReadyToUploadSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
+            const newFinisherFinishingDoneSubFolderPath = `${path.dirname(finisherReadyToUploadSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
+            fs.renameSync(finisherReadyToUploadSubFolderPath, newFinisherFinishingDoneSubFolderPath);
+            finisherReadyToUploadSubFolderAndFiles = folderWithOkAlreadMovedRemoved;
+            finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
+            isOverwrite = true;
+        }
+
+        // Check ReadyToUpload folder has AlreadyMoved_ prefixed to it, if has ignore the folder
+        if (/^AlreadyMoved_.*$/.test(finisherReadyToUploadSubFolderAndFiles)) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+
         // Check ReadyToUpload folder matches the format
         const regexToMatchFolderName = /^(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/;
         if (!regexToMatchFolderName.test(finisherReadyToUploadSubFolderAndFiles)) {
@@ -183,6 +201,7 @@ for (const finisher of finishers) {
             uniqueCode: uniqueCode,
             cuttingDoneBy: cuttingDoneBy,
             finisher: finisher,
+            isOverwrite: isOverwrite,
         });
     }
 }
