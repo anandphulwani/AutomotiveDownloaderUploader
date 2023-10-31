@@ -4,9 +4,9 @@ import path from 'path';
 import { URL } from 'url';
 
 /* eslint-disable import/extensions */
-import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
+import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc } from './functions/loggersupportive.js';
+import { lgw, lge, lgc, lgi } from './functions/loggersupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
@@ -212,7 +212,7 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
             foldersToShift.splice(foldersToShift[cnt]);
         } else {
             if (!isDryRun && !hasMovingToUploadZonePrinted) {
-                process.stdout.write(chalk.cyan('Moving folders to UploadingZone and FinishingAccounting: \n'));
+                lgi(`[${chalk.black.bgWhiteBright(currentTimeWOMSFormatted())}] Moving folders to UploadingZone and FinishingAccounting: \n`);
                 hasMovingToUploadZonePrinted = true;
             }
             if (!isDryRun) {
