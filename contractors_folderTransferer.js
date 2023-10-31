@@ -276,6 +276,16 @@ while (true) {
             historyOfWarnings[9].has(warning)
         ) {
             lgw(warning);
+            historyOfWarnings[0].delete(warning);
+            historyOfWarnings[1].delete(warning);
+            historyOfWarnings[2].delete(warning);
+            historyOfWarnings[3].delete(warning);
+            historyOfWarnings[4].delete(warning);
+            historyOfWarnings[5].delete(warning);
+            historyOfWarnings[6].delete(warning);
+            historyOfWarnings[7].delete(warning);
+            historyOfWarnings[8].delete(warning);
+            historyOfWarnings[9].delete(warning);
         }
     }
 
