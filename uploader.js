@@ -245,6 +245,7 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
                     process.stdout.write(chalk.cyan(`, `));
                 } else {
                     process.stdout.write(chalk.cyan(`\n`));
+                    printSectionSeperator();
                 }
             }
         }
