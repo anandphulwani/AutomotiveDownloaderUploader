@@ -1,7 +1,12 @@
 import chalk from 'chalk';
 
+/* eslint-disable import/extensions */
+import { lgi } from './loggersupportive.js';
+/* eslint-enable import/extensions */
+
+// TODO: Add functionality that if we want to send parameter that whether its info or error or warn
 function printSectionSeperator() {
-    console.log(chalk.black.bgWhiteBright('-'.repeat(80)));
+    lgi(chalk.black.bgWhiteBright('-'.repeat(80)));
 }
 
 // ONPROJECTFINISH: Remove retryCount variable and relative functions, when debugging is complete
