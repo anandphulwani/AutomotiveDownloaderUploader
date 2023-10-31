@@ -56,7 +56,7 @@ printSectionSeperator();
 const readyToUpload = config.finisherProcessingFolders[1];
 
 const cuttingAccounting = config.cutterRecordKeepingFolders[0];
-const finishingAccounting = config.finisherRecordKeepingFolders[0];
+// const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
 const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
 let reportJSONObj;
