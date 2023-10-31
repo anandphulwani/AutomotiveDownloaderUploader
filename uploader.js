@@ -36,6 +36,7 @@ import {
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
 import { attainLock, releaseLock } from './functions/locksupportive.js';
+import { moveFilesFromContractorsToUploadingZoneAndFinishingAccounting } from './functions/contractors_folderTransferersupportive.js';
 /* eslint-enable import/extensions */
 
 if (config.environment === 'production') {
@@ -200,58 +201,6 @@ foldersToShift.sort((a, b) => {
 // sleep(15);
 // console.log(foldersToShift);
 
-function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isDryRun = true) {
-    let doesDestinationFolderAlreadyExists = false;
-    let hasMovingToUploadZonePrinted = false;
-    const foldersToShiftLength = foldersToShift.length;
-    for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
-        const { dealerImagesFolder, folderSize, uniqueCode, cuttingDoneBy, finisher } = foldersToShift[cnt];
-        // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system works properly.
-        const folderSizeAfter10Seconds = getFolderSizeInBytes(dealerImagesFolder);
-        if (folderSizeAfter10Seconds !== folderSize) {
-            foldersToShift.splice(foldersToShift[cnt]);
-        } else {
-            if (!isDryRun && !hasMovingToUploadZonePrinted) {
-                lgi(`[${chalk.black.bgWhiteBright(currentTimeWOMSFormatted())}] Moving folders to UploadingZone and FinishingAccounting: \n`);
-                hasMovingToUploadZonePrinted = true;
-            }
-            if (!isDryRun) {
-                const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
-                process.stdout.write(chalk.cyan(folderNameToPrint));
-                for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
-                    process.stdout.write(chalk.cyan(`.`));
-                }
-            }
-            const newUploadingZonePath = `${config.uploadingZonePath}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
-            const newFinishingAccountingZonePath = `${
-                config.contractorsRecordKeepingPath
-            }\\${finisher}_Acnt\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
-            if (isDryRun) {
-                if (fs.existsSync(`${newFinishingAccountingZonePath}`)) {
-                    lge(`Folder: ${newFinishingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
-                    doesDestinationFolderAlreadyExists = true;
-                }
-                if (fs.existsSync(`${newUploadingZonePath}`)) {
-                    lge(`Folder: ${newUploadingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
-                    doesDestinationFolderAlreadyExists = true;
-                }
-            } else {
-                addUploadingToReport([path.basename(dealerImagesFolder), uniqueCode, cuttingDoneBy, finisher]);
-                createDirAndCopyFile(dealerImagesFolder, newFinishingAccountingZonePath);
-                createDirAndMoveFile(dealerImagesFolder, newUploadingZonePath);
-            }
-            if (!isDryRun) {
-                if (cnt !== foldersToShiftLength - 1) {
-                    process.stdout.write(chalk.cyan(`, `));
-                } else {
-                    process.stdout.write(chalk.cyan(`\n`));
-                    printSectionSeperator();
-                }
-            }
-        }
-    }
-    return doesDestinationFolderAlreadyExists;
-}
 
 const doesDestinationFolderAlreadyExists = moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(true);
 if (doesDestinationFolderAlreadyExists) {

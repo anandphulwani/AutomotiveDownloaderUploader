@@ -12,6 +12,7 @@ import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, ge
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
+import { moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting } from './functions/contractors_folderTransferersupportive.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -76,98 +77,6 @@ const finishingBuffer = config.finisherProcessingFolders[0];
 
 const cuttingAccounting = config.cutterRecordKeepingFolders[0];
 // const finishingAccounting = config.finisherRecordKeepingFolders[0];
-
-function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, isDryRun = true) {
-    let hasMovingToUploadZonePrinted = false;
-    const foldersToShiftLength = foldersToShift.length;
-    for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
-        const { dealerImagesFolder, folderSize, cutter, cuttersFinisher, isOverwrite } = foldersToShift[cnt];
-        // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system with the message `Folder in Cutter's CuttingDone locked, maybe a contractor working/moving it` works properly.
-        const folderSizeAfter10Seconds = getFolderSizeInBytes(dealerImagesFolder);
-        if (folderSizeAfter10Seconds !== folderSize) {
-            foldersToShift.splice(foldersToShift[cnt]);
-        } else {
-            if (!isDryRun && !hasMovingToUploadZonePrinted) {
-                lgi(`[${chalk.black.bgWhiteBright(currentTimeWOMSFormatted())}] Moving folders to FinishingBuffer and CuttingAccounting: \n`);
-                hasMovingToUploadZonePrinted = true;
-            }
-            if (!isDryRun) {
-                const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
-                process.stdout.write(chalk.cyan(folderNameToPrint));
-                lgif(folderNameToPrint);
-                for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
-                    process.stdout.write(chalk.cyan(`.`));
-                }
-            }
-            const newFinishingBufferPath = `${
-                config.contractorsZonePath
-            }\\${cuttersFinisher}\\${instanceRunDateFormatted}\\${finishingBuffer}\\${path.basename(dealerImagesFolder)}`;
-            const newCuttingAccountingZonePath = `${
-                config.contractorsRecordKeepingPath
-            }\\${cutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
-            if (isDryRun) {
-                if (isOverwrite === false) {
-                    let doesDestinationFolderAlreadyExists = false;
-                    let folderExistMesg = `Folder cannot be moved to new location as it already exists, Renaming to 'AlreadyMoved_',\nFolder: ${dealerImagesFolder}\n`;
-                    if (fs.existsSync(newFinishingBufferPath)) {
-                        folderExistMesg += `Destination (Finishing): ${newFinishingBufferPath}\n`;
-                        doesDestinationFolderAlreadyExists = true;
-                    }
-                    if (fs.existsSync(newCuttingAccountingZonePath)) {
-                        folderExistMesg += `Destination (Accounting): ${newCuttingAccountingZonePath}\n`;
-                        doesDestinationFolderAlreadyExists = true;
-                    }
-                    const otherContractors = Object.keys(config.contractors).filter((key) => key !== cutter);
-                    // eslint-disable-next-line no-restricted-syntax
-                    for (const innerLoopCutter of otherContractors) {
-                        const otherCuttingAccountingZonePath = `${
-                            config.contractorsRecordKeepingPath
-                        }\\${innerLoopCutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
-                        if (fs.existsSync(otherCuttingAccountingZonePath)) {
-                            folderExistMesg += `Destination (Other Cutter Accounting): ${otherCuttingAccountingZonePath}\n`;
-                            doesDestinationFolderAlreadyExists = true;
-                        }
-                    }
-                    if (doesDestinationFolderAlreadyExists) {
-                        lgw(folderExistMesg);
-                        fs.renameSync(dealerImagesFolder, `${path.dirname(dealerImagesFolder)}/AlreadyMoved_${path.basename(dealerImagesFolder)}`);
-                        foldersToShift.splice(cnt, 1);
-                    }
-                }
-            } else {
-                if (isOverwrite) {
-                    if (fs.existsSync(newFinishingBufferPath)) {
-                        removeDir(newFinishingBufferPath, true);
-                    }
-                    if (fs.existsSync(newCuttingAccountingZonePath)) {
-                        removeDir(newCuttingAccountingZonePath, true);
-                    }
-                    const otherContractors = Object.keys(config.contractors).filter((key) => key !== cutter);
-                    // eslint-disable-next-line no-restricted-syntax
-                    for (const innerLoopCutter of otherContractors) {
-                        const otherCuttingAccountingZonePath = `${
-                            config.contractorsRecordKeepingPath
-                        }\\${innerLoopCutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
-                        if (fs.existsSync(otherCuttingAccountingZonePath)) {
-                            removeDir(otherCuttingAccountingZonePath, true);
-                        }
-                    }
-                }
-                createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath, isOverwrite);
-                createDirAndMoveFile(dealerImagesFolder, newFinishingBufferPath, isOverwrite);
-            }
-            if (!isDryRun) {
-                if (cnt !== foldersToShiftLength - 1) {
-                    process.stdout.write(chalk.cyan(`, `));
-                } else {
-                    process.stdout.write(chalk.cyan(`\n`));
-                    printSectionSeperator();
-                }
-            }
-        }
-    }
-    return foldersToShift;
-}
 
 const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set()]; // Array of sets for the last three iterations
 
