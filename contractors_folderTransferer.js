@@ -117,6 +117,17 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
                         folderExistMesg += `Destination (Accounting): ${newCuttingAccountingZonePath}\n`;
                         doesDestinationFolderAlreadyExists = true;
                     }
+                    const otherContractors = Object.keys(config.contractors).filter((key) => key !== cutter);
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const innerLoopCutter of otherContractors) {
+                        const otherCuttingAccountingZonePath = `${
+                            config.contractorsRecordKeepingPath
+                        }\\${innerLoopCutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+                        if (fs.existsSync(otherCuttingAccountingZonePath)) {
+                            folderExistMesg += `Destination (Other Cutter Accounting): ${otherCuttingAccountingZonePath}\n`;
+                            doesDestinationFolderAlreadyExists = true;
+                        }
+                    }
                     if (doesDestinationFolderAlreadyExists) {
                         lgw(folderExistMesg);
                         fs.renameSync(dealerImagesFolder, `${path.dirname(dealerImagesFolder)}/AlreadyMoved_${path.basename(dealerImagesFolder)}`);
@@ -130,6 +141,16 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
                     }
                     if (fs.existsSync(newCuttingAccountingZonePath)) {
                         removeDir(newCuttingAccountingZonePath, true);
+                    }
+                    const otherContractors = Object.keys(config.contractors).filter((key) => key !== cutter);
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const innerLoopCutter of otherContractors) {
+                        const otherCuttingAccountingZonePath = `${
+                            config.contractorsRecordKeepingPath
+                        }\\${innerLoopCutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+                        if (fs.existsSync(otherCuttingAccountingZonePath)) {
+                            removeDir(otherCuttingAccountingZonePath, true);
+                        }
                     }
                 }
                 createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath, isOverwrite);
