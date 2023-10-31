@@ -226,7 +226,7 @@ async function doAllotment(
     ) {
         console.log(
             chalk.white.bgRed.bold(
-                `ERROR: While alloting by 'allotmentByImagesQty', found no of images alloted in the curretn lot (imagesQtyAllotedInCurrentLot): ${imagesQtyAllotedInCurrentLot} exceeded lot's image quantity (lotsImagesQty): ${lotsImagesQty}.` +
+                `ERROR: While alloting by 'allotmentByImagesQty', found no of images alloted in the current lot (imagesQtyAllotedInCurrentLot): ${imagesQtyAllotedInCurrentLot} exceeded lot's image quantity (lotsImagesQty): ${lotsImagesQty}.` +
                     `\nPossible chances of manual intervention of adding folder or images by the user in the lot folder`
             )
         );
