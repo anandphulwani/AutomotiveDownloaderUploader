@@ -200,7 +200,7 @@ foldersToShift.sort((a, b) => {
 // sleep(15);
 // console.log(foldersToShift);
 
-async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isDryRun = true) {
+function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isDryRun = true) {
     let doesDestinationFolderAlreadyExists = false;
     let hasMovingToUploadZonePrinted = false;
     const foldersToShiftLength = foldersToShift.length;
@@ -253,11 +253,11 @@ async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isD
     return doesDestinationFolderAlreadyExists;
 }
 
-const doesDestinationFolderAlreadyExists = await moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(true);
+const doesDestinationFolderAlreadyExists = moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(true);
 if (doesDestinationFolderAlreadyExists) {
     process.exit(1);
 }
-await moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(false);
+moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(false);
 
 if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
     console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));
