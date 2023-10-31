@@ -107,13 +107,18 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
             }\\${cutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             if (isDryRun) {
                 if (isOverwrite === false) {
+                    let doesDestinationFolderAlreadyExists = false;
+                    let folderExistMesg = `Folder cannot be moved to new location as it already exists, Renaming to 'AlreadyMoved_',\nFolder: ${dealerImagesFolder}\n`;
                     if (fs.existsSync(newFinishingBufferPath)) {
-                        lgw(`Folder already exists: ${newFinishingBufferPath},\n${dealerImagesFolder}\n cannot be moved to its location.`);
+                        folderExistMesg += `Destination (Finishing): ${newFinishingBufferPath}\n`;
+                        doesDestinationFolderAlreadyExists = true;
                     }
                     if (fs.existsSync(newCuttingAccountingZonePath)) {
-                        lgw(`Folder already exists: ${newCuttingAccountingZonePath},\n${dealerImagesFolder}\n cannot be moved to its location.`);
+                        folderExistMesg += `Destination (Accounting): ${newCuttingAccountingZonePath}\n`;
+                        doesDestinationFolderAlreadyExists = true;
                     }
-                    if (fs.existsSync(newFinishingBufferPath) || fs.existsSync(newCuttingAccountingZonePath)) {
+                    if (doesDestinationFolderAlreadyExists) {
+                        lgw(folderExistMesg);
                         fs.renameSync(dealerImagesFolder, `${path.dirname(dealerImagesFolder)}/AlreadyMoved_${path.basename(dealerImagesFolder)}`);
                         foldersToShift.splice(cnt, 1);
                     }
