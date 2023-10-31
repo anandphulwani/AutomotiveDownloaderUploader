@@ -41,6 +41,12 @@ async function downloadBookmarksFromSourceToProcessing() {
         const processingObj = JSON.parse(processingContents);
 
         // eslint-disable-next-line no-restricted-syntax
+        for (const key in sourceObj) {
+            if (key !== 'roots') {
+                delete sourceObj[key];
+            }
+        }
+        // eslint-disable-next-line no-restricted-syntax
         for (const key in sourceObj.roots) {
             if (key !== 'bookmark_bar') {
                 delete sourceObj.roots[key];
