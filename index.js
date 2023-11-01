@@ -254,5 +254,6 @@ for (const usernameBookmark of allUsernamesBookmarks) {
 // TODO: Enable this error catching, and copy it in the uploading section as well
 // } catch (error)
 // {
+//      Check for the error message if you get it, so to close nicely.
 //     Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
 // }
