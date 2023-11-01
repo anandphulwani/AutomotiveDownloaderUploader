@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 /* eslint-disable import/extensions */
-import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './datetime.js';
+import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
 import { lge, lgi, lgif, lgw } from './loggersupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFolderSizeInBytes, removeDir } from './filesystem.js';
@@ -11,9 +11,9 @@ import { addUploadingToReport } from './reportsupportive.js';
 import { printSectionSeperator } from './others.js';
 /* eslint-enable import/extensions */
 
-// const cuttingDone = config.cutterProcessingFolders[0];
+const cuttingDone = config.cutterProcessingFolders[0];
 const finishingBuffer = config.finisherProcessingFolders[0];
-// const readyToUpload = config.finisherProcessingFolders[1];
+const readyToUpload = config.finisherProcessingFolders[1];
 
 const cuttingAccounting = config.cutterRecordKeepingFolders[0];
 const finishingAccounting = config.finisherRecordKeepingFolders[0];
@@ -201,4 +201,61 @@ function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersTo
     return foldersToShift;
 }
 
-export { moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting, moveFilesFromContractorsToUploadingZoneAndFinishingAccounting };
+const cuttersCompletedAndDoneFileCreated = [];
+function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
+    // Check if JSON file of report exists, because that means some download is done and the first lot is allotted.
+    const reportDateFolder = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted);
+    const reportJSONFilePath = path.join(reportDateFolder, `${instanceRunDateFormatted}_report.json`);
+    if (!fs.existsSync(reportJSONFilePath)) {
+        return;
+    }
+
+    const downloadPathWithTodaysDate = `${config.downloadPath}\\${instanceRunDateFormatted}`;
+    if (fs.existsSync(downloadPathWithTodaysDate) && fs.readdirSync(downloadPathWithTodaysDate).length !== 0) {
+        return;
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const contractor of Object.keys(config.contractors)) {
+        const allWorkDoneFile = `${contractor}_${instanceRunDateFormatted}.txt`;
+        if (cuttersCompletedAndDoneFileCreated.includes(allWorkDoneFile)) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        const contractorPath = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted);
+        if (!fs.existsSync(contractorPath)) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        let contractorPathFiles = fs.readdirSync(contractorPath);
+        contractorPathFiles = contractorPathFiles.filter((filename) => ![cuttingDone, finishingBuffer, readyToUpload].includes(filename));
+        if (contractorPathFiles.length !== 0) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+
+        const contractorPathCuttingDone = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted, cuttingDone);
+        if (!fs.existsSync(contractorPath)) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        const contractorPathCuttingDoneFiles = fs.readdirSync(contractorPathCuttingDone);
+        if (contractorPathCuttingDoneFiles.length !== 0) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        const cuttersFinisher = config.contractors[contractor].finisher;
+        const cuttersFinishersFinishingBufferPath = path.join(config.contractorsZonePath, cuttersFinisher, instanceRunDateFormatted, finishingBuffer);
+        const allWorkDoneFileFullPath = path.join(cuttersFinishersFinishingBufferPath, allWorkDoneFile);
+        if (!fs.existsSync(allWorkDoneFileFullPath)) {
+            fs.closeSync(fs.openSync(allWorkDoneFileFullPath, 'a'));
+            cuttersCompletedAndDoneFileCreated.push(allWorkDoneFile);
+        }
+    }
+}
+
+export {
+    moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting,
+    moveFilesFromContractorsToUploadingZoneAndFinishingAccounting,
+    checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer,
+};

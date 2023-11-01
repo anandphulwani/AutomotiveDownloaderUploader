@@ -12,7 +12,10 @@ import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, ge
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
-import { moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting } from './functions/contractors_folderTransferersupportive.js';
+import {
+    checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer,
+    moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting,
+} from './functions/contractors_folderTransferersupportive.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -221,5 +224,6 @@ while (true) {
 
     foldersToShift = moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, true);
     moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, false);
+    checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer();
     await waitForSeconds(30);
 }
