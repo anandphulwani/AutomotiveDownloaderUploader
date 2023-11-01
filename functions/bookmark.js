@@ -119,9 +119,6 @@ async function downloadBookmarksFromSourceToProcessing() {
                 }
             }
         }
-        sourceJSONString = JSON.parse(sourceJSONString);
-        sourceJSONString = removeChecksumFromBookmarksObj(sourceJSONString);
-        sourceJSONString = JSON.stringify(sourceJSONString, null, 3);
 
         if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
             console.log(initalSourceJSONString);
@@ -190,9 +187,6 @@ async function downloadBookmarksFromSourceToProcessing() {
                 }
             }
         }
-        sourceJSONString = JSON.parse(sourceJSONString);
-        sourceJSONString = removeChecksumFromBookmarksObj(sourceJSONString);
-        sourceJSONString = JSON.stringify(sourceJSONString, null, 3);
 
         if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
             console.log(initalSourceJSONString);
