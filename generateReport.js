@@ -887,18 +887,6 @@ for (const typeOfExcel of typesOfExcel) {
          *
          *
          *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
          */
 
         const workbook = xlsx.utils.book_new();
