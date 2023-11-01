@@ -201,7 +201,7 @@ async function downloadBookmarksFromSourceToProcessing() {
         }
 
         console.log('Writing bookmarks file');
-        fs.writeFileSync(processingBookmarkPathWithoutSync, sourceJSONString);
+        writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initalSourceJSONString);
         releaseLock(processingBookmarkPathWithoutSync, 600000, true);
         releaseLock(sourceBookmarkPath, 600000, true);
     } catch (err) {
