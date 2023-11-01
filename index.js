@@ -207,19 +207,19 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                             try {
                                 fs.appendFileSync(
                                     './logs/bookmarksNotAppend.txt',
-                                    '--------------------------------------------------------------------------------------------------'
+                                    '--------------------------------------------------------------------------------------------------\n'
                                 );
                                 fs.appendFileSync(
                                     './logs/bookmarksNotAppend.txt',
-                                    `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, vehicleBookmark.name: ${vehicleBookmark.name}, vehicleBookmark.url: ${vehicleBookmark.url}`
+                                    `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, \nvehicleBookmark.name: ${vehicleBookmark.name}, \nvehicleBookmark.url: ${vehicleBookmark.url}\n`
                                 );
 
-                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `vehicleBookmark.guid: ${vehicleBookmark.guid}`);
-                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}`);
-                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `returnObj: ${returnObj}`);
+                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `vehicleBookmark.guid: ${vehicleBookmark.guid}\n`);
+                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}\n`);
+                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `returnObj: ${JSON.stringify(returnObj, null, 2)}\n`);
                                 fs.appendFileSync(
                                     './logs/bookmarksNotAppend.txt',
-                                    '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+                                    '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
                                 );
                             } catch (err) {
                                 console.error(err);
