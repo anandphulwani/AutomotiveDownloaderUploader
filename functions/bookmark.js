@@ -117,7 +117,7 @@ async function downloadBookmarksFromSourceToProcessing() {
             }
         }
 
-        if (Math.abs(initialLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
+        if (initialLineCount - sourceJSONString.trim().split(/\r\n|\r|\n/).length !== 0) {
             throw new Error(
                 `Before Copying the names of bookmarks folders which are allotted: initialLineCount and sourceJSONStringLineCount is not the same:\n`
             );
@@ -177,7 +177,7 @@ async function downloadBookmarksFromSourceToProcessing() {
             }
         }
 
-        if (Math.abs(initialLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
+        if (initialLineCount - sourceJSONString.trim().split(/\r\n|\r|\n/).length !== 0) {
             throw new Error(`Before writing bookmarks file: initialLineCount and writingLineCount is not the same:\n`);
         }
 
