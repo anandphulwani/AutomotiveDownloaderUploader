@@ -82,10 +82,7 @@ async function downloadBookmarksFromSourceToProcessing() {
                     const match = downloadedBookmarkBlockMatches[i];
 
                     if (match.split(/\r\n|\r|\n/).length > 15) {
-                        console.log(match);
-                        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-                        releaseLock(sourceBookmarkPath, 600000, true);
-                        process.exit(0);
+                        throw new Error(`Bookmarks URL Done Section: match's length is more than 15:\n ${match}`);
                     }
 
                     const guid = match.match(/"guid": "(.*?)"/)[1];
@@ -121,14 +118,9 @@ async function downloadBookmarksFromSourceToProcessing() {
         }
 
         if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
-            console.log(initalSourceJSONString);
-            console.log(`${'-'.repeat(70)}`);
-            console.log(sourceJSONString);
-            console.log(`${'-'.repeat(70)}`);
-            console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
-            releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-            releaseLock(sourceBookmarkPath, 600000, true);
-            process.exit(0);
+            throw new Error(
+                `Before Copying the names of bookmarks folders which are allotted: initialLineCount and sourceJSONStringLineCount is not the same:\n`
+            );
         }
 
         /**
@@ -149,10 +141,7 @@ async function downloadBookmarksFromSourceToProcessing() {
                     const match = allotedFolderBookmarkBlockMatches[i];
 
                     if (match.split(/\r\n|\r|\n/).length > 9) {
-                        console.log(match);
-                        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-                        releaseLock(sourceBookmarkPath, 600000, true);
-                        process.exit(0);
+                        throw new Error(`Bookmarks Folders Allotted Section: match's length is more than 9:\n ${match}`);
                     }
                     const guid = match.match(/"guid": "(.*?)"/)[1];
                     // console.log(`Found bookmark with GUID: ${guid}`);
@@ -189,14 +178,7 @@ async function downloadBookmarksFromSourceToProcessing() {
         }
 
         if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
-            console.log(initalSourceJSONString);
-            console.log(`${'-'.repeat(70)}`);
-            console.log(sourceJSONString);
-            console.log(`${'-'.repeat(70)}`);
-            console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
-            releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-            releaseLock(sourceBookmarkPath, 600000, true);
-            process.exit(0);
+            throw new Error(`Before writing bookmarks file: initialLineCount and writingLineCount is not the same:\n`);
         }
 
         console.log('Writing bookmarks file');
