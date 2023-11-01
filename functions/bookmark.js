@@ -29,8 +29,8 @@ function reformatJSONString(contents) {
 
 async function downloadBookmarksFromSourceToProcessing() {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
-    let initalSourceJSONString;
-    let initalLineCount;
+    let initialSourceJSONString;
+    let initialLineCount;
     let sourceJSONString;
 
     attainLock(sourceBookmarkPath, 600000, true);
@@ -61,8 +61,8 @@ async function downloadBookmarksFromSourceToProcessing() {
         sourceJSONString = JSON.stringify(sourceObj, null, 3);
         const processingJSONString = JSON.stringify(processingObj, null, 3);
 
-        initalSourceJSONString = sourceJSONString;
-        initalLineCount = sourceJSONString.trim().split(/\r\n|\r|\n/).length;
+        initialSourceJSONString = sourceJSONString;
+        initialLineCount = sourceJSONString.trim().split(/\r\n|\r|\n/).length;
 
         /**
          * Copying the names of bookmark urls which are downloaded
@@ -117,7 +117,7 @@ async function downloadBookmarksFromSourceToProcessing() {
             }
         }
 
-        if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
+        if (Math.abs(initialLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
             throw new Error(
                 `Before Copying the names of bookmarks folders which are allotted: initialLineCount and sourceJSONStringLineCount is not the same:\n`
             );
@@ -177,20 +177,20 @@ async function downloadBookmarksFromSourceToProcessing() {
             }
         }
 
-        if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
+        if (Math.abs(initialLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
             throw new Error(`Before writing bookmarks file: initialLineCount and writingLineCount is not the same:\n`);
         }
 
         console.log('Writing bookmarks file');
-        writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initalSourceJSONString);
+        writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initialSourceJSONString);
         releaseLock(processingBookmarkPathWithoutSync, 600000, true);
         releaseLock(sourceBookmarkPath, 600000, true);
     } catch (err) {
-        console.log(initalSourceJSONString);
+        console.log(initialSourceJSONString);
         printSectionSeperator();
         console.log(sourceJSONString);
         printSectionSeperator();
-        console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
+        console.log(`initialLineCount: ${initialLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
         console.log(`${err.message}`);
         releaseLock(processingBookmarkPathWithoutSync, 600000, true);
         releaseLock(sourceBookmarkPath, 600000, true);
@@ -321,7 +321,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
                 [
                     `${fileContents}\n${'-'.repeat(70)}`,
                     `${bookmarksFileText}\n${'-'.repeat(70)}`,
-                    `initalLineCount: ${fileContents.trim().split(/\r\n|\r|\n/).length}, finalLineCount: ${
+                    `initialLineCount: ${fileContents.trim().split(/\r\n|\r|\n/).length}, finalLineCount: ${
                         bookmarksFileText.split(/\r\n|\r|\n/).length
                     }`,
                 ].join('\n')
