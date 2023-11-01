@@ -16,6 +16,7 @@ import { getImagesFromContent } from './pageextraction.js';
 import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
 import { trimMultipleSpacesInMiddleIntoOne, allTrimString } from './stringformatting.js';
 import { writeFileWithComparingSameLinesWithOldContents } from './filesystem.js';
+import { printSectionSeperator } from './others.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -28,6 +29,10 @@ function reformatJSONString(contents) {
 
 async function downloadBookmarksFromSourceToProcessing() {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
+    let initalSourceJSONString;
+    let initalLineCount;
+    let sourceJSONString;
+
     attainLock(sourceBookmarkPath, 600000, true);
     attainLock(processingBookmarkPathWithoutSync, 600000, true);
 
@@ -53,11 +58,11 @@ async function downloadBookmarksFromSourceToProcessing() {
             }
         }
 
-        let sourceJSONString = JSON.stringify(sourceObj, null, 3);
+        sourceJSONString = JSON.stringify(sourceObj, null, 3);
         const processingJSONString = JSON.stringify(processingObj, null, 3);
 
-        const initalSourceJSONString = sourceJSONString;
-        const initalLineCount = sourceJSONString.split(/\r\n|\r|\n/).length;
+        initalSourceJSONString = sourceJSONString;
+        initalLineCount = sourceJSONString.trim().split(/\r\n|\r|\n/).length;
 
         /**
          * Copying the names of bookmark urls which are downloaded
@@ -205,6 +210,11 @@ async function downloadBookmarksFromSourceToProcessing() {
         releaseLock(processingBookmarkPathWithoutSync, 600000, true);
         releaseLock(sourceBookmarkPath, 600000, true);
     } catch (err) {
+        console.log(initalSourceJSONString);
+        printSectionSeperator();
+        console.log(sourceJSONString);
+        printSectionSeperator();
+        console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
         console.log(`${err.message}`);
         releaseLock(processingBookmarkPathWithoutSync, 600000, true);
         releaseLock(sourceBookmarkPath, 600000, true);
