@@ -60,7 +60,7 @@ async function downloadBookmarksFromSourceToProcessing() {
         const initalLineCount = sourceJSONString.split(/\r\n|\r|\n/).length;
 
         /**
-         * Copying the names of bookmarks which are done
+         * Copying the names of bookmark urls which are downloaded
          */
         const downloadedRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
         const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
@@ -130,7 +130,7 @@ async function downloadBookmarksFromSourceToProcessing() {
         }
 
         /**
-         * Copying the names of bookmarks folders which are done
+         * Copying the names of bookmarks folders which are allotted
          */
         const allotedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
         const allotedFolderRegexExpression = new RegExp(allotedFolderRegexString, 'g');
