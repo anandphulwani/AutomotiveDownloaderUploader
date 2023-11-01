@@ -33,8 +33,8 @@ async function downloadBookmarksFromSourceToProcessing() {
     let initialLineCount;
     let sourceJSONString;
 
-    attainLock(sourceBookmarkPath, 600000, true);
-    attainLock(processingBookmarkPathWithoutSync, 600000, true);
+    attainLock(sourceBookmarkPath, undefined, true);
+    attainLock(processingBookmarkPathWithoutSync, undefined, true);
 
     try {
         // Read the contents of both JSON files into memory
@@ -183,8 +183,8 @@ async function downloadBookmarksFromSourceToProcessing() {
 
         console.log('Writing bookmarks file');
         writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initialSourceJSONString);
-        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-        releaseLock(sourceBookmarkPath, 600000, true);
+        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+        releaseLock(sourceBookmarkPath, undefined, true);
     } catch (err) {
         console.log(initialSourceJSONString);
         printSectionSeperator();
@@ -192,8 +192,8 @@ async function downloadBookmarksFromSourceToProcessing() {
         printSectionSeperator();
         console.log(`initialLineCount: ${initialLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
         console.log(`${err.message}`);
-        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-        releaseLock(sourceBookmarkPath, 600000, true);
+        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+        releaseLock(sourceBookmarkPath, undefined, true);
         process.exit(1);
     }
 }
