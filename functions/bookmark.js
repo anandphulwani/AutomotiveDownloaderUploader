@@ -263,7 +263,7 @@ function removeChecksumFromBookmarksObj(bookmarksObj) {
     return JSON.parse(jsonString);
 }
 
-function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, appendText, useLockingMechanism) {
+function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, appendText) {
     const elementsDetails = {
         name: {
             blockRegex: `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`,
@@ -281,9 +281,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         },
     };
     const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-    if (useLockingMechanism) {
-        attainLock(fileToOperateOn, undefined, true);
-    }
+    attainLock(fileToOperateOn, undefined, true);
     try {
         const fileContents = fs.readFileSync(fileToOperateOn, 'utf8');
 
@@ -329,9 +327,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
             process.exit(1);
         }
         createBackupOfFile(fileToOperateOn, bookmarksFileText);
-        if (useLockingMechanism) {
-            releaseLock(fileToOperateOn, undefined, true);
-        }
+        releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         releaseLock(fileToOperateOn, undefined, true);
         lgs(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block: ${err.message}`);
