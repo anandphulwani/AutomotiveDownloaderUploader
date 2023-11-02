@@ -296,6 +296,27 @@ const styleOfAdditionalImagesTotalHeading = {
     alignment: { wrapText: true, horizontal: 'center' },
 };
 
+/**
+ *
+ *
+ * Styling for individual contractor report
+ *
+ *
+ *
+ */
+
+const contractorExcelStyleOfTopHeadingRow = {
+    font: { name: 'Arial', sz: 12, color: { rgb: 'FFFFFF' }, bold: true },
+    fill: { fgColor: { rgb: '800080' } }, // Background color
+    alignment: { horizontal: 'center' },
+};
+
+const contractorExcelStyleOfBottomTotalRow = {
+    font: { name: 'Arial', sz: 14, color: { rgb: '000000' } },
+    fill: { fgColor: { rgb: 'c5d9f1' } }, // Background color
+    alignment: { horizontal: 'center' },
+};
+
 export {
     addAllotmentToReport,
     addUploadingToReport,
@@ -321,4 +342,7 @@ export {
     styleOfAdditionalImagesTotalHeading,
     styleOfDealerNameHeadingEven,
     styleOfDealerNameHeadingOdd,
+    //
+    contractorExcelStyleOfTopHeadingRow,
+    contractorExcelStyleOfBottomTotalRow,
 };

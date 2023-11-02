@@ -27,6 +27,8 @@ import {
     styleOfFTPOrAdditionalImagesTotal,
     styleOfDifference,
     styleOfAdditionalImagesTotalHeading,
+    contractorExcelStyleOfTopHeadingRow,
+    contractorExcelStyleOfBottomTotalRow,
 } from './functions/reportsupportive.js';
 import { makeDir } from './functions/filesystem.js';
 import { lge, lgi, lgw } from './functions/loggersupportive.js';
@@ -895,4 +897,175 @@ for (const typeOfExcel of typesOfExcel) {
     }
     // eslint-disable-next-line no-nested-ternary
     // isIndividualOrMerged = isIndividualOrMerged === 'individual' ? 'merged' : isIndividualOrMerged === 'merged' ? false : null;
+}
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * Generate individual contractor report
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
+const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
+// eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
+for (const contractor of Object.keys(config.contractors)) {
+    const excelFilename = path.join(reportGenerationPath, 'contractors', `${contractor} ${monthInMMM}_${year}.xlsx`);
+    if (!fs.existsSync(path.dirname(excelFilename))) {
+        makeDir(path.dirname(excelFilename));
+    }
+    // const dealerConfigurationWithDates = [['', 'Date', ...dates]];
+    const excelData = [['DATE', ...dates]];
+
+    let transposedData = [];
+    for (let i = 0; i < excelData[0].length; i++) {
+        transposedData[i] = [];
+        for (let j = 0; j < excelData.length; j++) {
+            transposedData[i][j] = excelData[j][i];
+        }
+    }
+
+    transposedData[0][1] = 'Cutting';
+    let totalColumns = 2;
+    if (finishers.includes(contractor)) {
+        transposedData[0][2] = 'Finishing';
+        totalColumns = 3;
+    }
+    for (let i = 0; i < transposedData.length; i++) {
+        if (transposedData[i][0] === undefined || transposedData[i][0] === '' || transposedData[i][0] === 'DATE') {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        const rowsDate = transposedData[i][0];
+        const formattedDate = formatDate(rowsDate, 'DD-MMM-YYYY__YYYY-MM-DD');
+        const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', `${year}-${month}`, `${formattedDate}_report.json`);
+        if (!fs.existsSync(reportJSONFilePath)) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+        const reportJSONObj = JSON.parse(reportJSONContents);
+
+        const cuttingReportJSONObj = Object.fromEntries(Object.entries(reportJSONObj).filter(([, value]) => value.cutter === contractor));
+        let totalCuttingQty = 0;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const key in cuttingReportJSONObj) {
+            if (Object.prototype.hasOwnProperty.call(cuttingReportJSONObj, key)) {
+                const item = cuttingReportJSONObj[key];
+                totalCuttingQty += item.qty;
+            }
+        }
+        if (totalCuttingQty !== 0) {
+            transposedData[i][1] = totalCuttingQty;
+        }
+
+        if (finishers.includes(contractor)) {
+            const finishingReportJSONObj = Object.fromEntries(Object.entries(reportJSONObj).filter(([, value]) => value.finisher === contractor));
+            let totalFinishingQty = 0;
+            // eslint-disable-next-line no-restricted-syntax
+            for (const key in finishingReportJSONObj) {
+                if (Object.prototype.hasOwnProperty.call(finishingReportJSONObj, key)) {
+                    const item = finishingReportJSONObj[key];
+                    totalFinishingQty += item.qty;
+                }
+            }
+            if (totalFinishingQty !== 0) {
+                transposedData[i][2] = totalFinishingQty;
+            }
+        }
+    }
+    if (!finishers.includes(contractor)) {
+        transposedData.unshift(['', ''], ['', ''], ['', '']);
+    } else {
+        transposedData.unshift(['', '', ''], ['', '', ''], ['', '', '']);
+    }
+    transposedData = transposedData.map((row) => ['', ''].concat(row));
+    const worksheet = xlsx.utils.json_to_sheet(transposedData, { skipHeader: true });
+    worksheet['!rows'] = [];
+    worksheet['!cols'] = [];
+
+    worksheet['!cols'][0] = { wch: 16 };
+    worksheet['!cols'][1] = { wch: 23 };
+    worksheet['!cols'][2] = { wch: 30 };
+    worksheet['!cols'][3] = { wch: 50 };
+    if (finishers.includes(contractor)) {
+        worksheet['!cols'][4] = { wch: 50 };
+    }
+
+    const totalTextCellAddress = xlsx.utils.encode_cell({ r: dates.length + 5, c: 2 });
+    xlsx.utils.sheet_add_json(worksheet, [{ text: 'Total' }], { origin: totalTextCellAddress, skipHeader: true });
+    /* #region Calculating Total at the end of 'Cutting' column. */
+    /**
+     *
+     * Calculating Total Total at the end of 'Cutting' column.
+     *
+     */
+    const cuttingSumCellAddress = xlsx.utils.encode_cell({ r: dates.length + 5, c: 3 });
+    xlsx.utils.sheet_add_json(worksheet, [{ text: '' }], { origin: cuttingSumCellAddress, skipHeader: true });
+
+    const cuttingColumnRangeFrom = xlsx.utils.encode_cell({ r: 4, c: 3 });
+    const cuttingColumnRangeTo = xlsx.utils.encode_cell({ r: dates.length + 3, c: 3 });
+    const cuttingFormulaString = `SUM(${cuttingColumnRangeFrom}:${cuttingColumnRangeTo})`;
+    xlsx.utils.sheet_set_array_formula(worksheet, cuttingSumCellAddress, cuttingFormulaString);
+    /* #endregion */
+
+    /* #region Calculating Total at the end of 'Finishing' column. */
+    /**
+     *
+     * Calculating Total at the end of 'Finishing' column
+     *
+     */
+    if (finishers.includes(contractor)) {
+        const finishingSumCellAddress = xlsx.utils.encode_cell({ r: dates.length + 5, c: 4 });
+        xlsx.utils.sheet_add_json(worksheet, [{ text: '' }], { origin: finishingSumCellAddress, skipHeader: true });
+
+        const finishingColumnRangeFrom = xlsx.utils.encode_cell({ r: 4, c: 4 });
+        const finishingColumnRangeTo = xlsx.utils.encode_cell({ r: dates.length + 3, c: 4 });
+        const finishingFormulaString = `SUM(${finishingColumnRangeFrom}:${finishingColumnRangeTo})`;
+        xlsx.utils.sheet_set_array_formula(worksheet, finishingSumCellAddress, finishingFormulaString);
+    }
+    /* #endregion */
+
+    /* #region Styling Top Heading Row, Bottom Total Row and the Remaining cells */
+    /**
+     *
+     * Styling Top Heading Row, Bottom Total Row and the Remaining cells
+     *
+     */
+    for (let i = 0; i < dates.length + 6; i++) {
+        for (let j = 0; j < 2 + totalColumns; j++) {
+            const cellAddress = xlsx.utils.encode_cell({ r: i, c: j });
+            if (worksheet[cellAddress] === undefined) {
+                worksheet[cellAddress] = { t: 's', v: '' };
+            }
+
+            if (i === 3 && j >= 2) {
+                worksheet[cellAddress].s = contractorExcelStyleOfTopHeadingRow;
+            } else if (i === dates.length + 5 && j >= 2) {
+                worksheet[cellAddress].s = contractorExcelStyleOfBottomTotalRow;
+            } else {
+                worksheet[cellAddress].s = normalFont;
+            }
+        }
+    }
+    /* #endregion */
+
+    const workbook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    xlsx.writeFile(workbook, excelFilename, { sheetStubs: true });
 }
