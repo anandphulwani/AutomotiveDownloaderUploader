@@ -64,8 +64,6 @@ async function doAllotment(
         if (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors') {
             minDealerFolders = lotsMinimumDealerFoldersForEachContractors * contractorsNames.length;
         }
-        const { processingBookmarkPathWithoutSync } = config;
-        attainLock(processingBookmarkPathWithoutSync, undefined, true);
         const allotmentDetailsForReport = [];
 
         for (
@@ -215,7 +213,6 @@ async function doAllotment(
             // console.log(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted: `);
             // console.log(contractors);
         }
-        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         if (!isDryRun) {
             addAllotmentToReport(allotmentDetailsForReport);
         }
