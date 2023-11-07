@@ -299,6 +299,55 @@ const styleOfAdditionalImagesTotalHeading = {
 /**
  *
  *
+ * Styling for Vertical list of dealers and their sum excel
+ *
+ *
+ *
+ */
+
+const styleOfVerticalListHeading = {
+    font: { name: 'Calibri', sz: 14 },
+    fill: { fgColor: { rgb: '94b2d6' } }, // Background color
+    alignment: { horizontal: 'center' },
+};
+
+const styleOfVerticalListDealerNameNormalData = {
+    font: { name: 'Arial', sz: 12 },
+    fill: { fgColor: { rgb: 'B7DEE8' } }, // Background color
+    alignment: { horizontal: 'left' },
+};
+
+const styleOfVerticalListDealerNameFTPData = {
+    font: { name: 'Arial', sz: 12 },
+    fill: { fgColor: { rgb: '8db4e2' } }, // Background color
+    alignment: { horizontal: 'left' },
+};
+
+const styleOfVerticalListDealerNameTextTotalData = {
+    font: { name: 'Calibri', sz: 18 },
+    fill: { fgColor: { rgb: '4babc6' } },
+    alignment: { horizontal: 'left' },
+};
+
+const styleOfVerticalListDealerNumber = {
+    font: { name: 'Calibri', sz: 12 },
+    alignment: { horizontal: 'left' },
+};
+
+const styleOfVerticalListDealerQty = {
+    font: { name: 'Calibri', sz: 12 },
+    alignment: { horizontal: 'center' },
+};
+
+const styleOfVerticalListDataTotal = {
+    font: { name: 'Calibri', sz: 18 },
+    fill: { fgColor: { rgb: '4babc6' } },
+    alignment: { horizontal: 'center' },
+};
+
+/**
+ *
+ *
  * Styling for individual contractor report
  *
  *
@@ -342,6 +391,14 @@ export {
     styleOfAdditionalImagesTotalHeading,
     styleOfDealerNameHeadingEven,
     styleOfDealerNameHeadingOdd,
+    //
+    styleOfVerticalListHeading,
+    styleOfVerticalListDealerNameNormalData,
+    styleOfVerticalListDealerNameFTPData,
+    styleOfVerticalListDealerNameTextTotalData,
+    styleOfVerticalListDealerNumber,
+    styleOfVerticalListDealerQty,
+    styleOfVerticalListDataTotal,
     //
     contractorExcelStyleOfTopHeadingRow,
     contractorExcelStyleOfBottomTotalRow,

@@ -29,6 +29,13 @@ import {
     styleOfAdditionalImagesTotalHeading,
     contractorExcelStyleOfTopHeadingRow,
     contractorExcelStyleOfBottomTotalRow,
+    styleOfVerticalListHeading,
+    styleOfVerticalListDealerNameNormalData,
+    styleOfVerticalListDealerNameFTPData,
+    styleOfVerticalListDealerNameTextTotalData,
+    styleOfVerticalListDataTotal,
+    styleOfVerticalListDealerQty,
+    styleOfVerticalListDealerNumber,
 } from './functions/reportsupportive.js';
 import { makeDir } from './functions/filesystem.js';
 import { lge, lgi, lgw } from './functions/loggersupportive.js';
@@ -128,9 +135,10 @@ for (const typeOfExcel of typesOfExcel) {
     for (let username of allUsernamesFromConfig) {
         username = username.includes('@') ? username.split('@')[0] : username;
 
-        const excelFilename = `${reportGenerationPath}\\${username} (${typeOfExcel})_${monthInMMM}_${year}.xlsx`;
-        if (!fs.existsSync(path.dirname(excelFilename))) {
-            makeDir(path.dirname(excelFilename));
+        const excelFilename = `${username} (${typeOfExcel})_${monthInMMM}_${year}.xlsx`;
+        const excelFullPath = path.join(reportGenerationPath, excelFilename);
+        if (!fs.existsSync(reportGenerationPath)) {
+            makeDir(reportGenerationPath);
         }
         const dealerConfiguration = readDealerConfigurationFormatted(username);
         const dealerNumbers = dealerConfiguration.map((item) => [item['Dealer Number'], item['Dealer Name']]);
@@ -605,25 +613,7 @@ for (const typeOfExcel of typesOfExcel) {
         /**
          *
          *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
-         *
+         *  Styling of the worksheet done below
          *
          *
          *
@@ -887,13 +877,98 @@ for (const typeOfExcel of typesOfExcel) {
 
         /**
          *
-         *
+         * Writing the data to excel file.
          *
          */
 
         const workbook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-        xlsx.writeFile(workbook, excelFilename, { sheetStubs: true });
+        xlsx.writeFile(workbook, excelFullPath, { sheetStubs: true });
+
+        /**
+         *
+         * Vertical list of dealers and their sum excel
+         *
+         */
+        if (username === 'cute996' && typeOfExcel === 'merged') {
+            const verticalDealerListAndSumExcelFullPath = path.join(reportGenerationPath, `verticaldealerlistandsum_${excelFilename}`);
+
+            transposedData.splice(0, 1);
+            transposedData.splice(-10);
+
+            // Initialize an array to keep track of totals for each dealer
+            const totals = new Array(transposedData[1].length - 1).fill(0); // Subtract 1 to account for 'Date' column
+
+            // Calculate totals for each dealer
+            transposedData.slice(2).forEach((row) => {
+                row.forEach((value, index) => {
+                    if (index !== 0 && value !== undefined) {
+                        // Skip 'Date' column and undefined values
+                        totals[index - 1] += value; // Subtract 1 to align with the 'totals' array's indexing
+                    }
+                });
+            });
+
+            transposedData = transposedData[1].slice(1).map((dealerName, index) => {
+                // Skip 'Date' column
+                const dealerCode = transposedData[0][index + 1]; // Offset by 1 to skip the empty string at data[0][0]
+                return [dealerCode, dealerName, '', totals[index]];
+            });
+            transposedData.unshift(['', 'Dealer Name', '', 'No. of Background images']);
+            transposedData.push(['', '', '', '']);
+            for (let i = 1; i < 20; i++) {
+                transposedData.push(['FTP', '', '', '']);
+            }
+            transposedData.push(['', '', '', '']);
+            transposedData.push(['', '', '', '']);
+            transposedData.push(['', 'Total', '', '']);
+
+            const verticalDealerListAndSumWorksheet = xlsx.utils.json_to_sheet(transposedData, { skipHeader: true });
+            verticalDealerListAndSumWorksheet['!rows'] = [];
+            verticalDealerListAndSumWorksheet['!cols'] = [];
+
+            const totalSumCellAddress = xlsx.utils.encode_cell({ r: transposedData.length - 1, c: 3 });
+            console.log(totalSumCellAddress);
+            xlsx.utils.sheet_add_json(worksheet, [{ text: '' }], { origin: totalSumCellAddress, skipHeader: true });
+
+            const dealerTotalRangeFrom = xlsx.utils.encode_cell({ r: 1, c: 3 });
+            const dealerTotalRangeTo = xlsx.utils.encode_cell({ r: transposedData.length - 4, c: 3 });
+            const dealerTotalFormulaString = `SUM(${dealerTotalRangeFrom}:${dealerTotalRangeTo})`;
+            xlsx.utils.sheet_set_array_formula(verticalDealerListAndSumWorksheet, totalSumCellAddress, dealerTotalFormulaString);
+
+            verticalDealerListAndSumWorksheet['!cols'][0] = { wch: 9 };
+            verticalDealerListAndSumWorksheet['!cols'][1] = { wch: 48 };
+            verticalDealerListAndSumWorksheet['!cols'][2] = { wch: 9 };
+            verticalDealerListAndSumWorksheet['!cols'][3] = { wch: 30 };
+
+            const dealerNameHeadingCellAddress = xlsx.utils.encode_cell({ r: 0, c: 1 });
+            const totalQtyHeadingCellAddress = xlsx.utils.encode_cell({ r: 0, c: 3 });
+            verticalDealerListAndSumWorksheet[dealerNameHeadingCellAddress].s = styleOfVerticalListHeading;
+            verticalDealerListAndSumWorksheet[totalQtyHeadingCellAddress].s = styleOfVerticalListHeading;
+
+            for (let i = 1; i < transposedData.length; i++) {
+                const dealerNumberCellAddress = xlsx.utils.encode_cell({ r: i, c: 0 });
+                const dealerNameCellAddress = xlsx.utils.encode_cell({ r: i, c: 1 });
+                const totalQtyCellAddress = xlsx.utils.encode_cell({ r: i, c: 3 });
+                verticalDealerListAndSumWorksheet[dealerNumberCellAddress].s = styleOfVerticalListDealerNumber;
+                if (i < transposedData.length - 19 - 4) {
+                    verticalDealerListAndSumWorksheet[dealerNameCellAddress].s = styleOfVerticalListDealerNameNormalData;
+                } else if (i > transposedData.length - 19 - 4 && i < transposedData.length - 3) {
+                    verticalDealerListAndSumWorksheet[dealerNameCellAddress].s = styleOfVerticalListDealerNameFTPData;
+                } else if (i === transposedData.length - 1) {
+                    verticalDealerListAndSumWorksheet[dealerNameCellAddress].s = styleOfVerticalListDealerNameTextTotalData;
+                }
+                if (i < transposedData.length - 1) {
+                    verticalDealerListAndSumWorksheet[totalQtyCellAddress].s = styleOfVerticalListDealerQty;
+                } else {
+                    verticalDealerListAndSumWorksheet[totalQtyCellAddress].s = styleOfVerticalListDataTotal;
+                }
+            }
+
+            const verticalDealerListAndSumWorkbook = xlsx.utils.book_new();
+            xlsx.utils.book_append_sheet(verticalDealerListAndSumWorkbook, verticalDealerListAndSumWorksheet, 'Sheet1');
+            xlsx.writeFile(verticalDealerListAndSumWorkbook, verticalDealerListAndSumExcelFullPath, { sheetStubs: true });
+        }
     }
     // eslint-disable-next-line no-nested-ternary
     // isIndividualOrMerged = isIndividualOrMerged === 'individual' ? 'merged' : isIndividualOrMerged === 'merged' ? false : null;
@@ -925,9 +1000,10 @@ for (const typeOfExcel of typesOfExcel) {
 const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
 // eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
 for (const contractor of Object.keys(config.contractors)) {
-    const excelFilename = path.join(reportGenerationPath, 'contractors', `${contractor} ${monthInMMM}_${year}.xlsx`);
-    if (!fs.existsSync(path.dirname(excelFilename))) {
-        makeDir(path.dirname(excelFilename));
+    const excelFilename = `${contractor} ${monthInMMM}_${year}.xlsx`;
+    const excelFullPath = path.join(reportGenerationPath, 'contractors', excelFilename);
+    if (!fs.existsSync(path.join(reportGenerationPath, 'contractors'))) {
+        makeDir(path.join(reportGenerationPath, 'contractors'));
     }
     // const dealerConfigurationWithDates = [['', 'Date', ...dates]];
     const excelData = [['DATE', ...dates]];
@@ -1067,5 +1143,5 @@ for (const contractor of Object.keys(config.contractors)) {
 
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    xlsx.writeFile(workbook, excelFilename, { sheetStubs: true });
+    xlsx.writeFile(workbook, excelFullPath, { sheetStubs: true });
 }
