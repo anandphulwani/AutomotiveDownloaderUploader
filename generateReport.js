@@ -39,6 +39,7 @@ import {
 } from './functions/reportsupportive.js';
 import { copyDirOrFile, makeDir } from './functions/filesystem.js';
 import { lge, lgi, lgw } from './functions/loggersupportive.js';
+import { attainLock, releaseLock } from './functions/locksupportive.js';
 // import {
 //     allTrimStringArrayOfObjects,
 //     trimMultipleSpacesInMiddleIntoOneArrayOfObjects,
@@ -168,7 +169,10 @@ for (const typeOfExcel of typesOfExcel) {
                 // eslint-disable-next-line no-continue
                 continue;
             }
+            attainLock(reportJSONFilePath, undefined, true);
             const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+            releaseLock(reportJSONFilePath, undefined, true);
+
             let reportJSONObj = JSON.parse(reportJSONContents);
             reportJSONObj = Object.fromEntries(Object.entries(reportJSONObj).filter(([, value]) => value.username === username));
 
@@ -1034,7 +1038,10 @@ for (const contractor of Object.keys(config.contractors)) {
             // eslint-disable-next-line no-continue
             continue;
         }
+        attainLock(reportJSONFilePath, undefined, true);
         const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+        releaseLock(reportJSONFilePath, undefined, true);
+
         const reportJSONObj = JSON.parse(reportJSONContents);
 
         const cuttingReportJSONObj = Object.fromEntries(Object.entries(reportJSONObj).filter(([, value]) => value.cutter === contractor));
