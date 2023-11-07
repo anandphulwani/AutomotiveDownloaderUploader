@@ -34,6 +34,20 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         `.\\logs`, // Static delete after 120 days
     ];
 
+    const cuttingAccounting = config.cutterRecordKeepingFolders[0];
+    const finishingAccounting = config.finisherRecordKeepingFolders[0];
+
+    // eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
+    for (const contractor of Object.keys(config.contractors)) {
+        foldersToCleanUp.push(`${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\${cuttingAccounting}`);
+    }
+
+    const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
+    // eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
+    for (const finisher of Object.keys(finishers)) {
+        foldersToCleanUp.push(`${config.contractorsRecordKeepingPath}\\${finisher}_Acnt\\${finishingAccounting}`);
+    }
+
     /* #region: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
     // eslint-disable-next-line no-restricted-syntax
     for (const folderToCleanUp of foldersToCleanUp) {
