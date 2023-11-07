@@ -37,7 +37,7 @@ import {
     styleOfVerticalListDealerQty,
     styleOfVerticalListDealerNumber,
 } from './functions/reportsupportive.js';
-import { makeDir } from './functions/filesystem.js';
+import { copyDirOrFile, makeDir } from './functions/filesystem.js';
 import { lge, lgi, lgw } from './functions/loggersupportive.js';
 // import {
 //     allTrimStringArrayOfObjects,
@@ -1144,4 +1144,10 @@ for (const contractor of Object.keys(config.contractors)) {
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
     xlsx.writeFile(workbook, excelFullPath, { sheetStubs: true });
+
+    const contractorExcelReportDir = `${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\excel_reports\\`;
+    if (!fs.existsSync(contractorExcelReportDir)) {
+        makeDir(contractorExcelReportDir);
+    }
+    copyDirOrFile(excelFullPath, path.join(contractorExcelReportDir, `${monthInMMM}_${year}.xlsx`), true);
 }
