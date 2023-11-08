@@ -155,7 +155,7 @@ function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersTo
                             config.contractorsRecordKeepingPath
                         }\\${innerLoopCutter}_Acnt\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
                         if (fs.existsSync(otherFinishingAccountingZonePath)) {
-                            folderExistMesg += `Destination (Other Cutter Accounting): ${otherFinishingAccountingZonePath}\n`;
+                            folderExistMesg += `Destination (Other Finishing Accounting): ${otherFinishingAccountingZonePath}\n`;
                             doesDestinationFolderAlreadyExists = true;
                         }
                     }
