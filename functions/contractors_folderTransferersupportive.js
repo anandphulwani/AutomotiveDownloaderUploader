@@ -114,7 +114,7 @@ function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersTo
     let hasMovingToUploadZonePrinted = false;
     const foldersToShiftLength = foldersToShift.length;
     for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
-        const { dealerImagesFolder, folderSize, uniqueCode, cuttingDoneBy, finisher, isOverwrite } = foldersToShift[cnt];
+        const { dealerImagesFolder, folderSize, uniqueCode, cutter, finisher, isOverwrite } = foldersToShift[cnt];
         // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system works properly.
         const folderSizeAfter10Seconds = getFolderSizeInBytes(dealerImagesFolder);
         if (folderSizeAfter10Seconds !== folderSize) {
@@ -184,7 +184,7 @@ function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersTo
                         }
                     }
                 }
-                addUploadingToReport([path.basename(dealerImagesFolder), uniqueCode, cuttingDoneBy, finisher]);
+                addUploadingToReport([path.basename(dealerImagesFolder), uniqueCode, cutter, finisher]);
                 createDirAndCopyFile(dealerImagesFolder, newFinishingAccountingZonePath, isOverwrite);
                 createDirAndMoveFile(dealerImagesFolder, newUploadingZonePath, isOverwrite);
             }
