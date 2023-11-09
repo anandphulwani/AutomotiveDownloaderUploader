@@ -80,7 +80,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     } else if (level === 'debug') {
         logMesg = chalk.white.bgMagentaBright.bold(logMesg);
     } else if (level === 'silly') {
-        logMesg = chalk.bgWhite.bold(logMesg);
+        logMesg = chalk.black.bgWhiteBright(logMesg);
     } else {
         logMesg = chalk.inverse(logMesg);
     }
