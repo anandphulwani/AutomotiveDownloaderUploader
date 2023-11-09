@@ -36,7 +36,7 @@ import {
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
 import { attainLock, releaseLock } from './functions/locksupportive.js';
-import { moveFilesFromContractorsToUploadingZoneAndFinishingAccounting } from './functions/contractors_folderTransferersupportive.js';
+import { moveFilesFromSourceToDestinationAndAccounting } from './functions/contractors_folderTransferersupportive.js';
 /* eslint-enable import/extensions */
 
 if (config.environment === 'production') {
@@ -220,8 +220,8 @@ foldersToShift.sort((a, b) => {
 // sleep(15);
 // console.log(foldersToShift);
 
-foldersToShift = moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersToShift, true);
-moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersToShift, false);
+foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
+moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
 
 if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
     console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));
