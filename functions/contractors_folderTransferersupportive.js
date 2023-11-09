@@ -11,12 +11,12 @@ import { addUploadingToReport } from './reportsupportive.js';
 import { printSectionSeperator } from './others.js';
 /* eslint-enable import/extensions */
 
-const cuttingDone = config.cutterProcessingFolders[0];
-const finishingBuffer = config.finisherProcessingFolders[0];
-const readyToUpload = config.finisherProcessingFolders[1];
+const cuttingDoneFolderName = config.cutterProcessingFolders[0];
+const finishingBufferFolderName = config.finisherProcessingFolders[0];
+const readyToUploadFolderName = config.finisherProcessingFolders[1];
 
-const cuttingAccounting = config.cutterRecordKeepingFolders[0];
-const finishingAccounting = config.finisherRecordKeepingFolders[0];
+const cuttingAccountingFolderName = config.cutterRecordKeepingFolders[0];
+const finishingAccountingFolderName = config.finisherRecordKeepingFolders[0];
 
 function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, isDryRun = true) {
     let hasMovingToUploadZonePrinted = false;
@@ -42,10 +42,10 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
             }
             const newFinishingBufferPath = `${
                 config.contractorsZonePath
-            }\\${cuttersFinisher}\\${instanceRunDateFormatted}\\${finishingBuffer}\\${path.basename(dealerImagesFolder)}`;
+            }\\${cuttersFinisher}\\${instanceRunDateFormatted}\\${finishingBufferFolderName}\\${path.basename(dealerImagesFolder)}`;
             const newCuttingAccountingZonePath = `${
                 config.contractorsRecordKeepingPath
-            }\\${cutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+            }\\${cutter}_Acnt\\${cuttingAccountingFolderName}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             if (isDryRun) {
                 if (isOverwrite === false) {
                     let doesDestinationFolderAlreadyExists = false;
@@ -63,7 +63,9 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
                     for (const innerLoopCutter of otherContractors) {
                         const otherCuttingAccountingZonePath = `${
                             config.contractorsRecordKeepingPath
-                        }\\${innerLoopCutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+                        }\\${innerLoopCutter}_Acnt\\${cuttingAccountingFolderName}\\${instanceRunDateFormatted}\\${path.basename(
+                            dealerImagesFolder
+                        )}`;
                         if (fs.existsSync(otherCuttingAccountingZonePath)) {
                             folderExistMesg += `Destination (Other Cutter Accounting): ${otherCuttingAccountingZonePath}\n`;
                             doesDestinationFolderAlreadyExists = true;
@@ -88,7 +90,9 @@ function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShi
                     for (const innerLoopCutter of otherContractors) {
                         const otherCuttingAccountingZonePath = `${
                             config.contractorsRecordKeepingPath
-                        }\\${innerLoopCutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+                        }\\${innerLoopCutter}_Acnt\\${cuttingAccountingFolderName}\\${instanceRunDateFormatted}\\${path.basename(
+                            dealerImagesFolder
+                        )}`;
                         if (fs.existsSync(otherCuttingAccountingZonePath)) {
                             removeDir(otherCuttingAccountingZonePath, true);
                         }
@@ -135,7 +139,7 @@ function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersTo
             const newUploadingZonePath = `${config.uploadingZonePath}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             const newFinishingAccountingZonePath = `${
                 config.contractorsRecordKeepingPath
-            }\\${finisher}_Acnt\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+            }\\${finisher}_Acnt\\${finishingAccountingFolderName}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
             if (isDryRun) {
                 if (isOverwrite === false) {
                     let doesDestinationFolderAlreadyExists = false;
@@ -153,7 +157,9 @@ function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersTo
                     for (const innerLoopCutter of otherContractors) {
                         const otherFinishingAccountingZonePath = `${
                             config.contractorsRecordKeepingPath
-                        }\\${innerLoopCutter}_Acnt\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+                        }\\${innerLoopCutter}_Acnt\\${finishingAccountingFolderName}\\${instanceRunDateFormatted}\\${path.basename(
+                            dealerImagesFolder
+                        )}`;
                         if (fs.existsSync(otherFinishingAccountingZonePath)) {
                             folderExistMesg += `Destination (Other Finishing Accounting): ${otherFinishingAccountingZonePath}\n`;
                             doesDestinationFolderAlreadyExists = true;
@@ -178,7 +184,9 @@ function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersTo
                     for (const innerLoopFinisher of otherContractors) {
                         const otherFinishingAccountingZonePath = `${
                             config.contractorsRecordKeepingPath
-                        }\\${innerLoopFinisher}_Acnt\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
+                        }\\${innerLoopFinisher}_Acnt\\${finishingAccountingFolderName}\\${instanceRunDateFormatted}\\${path.basename(
+                            dealerImagesFolder
+                        )}`;
                         if (fs.existsSync(otherFinishingAccountingZonePath)) {
                             removeDir(otherFinishingAccountingZonePath, true);
                         }
@@ -228,13 +236,15 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
             continue;
         }
         let contractorPathFiles = fs.readdirSync(contractorPath);
-        contractorPathFiles = contractorPathFiles.filter((filename) => ![cuttingDone, finishingBuffer, readyToUpload].includes(filename));
+        contractorPathFiles = contractorPathFiles.filter(
+            (filename) => ![cuttingDoneFolderName, finishingBufferFolderName, readyToUploadFolderName].includes(filename)
+        );
         if (contractorPathFiles.length !== 0) {
             // eslint-disable-next-line no-continue
             continue;
         }
 
-        const contractorPathCuttingDone = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted, cuttingDone);
+        const contractorPathCuttingDone = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted, cuttingDoneFolderName);
         if (!fs.existsSync(contractorPath)) {
             // eslint-disable-next-line no-continue
             continue;
@@ -245,7 +255,12 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
             continue;
         }
         const cuttersFinisher = config.contractors[contractor].finisher;
-        const cuttersFinishersFinishingBufferPath = path.join(config.contractorsZonePath, cuttersFinisher, instanceRunDateFormatted, finishingBuffer);
+        const cuttersFinishersFinishingBufferPath = path.join(
+            config.contractorsZonePath,
+            cuttersFinisher,
+            instanceRunDateFormatted,
+            finishingBufferFolderName
+        );
         const allWorkDoneFileFullPath = path.join(cuttersFinishersFinishingBufferPath, allWorkDoneFile);
         if (!fs.existsSync(allWorkDoneFileFullPath)) {
             fs.closeSync(fs.openSync(allWorkDoneFileFullPath, 'a'));
