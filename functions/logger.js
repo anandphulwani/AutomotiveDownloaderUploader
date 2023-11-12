@@ -60,15 +60,15 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     logMesg = logMesg.join(' ');
     logMesg = logMesg.padEnd(120, ' ');
     if (level === 'catcherror') {
-        logMesg = chalk.bgRed.white(logMesg);
+        logMesg = chalk.bgRgb(248, 100, 90).whiteBright(logMesg);
         if (stack !== undefined) {
             stack = stack.split('\n');
             stack = stack.map((line) => line.padEnd(120, ' '));
             stack = stack.join('\n');
-            logMesg += `\n${chalk.bgRedBright.white(stack)}`;
+            logMesg += `\n${chalk.bgRgb(248, 131, 121).whiteBright(stack)}`;
         }
     } else if (level === 'unreachable') {
-        logMesg = chalk.white.bgRedBright.bold(logMesg);
+        logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg);
     } else if (level === 'error') {
         logMesg = chalk.white.bgRed.bold(logMesg);
     } else if (level === 'warn') {
