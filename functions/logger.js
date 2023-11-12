@@ -115,7 +115,6 @@ const catcherrorFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'catcherror',
     levels: { catcherror: 0, error: 1 },
-    defaultMeta: { service: 'log-service' },
     transports: [
         // new transports.File({
         //     ...fileTransportOptions,
@@ -145,7 +144,6 @@ const unreachableFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'unreachable',
     levels: { unreachable: 0 },
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -158,7 +156,6 @@ const unreachableFileWinston = createLogger({
 
 const errorFileWinston = createLogger({
     level: 'error',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -171,7 +168,6 @@ const errorFileWinston = createLogger({
 
 const warnFileWinston = createLogger({
     level: 'warn',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -184,7 +180,6 @@ const warnFileWinston = createLogger({
 
 const infoFileWinston = createLogger({
     level: 'info',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -197,7 +192,6 @@ const infoFileWinston = createLogger({
 
 const verboseFileWinston = createLogger({
     level: 'verbose',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -210,7 +204,6 @@ const verboseFileWinston = createLogger({
 
 const debugFileWinston = createLogger({
     level: 'debug',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -223,7 +216,6 @@ const debugFileWinston = createLogger({
 
 const sillyFileWinston = createLogger({
     level: 'silly',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -240,7 +232,6 @@ const catcherrorConsoleWinston = createLogger({
     format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'catcherror',
     levels: { catcherror: 0, error: 1 },
-    defaultMeta: { service: 'log-service' },
     transports: [
         // new transports.Console({
         //     ...consoleTransportOptions,
@@ -260,7 +251,6 @@ const unreachableConsoleWinston = createLogger({
     format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'unreachable',
     levels: { unreachable: 0 },
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -272,7 +262,6 @@ const unreachableConsoleWinston = createLogger({
 
 const errorConsoleWinston = createLogger({
     level: 'error',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -284,7 +273,6 @@ const errorConsoleWinston = createLogger({
 
 const warnConsoleWinston = createLogger({
     level: 'warn',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -296,7 +284,6 @@ const warnConsoleWinston = createLogger({
 
 const infoConsoleWinston = createLogger({
     level: 'info',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -308,7 +295,6 @@ const infoConsoleWinston = createLogger({
 
 const verboseConsoleWinston = createLogger({
     level: 'verbose',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -320,7 +306,6 @@ const verboseConsoleWinston = createLogger({
 
 const debugConsoleWinston = createLogger({
     level: 'debug',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -332,7 +317,6 @@ const debugConsoleWinston = createLogger({
 
 const sillyConsoleWinston = createLogger({
     level: 'silly',
-    defaultMeta: { service: 'log-service' },
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
