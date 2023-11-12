@@ -17,60 +17,109 @@ import {
 import { generateAndGetNonCatchErrorLogLevels9DigitUniqueId, generateAndGetCatchErrorLogLevels6DigitUniqueId } from './loggeruniqueidgenerators.js';
 /* eslint-enable import/extensions */
 
+function convertArgsToProperOrder(...args) {
+    let message;
+    let lineSep;
+    let error;
+
+    args.forEach((arg) => {
+        // console.log(typeof arg);
+        if (typeof arg === 'string') {
+            message = arg;
+        } else if (typeof arg === 'boolean') {
+            lineSep = arg;
+        } else if (arg instanceof Error) {
+            error = arg;
+        }
+    });
+
+    if (message && lineSep === undefined) {
+        lineSep = true;
+    }
+    return [message, error, lineSep];
+}
+
 const lgu = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportUnreachableFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    loggerConsole.unreachable(...args, { filename, lineNumber, uniqueId });
-    loggerFile.unreachable(...args, { filename, lineNumber, uniqueId });
+    loggerConsole.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgc = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportCatcherrorFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    loggerConsole.catcherror(...args, { filename, lineNumber, uniqueId });
-    loggerFile.catcherror(...args, { filename, lineNumber, uniqueId });
+    loggerConsole.catcherror(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.catcherror(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
+/**
+ *
+ * Accepted Samples
+ */
+//
+// lge('Logging unreachable error message 01');
+// lge('Logging unreachable error message 02', false);
+// lge('Logging unreachable error message 03', false, new Error('Error to be test 03'));
+// lge('Logging unreachable error message 04', new Error('Error to be test 04'));
+// lge('Logging unreachable error message 05', new Error('Error to be test 05'), true);
+// lge(new Error('Error to be test 06'));
+// console.log('------------------------------------------------------------');
+//
 const lge = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportErrorFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.error(...args, { filename, lineNumber, uniqueId });
-    loggerFile.error(...args, { filename, lineNumber, uniqueId });
+    loggerConsole.error(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.error(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgw = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportWarnFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.warn(...args, { filename, lineNumber, uniqueId });
-    loggerFile.warn(...args, { filename, lineNumber, uniqueId });
+    loggerConsole.warn(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.warn(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgi = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportInfoFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.info(...args, { filename, lineNumber, uniqueId });
-    loggerFile.info(...args, { filename, lineNumber, uniqueId });
+    loggerConsole.info(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.info(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgv = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportVerboseFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.verbose(...args, { filename, lineNumber, uniqueId });
-    loggerFile.verbose(...args, { filename, lineNumber, uniqueId });
+    loggerConsole.verbose(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.verbose(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgd = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportDebugFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.debug(...args, { filename, lineNumber, uniqueId });
-    loggerFile.debug(...args, { filename, lineNumber, uniqueId });
+    loggerConsole.debug(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.debug(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 /**
@@ -78,67 +127,85 @@ const lgd = (...args) => {
  * which should never be called, or errors that should never generate.
  */
 const lgs = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportSillyFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.silly(...args, { filename, lineNumber, uniqueId });
-    loggerFile.silly(...args, { filename, lineNumber, uniqueId });
+    loggerConsole.silly(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.silly(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lguf = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportUnreachableFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    loggerFile.unreachable(...args, { filename, lineNumber, uniqueId });
+    loggerFile.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgcf = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportCatcherrorFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    loggerFile.catcherror(...args, { filename, lineNumber, uniqueId });
+    loggerFile.catcherror(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgef = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportErrorFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.error(...args, { filename, lineNumber, uniqueId });
+    loggerFile.error(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgwf = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportWarnFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.warn(...args, { filename, lineNumber, uniqueId });
+    loggerFile.warn(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgif = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportInfoFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.info(...args, { filename, lineNumber, uniqueId });
+    loggerFile.info(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgvf = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportVerboseFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.verbose(...args, { filename, lineNumber, uniqueId });
+    loggerFile.verbose(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgdf = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportDebugFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.debug(...args, { filename, lineNumber, uniqueId });
+    loggerFile.debug(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgsf = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
     addIndividualTransportSillyFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.silly(...args, { filename, lineNumber, uniqueId });
+    loggerFile.silly(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 // eslint-disable-next-line import/prefer-default-export
