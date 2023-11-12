@@ -1,8 +1,12 @@
-import pos from 'get-cursor-position';
+import getCursorPosition from 'get-cursor-position';
 
-async function getRowPosOnTerminal() {
-    return pos.sync().row;
+function getRowPosOnTerminal() {
+    return getCursorPosition.sync().row;
+}
+
+function getColPosOnTerminal() {
+    return getCursorPosition.sync().col;
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { getRowPosOnTerminal };
+export { getRowPosOnTerminal, getColPosOnTerminal };
