@@ -56,19 +56,6 @@ const lgu = (...args) => {
     loggerFile.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
-/**
- *
- * Accepted Samples
- */
-//
-// lge('Logging unreachable error message 01');
-// lge('Logging unreachable error message 02', false);
-// lge('Logging unreachable error message 03', false, new Error('Error to be test 03'));
-// lge('Logging unreachable error message 04', new Error('Error to be test 04'));
-// lge('Logging unreachable error message 05', new Error('Error to be test 05'), true);
-// lge(new Error('Error to be test 06'));
-// console.log('------------------------------------------------------------');
-//
 const lge = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
