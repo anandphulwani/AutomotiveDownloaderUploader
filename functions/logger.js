@@ -250,6 +250,7 @@ const debugFileWinston = createLogger({
 
 const billyFileWinston = createLogger({
     level: 'billy',
+    levels: { billy: 0 },
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -351,6 +352,7 @@ const debugConsoleWinston = createLogger({
 
 const billyConsoleWinston = createLogger({
     level: 'billy',
+    levels: { billy: 0 },
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
