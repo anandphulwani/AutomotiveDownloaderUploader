@@ -18,8 +18,8 @@ import { generateAndGetNonCatchErrorLogLevels9DigitUniqueId, generateAndGetCatch
 /* eslint-enable import/extensions */
 
 function convertArgsToProperOrder(...args) {
-    let message;
-    let lineSep;
+    let message = '';
+    let lineSep = true;
     let error;
 
     args.forEach((arg) => {
@@ -33,9 +33,6 @@ function convertArgsToProperOrder(...args) {
         }
     });
 
-    if (message && lineSep === undefined) {
-        lineSep = true;
-    }
     return [message, error, lineSep];
 }
 

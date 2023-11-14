@@ -4,6 +4,7 @@ import { createLogger, format, transports } from 'winston';
 /* eslint-disable import/extensions */
 import { currentDateTimeReadableFormatted } from './datetime.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
+import { getColPosOnTerminal } from './terminal.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, printf, errors } = format;
@@ -30,17 +31,26 @@ const logFormatFile = printf(({ level, message, timestamp: ts, stack, [Symbol.fo
 });
 
 const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
+    message = message.trim();
     // console.log(`logFormatConsole Called, level:${level}`);
-    const { filename, lineNumber, uniqueId } = sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '' };
+    const { filename, lineNumber, uniqueId, lineSep } =
+        sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '', lineSep: true };
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
     if (level === 'catcherror' || level === 'unreachable') {
         uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
     }
+    // If custom message is sent then, the custom message is merged with the first line of error message.
     if (stack !== undefined && stack.length > 0) {
-        const stackArray = stack.split('\n');
-        const errorString = stackArray[0].replace(/^[a-zA-Z]*Error:/, '').trim();
-        message = message.replace(errorString, `\n${errorString}`);
+        stack = stack.split('\n');
+        const regex = new RegExp(`^(\\S+?): ${message}$`);
+        if (regex.test(stack[0])) {
+            stack.shift();
+        } else {
+            const errorString = stack[0].replace(/^[a-zA-Z]*Error:/, '').trim();
+            message = message.replace(errorString, '');
+        }
+        stack = stack.join('\n');
     }
     let levelToPrint = '';
     if (level === 'warn') {
@@ -50,22 +60,44 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     } else {
         levelToPrint = level;
     }
-    if (level === 'info') {
-        logMesg.push(message);
-    } else {
+    if (level !== 'info') {
         logMesg.push(`${levelToPrint}:`.toUpperCase());
-        logMesg.push(message);
-        // logMesg.push(`${message} (${filename}:${lineNumber})`);
     }
+    logMesg.push(message);
+    // logMesg.push(`${message} (${filename}:${lineNumber})`);
     logMesg = logMesg.join(' ');
-    logMesg = logMesg.padEnd(120, ' ');
+    logMesg = logMesg.split('\n');
+    logMesg = logMesg.map((line, index, arr) => {
+        if (index === arr.length - 1 && lineSep === false && !(level === 'catcherror' && stack !== undefined)) {
+            return line;
+        }
+        if (index === 0) {
+            return line.padEnd(120 - getColPosOnTerminal() + 1, ' ');
+        }
+        return line.padEnd(120, ' ');
+    });
+    logMesg = logMesg.join('\n');
+    if (lineSep) {
+        logMesg = `${logMesg}\n`;
+    }
     if (level === 'catcherror') {
         logMesg = chalk.bgRgb(248, 100, 90).whiteBright(logMesg);
         if (stack !== undefined) {
+            if (!lineSep) {
+                logMesg = `${logMesg}\n`;
+            }
             stack = stack.split('\n');
-            stack = stack.map((line) => line.padEnd(120, ' '));
+            stack = stack.map((line, index, arr) => {
+                if (index === arr.length - 1 && lineSep === false) {
+                    return line;
+                }
+                return line.padEnd(120, ' ');
+            });
             stack = stack.join('\n');
-            logMesg += `\n${chalk.bgRgb(248, 131, 121).whiteBright(stack)}`;
+            if (lineSep) {
+                stack = `${stack}\n`;
+            }
+            logMesg += `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}`;
         }
     } else if (level === 'unreachable') {
         logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg);
@@ -91,6 +123,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
 /* #region fileTransportOptions and consoleTransportOptions : Begin */
 const fileTransportOptions = {
     format: combine(timestamp({ format: currentDateTimeReadableFormatted() }), errors({ stack: true }), logFormatFile),
+    eol: '',
     maxsize: 10485760, // 10MB
     maxFiles: 5,
     tailable: true,
@@ -107,6 +140,7 @@ const consoleTransportOptions = {
         })(),
         logFormatConsole
     ),
+    eol: '',
 };
 /* #endregion fileTransportOptions and consoleTransportOptions : End */
 
