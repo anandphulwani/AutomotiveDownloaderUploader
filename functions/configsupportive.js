@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs';
+import path from 'path';
 
 /* eslint-disable import/extensions */
 import { lgc } from './loggersupportive.js';
@@ -9,6 +10,7 @@ import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { makeDir } from './filesystem.js';
 import { instanceRunDateFormatted } from './datetime.js';
+import { getProjectConfigFilePath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
 function getCredentialsForUsername(username) {
@@ -31,7 +33,7 @@ function getAppDomain() {
 }
 
 async function setContractorsCurrentAllotted(contractor, allottedQty) {
-    const fileToOperateOn = '.\\configs\\config-user.js';
+    const fileToOperateOn = getProjectConfigFilePath();
     attainLock(fileToOperateOn, undefined, true);
 
     try {
@@ -64,7 +66,7 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
 }
 
 function getContractorsCurrentAllotted(contractor) {
-    const configUserContent = fs.readFileSync('.\\configs\\config-user.js', 'utf8');
+    const configUserContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
     const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
     const regexExpression = new RegExp(regexString, 'g');
 
@@ -86,7 +88,7 @@ async function addToContractorsCurrentAllotted(contractor, quantity) {
 }
 
 function getLastLotNumber() {
-    const configContent = fs.readFileSync('.\\configs\\config.js', 'utf8');
+    const configContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
     const lastLotNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\r\\n)`;
     const lastLotNumberRegexExpression = new RegExp(lastLotNumberRegexString, 'g');
 
@@ -99,7 +101,7 @@ function getLastLotNumber() {
 }
 
 function getLastLotDate() {
-    const configContent = fs.readFileSync('.\\configs\\config.js', 'utf8');
+    const configContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
     const lastLotDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\r\\n)`;
     const lastLotDateRegexExpression = new RegExp(lastLotDateRegexString, 'g');
 
@@ -112,7 +114,7 @@ function getLastLotDate() {
 }
 
 async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
-    const fileToOperateOn = '.\\configs\\config.js';
+    const fileToOperateOn = getProjectConfigFilePath();
     attainLock(fileToOperateOn, undefined, true);
 
     try {

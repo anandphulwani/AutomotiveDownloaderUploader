@@ -5,6 +5,7 @@ import puppeteer from 'puppeteer';
 import { exec, spawn } from 'child_process';
 import { keyInYN } from 'readline-sync';
 import { URL as URLparser } from 'url';
+import path from 'path';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
@@ -31,6 +32,7 @@ import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText }
 import { validateConfigFile } from './functions/configvalidation.js';
 import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
+import { getProjectLogsDirPath } from './functions/projectpaths.js';
 /* eslint-enable import/extensions */
 
 // const {
@@ -205,20 +207,21 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                         console.log('Bookmark not appended!');
                         if (config.updateBookmarksOnceDone) {
                             try {
+                                const bookmarksNotAppendFile = path.join(getProjectLogsDirPath(), 'bookmarksNotAppend.txt');
                                 fs.appendFileSync(
-                                    './logs/bookmarksNotAppend.txt',
+                                    bookmarksNotAppendFile,
                                     '--------------------------------------------------------------------------------------------------\n'
                                 );
                                 fs.appendFileSync(
-                                    './logs/bookmarksNotAppend.txt',
+                                    bookmarksNotAppendFile,
                                     `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, \nvehicleBookmark.name: ${vehicleBookmark.name}, \nvehicleBookmark.url: ${vehicleBookmark.url}\n`
                                 );
 
-                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `vehicleBookmark.guid: ${vehicleBookmark.guid}\n`);
-                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}\n`);
-                                fs.appendFileSync('./logs/bookmarksNotAppend.txt', `returnObj: ${JSON.stringify(returnObj, null, 2)}\n`);
+                                fs.appendFileSync(bookmarksNotAppendFile, `vehicleBookmark.guid: ${vehicleBookmark.guid}\n`);
+                                fs.appendFileSync(bookmarksNotAppendFile, `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}\n`);
+                                fs.appendFileSync(bookmarksNotAppendFile, `returnObj: ${JSON.stringify(returnObj, null, 2)}\n`);
                                 fs.appendFileSync(
-                                    './logs/bookmarksNotAppend.txt',
+                                    bookmarksNotAppendFile,
                                     '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
                                 );
                             } catch (err) {
