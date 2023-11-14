@@ -1,6 +1,6 @@
 /* eslint-disable import/extensions */
-import { config } from './configs/config.js';
-import { attainLock, releaseLock } from './functions/locksupportive.js';
+import { config } from '../configs/config.js';
+import { attainLock, releaseLock } from '../functions/locksupportive.js';
 /* eslint-enable import/extensions */
 
 let counter = 0;
