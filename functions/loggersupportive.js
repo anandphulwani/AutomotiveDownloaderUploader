@@ -5,8 +5,8 @@ import { getCallerDetails } from './callerdetails.js';
 import {
     loggerFile,
     loggerConsole,
-    addIndividualTransportUnreachableFileWinston,
     addIndividualTransportCatcherrorFileWinston,
+    addIndividualTransportUnreachableFileWinston,
     addIndividualTransportErrorFileWinston,
     addIndividualTransportWarnFileWinston,
     addIndividualTransportInfoFileWinston,
@@ -36,16 +36,6 @@ function convertArgsToProperOrder(...args) {
     return [message, error, lineSep];
 }
 
-const lgu = (...args) => {
-    args = convertArgsToProperOrder(...args);
-    const lineSep = args.pop();
-    addIndividualTransportUnreachableFileWinston();
-    const { filename, lineNumber } = getCallerDetails(...args);
-    const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    loggerConsole.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
-    loggerFile.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
-};
-
 const lgc = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
@@ -54,6 +44,16 @@ const lgc = (...args) => {
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
     loggerConsole.catcherror(...args, { filename, lineNumber, uniqueId, lineSep });
     loggerFile.catcherror(...args, { filename, lineNumber, uniqueId, lineSep });
+};
+
+const lgu = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
+    addIndividualTransportUnreachableFileWinston();
+    const { filename, lineNumber } = getCallerDetails(...args);
+    const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
+    loggerConsole.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 /**
@@ -133,15 +133,6 @@ const lgb = (...args) => {
     loggerFile.billy(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
-const lguf = (...args) => {
-    args = convertArgsToProperOrder(...args);
-    const lineSep = args.pop();
-    addIndividualTransportUnreachableFileWinston();
-    const { filename, lineNumber } = getCallerDetails(...args);
-    const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    loggerFile.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
-};
-
 const lgcf = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
@@ -149,6 +140,15 @@ const lgcf = (...args) => {
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
     loggerFile.catcherror(...args, { filename, lineNumber, uniqueId, lineSep });
+};
+
+const lguf = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
+    addIndividualTransportUnreachableFileWinston();
+    const { filename, lineNumber } = getCallerDetails(...args);
+    const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
+    loggerFile.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lgef = (...args) => {
