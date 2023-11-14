@@ -12,7 +12,7 @@ import {
     addIndividualTransportInfoFileWinston,
     addIndividualTransportVerboseFileWinston,
     addIndividualTransportDebugFileWinston,
-    addIndividualTransportSillyFileWinston,
+    addIndividualTransportBillyFileWinston,
 } from './logger.js';
 import { generateAndGetNonCatchErrorLogLevels9DigitUniqueId, generateAndGetCatchErrorLogLevels6DigitUniqueId } from './loggeruniqueidgenerators.js';
 /* eslint-enable import/extensions */
@@ -123,14 +123,14 @@ const lgd = (...args) => {
  * This function is used for those parts of the code,
  * which should never be called, or errors that should never generate.
  */
-const lgs = (...args) => {
+const lgb = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
-    addIndividualTransportSillyFileWinston();
+    addIndividualTransportBillyFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.silly(...args, { filename, lineNumber, uniqueId, lineSep });
-    loggerFile.silly(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerConsole.billy(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.billy(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lguf = (...args) => {
@@ -196,14 +196,14 @@ const lgdf = (...args) => {
     loggerFile.debug(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
-const lgsf = (...args) => {
+const lgbf = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
-    addIndividualTransportSillyFileWinston();
+    addIndividualTransportBillyFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.silly(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.billy(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { lgc, lgu, lge, lgw, lgi, lgv, lgd, lgs, lgcf, lguf, lgef, lgwf, lgif, lgvf, lgdf, lgsf };
+export { lgc, lgu, lge, lgw, lgi, lgv, lgd, lgb, lgcf, lguf, lgef, lgwf, lgif, lgvf, lgdf, lgbf };

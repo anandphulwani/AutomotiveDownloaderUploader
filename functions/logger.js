@@ -111,7 +111,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         logMesg = chalk.white.bgGreenBright.bold(logMesg);
     } else if (level === 'debug') {
         logMesg = chalk.white.bgMagentaBright.bold(logMesg);
-    } else if (level === 'silly') {
+    } else if (level === 'billy') {
         logMesg = chalk.black.bgWhiteBright(logMesg);
     } else {
         logMesg = chalk.inverse(logMesg);
@@ -248,14 +248,14 @@ const debugFileWinston = createLogger({
     ],
 });
 
-const sillyFileWinston = createLogger({
-    level: 'silly',
+const billyFileWinston = createLogger({
+    level: 'billy',
     transports: [
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
             filename: `${instanceRunLogFilePrefix}.log`,
-            level: 'silly',
+            level: 'billy',
         }),
     ],
 });
@@ -349,13 +349,13 @@ const debugConsoleWinston = createLogger({
     ],
 });
 
-const sillyConsoleWinston = createLogger({
-    level: 'silly',
+const billyConsoleWinston = createLogger({
+    level: 'billy',
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
-            name: 'silly',
-            level: 'silly',
+            name: 'billy',
+            level: 'billy',
         }),
     ],
 });
@@ -467,18 +467,18 @@ function addIndividualTransportDebugFileWinston() {
     }
 }
 
-let isIndividualTransportSillyFileWinstonEnabled = false;
-function addIndividualTransportSillyFileWinston() {
-    if (!isIndividualTransportSillyFileWinstonEnabled) {
-        sillyFileWinston.add(
+let isIndividualTransportBillyFileWinstonEnabled = false;
+function addIndividualTransportBillyFileWinston() {
+    if (!isIndividualTransportBillyFileWinstonEnabled) {
+        billyFileWinston.add(
             new transports.File({
                 ...fileTransportOptions,
-                name: 'silly',
-                filename: `${instanceRunLogFilePrefix}_silly.log`,
-                level: 'silly',
+                name: 'billy',
+                filename: `${instanceRunLogFilePrefix}_billy.log`,
+                level: 'billy',
             })
         );
-        isIndividualTransportSillyFileWinstonEnabled = true;
+        isIndividualTransportBillyFileWinstonEnabled = true;
     }
 }
 /* #endregion addIndividualTransport Functions : End */
@@ -513,9 +513,9 @@ const loggerFile = {
         // console.log('Logger File Debug');
         debugFileWinston.debug(...args);
     },
-    silly: (...args) => {
-        // console.log('Logger File Silly');
-        sillyFileWinston.silly(...args);
+    billy: (...args) => {
+        // console.log('Logger File Billy');
+        billyFileWinston.billy(...args);
     },
 };
 
@@ -548,9 +548,9 @@ const loggerConsole = {
         // console.log('Logger Console Debug');
         debugConsoleWinston.debug(...args);
     },
-    silly: (...args) => {
-        // console.log('Logger Console Silly');
-        sillyConsoleWinston.silly(...args);
+    billy: (...args) => {
+        // console.log('Logger Console Billy');
+        billyConsoleWinston.billy(...args);
     },
 };
 /* #endregion Main logger functions: loggerFile, loggerConsole : End */
@@ -558,8 +558,8 @@ const loggerConsole = {
 // #region
 // Set logger level based on environment variable (default to info)
 // logger.level = process.env.LOG_LEVEL || 'info';
-loggerFile.level = process.env.LOG_LEVEL || 'silly';
-loggerConsole.level = process.env.LOG_LEVEL || 'silly';
+loggerFile.level = process.env.LOG_LEVEL || 'billy';
+loggerConsole.level = process.env.LOG_LEVEL || 'billy';
 
 // // Rotate logs and persist logs with warn, error, fatal on disk
 // setInterval(() => {
@@ -579,5 +579,5 @@ export {
     addIndividualTransportInfoFileWinston,
     addIndividualTransportVerboseFileWinston,
     addIndividualTransportDebugFileWinston,
-    addIndividualTransportSillyFileWinston,
+    addIndividualTransportBillyFileWinston,
 };
