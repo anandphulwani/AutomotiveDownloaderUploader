@@ -8,7 +8,7 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { lgc, lgs } from './loggersupportive.js';
+import { lgc, lgb } from './loggersupportive.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
@@ -291,7 +291,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
 
         const blockRegexExpression = new RegExp(elementsDetails[element].blockRegex, 'g');
         if (!blockRegexExpression.test(bookmarksFileText)) {
-            lgs(
+            lgb(
                 [
                     'Unable to match regex for fn replaceBookmarksElementByGUIDAndWriteToBookmarksFile()',
                     elementsDetails[element].blockRegex,
@@ -315,7 +315,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         bookmarksFileText = reformatJSONString(bookmarksFileText);
         const returnVal = writeFileWithComparingSameLinesWithOldContents(fileToOperateOn, bookmarksFileText, fileContents);
         if (!returnVal) {
-            lgs(
+            lgb(
                 [
                     `${fileContents}\n${'-'.repeat(70)}`,
                     `${bookmarksFileText}\n${'-'.repeat(70)}`,
@@ -330,7 +330,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         releaseLock(fileToOperateOn, undefined, true);
-        lgs(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block: ${err.message}`);
+        lgb(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block: ${err.message}`);
         process.exit(1);
     }
 }

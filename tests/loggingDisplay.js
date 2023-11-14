@@ -1,6 +1,6 @@
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { lgu, lgc, lge, lgw, lgi, lgv, lgd, lgs } from '../functions/loggersupportive.js';
+import { lgu, lgc, lge, lgw, lgi, lgv, lgd, lgb } from '../functions/loggersupportive.js';
 import { getColPosOnTerminal } from '../functions/terminal.js';
 /* eslint-enable import/extensions */
 
@@ -50,7 +50,7 @@ lgw('Logging warning message');
 lgi('Logging info message');
 lgv('Logging verbose message');
 lgd('Logging debug message');
-lgs('Logging silly message');
+lgb('Logging billy message');
 console.log('------------------------------------------------------------');
 lgu('Logging unreachable error message', errorToTest, false);
 lgc('Logging catched error message', errorToTest, false);
@@ -59,7 +59,7 @@ lgw('Logging warning message', false);
 lgi('Logging info message', false);
 lgv('Logging verbose message', false);
 lgd('Logging debug message', false);
-lgs('Logging silly message', false);
+lgb('Logging billy message', false);
 console.log('------------------------------------------------------------');
 lgu('Logging unreachable error message');
 lgc('Logging catched error message');
@@ -68,4 +68,4 @@ lgw('Logging warning message');
 lgi('Logging info message');
 lgv('Logging verbose message');
 lgd('Logging debug message');
-lgs('Logging silly message');
+lgb('Logging billy message');
