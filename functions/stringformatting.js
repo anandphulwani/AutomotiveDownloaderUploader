@@ -58,6 +58,12 @@ function removeDuplicates(arr) {
     return arr.filter((item, index) => arr.indexOf(item) === index);
 }
 
+function padStartAndEnd(str, targetLength, padString) {
+    str = str.padStart((str.length + targetLength) / 2, padString);
+    str = str.padEnd(targetLength, padString);
+    return str;
+}
+
 export {
     zeroPad,
     checkForSpaceInBeginOrEnd,
@@ -71,4 +77,5 @@ export {
     trimSingleSpaceInMiddleArrayOfObjects,
     trimSingleSpaceInMiddleArray,
     removeDuplicates,
+    padStartAndEnd,
 };
