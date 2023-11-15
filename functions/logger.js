@@ -6,6 +6,7 @@ import { currentDateTimeReadableFormatted } from './datetime.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { getColPosOnTerminal } from './terminal.js';
 import { padStartAndEnd } from './stringformatting.js';
+import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, printf, errors } = format;
@@ -45,8 +46,8 @@ const logFormatFile = (logFilename) =>
 const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
     message = message.trim();
     // console.log(`logFormatConsole Called, level:${level}`);
-    const { filename, lineNumber, uniqueId, lineSep } =
-        sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '', lineSep: true };
+    const { filename, lineNumber, uniqueId, textColor, lineSep } =
+        sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '', textColor: undefined, lineSep: true };
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
     if (level === 'catcherror' || level === 'unreachable') {

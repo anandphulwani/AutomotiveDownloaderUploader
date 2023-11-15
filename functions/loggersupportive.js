@@ -16,12 +16,14 @@ import {
     addIndividualTransportBillyFileWinston,
 } from './logger.js';
 import { generateAndGetNonCatchErrorLogLevels9DigitUniqueId, generateAndGetCatchErrorLogLevels6DigitUniqueId } from './loggeruniqueidgenerators.js';
+import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
 function convertArgsToProperOrder(...args) {
     let message = '';
     let lineSep = true;
     let error;
+    let textColor;
 
     args.forEach((arg) => {
         // console.log(typeof arg);
@@ -31,10 +33,12 @@ function convertArgsToProperOrder(...args) {
             lineSep = arg;
         } else if (arg instanceof Error) {
             error = arg;
+        } else if (arg instanceof Color) {
+            textColor = arg;
         }
     });
 
-    return [message, error, lineSep];
+    return [message, error, textColor, lineSep];
 }
 
 const lgc = (...args) => {
@@ -90,10 +94,11 @@ const lgw = (...args) => {
 const lgi = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
+    const textColor = args.pop();
     addIndividualTransportInfoFileWinston();
     const { filename, lineNumber } = getCallerDetails(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.info(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerConsole.info(...args, { filename, lineNumber, uniqueId, textColor, lineSep });
     loggerFile.info(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
