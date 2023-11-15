@@ -17,7 +17,7 @@ const logFormatFile = printf(({ level, message, timestamp: ts, stack, [Symbol.fo
     const { filename, lineNumber, uniqueId } = sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '' };
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
-    uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
+    uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
     logMesg.push(`[${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}]`.padEnd(13, ' '));
     if (sp === undefined) {
         logMesg.push(`${message}`);
