@@ -21,8 +21,8 @@ import Color from '../class/Colors.js';
 
 function convertArgsToProperOrder(...args) {
     let message = '';
-    let lineSep = true;
     let error;
+    let lineSep = true;
     let textColor;
 
     args.forEach((arg) => {
