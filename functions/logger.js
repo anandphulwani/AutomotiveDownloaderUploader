@@ -8,6 +8,7 @@ import { getColPosOnTerminal } from './terminal.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, printf, errors } = format;
+const levels = { unreachable: 0, catcherror: 1, severe: 2, error: 3, warn: 4, info: 5, verbose: 6, debug: 7, billy: 8 };
 
 // Define log functions
 /* #region logFormatFile and logFormatConsole : Begin */
@@ -148,7 +149,7 @@ const consoleTransportOptions = {
 const catcherrorFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'catcherror',
-    levels: { catcherror: 0, error: 1 },
+    levels: levels,
     transports: [
         // new transports.File({
         //     ...fileTransportOptions,
@@ -190,6 +191,7 @@ const unreachableFileWinston = createLogger({
 
 const errorFileWinston = createLogger({
     level: 'error',
+    levels: levels,
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -202,6 +204,7 @@ const errorFileWinston = createLogger({
 
 const warnFileWinston = createLogger({
     level: 'warn',
+    levels: levels,
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -214,6 +217,7 @@ const warnFileWinston = createLogger({
 
 const infoFileWinston = createLogger({
     level: 'info',
+    levels: levels,
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -226,6 +230,7 @@ const infoFileWinston = createLogger({
 
 const verboseFileWinston = createLogger({
     level: 'verbose',
+    levels: levels,
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -238,6 +243,7 @@ const verboseFileWinston = createLogger({
 
 const debugFileWinston = createLogger({
     level: 'debug',
+    levels: levels,
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -250,7 +256,7 @@ const debugFileWinston = createLogger({
 
 const billyFileWinston = createLogger({
     level: 'billy',
-    levels: { billy: 0 },
+    levels: levels,
     transports: [
         new transports.File({
             ...fileTransportOptions,
@@ -266,7 +272,7 @@ const billyFileWinston = createLogger({
 const catcherrorConsoleWinston = createLogger({
     format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'catcherror',
-    levels: { catcherror: 0, error: 1 },
+    levels: levels,
     transports: [
         // new transports.Console({
         //     ...consoleTransportOptions,
@@ -285,7 +291,7 @@ const catcherrorConsoleWinston = createLogger({
 const unreachableConsoleWinston = createLogger({
     format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'unreachable',
-    levels: { unreachable: 0 },
+    levels: levels,
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -297,6 +303,7 @@ const unreachableConsoleWinston = createLogger({
 
 const errorConsoleWinston = createLogger({
     level: 'error',
+    levels: levels,
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -308,6 +315,7 @@ const errorConsoleWinston = createLogger({
 
 const warnConsoleWinston = createLogger({
     level: 'warn',
+    levels: levels,
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -330,6 +338,7 @@ const infoConsoleWinston = createLogger({
 
 const verboseConsoleWinston = createLogger({
     level: 'verbose',
+    levels: levels,
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -352,7 +361,7 @@ const debugConsoleWinston = createLogger({
 
 const billyConsoleWinston = createLogger({
     level: 'billy',
-    levels: { billy: 0 },
+    levels: levels,
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
