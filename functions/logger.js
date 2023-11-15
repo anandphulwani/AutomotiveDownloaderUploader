@@ -122,13 +122,13 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
 /* #endregion logFormatFile and logFormatConsole : End */
 
 /* #region fileTransportOptions and consoleTransportOptions : Begin */
-const fileTransportOptions = {
-    format: combine(timestamp({ format: currentDateTimeReadableFormatted() }), errors({ stack: true }), logFormatFile),
+const fileTransportOptions = (logFilename) => ({
+    format: combine(timestamp({ format: currentDateTimeReadableFormatted() }), errors({ stack: true }), logFormatFile(logFilename)),
     eol: '',
     maxsize: 10485760, // 10MB
     maxFiles: 5,
     tailable: true,
-};
+});
 
 // Define transport options for logging to console
 const consoleTransportOptions = {
