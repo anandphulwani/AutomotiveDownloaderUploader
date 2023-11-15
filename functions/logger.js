@@ -22,9 +22,9 @@ const logFormatFile = (logFilename) =>
             sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '', lineSep: true };
         let logMesg = [];
         if (lastWriteLineSep) {
-        ts !== undefined ? logMesg.push(ts) : null;
-        uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
-        logMesg.push(`[${padStartAndEnd(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}`, 13, ' ')}]`);
+            ts !== undefined ? logMesg.push(ts) : null;
+            uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
+            logMesg.push(`[${padStartAndEnd(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}`, 13, ' ')}]`);
         }
         if (sp === undefined || lineSep === false) {
             logMesg.push(`${message}`);
