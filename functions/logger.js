@@ -212,6 +212,23 @@ const unreachableFileWinston = createLogger({
     ],
 });
 
+const severeFileWinston = createLogger({
+    format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'severe',
+    levels: levels,
+    // levels: { severe: 0, error: 1 },
+    transports: [
+        // To catch the non catched errors
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(mainLogFile),
+            name: 'all',
+            filename: mainLogFile,
+            level: 'severe',
+        }),
+    ],
+});
+
 const errorFileWinston = createLogger({
     level: 'error',
     levels: levels,
@@ -324,6 +341,19 @@ const unreachableConsoleWinston = createLogger({
     ],
 });
 
+const severeConsoleWinston = createLogger({
+    format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'severe',
+    levels: levels,
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'severe',
+            level: 'severe',
+        }),
+    ],
+});
+
 const errorConsoleWinston = createLogger({
     level: 'error',
     levels: levels,
@@ -423,6 +453,21 @@ function addIndividualTransportUnreachableFileWinston() {
             })
         );
         isIndividualTransportUnreachableFileWinstonEnabled = true;
+    }
+}
+
+let isIndividualTransportSevereFileWinstonEnabled = false;
+function addIndividualTransportSevereFileWinston() {
+    if (!isIndividualTransportSevereFileWinstonEnabled) {
+        severeFileWinston.add(
+            new transports.File({
+                ...fileTransportOptions(severeLogFile),
+                name: 'severe',
+                filename: severeLogFile,
+                level: 'severe',
+            })
+        );
+        isIndividualTransportSevereFileWinstonEnabled = true;
     }
 }
 
@@ -527,6 +572,10 @@ const loggerFile = {
         // console.log('Logger File Unreachable');
         unreachableFileWinston.unreachable(...args);
     },
+    severe: (...args) => {
+        // console.log('Logger File Severe');
+        severeFileWinston.severe(...args);
+    },
     error: (...args) => {
         // console.log('Logger File Erro');
         errorFileWinston.error(...args);
@@ -561,6 +610,10 @@ const loggerConsole = {
     unreachable: (...args) => {
         // console.log('Logger Console Unreachable');
         unreachableConsoleWinston.unreachable(...args);
+    },
+    severe: (...args) => {
+        // console.log('Logger Console Severe');
+        severeConsoleWinston.severe(...args);
     },
     error: (...args) => {
         // console.log('Logger Console Error');
@@ -608,6 +661,7 @@ export {
     loggerConsole,
     addIndividualTransportCatcherrorFileWinston,
     addIndividualTransportUnreachableFileWinston,
+    addIndividualTransportSevereFileWinston,
     addIndividualTransportErrorFileWinston,
     addIndividualTransportWarnFileWinston,
     addIndividualTransportInfoFileWinston,

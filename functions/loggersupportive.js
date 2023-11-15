@@ -7,6 +7,7 @@ import {
     loggerConsole,
     addIndividualTransportCatcherrorFileWinston,
     addIndividualTransportUnreachableFileWinston,
+    addIndividualTransportSevereFileWinston,
     addIndividualTransportErrorFileWinston,
     addIndividualTransportWarnFileWinston,
     addIndividualTransportInfoFileWinston,
@@ -54,6 +55,16 @@ const lgu = (...args) => {
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
     loggerConsole.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
     loggerFile.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
+};
+
+const lgs = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
+    addIndividualTransportSevereFileWinston();
+    const { filename, lineNumber } = getCallerDetails(...args);
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerConsole.severe(...args, { filename, lineNumber, uniqueId, lineSep });
+    loggerFile.severe(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
 const lge = (...args) => {
@@ -138,6 +149,15 @@ const lguf = (...args) => {
     loggerFile.unreachable(...args, { filename, lineNumber, uniqueId, lineSep });
 };
 
+const lgsf = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const lineSep = args.pop();
+    addIndividualTransportSevereFileWinston();
+    const { filename, lineNumber } = getCallerDetails(...args);
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerFile.severe(...args, { filename, lineNumber, uniqueId, lineSep });
+};
+
 const lgef = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
@@ -193,4 +213,4 @@ const lgbf = (...args) => {
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { lgc, lgu, lge, lgw, lgi, lgv, lgd, lgb, lgcf, lguf, lgef, lgwf, lgif, lgvf, lgdf, lgbf };
+export { lgc, lgu, lgs, lge, lgw, lgi, lgv, lgd, lgb, lgcf, lguf, lgsf, lgef, lgwf, lgif, lgvf, lgdf, lgbf };
