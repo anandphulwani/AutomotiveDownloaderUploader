@@ -5,6 +5,7 @@ import { createLogger, format, transports } from 'winston';
 import { currentDateTimeReadableFormatted } from './datetime.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { getColPosOnTerminal } from './terminal.js';
+import { padStartAndEnd } from './stringformatting.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, printf, errors } = format;
@@ -18,7 +19,7 @@ const logFormatFile = printf(({ level, message, timestamp: ts, stack, [Symbol.fo
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
     uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
-    logMesg.push(`[${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}]`.padEnd(13, ' '));
+    logMesg.push(`[${padStartAndEnd(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}`, 13, ' ')}]`);
     if (sp === undefined) {
         logMesg.push(`${message}`);
     } else {
