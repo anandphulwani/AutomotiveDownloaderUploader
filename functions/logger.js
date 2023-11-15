@@ -146,6 +146,18 @@ const consoleTransportOptions = {
 /* #endregion fileTransportOptions and consoleTransportOptions : End */
 
 /* #region File loggers: catcherror, error, warn, info : Begin */
+const mainLogFile = `${instanceRunLogFilePrefix}.log`;
+const applicationErrorsLogFile = `${instanceRunLogFilePrefix}_applicationerrors.log`;
+const catchErrorLogFile = `${instanceRunLogFilePrefix}_catcherror.log`;
+const unreachableLogFile = `${instanceRunLogFilePrefix}_unreachable.log`;
+const severeLogFile = `${instanceRunLogFilePrefix}_severe.log`;
+const errorLogFile = `${instanceRunLogFilePrefix}_error.log`;
+const warnLogFile = `${instanceRunLogFilePrefix}_warn.log`;
+const infoLogFile = `${instanceRunLogFilePrefix}_info.log`;
+const verboseFile = `${instanceRunLogFilePrefix}_verbose.log`;
+const debugLogFile = `${instanceRunLogFilePrefix}_debug.log`;
+const sillyLogFile = `${instanceRunLogFilePrefix}_billy.log`;
+
 const catcherrorFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'catcherror',
@@ -162,14 +174,14 @@ const catcherrorFileWinston = createLogger({
             handleExceptions: true,
             ...fileTransportOptions,
             name: 'all',
-            filename: `${instanceRunLogFilePrefix}.log`,
+            filename: mainLogFile,
             level: 'error',
         }),
         new transports.File({
             handleExceptions: true,
             ...fileTransportOptions,
             name: 'all',
-            filename: `${instanceRunLogFilePrefix}_noncatcherror.log`,
+            filename: applicationErrorsLogFile,
             level: 'error',
         }),
     ],
@@ -183,7 +195,7 @@ const unreachableFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `${instanceRunLogFilePrefix}.log`,
+            filename: mainLogFile,
             level: 'unreachable',
         }),
     ],
@@ -196,7 +208,7 @@ const errorFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `${instanceRunLogFilePrefix}.log`,
+            filename: mainLogFile,
             level: 'error',
         }),
     ],
@@ -209,7 +221,7 @@ const warnFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `${instanceRunLogFilePrefix}.log`,
+            filename: mainLogFile,
             level: 'warn',
         }),
     ],
@@ -222,7 +234,7 @@ const infoFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `${instanceRunLogFilePrefix}.log`,
+            filename: mainLogFile,
             level: 'info',
         }),
     ],
@@ -235,7 +247,7 @@ const verboseFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `${instanceRunLogFilePrefix}.log`,
+            filename: mainLogFile,
             level: 'verbose',
         }),
     ],
@@ -248,7 +260,7 @@ const debugFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `${instanceRunLogFilePrefix}.log`,
+            filename: mainLogFile,
             level: 'debug',
         }),
     ],
@@ -261,7 +273,7 @@ const billyFileWinston = createLogger({
         new transports.File({
             ...fileTransportOptions,
             name: 'all',
-            filename: `${instanceRunLogFilePrefix}.log`,
+            filename: mainLogFile,
             level: 'billy',
         }),
     ],
@@ -380,7 +392,7 @@ function addIndividualTransportCatcherrorFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'catcherror',
-                filename: `${instanceRunLogFilePrefix}_catcherror.log`,
+                filename: catchErrorLogFile,
                 level: 'catcherror',
             })
         );
@@ -395,7 +407,7 @@ function addIndividualTransportUnreachableFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'unreachable',
-                filename: `${instanceRunLogFilePrefix}_unreachable.log`,
+                filename: unreachableLogFile,
                 level: 'unreachable',
             })
         );
@@ -410,7 +422,7 @@ function addIndividualTransportErrorFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'error',
-                filename: `${instanceRunLogFilePrefix}_error.log`,
+                filename: errorLogFile,
                 level: 'error',
             })
         );
@@ -425,7 +437,7 @@ function addIndividualTransportWarnFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'warn',
-                filename: `${instanceRunLogFilePrefix}_warn.log`,
+                filename: warnLogFile,
                 level: 'warn',
             })
         );
@@ -440,7 +452,7 @@ function addIndividualTransportInfoFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'info',
-                filename: `${instanceRunLogFilePrefix}_info.log`,
+                filename: infoLogFile,
                 level: 'info',
             })
         );
@@ -455,7 +467,7 @@ function addIndividualTransportVerboseFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'verbose',
-                filename: `${instanceRunLogFilePrefix}_verbose.log`,
+                filename: verboseFile,
                 level: 'verbose',
             })
         );
@@ -470,7 +482,7 @@ function addIndividualTransportDebugFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'debug',
-                filename: `${instanceRunLogFilePrefix}_debug.log`,
+                filename: debugLogFile,
                 level: 'debug',
             })
         );
@@ -485,7 +497,7 @@ function addIndividualTransportBillyFileWinston() {
             new transports.File({
                 ...fileTransportOptions,
                 name: 'billy',
-                filename: `${instanceRunLogFilePrefix}_billy.log`,
+                filename: sillyLogFile,
                 level: 'billy',
             })
         );
