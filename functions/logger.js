@@ -121,7 +121,31 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     } else if (level === 'warn') {
         logMesg = chalk.white.bgYellow.bold(logMesg);
     } else if (level === 'info') {
-        logMesg = chalk.cyan(logMesg);
+        if (textColor === undefined || textColor === 'cyan') {
+            logMesg = chalk.cyan(logMesg);
+        } else if (textColor === 'bgCyan') {
+            logMesg = chalk.bgCyan.bold(logMesg);
+        } else if (textColor === 'green') {
+            logMesg = chalk.green.bold(logMesg);
+        } else if (textColor === 'bgGreen') {
+            logMesg = chalk.white.bgGreen.bold(logMesg);
+        } else if (textColor === 'yellow') {
+            logMesg = chalk.yellow.bold(logMesg);
+        } else if (textColor === 'bgYellow') {
+            logMesg = chalk.white.bgYellow.bold(logMesg);
+        } else if (textColor === 'red') {
+            logMesg = chalk.red.bold(logMesg);
+        } else if (textColor === 'bgRed') {
+            logMesg = chalk.white.bgRed.bold(logMesg);
+        } else if (textColor === 'magenta') {
+            logMesg = chalk.magenta.bold(logMesg);
+        } else if (textColor === 'bgMagenta') {
+            logMesg = chalk.white.bgMagenta.bold(logMesg);
+        } else if (textColor === 'white') {
+            logMesg = chalk.whiteBright(logMesg);
+        } else if (textColor === 'bgWhite') {
+            logMesg = chalk.black.bgWhiteBright(logMesg);
+        }
     } else if (level === 'verbose') {
         logMesg = chalk.white.bgGreenBright.bold(logMesg);
     } else if (level === 'debug') {
