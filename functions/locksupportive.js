@@ -8,13 +8,14 @@ import { msleep } from './sleep.js';
 import { instanceRunDateFormatted, instanceRunTime, currentTime } from './datetime.js';
 import { lgccyclicdependency, lgwcyclicdependency } from './loggercyclicdependency.js';
 import { getCallerDetails } from './callerdetails.js';
+import { getProjectLogsDirPath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
 // Attemp to attainLock, retrying multiple times in a duration of 5 to 10 mins, before timing out
 function attainLock(fileToOperateOn, stale = 300000, debug = false) {
     const errorToGetCaller = new Error();
     const { functionName: callerFunctionName } = getCallerDetails([errorToGetCaller]);
-    const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTime}/${path.basename(fileToOperateOn)}`;
+    const logPath = path.join(getProjectLogsDirPath(), 'lockslog', instanceRunDateFormatted, instanceRunTime, path.basename(fileToOperateOn));
     try {
         fs.mkdirSync(logPath, { recursive: true });
         for (let lockTryIndex = 0; lockTryIndex <= 12000; lockTryIndex++) {
@@ -78,7 +79,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
 
 function releaseLock(fileToOperateOn, stale = 300000, debug = false) {
     const errorToGetCaller = new Error();
-    const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTime}/${path.basename(fileToOperateOn)}`;
+    const logPath = path.join(getProjectLogsDirPath(), 'lockslog', instanceRunDateFormatted, instanceRunTime, path.basename(fileToOperateOn));
     let callerFunctionName = '';
     try {
         ({ functionName: callerFunctionName } = getCallerDetails([errorToGetCaller]));
