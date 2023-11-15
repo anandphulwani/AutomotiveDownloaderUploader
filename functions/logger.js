@@ -13,7 +13,8 @@ const levels = { unreachable: 0, catcherror: 1, severe: 2, error: 3, warn: 4, in
 
 // Define log functions
 /* #region logFormatFile and logFormatConsole : Begin */
-const logFormatFile = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
+const logFormatFile = (logFilename) =>
+    printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
     // console.log(`logFormatFile Called, level:${level}`);
     const { filename, lineNumber, uniqueId, lineSep } =
         sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '', lineSep: true };
