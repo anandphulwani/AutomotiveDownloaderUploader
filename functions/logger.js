@@ -13,15 +13,19 @@ const levels = { unreachable: 0, catcherror: 1, severe: 2, error: 3, warn: 4, in
 
 // Define log functions
 /* #region logFormatFile and logFormatConsole : Begin */
+const lastWriteLineSepObj = {};
 const logFormatFile = (logFilename) =>
     printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
         // console.log(`logFormatFile Called, level:${level}`);
+        const lastWriteLineSep = Object.prototype.hasOwnProperty.call(lastWriteLineSepObj, logFilename) ? lastWriteLineSepObj[logFilename] : true;
         const { filename, lineNumber, uniqueId, lineSep } =
             sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '', lineSep: true };
         let logMesg = [];
+        if (lastWriteLineSep) {
         ts !== undefined ? logMesg.push(ts) : null;
         uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
         logMesg.push(`[${padStartAndEnd(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}`, 13, ' ')}]`);
+        }
         if (sp === undefined || lineSep === false) {
             logMesg.push(`${message}`);
         } else {
@@ -34,6 +38,7 @@ const logFormatFile = (logFilename) =>
         if (lineSep) {
             logMesg = `${logMesg}\n`;
         }
+        lastWriteLineSepObj[logFilename] = lineSep;
         return logMesg;
     });
 
