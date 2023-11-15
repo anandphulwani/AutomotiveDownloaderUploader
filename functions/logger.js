@@ -113,6 +113,8 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         }
     } else if (level === 'unreachable') {
         logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg);
+    } else if (level === 'severe') {
+        logMesg = chalk.white.bgRgb(163, 0, 10).bold(logMesg);
     } else if (level === 'error') {
         logMesg = chalk.white.bgRed.bold(logMesg);
     } else if (level === 'warn') {
