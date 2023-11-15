@@ -209,6 +209,13 @@ const unreachableFileWinston = createLogger({
             filename: mainLogFile,
             level: 'unreachable',
         }),
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(applicationErrorsLogFile),
+            name: 'all',
+            filename: applicationErrorsLogFile,
+            level: 'unreachable',
+        }),
     ],
 });
 
@@ -224,6 +231,13 @@ const severeFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
+            level: 'severe',
+        }),
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(applicationErrorsLogFile),
+            name: 'all',
+            filename: applicationErrorsLogFile,
             level: 'severe',
         }),
     ],
