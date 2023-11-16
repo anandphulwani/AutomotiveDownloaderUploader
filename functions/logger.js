@@ -123,13 +123,13 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     }
     if (level === 'catcherror') {
         logMesg = chalk.bgRgb(248, 100, 90).whiteBright(logMesg);
-        logMesg += `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}`;
+        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     } else if (level === 'unreachable') {
         logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg);
-        logMesg += `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}`;
+        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     } else if (level === 'severe') {
         logMesg = chalk.white.bgRgb(163, 0, 10).bold(logMesg);
-        logMesg += `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}`;
+        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     } else if (level === 'error') {
         logMesg = chalk.white.bgRed.bold(logMesg);
     } else if (level === 'warn') {
