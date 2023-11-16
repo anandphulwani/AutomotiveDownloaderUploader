@@ -19,8 +19,7 @@ const logFormatFile = (logFilename) =>
     printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
         // console.log(`logFormatFile Called, level:${level}`);
         const lastWriteLineSep = Object.prototype.hasOwnProperty.call(lastWriteLineSepObj, logFilename) ? lastWriteLineSepObj[logFilename] : true;
-        const { filename, lineNumber, uniqueId, lineSep } =
-            sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '', lineSep: true };
+        const { callerHierarchy, uniqueId, lineSep } = sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', lineSep: true };
         let logMesg = [];
         if (lastWriteLineSep) {
             ts !== undefined ? logMesg.push(ts) : null;
@@ -39,10 +38,9 @@ const logFormatFile = (logFilename) =>
             }
             stack = stack.join('\n');
         }
-        if (sp === undefined || lineSep === false) {
-            logMesg.push(`${message}`);
-        } else {
-            logMesg.push(`${message} (${filename}:${lineNumber})`);
+        logMesg.push(message);
+        if (callerHierarchy !== '' && sp !== undefined && lineSep === true) {
+            logMesg.push(`(${callerHierarchy})`);
         }
         logMesg = logMesg.join(' ');
         if (stack !== undefined && !logMesg.includes(stack)) {
@@ -58,8 +56,8 @@ const logFormatFile = (logFilename) =>
 const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
     message = message.trim();
     // console.log(`logFormatConsole Called, level:${level}`);
-    const { filename, lineNumber, uniqueId, textColor, lineSep } =
-        sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '', textColor: undefined, lineSep: true };
+    const { callerHierarchy, uniqueId, textColor, lineSep } =
+        sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', textColor: undefined, lineSep: true };
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
     if (level === 'catcherror' || level === 'unreachable' || level === 'severe') {
@@ -89,7 +87,9 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         logMesg.push(`${levelToPrint}:`.toUpperCase());
     }
     logMesg.push(message);
-    // logMesg.push(`${message} (${filename}:${lineNumber})`);
+    if ((level === 'catcherror' || level === 'unreachable' || level === 'severe') && callerHierarchy !== '' && sp !== undefined && lineSep === true) {
+        logMesg.push(`(${callerHierarchy})`);
+    }
     logMesg = logMesg.join(' ');
     logMesg = logMesg.split('\n');
     logMesg = logMesg.map((line, index, arr) => {
