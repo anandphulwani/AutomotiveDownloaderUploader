@@ -50,7 +50,7 @@ if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
             getProjectLogsDirPath(),
             'lockslog',
             instanceRunDateFormatted,
-            instanceRunTime,
+            instanceRunTimeWOMS,
             `logs{Slash}${instanceRunDateFormatted}{Slash}${path.basename(instanceRunLogFilePrefix)}`
         );
         if (!fs.existsSync(logPath)) {
