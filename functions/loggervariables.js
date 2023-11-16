@@ -3,7 +3,13 @@ import path from 'path';
 import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { currentTime, instanceRunDateFormatted, instanceRunDateTimeSeparated, instanceRunTime } from './datetime.js';
+import {
+    currentTime,
+    instanceRunDateFormatted,
+    instanceRunDateTimeSeparated,
+    instanceRunDateTimeWOMSSeparated,
+    instanceRunTimeWOMS,
+} from './datetime.js';
 import { getProjectLogsDirPath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
@@ -45,7 +51,7 @@ if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
             'lockslog',
             instanceRunDateFormatted,
             instanceRunTime,
-            path.basename(instanceRunLogFilePrefix)
+            `logs{Slash}${instanceRunDateFormatted}{Slash}${path.basename(instanceRunLogFilePrefix)}`
         );
         if (!fs.existsSync(logPath)) {
             fs.mkdirSync(logPath, { recursive: true });
