@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { lgccyclicdependency } from './loggercyclicdependency.js';
 /* eslint-enable import/extensions */
 
-const getCallerDetails = (...args) => {
+const getCallerDetailsList = (...args) => {
     let stackTrace;
     let functionName;
     let pathToFile;
@@ -84,6 +84,11 @@ const getCallerDetails = (...args) => {
         lineNumber: lineNumber,
         columnNumber: columnNumber,
     };
+};
+
+const getCallerDetails = (...args) => {
+    const callerDetails = getCallerDetailsList(...args);
+    return callerDetails.shift();
 };
 
 // eslint-disable-next-line import/prefer-default-export
