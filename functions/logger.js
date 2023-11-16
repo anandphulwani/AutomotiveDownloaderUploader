@@ -27,6 +27,18 @@ const logFormatFile = (logFilename) =>
             uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
             logMesg.push(`[${padStartAndEnd(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}`, 13, ' ')}]`);
         }
+        if (stack !== undefined && !logMesg.includes(stack)) {
+            // If custom message is sent then, the custom message is merged with the first line of error message.
+            stack = stack.split('\n');
+            const regex = new RegExp(`^(\\S+?): ${message}$`);
+            if (regex.test(stack[0])) {
+                stack.shift();
+            } else {
+                const errorString = stack[0].replace(/^[a-zA-Z]*Error:/, '').trim();
+                message = message.replace(errorString, '');
+            }
+            stack = stack.join('\n');
+        }
         if (sp === undefined || lineSep === false) {
             logMesg.push(`${message}`);
         } else {
