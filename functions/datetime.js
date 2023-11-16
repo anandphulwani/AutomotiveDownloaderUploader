@@ -3,6 +3,7 @@ import date from 'date-and-time';
 const instanceRunDateFormatted = date.format(new Date(), 'YYYY-MM-DD');
 const instanceRunDateWODayFormatted = date.format(new Date(), 'YYYY-MM');
 const instanceRunTime = date.format(new Date(), 'HHmmssSSS');
+const instanceRunTimeWOMS = date.format(new Date(), 'HHmmss');
 const instanceRunTimeWOMSFormatted = date.format(new Date(), 'HH:mm:ss');
 const instanceRunTimeWOSSMSFormatted = date.format(new Date(), 'HH:mm');
 const instanceRunDateTimeSeparated = date.format(new Date(), 'YYYYMMDD-HHmmssSSS');
@@ -13,6 +14,7 @@ const instanceRunDateTimeWOMSReadableFormatted = date.format(new Date(), 'YYYY-M
 const currentDateFormatted = () => date.format(new Date(), 'YYYY-MM-DD');
 const currentDateWODayFormatted = () => date.format(new Date(), 'YYYY-MM');
 const currentTime = () => date.format(new Date(), 'HHmmssSSS');
+const currentTimeWOMS = () => date.format(new Date(), 'HHmmss');
 const currentTimeWOMSFormatted = () => date.format(new Date(), 'HH:mm:ss');
 const currentTimeWOSSMSFormatted = () => date.format(new Date(), 'HH:mm');
 const currentDateTimeSeparated = () => date.format(new Date(), 'YYYYMMDD-HHmmssSSS');
@@ -68,6 +70,7 @@ export {
     instanceRunDateFormatted,
     instanceRunDateWODayFormatted,
     instanceRunTime,
+    instanceRunTimeWOMS,
     instanceRunTimeWOMSFormatted,
     instanceRunTimeWOSSMSFormatted,
     instanceRunDateTimeSeparated,
@@ -77,6 +80,7 @@ export {
     currentDateFormatted,
     currentDateWODayFormatted,
     currentTime,
+    currentTimeWOMS,
     currentTimeWOMSFormatted,
     currentTimeWOSSMSFormatted,
     currentDateTimeSeparated,
