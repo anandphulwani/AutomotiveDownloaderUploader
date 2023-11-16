@@ -50,7 +50,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         sp !== undefined ? sp.slice(-1)[0] : { filename: '', lineNumber: '', uniqueId: '', textColor: undefined, lineSep: true };
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
-    if (level === 'catcherror' || level === 'unreachable') {
+    if (level === 'catcherror' || level === 'unreachable' || level === 'severe') {
         uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
     }
     // If custom message is sent then, the custom message is merged with the first line of error message.
