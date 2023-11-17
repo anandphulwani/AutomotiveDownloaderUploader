@@ -140,6 +140,8 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
             logMesg = chalk.cyan(logMesg);
         } else if (textColor === 'bgCyan') {
             logMesg = chalk.bgCyan.bold(logMesg);
+        } else if (textColor === 'cyanBold') {
+            logMesg = chalk.cyan.bold(logMesg);
         } else if (textColor === 'green') {
             logMesg = chalk.green.bold(logMesg);
         } else if (textColor === 'bgGreen') {
