@@ -4,6 +4,10 @@ class Color {
         Object.freeze(this);
     }
 
+    static get cyanBold() {
+        return new Color('cyanBold');
+    }
+
     static get cyan() {
         return new Color('cyan');
     }
