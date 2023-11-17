@@ -60,17 +60,3 @@ class Color {
 Object.freeze(Color);
 
 export default Color;
-
-// chalk.cyan
-// chalk.cyan.bold
-// chalk.green.bold
-// chalk.yellow.bold
-// chalk.red.bold
-// chalk.white
-
-// chalk.black.bgWhiteBright
-
-// chalk.whiteBright.bgCyan
-// chalk.bgCyan.bold
-// chalk.white.bgYellow.bold
-// chalk.white.bgRed.bold

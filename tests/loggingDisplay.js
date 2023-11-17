@@ -121,6 +121,4 @@ lgi('Info Folder 10 .........', false);
 lgi('');
 lgi('Info Folder 50 .........');
 
-console.log(chalk.bgCyan.bold('Hello'));
-console.log(chalk.whiteBright.bgCyan('Hello'));
 console.log('------------------------------------------------------------');
