@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import path from 'path';
 import logSymbols from 'log-symbols';
 // eslint-disable-next-line import/extensions
-import { moveFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
+import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
     return new Promise((resolve, reject) => {
@@ -63,7 +63,7 @@ async function downloadFileAndCompareWithChecksum(
                     if (isSingleImage) {
                         const newFilePath = `${path.dirname(filePath)}/${path.basename(destinationPath)}${path.extname(path.basename(filePath))}`;
                         destinationPath = `${path.dirname(destinationPath)}/`;
-                        await moveFile(filePath, newFilePath, debug);
+                        moveDirOrFile(filePath, newFilePath, true, debug);
                         filePath = newFilePath;
                     }
                     createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, true, debug);
