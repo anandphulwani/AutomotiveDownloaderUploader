@@ -41,6 +41,10 @@ function convertArgsToProperOrder(...args) {
     return [message, error, textColor, lineSep];
 }
 
+/**
+ * lgc: is for those errors which are catched by try, catch which are not anticipated, but are catched by try
+ * catch blocks and should be handled.
+ */
 const lgc = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
@@ -51,6 +55,10 @@ const lgc = (...args) => {
     loggerFile.catcherror(...args, { callerHierarchy, uniqueId, lineSep });
 };
 
+/**
+ * lgu: is for those part of lines which should never be called, basically those sections of code
+ * which are unreachable, if they are reached, there is some problem in the code.
+ */
 const lgu = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
@@ -61,6 +69,9 @@ const lgu = (...args) => {
     loggerFile.unreachable(...args, { callerHierarchy, uniqueId, lineSep });
 };
 
+/**
+ * lgs: is for errors which are generated at the application level mainly focused for developer purposes and debugging.
+ */
 const lgs = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
@@ -71,6 +82,9 @@ const lgs = (...args) => {
     loggerFile.severe(...args, { callerHierarchy, uniqueId, lineSep });
 };
 
+/**
+ * lge: is for errors which are generated at the user level using the system.
+ */
 const lge = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();
