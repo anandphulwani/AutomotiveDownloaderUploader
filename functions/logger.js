@@ -17,6 +17,7 @@ const levels = { unreachable: 0, catcherror: 1, severe: 2, error: 3, warn: 4, in
 const lastWriteLineSepObj = {};
 const logFormatFile = (logFilename) =>
     printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
+        message = message.trim();
         // console.log(`logFormatFile Called, level:${level}`);
         const lastWriteLineSep = Object.prototype.hasOwnProperty.call(lastWriteLineSepObj, logFilename) ? lastWriteLineSepObj[logFilename] : true;
         const { callerHierarchy, uniqueId, lineSep } = sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', lineSep: true };
@@ -34,7 +35,7 @@ const logFormatFile = (logFilename) =>
                 stack.shift();
             } else {
                 const errorString = stack[0].replace(/^[a-zA-Z]*Error:/, '').trim();
-                message = message.replace(errorString, '');
+                message = message.replace(errorString, '').trim();
             }
             stack = stack.join('\n');
         }
@@ -71,7 +72,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
             stack.shift();
         } else {
             const errorString = stack[0].replace(/^[a-zA-Z]*Error:/, '').trim();
-            message = message.replace(errorString, '');
+            message = message.replace(errorString, '').trim();
         }
         stack = stack.join('\n');
     }
