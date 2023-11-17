@@ -6,7 +6,7 @@ import path from 'path';
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
 import { lge, lgi, lgif, lgw } from './loggersupportive.js';
-import { createDirAndCopyFile, createDirAndMoveFile, getFolderSizeInBytes, removeDir } from './filesystem.js';
+import { createDirAndCopyFile, createDirAndMoveFile, getFolderSizeInBytes, removeDirIfExists } from './filesystem.js';
 import { addUploadingToReport } from './reportsupportive.js';
 import { printSectionSeperator } from './others.js';
 /* eslint-enable import/extensions */
@@ -99,8 +99,8 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
             }
         } else {
             if (isOverwrite) {
-                fs.existsSync(destinationPath) ? removeDir(destinationPath, true) : null;
-                fs.existsSync(contractorAccountingPath) ? removeDir(contractorAccountingPath, true) : null;
+                removeDirIfExists(destinationPath, true);
+                removeDirIfExists(contractorAccountingPath, true);
                 const otherContractors = Object.keys(config.contractors).filter((key) => key !== contractor);
                 // eslint-disable-next-line no-restricted-syntax
                 for (const innerLoopContractor of otherContractors) {
@@ -111,7 +111,7 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
                         instanceRunDateFormatted,
                         path.basename(dealerImagesFolder)
                     );
-                    fs.existsSync(otherAccountingZonePath) ? removeDir(otherAccountingZonePath, true) : null;
+                    removeDirIfExists(otherAccountingZonePath, true);
                 }
             }
             if (sourceDestinationAccountingType === 'uploadingZone') {
