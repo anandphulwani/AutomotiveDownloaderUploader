@@ -66,7 +66,7 @@ async function downloadFileAndCompareWithChecksum(
                         await moveFile(filePath, newFilePath, debug);
                         filePath = newFilePath;
                     }
-                    createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, debug);
+                    createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, true, debug);
                     debug
                         ? console.log(chalk.green.bold(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`))
                         : process.stdout.write(
