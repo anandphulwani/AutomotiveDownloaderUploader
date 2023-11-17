@@ -21,24 +21,6 @@ function makeDir(dirPath, debug = false) {
     }
 }
 
-async function moveFile(fromPath, toPath, debug = false) {
-    return new Promise((resolve, reject) => {
-        mv(fromPath, toPath, (error) => {
-            if (error) {
-                lgc(`${'Unable to move file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`, error);
-                process.exit(1);
-            } else {
-                debug
-                    ? console.log(
-                          `${'File moved successfully from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
-                      )
-                    : '';
-                resolve();
-            }
-        });
-    });
-}
-
 function moveDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     // If resource is busy or locked, or operation is not permitted, try for 120 seconds before throwing an error.
     for (let i = 0; i < 30; i++) {
@@ -301,7 +283,7 @@ function getFolderSizeInBytes(folderPath) {
 
 export {
     makeDir,
-    moveFile,
+    moveDirOrFile,
     copyDirOrFile,
     createDirAndCopyFile,
     createDirAndMoveFile,
