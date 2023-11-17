@@ -172,6 +172,14 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
     debug ? console.log('Removing Directory : Done') : '';
 }
 
+function removeDirIfExists(dirPath, recursiveDelete = false, debug = false) {
+    debug ? console.log('Removing Directory If Exists : Executing') : '';
+    if (fs.existsSync(dirPath)) {
+        removeDir(dirPath, recursiveDelete, debug);
+    }
+    debug ? console.log('Removing Directory If Exists: Done') : '';
+}
+
 function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, debug = false) {
     const recursiveParentLevel = recursiveDeleteParentLevel !== false ? recursiveDeleteParentLevel : 0;
     // Run it so that it just not traverses above 3 directories
@@ -302,6 +310,7 @@ export {
     writeFileWithVerification,
     writeFileWithComparingSameLinesWithOldContents,
     removeDir,
+    removeDirIfExists,
     removeDirAndRemoveParentDirIfEmpty,
     generateTempFolderWithRandomText,
     getFileCountRecursively,
