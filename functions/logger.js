@@ -136,31 +136,31 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     } else if (level === 'warn') {
         logMesg = chalk.white.bgYellow.bold(logMesg);
     } else if (level === 'info') {
-        if (textColor === undefined || textColor === 'cyan') {
+        if (textColor === undefined || textColor.name === 'cyan') {
             logMesg = chalk.cyan(logMesg);
-        } else if (textColor === 'bgCyan') {
+        } else if (textColor.name === 'bgCyan') {
             logMesg = chalk.bgCyan.bold(logMesg);
-        } else if (textColor === 'cyanBold') {
+        } else if (textColor.name === 'cyanBold') {
             logMesg = chalk.cyan.bold(logMesg);
-        } else if (textColor === 'green') {
+        } else if (textColor.name === 'green') {
             logMesg = chalk.green.bold(logMesg);
-        } else if (textColor === 'bgGreen') {
+        } else if (textColor.name === 'bgGreen') {
             logMesg = chalk.white.bgGreen.bold(logMesg);
-        } else if (textColor === 'yellow') {
+        } else if (textColor.name === 'yellow') {
             logMesg = chalk.yellow.bold(logMesg);
-        } else if (textColor === 'bgYellow') {
+        } else if (textColor.name === 'bgYellow') {
             logMesg = chalk.white.bgYellow.bold(logMesg);
-        } else if (textColor === 'red') {
+        } else if (textColor.name === 'red') {
             logMesg = chalk.red.bold(logMesg);
-        } else if (textColor === 'bgRed') {
+        } else if (textColor.name === 'bgRed') {
             logMesg = chalk.white.bgRed.bold(logMesg);
-        } else if (textColor === 'magenta') {
+        } else if (textColor.name === 'magenta') {
             logMesg = chalk.magenta.bold(logMesg);
-        } else if (textColor === 'bgMagenta') {
+        } else if (textColor.name === 'bgMagenta') {
             logMesg = chalk.white.bgMagenta.bold(logMesg);
-        } else if (textColor === 'white') {
+        } else if (textColor.name === 'white') {
             logMesg = chalk.whiteBright(logMesg);
-        } else if (textColor === 'bgWhite') {
+        } else if (textColor.name === 'bgWhite') {
             logMesg = chalk.black.bgWhiteBright(logMesg);
         }
     } else if (level === 'verbose') {
