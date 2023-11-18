@@ -35,6 +35,7 @@ import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
 import { lge, lgi, lgu } from './functions/loggersupportive.js';
 import Color from './class/Colors.js';
+import LineSeparator from './class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 // const {
@@ -140,7 +141,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
     let userLoggedIn = '';
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
-        lgi(`Reading bookmarks for the Username: `, false);
+        lgi(`Reading bookmarks for the Username: `, LineSeparator.false);
         lgi(usernameBookmark.name, Color.cyanBold);
         const credentials = getCredentialsForUsername(usernameBookmark.name);
 
@@ -164,9 +165,9 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                 imagesQtyInLot = 0;
                 lotIndex++;
             }
-            lgi('Reading bookmarks for the Dealer: ', false);
-            lgi(dealerLevelBookmarkName, Color.cyanBold, false);
-            lgi(' from the Username: ', false);
+            lgi('Reading bookmarks for the Dealer: ', LineSeparator.false);
+            lgi(dealerLevelBookmarkName, Color.cyanBold, LineSeparator.false);
+            lgi(' from the Username: ', LineSeparator.false);
             lgi(usernameBookmark.name, Color.cyanBold);
             const vehicleBookmarks = dealerLevelBookmark.children;
 

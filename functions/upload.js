@@ -26,6 +26,7 @@ import { zeroPad } from './stringformatting.js';
 import { perImageTimeToUpload, perVINTimeToUpload } from './datastoresupportive.js';
 import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 import Color from '../class/Colors.js';
+import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 const printToLogBuffer = [];
@@ -35,8 +36,8 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         `fn uploadBookmarkURL() : BEGIN, Params: page: OBJECT, uniqueIdElement: ${uniqueIdElement}, uniqueIdFolderPath: ${uniqueIdFolderPath}, dealerFolder: ${dealerFolder}, name: ${name}, URL: ${URL}, debug: ${debug}`
     );
     const startingRow = await getRowPosOnTerminal();
-    lgi(`\t${userLoggedIn}/`, false);
-    lgi(`${dealerFolder}/`, Color.cyanBold, false);
+    lgi(`\t${userLoggedIn}/`, LineSeparator.false);
+    lgi(`${dealerFolder}/`, Color.cyanBold, LineSeparator.false);
     lgi(`${name} : ${URL}`);
     printToLogBuffer.push(`\${userLoggedIn}/\${dealerFolder}/\${name} : \${URL}  :   ${userLoggedIn}/${dealerFolder}/${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
@@ -184,7 +185,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // Later: error handling if stuck delete all previous images and start again.
 
     const startingRow = await getRowPosOnTerminal();
-    lgi(` Uploading Files`, false);
+    lgi(` Uploading Files`, LineSeparator.false);
 
     /* #region: Uploading the files: Begin */
     lgif(`region: Uploading the files: Begin`);
@@ -194,7 +195,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // eslint-disable-next-line no-useless-catch
     try {
         VINFolderPathList = typeOfVINPath === 'VINFolder' ? fs.readdirSync(VINFolderPath) : [VINFilePath];
-        lgi(`(${zeroPad(VINFolderPathList.length, 2)}): `, false);
+        lgi(`(${zeroPad(VINFolderPathList.length, 2)}): `, LineSeparator.false);
 
         // eslint-disable-next-line no-restricted-syntax
         for (const VINFolderSubFolderAndFiles of VINFolderPathList) {
@@ -265,9 +266,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     process.stdout.moveCursor(0, -diffInRows); // up one line
     process.stdout.clearLine(diffInRows); // from cursor to end
     process.stdout.cursorTo(0);
-    lgi(` Uploading Files(${zeroPad(VINFolderPathList.length, 2)}): `, false);
-    lgi(`${logSymbols.success}${' '.repeat(3)}`, Color.green, false);
-    lgi(` Mark Deletion: `, false);
+    lgi(` Uploading Files(${zeroPad(VINFolderPathList.length, 2)}): `, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(3)}`, Color.green, LineSeparator.false);
+    lgi(` Mark Deletion: `, LineSeparator.false);
 
     /* #region: Mark file to delete the older files so as to replace with the newer files later on: Begin */
     lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: Begin`);
@@ -322,8 +323,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: End`);
     /* #endregion: Delete the older files to replace with the newer files: End */
 
-    lgi(`${logSymbols.success}${' '.repeat(13)}`, Color.green, false);
-    lgi(` Move Files To Location: `, false);
+    lgi(`${logSymbols.success}${' '.repeat(13)}`, Color.green, LineSeparator.false);
+    lgi(` Move Files To Location: `, LineSeparator.false);
 
     const imageDIVContainer2 = await page.$('.tn-list-container');
     const imageULContainer2 = await imageDIVContainer2.$('.container.tn-list.sortable.deletable.ui-sortable');
@@ -368,8 +369,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Move uploaded files on the correct location: End`);
     /* #endregion: Move uploaded files on the correct location: End */
 
-    lgi(`${logSymbols.success}${' '.repeat(4)}`, Color.green, false);
-    lgi(`\n Move Files To Last: `, false);
+    lgi(`${logSymbols.success}${' '.repeat(4)}`, Color.green, LineSeparator.false);
+    lgi(`\n Move Files To Last: `, LineSeparator.false);
 
     /* #region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin */
     lgif(
@@ -384,8 +385,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     /* #endregion: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End */
 
-    lgi(`${logSymbols.success}${' '.repeat(4)}`, Color.green, false);
-    lgi(` Lock The Images Checkbox: `, false);
+    lgi(`${logSymbols.success}${' '.repeat(4)}`, Color.green, LineSeparator.false);
+    lgi(` Lock The Images Checkbox: `, LineSeparator.false);
 
     /* #region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin */
     lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin`);
@@ -412,8 +413,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End`);
     /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */
 
-    lgi(`${logSymbols.success}${' '.repeat(2)}`, Color.green, false);
-    lgi(` Saving Now: `, false);
+    lgi(`${logSymbols.success}${' '.repeat(2)}`, Color.green, LineSeparator.false);
+    lgi(` Saving Now: `, LineSeparator.false);
 
     /* #region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin */
     lgif(
@@ -451,12 +452,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     /* #endregion: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End */
 
-    lgi(`${logSymbols.success}${' '.repeat(16)}`, Color.green, false);
-    lgi(` Saved: `, false);
+    lgi(`${logSymbols.success}${' '.repeat(16)}`, Color.green, LineSeparator.false);
+    lgi(` Saved: `, LineSeparator.false);
 
     await page.waitForNavigation({ timeout: 300000 });
 
-    lgi(`${logSymbols.success}${' '.repeat(5)}`, Color.green, false);
+    lgi(`${logSymbols.success}${' '.repeat(5)}`, Color.green, LineSeparator.false);
 
     const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, false);
     const returnObj = {
@@ -773,26 +774,26 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
             process.stdout.moveCursor(0, -diffInRows); // up one line
             process.stdout.clearLine(diffInRows); // from cursor to end
             process.stdout.cursorTo(0);
-            lgi(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `, false);
+            lgi(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `, LineSeparator.false);
             for (let cnt = 1; cnt <= (isAdditionalFile ? totalUploadFiles + countOfComplete : countOfComplete); cnt++) {
                 if (isAdditionalFile && cnt > totalUploadFiles) {
-                    lgi(`, `, false);
+                    lgi(`, `, LineSeparator.false);
                 }
-                lgi(`${zeroPad(cnt, 2)}.`, false);
-                lgi(`${logSymbols.success} `, Color.green, false);
+                lgi(`${zeroPad(cnt, 2)}.`, LineSeparator.false);
+                lgi(`${logSymbols.success} `, Color.green, LineSeparator.false);
             }
 
             const regexString = `<span class="fileinfo"> - (\\d{1,3}%)</span>`;
             const regexExpression = new RegExp(regexString, 'g');
             if (regexExpression.test(currentQueueContent)) {
                 if (isAdditionalFile) {
-                    lgi(`, `, false);
+                    lgi(`, `, LineSeparator.false);
                 }
                 // lgcf(`01: currentQueueContent.match(regexExpression) : ${currentQueueContent.match(regexExpression)}`);
                 const percentage = currentQueueContent.match(regexExpression)[0].match(regexString)[1];
                 // lgcf(`percentage: ${percentage}`);
-                lgi(`  ${zeroPad(countOfComplete + 1, 2)}.`, false);
-                lgi(` ${percentage}`, Color.cyanBold, false);
+                lgi(`  ${zeroPad(countOfComplete + 1, 2)}.`, LineSeparator.false);
+                lgi(` ${percentage}`, Color.cyanBold, LineSeparator.false);
             }
             loopCountOfQueueContent = 0;
         } else {

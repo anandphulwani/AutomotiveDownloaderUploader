@@ -7,6 +7,7 @@ import { incRetryCount } from './others.js';
 import { waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith } from './waiting.js';
 import { lgbf, lge, lgi, lgu } from './loggersupportive.js';
 import Color from '../class/Colors.js';
+import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 async function gotoURL(page, URL, debug = false) {
@@ -21,11 +22,11 @@ async function gotoURL(page, URL, debug = false) {
             // await page.goto(URL, { waitUntil: "networkidle2" });
             const pageContent = await page.content();
             if (pageContent.includes('/Framework/Resources/Images/Layout/Errors/500_error.png')) {
-                lgi(` ${logSymbols.warning}`, Color.yellow, false);
+                lgi(` ${logSymbols.warning}`, Color.yellow, LineSeparator.false);
                 if (gotoCnt < 4) {
                     // Sleep for 5 mins
                     for (let cnt = 0; cnt < 100; cnt++) {
-                        lgi('.', Color.yellow, false);
+                        lgi('.', Color.yellow, LineSeparator.false);
                         await waitForSeconds(3);
                     }
                 } else {
@@ -46,11 +47,11 @@ async function gotoURL(page, URL, debug = false) {
                 err.message === 'Page.navigate timed out.'
             ) {
                 lgi(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
-                lgi(` ${logSymbols.warning}`, Color.yellow, false);
+                lgi(` ${logSymbols.warning}`, Color.yellow, LineSeparator.false);
                 if (gotoCnt < 4) {
                     // Sleep for 30 seconds
                     for (let cnt = 0; cnt < 10; cnt++) {
-                        lgi('.', Color.yellow, false);
+                        lgi('.', Color.yellow, LineSeparator.false);
                         await waitForSeconds(3);
                     }
                     incRetryCount();
@@ -59,7 +60,7 @@ async function gotoURL(page, URL, debug = false) {
                     lge(
                         `Unable to get the following URL after 5 retries in interval of 30 seconds each, get operation timeout set to 60 seconds: ${URL} .`
                     );
-                    lge('  ', false);
+                    lge('  ', LineSeparator.false);
                 }
             } else {
                 lgu(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);

@@ -10,6 +10,7 @@ import { createDirAndCopyFile, createDirAndMoveFile, getFolderSizeInBytes, remov
 import { addUploadingToReport } from './reportsupportive.js';
 import { printSectionSeperator } from './others.js';
 import Color from '../class/Colors.js';
+import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 const cuttingDoneFolderName = config.cutterProcessingFolders[0];
@@ -54,17 +55,17 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
         contractorAccountingPath = path.join(contractorAccountingPath, path.basename(dealerImagesFolder));
 
         if (!isDryRun && !hasMovingToUploadZonePrinted) {
-            lgi(`[`, false);
-            lgi(currentTimeWOMSFormatted(), Color.bgWhite, false);
-            lgi(`]`, false);
+            lgi(`[`, LineSeparator.false);
+            lgi(currentTimeWOMSFormatted(), Color.bgWhite, LineSeparator.false);
+            lgi(`]`, LineSeparator.false);
             lgi(`${movingMesg}: `);
             hasMovingToUploadZonePrinted = true;
         }
         if (!isDryRun) {
             const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
-            lgi(folderNameToPrint, false);
+            lgi(folderNameToPrint, LineSeparator.false);
             for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
-                lgi(`.`, false);
+                lgi(`.`, LineSeparator.false);
             }
         }
         if (isDryRun) {
@@ -126,7 +127,7 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
         }
         if (!isDryRun) {
             if (cnt !== foldersToShiftLength - 1) {
-                lgi(`, `, false);
+                lgi(`, `, LineSeparator.false);
             } else {
                 lgi('');
                 printSectionSeperator();

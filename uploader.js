@@ -38,6 +38,7 @@ import { uploadBookmarkURL } from './functions/upload.js';
 import { attainLock, releaseLock } from './functions/locksupportive.js';
 import { moveFilesFromSourceToDestinationAndAccounting } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
+import LineSeparator from './class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 if (config.environment === 'production') {
@@ -288,7 +289,7 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
     let userLoggedIn = '';
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
-        lgi(`Uploading bookmarks for the Username: `, false);
+        lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
         lgi(usernameBookmark.name, Color.cyanBold);
         const credentials = getCredentialsForUsername(usernameBookmark.name);
 
@@ -308,9 +309,9 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
             // eslint-disable-next-line no-restricted-syntax
             for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
                 // if (isDealerFolderToBeUploaded) {
-                lgi('Uploading bookmarks for the Dealer: ', false);
-                lgi(dealerLevelBookmarkName, Color.cyanBold, false);
-                lgi(' from the Username: ', false);
+                lgi('Uploading bookmarks for the Dealer: ', LineSeparator.false);
+                lgi(dealerLevelBookmarkName, Color.cyanBold, LineSeparator.false);
+                lgi(' from the Username: ', LineSeparator.false);
                 lgi(usernameBookmark.name, Color.cyanBold);
                 const vehicleBookmarks = dealerLevelBookmark.children;
 

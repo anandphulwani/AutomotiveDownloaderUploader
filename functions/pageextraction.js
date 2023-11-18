@@ -15,6 +15,7 @@ import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './downlo
 import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './excelsupportive.js';
 import { lge, lgi, lgu, lgw } from './loggersupportive.js';
 import Color from '../class/Colors.js';
+import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 async function getImagesFromContent(page, lotIndex, username, dealerFolder, debug = false) {
@@ -65,7 +66,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
             lgw('');
             lgw(
                 `Under ${dealerFolder}/${VINNumber}, Unable to find image number: ${imageNumberToDownload}, Total images under page: ${imageOriginalURLS.length}.`,
-                false
+                LineSeparator.false
             );
             // eslint-disable-next-line no-continue
             continue;
@@ -80,7 +81,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         } else {
             shortFilename = `${dealerFolder}/${VINNumber}/${path.basename(file.path)}`;
         }
-        debug ? '' : lgi(`${shortFilename} »`, Color.white, false);
+        debug ? '' : lgi(`${shortFilename} »`, Color.white, LineSeparator.false);
         const shortFilenameTextLength = shortFilename.length + 2;
 
         let checksumOfFile;
@@ -98,11 +99,11 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     err.message === 'Page.navigate timed out.'
                 ) {
                     lgi(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
-                    lgi(` ${logSymbols.warning}`, Color.yellow, false);
+                    lgi(` ${logSymbols.warning}`, Color.yellow, LineSeparator.false);
                     if (checksumOfFileCnt < 4) {
                         // Sleep for 30 seconds
                         for (let cnt = 0; cnt < 10; cnt++) {
-                            lgi('.', Color.yellow, false);
+                            lgi('.', Color.yellow, LineSeparator.false);
                             await waitForSeconds(3);
                         }
                         incRetryCount();
@@ -111,7 +112,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                         lge(
                             `Unable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                         );
-                        lge('  ', false);
+                        lge('  ', LineSeparator.false);
                     }
                 } else {
                     lgu(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
@@ -149,11 +150,11 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     err.message === 'Page.navigate timed out.'
                 ) {
                     lgi(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
-                    lgi(` ${logSymbols.warning}`, Color.yellow, false);
+                    lgi(` ${logSymbols.warning}`, Color.yellow, LineSeparator.false);
                     if (downloadCnt < 4) {
                         // Sleep for 30 seconds
                         for (let cnt = 0; cnt < 10; cnt++) {
-                            lgi('.', Color.yellow, false);
+                            lgi('.', Color.yellow, LineSeparator.false);
                             await waitForSeconds(3);
                         }
                         incRetryCount();
@@ -162,7 +163,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                         lge(
                             `Unable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                         );
-                        lge('  ', false);
+                        lge('  ', LineSeparator.false);
                     }
                 } else {
                     lgu(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
@@ -174,7 +175,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     lgi(
         `Images (Downloaded/Requested)  /Available: (${imagesDownloaded}/${imageNumbersToDownload.length})  /${imageOriginalURLS.length}         `,
         Color.bgCyan,
-        false
+        LineSeparator.false
     );
     debug ? '' : process.stdout.write('\n');
     // LOWPRIORITY:  Make sure this removeDir runs properly

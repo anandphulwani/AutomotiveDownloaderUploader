@@ -13,7 +13,7 @@ import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { getProjectConfigDirPath, getProjectLogsDirPath } from './projectpaths.js';
-
+import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -24,7 +24,7 @@ const perImageTimeToUpload = 7.25;
 const perVINTimeToUpload = 7;
 
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
-    lgi(`Auto cleaning up the datastore: `, false);
+    lgi(`Auto cleaning up the datastore: `, LineSeparator.false);
     const foldersToCleanUp = [
         config.lockingBackupsZonePath,
         config.downloadPath,
@@ -74,7 +74,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         }
     }
     /* #endregion: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
-    lgi(`01:${logSymbols.success} `, false);
+    lgi(`01:${logSymbols.success} `, LineSeparator.false);
 
     /* #region: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
     if (fs.existsSync(config.lockingBackupsZonePath)) {
@@ -101,7 +101,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         }
     }
     /* #endregion: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
-    lgi(`02:${logSymbols.success} `, false);
+    lgi(`02:${logSymbols.success} `, LineSeparator.false);
 
     /* #region: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
     const lockingBackupsDirWithTodaysDate = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}`;
@@ -173,7 +173,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         });
     }
     /* #endregion: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
-    lgi(`03:${logSymbols.success} `, false);
+    lgi(`03:${logSymbols.success} `, LineSeparator.false);
 
     // eslint-disable-next-line no-restricted-syntax
     for (const dateDir of fs.readdirSync(getProjectLogsDirPath())) {

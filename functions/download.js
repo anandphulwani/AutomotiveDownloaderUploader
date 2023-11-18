@@ -9,6 +9,7 @@ import logSymbols from 'log-symbols';
 import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
 import { lgi, lgu } from './loggersupportive.js';
 import Color from '../class/Colors.js';
+import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
@@ -76,7 +77,7 @@ async function downloadFileAndCompareWithChecksum(
                         : lgi(
                               ` ${logSymbols.success}${' '.repeat(38 - shortFilenameTextLength > 0 ? 38 - shortFilenameTextLength : 0)}`,
                               Color.green,
-                              false
+                              LineSeparator.false
                           );
                 }
                 resolve();
