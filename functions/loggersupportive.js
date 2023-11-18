@@ -136,10 +136,6 @@ const lgd = (...args) => {
     loggerFile.debug(...args, { callerHierarchy, uniqueId, lineSep });
 };
 
-/**
- * This function is used for those parts of the code,
- * which should never be called, or errors that should never generate.
- */
 const lgb = (...args) => {
     args = convertArgsToProperOrder(...args);
     const lineSep = args.pop();

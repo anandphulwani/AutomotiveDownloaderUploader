@@ -9,6 +9,7 @@ import {
     trimSingleSpaceInMiddleArray,
     removeDuplicates,
 } from './stringformatting.js';
+import { lge, lgw } from './loggersupportive.js';
 /* eslint-enable import/extensions */
 
 let resultStatus;
@@ -132,13 +133,7 @@ function checkForDuplicatesInArray(usernameTrimmed, data, columnName) {
     dupElements.forEach((dupElement) => {
         let elementsLocations = elementsAllIndex(data, dupElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: (${usernameTrimmed}) In column '${columnName}', found '${dupElement}' at multiple row numbers at ${elementsLocations.join(
-                    ', '
-                )}.`
-            )
-        );
+        lge(`(${usernameTrimmed}) In column '${columnName}', found '${dupElement}' at multiple row numbers at ${elementsLocations.join(', ')}.`);
     });
 }
 
@@ -148,11 +143,7 @@ function checkForEmptyCellsInArray(usernameTrimmed, data, columnName) {
     if (elementsLocations.length > 0) {
         setResultStatus('error');
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: (${usernameTrimmed}) In column '${columnName}', found empty/blank cell at row number at ${elementsLocations.join(', ')}.`
-            )
-        );
+        lge(`(${usernameTrimmed}) In column '${columnName}', found empty/blank cell at row number at ${elementsLocations.join(', ')}.`);
     }
 }
 
@@ -169,11 +160,9 @@ function checkForSpaceInBeginOrEndInArray(usernameTrimmed, data, columnName) {
     spaceElements.forEach((spaceElement) => {
         let elementsLocations = elementsAllIndex(data, spaceElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgYellow.bold(
-                `WARNING: (${usernameTrimmed}) In column '${columnName}', found space(s) in beginning and/or the end of element\n` +
-                    `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lgw(
+            `(${usernameTrimmed}) In column '${columnName}', found space(s) in beginning and/or the end of element\n` +
+                `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }
@@ -191,11 +180,9 @@ function checkForMultipleSpacesInMiddleInArray(usernameTrimmed, data, columnName
     spaceElements.forEach((spaceElement) => {
         let elementsLocations = elementsAllIndex(data, spaceElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgYellow.bold(
-                `WARNING: (${usernameTrimmed}) In column '${columnName}', found multiple consecutive space in middle of the element\n` +
-                    `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lgw(
+            `(${usernameTrimmed}) In column '${columnName}', found multiple consecutive space in middle of the element\n` +
+                `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }
@@ -213,11 +200,9 @@ function checkForSingleSpaceInMiddleInArray(usernameTrimmed, data, columnName) {
     spaceElements.forEach((spaceElement) => {
         let elementsLocations = elementsAllIndex(data, spaceElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgYellow.bold(
-                `WARNING: (${usernameTrimmed}) In column '${columnName}', found single space in middle of the element\n` +
-                    `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lgw(
+            `(${usernameTrimmed}) In column '${columnName}', found single space in middle of the element\n` +
+                `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }
@@ -235,11 +220,9 @@ function checkForBooleanValueOnlyInArray(usernameTrimmed, data, columnName) {
     notBooleanElements.forEach((notBooleanElement) => {
         let elementsLocations = elementsAllIndex(data, notBooleanElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: (${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no), element value: \n` +
-                    `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lge(
+            `(${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no), element value: \n` +
+                `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }
@@ -258,11 +241,9 @@ function checkForBooleanOrBlankValueOnlyInArray(usernameTrimmed, data, columnNam
     notBooleanElements.forEach((notBooleanElement) => {
         let elementsLocations = elementsAllIndex(data, notBooleanElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: (${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no) or blank, element value: \n` +
-                    `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lge(
+            `(${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no) or blank, element value: \n` +
+                `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }
@@ -280,11 +261,9 @@ function checkForNumbersAndCommaOnlyInArray(usernameTrimmed, data, columnName) {
     notNumbersAndCommaElements.forEach((notNumbersAndCommaElement) => {
         let elementsLocations = elementsAllIndex(data, notNumbersAndCommaElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: (${usernameTrimmed}) In column '${columnName}', found invalid value for numbers separeted by comma, element value: \n` +
-                    `         '${notNumbersAndCommaElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lge(
+            `${usernameTrimmed}) In column '${columnName}', found invalid value for numbers separeted by comma, element value: \n` +
+                `         '${notNumbersAndCommaElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }

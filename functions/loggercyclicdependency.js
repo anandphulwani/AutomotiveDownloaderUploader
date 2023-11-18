@@ -19,7 +19,6 @@ import { loggerFile, loggerConsole, addIndividualTransportCatcherrorFileWinston,
  */
 const lgccyclicdependency = (...args) => {
     addIndividualTransportCatcherrorFileWinston();
-    // const { filename, lineNumber } = getCallerDetails(...args);
     const filename = 'loggercyclicdependency.js';
     const lineNumber = '00';
     const uniqueId = '######';
@@ -29,7 +28,6 @@ const lgccyclicdependency = (...args) => {
 
 const lgwcyclicdependency = (...args) => {
     addIndividualTransportWarnFileWinston();
-    // const { filename, lineNumber } = getCallerDetails(...args);
     const filename = 'loggercyclicdependency.js';
     const lineNumber = '00';
     const uniqueId = '######';

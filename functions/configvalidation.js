@@ -6,6 +6,7 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 import { config } from '../configs/config.js';
 import { getCredentialsForUsername } from './configsupportive.js';
 import { getAllDealerNumbers } from './excelsupportive.js';
+import { lge } from './loggersupportive.js';
 /* eslint-enable import/extensions */
 
 function validateConfigFile(debug = false) {
@@ -16,11 +17,7 @@ function validateConfigFile(debug = false) {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
     if (path.resolve(sourceBookmarkPath) === path.resolve(processingBookmarkPathWithoutSync)) {
         validationStatus = 'error';
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: Config's 'sourceBookmarkPath' and Config's 'processingBookmarkPathWithoutSync' are reflecting the same file.`
-            )
-        );
+        lge(`Config's 'sourceBookmarkPath' and Config's 'processingBookmarkPathWithoutSync' are reflecting the same file.`);
         return validationStatus;
     }
     debug ? console.log(`Making sure that 'config.sourceBookmarkPath' and 'config.processingBookmarkPathWithoutSync' are not same file: Done.`) : '';

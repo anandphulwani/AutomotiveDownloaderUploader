@@ -7,7 +7,7 @@ import { question } from 'readline-sync';
 /* eslint-disable import/extensions */
 import { zeroPad } from './stringformatting.js';
 import { config } from '../configs/config.js';
-import { lge } from './loggersupportive.js';
+import { lge, lgi, lgs, lgu } from './loggersupportive.js';
 import { getIndexOfHighestIn2DArrayColumn } from './others.js';
 import { createDirAndCopyFile, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './excelsupportive.js';
@@ -21,6 +21,7 @@ import {
     getDealerFolderRecordKeepingZonePath,
 } from './allotmentsupportive.js';
 import { attainLock, releaseLock } from './locksupportive.js';
+import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
 let earlierLoopUsernameFolder = '';
@@ -47,10 +48,8 @@ async function doAllotment(
         allotmentSystem !== 'allotmentByImagesQty' &&
         allotmentSystem !== 'allotmentByManual'
     ) {
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: Unknown allotment system: '${allotmentSystem}' used, available systems are 'allotmentByMinimumDealerFoldersForEachContractors' and 'allotmentByImagesQty'.`
-            )
+        lgu(
+            `Unknown allotment system: '${allotmentSystem}' used, available systems are 'allotmentByMinimumDealerFoldersForEachContractors' and 'allotmentByImagesQty'.`
         );
         process.exit(1);
     }
@@ -120,11 +119,9 @@ async function doAllotment(
                         currentPrioritySingleLine += contractorSection;
                     }
                 });
-                console.log('');
-                console.log(
-                    chalk.cyan.bold(`Allot            ${sourceDealerFolderName.padEnd(20, ' ')} To                  ???????`.padEnd(120, ' '))
-                );
-                console.log(chalk.cyan.bold(`${currentPrioritySingleLine}`));
+                lgi('');
+                lgi(`Allot            ${sourceDealerFolderName.padEnd(20, ' ')} To                  ???????`.padEnd(120, ' '), Color.cyanBold);
+                lgi(`${currentPrioritySingleLine}`, Color.cyanBold);
                 // const cancelVal = index === 0 ? 'Exit' : false;
                 // contractorsIndex = keyInSelect(contractorsNames, null, { cancel: cancelVal });
 
@@ -136,7 +133,7 @@ async function doAllotment(
                     )
                     .join('\n')}\n`;
                 allotmentQuestion = index === 0 ? (allotmentQuestion += `[0] EXIT\n`) : allotmentQuestion;
-                console.log(allotmentQuestion);
+                lgi(allotmentQuestion, Color.white);
                 const indexOfPriorityContractor = contractorsNames.indexOf(contractorsSortedByPriority[0][0]) + 1;
                 do {
                     contractorsIndex = question('', { defaultInput: indexOfPriorityContractor.toString() });
@@ -146,7 +143,7 @@ async function doAllotment(
                         (index !== 0 && Number(contractorsIndex) < 1) ||
                         Number(contractorsIndex) > contractorsNames.length
                     ) {
-                        console.log('Invalid input, please try again: ');
+                        lge('Invalid input, please try again: ');
                     }
                 } while (
                     Number.isNaN(Number(contractorsIndex)) ||
@@ -187,13 +184,12 @@ async function doAllotment(
                     doesDestinationFolderAlreadyExists = true;
                 }
             }
-            console.log(
-                chalk.bgCyan.bold(
-                    `${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`.padEnd(
-                        120,
-                        ' '
-                    )
-                )
+            lgi(
+                `${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`.padEnd(
+                    120,
+                    ' '
+                ),
+                Color.bgCyan
             );
             if (!isDryRun) {
                 await addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
@@ -221,11 +217,9 @@ async function doAllotment(
         lotsImagesQty > 0 &&
         imagesQtyAllotedInCurrentLot >= lotsImagesQty
     ) {
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: While alloting by 'allotmentByImagesQty', found no of images alloted in the current lot (imagesQtyAllotedInCurrentLot): ${imagesQtyAllotedInCurrentLot} exceeded lot's image quantity (lotsImagesQty): ${lotsImagesQty}.` +
-                    `\nPossible chances of manual intervention of adding folder or images by the user in the lot folder`
-            )
+        lgs(
+            `While alloting by 'allotmentByImagesQty', found no of images alloted in the current lot (imagesQtyAllotedInCurrentLot): ${imagesQtyAllotedInCurrentLot} exceeded lot's image quantity (lotsImagesQty): ${lotsImagesQty}.` +
+                `\nPossible chances of manual intervention of adding folder or images by the user in the lot folder`
         );
     }
     return [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted, doesDestinationFolderAlreadyExists];

@@ -9,12 +9,13 @@ import {
     trimSingleSpaceInMiddleArrayOfObjects,
     trimSingleSpaceInMiddleArray,
 } from './stringformatting.js';
+import { lge } from './loggersupportive.js';
 /* eslint-enable import/extensions */
 
 function readDealerConfigurationExcel(username) {
     const excelFilename = `${config.dealerConfigurationFolder}\\${username}.xlsx`;
     if (!fs.existsSync(excelFilename)) {
-        console.log(chalk.white.bgRed.bold(`Dealer configuration excel file: ${excelFilename} does not exist, Please check.`));
+        lge(`Dealer configuration excel file: ${excelFilename} does not exist, Please check.`);
         process.exit(1);
     }
     const file = xlsx.readFile(excelFilename);

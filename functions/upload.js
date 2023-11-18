@@ -25,6 +25,7 @@ import { waitForElementContainsOrEqualsHTML, waitTillCurrentURLEndsWith } from '
 import { zeroPad } from './stringformatting.js';
 import { perImageTimeToUpload, perVINTimeToUpload } from './datastoresupportive.js';
 import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
+import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
 const printToLogBuffer = [];
@@ -34,7 +35,9 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         `fn uploadBookmarkURL() : BEGIN, Params: page: OBJECT, uniqueIdElement: ${uniqueIdElement}, uniqueIdFolderPath: ${uniqueIdFolderPath}, dealerFolder: ${dealerFolder}, name: ${name}, URL: ${URL}, debug: ${debug}`
     );
     const startingRow = await getRowPosOnTerminal();
-    process.stdout.write(chalk.cyan(`\t${userLoggedIn}/`) + chalk.cyan.bold(`${dealerFolder}/`) + chalk.cyan(`${name} : ${URL}\n`));
+    lgi(`\t${userLoggedIn}/`, false);
+    lgi(`${dealerFolder}/`, Color.cyanBold, false);
+    lgi(`${name} : ${URL}`);
     printToLogBuffer.push(`\${userLoggedIn}/\${dealerFolder}/\${name} : \${URL}  :   ${userLoggedIn}/${dealerFolder}/${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
@@ -54,8 +57,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
         printToLogBuffer.pop();
-        lgef(`${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
-        process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
+        lge(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
         const VINNumberFromBookmark = name.split(' |#| ')[1].trim();
         const { typeOfVINPath, VINFolderPath, VINFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
         const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, true);
@@ -91,21 +93,21 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         const totalTimeEstimatedInSeconds = Math.round(perImageTimeToUpload * returnObj.imagesUploaded + perVINTimeToUpload);
         const diffInEstimate = Math.round((elapsedTimeInSeconds / totalTimeEstimatedInSeconds) * 10) / 10;
         if (diffInEstimate > 3) {
-            currentColor = chalk.bgRed.white;
+            currentColor = Color.bgRed;
         } else if (diffInEstimate > 2) {
-            currentColor = chalk.red.bold;
+            currentColor = Color.red;
         } else if (diffInEstimate > 1.5) {
-            currentColor = chalk.yellow.bold;
+            currentColor = Color.yellow;
         } else {
-            currentColor = chalk.cyan;
+            currentColor = Color.cyan;
         }
         if (newEndingRow - 3 !== endingRow) {
-            console.log(currentColor(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`));
+            lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor);
         } else {
             debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
             debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
             debug ? '' : process.stdout.cursorTo(0);
-            process.stdout.write(currentColor(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}\n`));
+            lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor);
         }
     }
     lgif(`fn uploadBookmarkURL() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
@@ -182,7 +184,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // Later: error handling if stuck delete all previous images and start again.
 
     const startingRow = await getRowPosOnTerminal();
-    process.stdout.write(chalk.cyan(` Uploading Files`));
+    lgi(` Uploading Files`, false);
 
     /* #region: Uploading the files: Begin */
     lgif(`region: Uploading the files: Begin`);
@@ -192,7 +194,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // eslint-disable-next-line no-useless-catch
     try {
         VINFolderPathList = typeOfVINPath === 'VINFolder' ? fs.readdirSync(VINFolderPath) : [VINFilePath];
-        process.stdout.write(chalk.cyan(`(${zeroPad(VINFolderPathList.length, 2)}): `));
+        lgi(`(${zeroPad(VINFolderPathList.length, 2)}): `, false);
 
         // eslint-disable-next-line no-restricted-syntax
         for (const VINFolderSubFolderAndFiles of VINFolderPathList) {
@@ -263,9 +265,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     process.stdout.moveCursor(0, -diffInRows); // up one line
     process.stdout.clearLine(diffInRows); // from cursor to end
     process.stdout.cursorTo(0);
-    process.stdout.write(chalk.cyan(` Uploading Files(${zeroPad(VINFolderPathList.length, 2)}): `));
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(3)}`));
-    process.stdout.write(chalk.cyan(` Mark Deletion: `));
+    lgi(` Uploading Files(${zeroPad(VINFolderPathList.length, 2)}): `, false);
+    lgi(`${logSymbols.success}${' '.repeat(3)}`, Color.green, false);
+    lgi(` Mark Deletion: `, false);
 
     /* #region: Mark file to delete the older files so as to replace with the newer files later on: Begin */
     lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: Begin`);
@@ -320,8 +322,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: End`);
     /* #endregion: Delete the older files to replace with the newer files: End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(13)}`));
-    process.stdout.write(chalk.cyan(` Move Files To Location: `));
+    lgi(`${logSymbols.success}${' '.repeat(13)}`, Color.green, false);
+    lgi(` Move Files To Location: `, false);
 
     const imageDIVContainer2 = await page.$('.tn-list-container');
     const imageULContainer2 = await imageDIVContainer2.$('.container.tn-list.sortable.deletable.ui-sortable');
@@ -366,8 +368,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Move uploaded files on the correct location: End`);
     /* #endregion: Move uploaded files on the correct location: End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(4)}`));
-    process.stdout.write(chalk.cyan(`\n Move Files To Last: `));
+    lgi(`${logSymbols.success}${' '.repeat(4)}`, Color.green, false);
+    lgi(`\n Move Files To Last: `, false);
 
     /* #region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin */
     lgif(
@@ -382,8 +384,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     /* #endregion: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(4)}`));
-    process.stdout.write(chalk.cyan(` Lock The Images Checkbox: `));
+    lgi(`${logSymbols.success}${' '.repeat(4)}`, Color.green, false);
+    lgi(` Lock The Images Checkbox: `, false);
 
     /* #region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin */
     lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin`);
@@ -410,8 +412,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End`);
     /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(2)}`));
-    process.stdout.write(chalk.cyan(` Saving Now: `));
+    lgi(`${logSymbols.success}${' '.repeat(2)}`, Color.green, false);
+    lgi(` Saving Now: `, false);
 
     /* #region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin */
     lgif(
@@ -449,12 +451,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     /* #endregion: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(16)}`));
-    process.stdout.write(chalk.cyan(` Saved: `));
+    lgi(`${logSymbols.success}${' '.repeat(16)}`, Color.green, false);
+    lgi(` Saved: `, false);
 
     await page.waitForNavigation({ timeout: 300000 });
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(5)}`));
+    lgi(`${logSymbols.success}${' '.repeat(5)}`, Color.green, false);
 
     const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, false);
     const returnObj = {
@@ -628,16 +630,10 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                                 `fromPosition > toPosition: ${fromPosition} > ${toPosition}, toPositionSubImageVehicleId === currToPositionNextSubImageVehicleId: ${toPositionSubImageVehicleId} === ${currToPositionNextSubImageVehicleId}` +
                                 `fromPosition < toPosition: ${fromPosition} < ${toPosition}, toPositionSubImageVehicleId === currToPositionPrevSubImageVehicleId: ${toPositionSubImageVehicleId} === ${currToPositionPrevSubImageVehicleId}`
                         );
-                        console.log(
-                            chalk.white.bgRed.bold(
-                                `Image position changed, but the 'vechileId' from 'fromPositionSubImageVehicleId' and 'currToPositionSubImageVehicleId' doesn't match.`
-                            )
-                        );
                         await waitForSeconds(240, true);
                         process.exit(1);
                     }
                 } else {
-                    console.log(chalk.white.bgRed.bold(`Image position changed, but the 'vechileId' from previous/next doesn't match.`));
                     lgu(`Image position changed, but the 'vechileId' from previous/next doesn't match.`);
                     await waitForSeconds(240, true);
                     process.exit(1);
@@ -709,7 +705,6 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             isSlow ? await waitForSeconds(1, true) : '';
             oldToPositionElementRectX = toPositionElementRect.x;
             if (lastIndex === 100) {
-                console.log(chalk.white.bgRed.bold(`Tried changing image position for 100 iterations, but it didn't work.`));
                 lgu(`Tried changing image position for 100 iterations, but it didn't work.`);
                 process.exit(1);
             }
@@ -778,25 +773,26 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
             process.stdout.moveCursor(0, -diffInRows); // up one line
             process.stdout.clearLine(diffInRows); // from cursor to end
             process.stdout.cursorTo(0);
-            process.stdout.write(chalk.cyan(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `));
+            lgi(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `, false);
             for (let cnt = 1; cnt <= (isAdditionalFile ? totalUploadFiles + countOfComplete : countOfComplete); cnt++) {
                 if (isAdditionalFile && cnt > totalUploadFiles) {
-                    process.stdout.write(chalk.cyan(`, `));
+                    lgi(`, `, false);
                 }
-                process.stdout.write(chalk.cyan(`${zeroPad(cnt, 2)}.`) + chalk.green.bold(`${logSymbols.success} `));
+                lgi(`${zeroPad(cnt, 2)}.`, false);
+                lgi(`${logSymbols.success} `, Color.green, false);
             }
 
             const regexString = `<span class="fileinfo"> - (\\d{1,3}%)</span>`;
             const regexExpression = new RegExp(regexString, 'g');
             if (regexExpression.test(currentQueueContent)) {
                 if (isAdditionalFile) {
-                    process.stdout.write(chalk.cyan(`, `));
+                    lgi(`, `, false);
                 }
                 // lgcf(`01: currentQueueContent.match(regexExpression) : ${currentQueueContent.match(regexExpression)}`);
                 const percentage = currentQueueContent.match(regexExpression)[0].match(regexString)[1];
                 // lgcf(`percentage: ${percentage}`);
-                process.stdout.write(chalk.cyan(`  ${zeroPad(countOfComplete + 1, 2)}.`));
-                process.stdout.write(chalk.cyan.bold(` ${percentage}`));
+                lgi(`  ${zeroPad(countOfComplete + 1, 2)}.`, false);
+                lgi(` ${percentage}`, Color.cyanBold, false);
             }
             loopCountOfQueueContent = 0;
         } else {

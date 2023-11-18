@@ -10,7 +10,7 @@ import cfonts from 'cfonts';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
-import { lge, lgw, lgif } from './functions/loggersupportive.js';
+import { lge, lgw, lgif, lgi } from './functions/loggersupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
 import { makeDir, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
@@ -237,7 +237,7 @@ if (doesDestinationFolderAlreadyExists) {
 let imagesQtyAllotedInCurrentLot = 0;
 let foldersAlloted = 0;
 
-console.log('');
+lgi('');
 if (keyInYN('To continue with the above allotment press Y, for other options press N.')) {
     /**
      * Alloting minimum DealerFolders for each contractors as per config
@@ -256,7 +256,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
         foldersAlloted
     );
     /* #endregion */
-    console.log(`-----------------------------------------------------`);
+    lgi(`-----------------------------------------------------`);
     // console.log(contractors);
     // console.log(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}`);
 
@@ -294,7 +294,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
     setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
     /* #endregion */
 } else if (keyInYN('To use manual allotment system press Y, to exit from this process press N.')) {
-    console.log('');
+    lgi('');
     await doAllotment(
         'allotmentByManual',
         undefined,

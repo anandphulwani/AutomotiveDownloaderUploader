@@ -33,6 +33,8 @@ import { validateConfigFile } from './functions/configvalidation.js';
 import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
+import { lge, lgi, lgu } from './functions/loggersupportive.js';
+import Color from './class/Colors.js';
 /* eslint-enable import/extensions */
 
 // const {
@@ -71,7 +73,7 @@ if (
         [validateDealerConfigurationExcelFile() !== 'error', validateBookmarksAndCheckCredentialsPresent() !== 'error'].every((i) => i)
     )
 ) {
-    console.log(chalk.white.bgRed.bold(`Please correct the above errors, in order to continue.`));
+    lge(`Please correct the above errors, in order to continue.`);
     if (config.environment === 'production') {
         process.exit(1);
     }
@@ -138,7 +140,8 @@ for (const usernameBookmark of allUsernamesBookmarks) {
     let userLoggedIn = '';
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
-        console.log(chalk.cyan(`Reading bookmarks for the Username: ${chalk.cyan.bold(usernameBookmark.name)}`));
+        lgi(`Reading bookmarks for the Username: `, false);
+        lgi(usernameBookmark.name, Color.cyanBold);
         const credentials = getCredentialsForUsername(usernameBookmark.name);
 
         setCurrentDealerConfiguration(usernameBookmark.name);
@@ -161,12 +164,10 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                 imagesQtyInLot = 0;
                 lotIndex++;
             }
-            console.log(
-                chalk.cyan('Reading bookmarks for the Dealer: ') +
-                    chalk.cyan.bold(dealerLevelBookmarkName) +
-                    chalk.cyan(' from the Username: ') +
-                    chalk.cyan.bold(usernameBookmark.name)
-            );
+            lgi('Reading bookmarks for the Dealer: ', false);
+            lgi(dealerLevelBookmarkName, Color.cyanBold, false);
+            lgi(' from the Username: ', false);
+            lgi(usernameBookmark.name, Color.cyanBold);
             const vehicleBookmarks = dealerLevelBookmark.children;
 
             // eslint-disable-next-line no-restricted-syntax
@@ -204,7 +205,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                     if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
                         replaceBookmarksElementByGUIDAndWriteToBookmarksFile('name', vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
                     } else {
-                        console.log('Bookmark not appended!');
+                        lgu('Bookmark not appended!');
                         if (config.updateBookmarksOnceDone) {
                             try {
                                 const bookmarksNotAppendFile = path.join(getProjectLogsDirPath(), 'bookmarksNotAppend.txt');

@@ -9,6 +9,7 @@ import { lge, lgi, lgif, lgw } from './loggersupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFolderSizeInBytes, removeDirIfExists } from './filesystem.js';
 import { addUploadingToReport } from './reportsupportive.js';
 import { printSectionSeperator } from './others.js';
+import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
 const cuttingDoneFolderName = config.cutterProcessingFolders[0];
@@ -53,15 +54,17 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
         contractorAccountingPath = path.join(contractorAccountingPath, path.basename(dealerImagesFolder));
 
         if (!isDryRun && !hasMovingToUploadZonePrinted) {
-            lgi(`[${chalk.black.bgWhiteBright(currentTimeWOMSFormatted())}] ${movingMesg}: \n`);
+            lgi(`[`, false);
+            lgi(currentTimeWOMSFormatted(), Color.bgWhite, false);
+            lgi(`]`, false);
+            lgi(`${movingMesg}: `);
             hasMovingToUploadZonePrinted = true;
         }
         if (!isDryRun) {
             const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
-            process.stdout.write(chalk.cyan(folderNameToPrint));
-            lgif(folderNameToPrint);
+            lgi(folderNameToPrint, false);
             for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
-                process.stdout.write(chalk.cyan(`.`));
+                lgi(`.`, false);
             }
         }
         if (isDryRun) {
@@ -123,9 +126,9 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
         }
         if (!isDryRun) {
             if (cnt !== foldersToShiftLength - 1) {
-                process.stdout.write(chalk.cyan(`, `));
+                lgi(`, `, false);
             } else {
-                process.stdout.write(chalk.cyan(`\n`));
+                lgi('');
                 printSectionSeperator();
             }
         }

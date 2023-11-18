@@ -66,8 +66,9 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
         }
     } catch (error) {
         lgccyclicdependency(`attainLock(${fileToOperateOn}) section catch block called.`, error);
-        console.log(error.message);
-        console.log(`attainLock(${fileToOperateOn}): This piece of code should be unreachable, caller: ${callerWithFunctionNameHierarchy}.\n`);
+        lgccyclicdependency(
+            `attainLock(${fileToOperateOn}): This piece of code should be unreachable, caller: ${callerWithFunctionNameHierarchy}.\n`
+        );
         if (debug) {
             fs.appendFileSync(
                 `${logPath}/00_${currentTime()}_CatchError_${callerFunctionName}.txt`,
@@ -94,8 +95,9 @@ function releaseLock(fileToOperateOn, stale = 300000, debug = false) {
         }
     } catch (error) {
         lgccyclicdependency(`releaseLock(${fileToOperateOn}) section catch block called.`, error);
-        console.log(error.message);
-        console.log(`releaseLock(${fileToOperateOn}): This piece of code should be unreachable, caller: ${callerWithFunctionNameHierarchy}.\n`);
+        lgccyclicdependency(
+            `releaseLock(${fileToOperateOn}): This piece of code should be unreachable, caller: ${callerWithFunctionNameHierarchy}.\n`
+        );
         if (debug) {
             fs.appendFileSync(
                 `${logPath}/00_${currentTime()}_CatchError_${callerFunctionName}.txt`,

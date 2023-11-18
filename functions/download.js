@@ -4,8 +4,12 @@ import fs from 'fs';
 import chalk from 'chalk';
 import path from 'path';
 import logSymbols from 'log-symbols';
-// eslint-disable-next-line import/extensions
+
+/* eslint-disable import/extensions */
 import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
+import { lgi, lgu } from './loggersupportive.js';
+import Color from '../class/Colors.js';
+/* eslint-enable import/extensions */
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
     return new Promise((resolve, reject) => {
@@ -19,7 +23,7 @@ async function getChecksumFromURL(url, hashAlgo, debug = false) {
                     const checksumOfFile = hashSum.digest('hex');
                     resolve(checksumOfFile);
                 } else {
-                    console.log(chalk.white.bgRed.bold(`Unable to calculate checksum of the file: ${url}`));
+                    lgu(`Unable to calculate checksum of the file: ${url}`);
                     process.exit(1);
                 }
             });
@@ -69,10 +73,10 @@ async function downloadFileAndCompareWithChecksum(
                     createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, true, debug);
                     debug
                         ? console.log(chalk.green.bold(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`))
-                        : process.stdout.write(
-                              chalk.green.bold(
-                                  ` ${logSymbols.success}${' '.repeat(38 - shortFilenameTextLength > 0 ? 38 - shortFilenameTextLength : 0)}`
-                              )
+                        : lgi(
+                              ` ${logSymbols.success}${' '.repeat(38 - shortFilenameTextLength > 0 ? 38 - shortFilenameTextLength : 0)}`,
+                              Color.green,
+                              false
                           );
                 }
                 resolve();

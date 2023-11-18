@@ -6,6 +6,7 @@ import path from 'path';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
+import { lgs, lgu } from './loggersupportive.js';
 /* eslint-enable import/extensions */
 
 /* #region : Supporting functions */
@@ -137,11 +138,7 @@ function getDealerFolderContractorsZonePath(sourcePath, contractorsName, additio
         sourcePath = path.dirname(sourcePath);
     }
     if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
-            )
-        );
+        lgs(`Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`);
         process.exit(0);
     }
     sourcePathFoldersArr.reverse();
@@ -159,11 +156,7 @@ function getDealerFolderRecordKeepingZonePath(sourcePath, additionalText) {
         sourcePath = path.dirname(sourcePath);
     }
     if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
-            )
-        );
+        lgs(`Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`);
         process.exit(0);
     }
     sourcePathFoldersArr.reverse();
@@ -222,7 +215,7 @@ async function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDi
         }
     }
     if (!doesLotFolderPathContainsFiles) {
-        console.log(chalk.white.bgRed.bold(`The lot folder does not contain any files to allot.`));
+        lgu(`The lot folder does not contain any files to allot.`);
         process.exit(1);
     }
     return dealerDirs;

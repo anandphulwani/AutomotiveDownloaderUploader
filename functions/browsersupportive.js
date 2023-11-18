@@ -7,6 +7,7 @@ import { getCredentialsForUsername, getAppDomain } from './configsupportive.js';
 import { fillInTextbox, clickOnButton } from './actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitTillCurrentURLStartsWith } from './waiting.js';
 import { gotoPageAndWaitTillCurrentURLStartsWith } from './goto.js';
+import { lge } from './loggersupportive.js';
 
 /* eslint-enable import/extensions */
 
@@ -15,11 +16,13 @@ async function initBrowserAndGetPage(profile) {
     const browser = await puppeteer.launch(config.browserArgs);
     const numberOfOpenPages = (await browser.pages()).length;
     if (numberOfOpenPages > 1) {
-        console.log(chalk.white.bgRed.bold(`\nGoogle Chrome has older multiple tabs opened, Change google chrome settings:`));
-        console.log(chalk.white.bgRed.bold(`        01. Open "chrome://settings/" URL in Google Chrome.`));
-        console.log(chalk.white.bgRed.bold(`        02. Search "On startup" in the search bar.`));
-        console.log(chalk.white.bgRed.bold(`        03. Select "Open the New Tab page" in the options.`));
-        console.log(chalk.white.bgRed.bold(`        04. Close the browser.`));
+        let errorMesg = '';
+        errorMesg += `\nGoogle Chrome has older multiple tabs opened, Change google chrome settings:\n`;
+        errorMesg += `        01. Open "chrome://settings/" URL in Google Chrome.\n`;
+        errorMesg += `        02. Search "On startup" in the search bar.\n`;
+        errorMesg += `        03. Select "Open the New Tab page" in the options.\n`;
+        errorMesg += `        04. Close the browser.`;
+        lge(errorMesg);
         process.exit(1);
     }
     const [page] = await browser.pages();

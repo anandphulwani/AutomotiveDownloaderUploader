@@ -8,7 +8,7 @@ import { checkSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted, currentTime } from './datetime.js';
 import { config } from '../configs/config.js';
-import { lge, lgc } from './loggersupportive.js';
+import { lge, lgc, lgi } from './loggersupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
@@ -24,7 +24,7 @@ const perImageTimeToUpload = 7.25;
 const perVINTimeToUpload = 7;
 
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
-    process.stdout.write(chalk.cyan(`Auto cleaning up the datastore: `));
+    lgi(`Auto cleaning up the datastore: `, false);
     const foldersToCleanUp = [
         config.lockingBackupsZonePath,
         config.downloadPath,
@@ -74,7 +74,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         }
     }
     /* #endregion: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
-    process.stdout.write(chalk.cyan(`01:${logSymbols.success} `));
+    lgi(`01:${logSymbols.success} `, false);
 
     /* #region: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
     if (fs.existsSync(config.lockingBackupsZonePath)) {
@@ -101,7 +101,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         }
     }
     /* #endregion: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
-    process.stdout.write(chalk.cyan(`02:${logSymbols.success} `));
+    lgi(`02:${logSymbols.success} `, false);
 
     /* #region: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
     const lockingBackupsDirWithTodaysDate = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}`;
@@ -173,7 +173,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         });
     }
     /* #endregion: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
-    process.stdout.write(chalk.cyan(`03:${logSymbols.success} `));
+    lgi(`03:${logSymbols.success} `, false);
 
     // eslint-disable-next-line no-restricted-syntax
     for (const dateDir of fs.readdirSync(getProjectLogsDirPath())) {
@@ -210,7 +210,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
             }
         }
     }
-    process.stdout.write(chalk.cyan(`04:${logSymbols.success}\n`));
+    lgi(`04:${logSymbols.success}`);
 }
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {

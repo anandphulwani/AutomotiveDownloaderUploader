@@ -37,6 +37,7 @@ import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './funct
 import { uploadBookmarkURL } from './functions/upload.js';
 import { attainLock, releaseLock } from './functions/locksupportive.js';
 import { moveFilesFromSourceToDestinationAndAccounting } from './functions/contractors_folderTransferersupportive.js';
+import Color from './class/Colors.js';
 /* eslint-enable import/extensions */
 
 if (config.environment === 'production') {
@@ -224,7 +225,7 @@ foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', 
 moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
 
 if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
-    console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));
+    lgi(`No data present in the uploading zone, Exiting.`);
     process.exit(0);
 }
 
@@ -266,7 +267,7 @@ if (
         [validateDealerConfigurationExcelFile() !== 'error', validateBookmarksAndCheckCredentialsPresent() !== 'error'].every((i) => i)
     )
 ) {
-    console.log(chalk.white.bgRed.bold(`Please correct the above errors, in order to continue.`));
+    lge(`Please correct the above errors, in order to continue.`);
     if (config.environment === 'production') {
         process.exit(1);
     }
@@ -287,7 +288,8 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
     let userLoggedIn = '';
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
-        console.log(chalk.cyan(`Uploading bookmarks for the Username: ${chalk.cyan.bold(usernameBookmark.name)}`));
+        lgi(`Uploading bookmarks for the Username: `, false);
+        lgi(usernameBookmark.name, Color.cyanBold);
         const credentials = getCredentialsForUsername(usernameBookmark.name);
 
         setCurrentDealerConfiguration(usernameBookmark.name);
@@ -306,12 +308,10 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
             // eslint-disable-next-line no-restricted-syntax
             for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
                 // if (isDealerFolderToBeUploaded) {
-                console.log(
-                    chalk.cyan('Uploading bookmarks for the Dealer: ') +
-                        chalk.cyan.bold(dealerLevelBookmarkName) +
-                        chalk.cyan(' from the Username: ') +
-                        chalk.cyan.bold(usernameBookmark.name)
-                );
+                lgi('Uploading bookmarks for the Dealer: ', false);
+                lgi(dealerLevelBookmarkName, Color.cyanBold, false);
+                lgi(' from the Username: ', false);
+                lgi(usernameBookmark.name, Color.cyanBold);
                 const vehicleBookmarks = dealerLevelBookmark.children;
 
                 // eslint-disable-next-line no-restricted-syntax
@@ -322,7 +322,7 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
                         vehicleBookmark.url += '#imagery';
                     }
                     if (vehicleBookmark.name.includes(' |#| ') && !vehicleBookmark.name.split(' |#| ')[1].startsWith('Ignoring')) {
-                        console.log(chalk.whiteBright.bgCyan(getUploadRemainingSummary(foldersToUpload)));
+                        lgi(getUploadRemainingSummary(foldersToUpload), Color.bgCyan);
                         if (typeof page === 'boolean' && !page) {
                             ({ page, browser } = await initBrowserAndGetPage('upload'));
                         }

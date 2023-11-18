@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 /* eslint-disable import/extensions */
-import { lgc } from './loggersupportive.js';
+import { lgc, lgs, lgu } from './loggersupportive.js';
 import { config } from '../configs/config.js';
 import { waitForMilliSeconds } from './sleep.js';
 import { attainLock, releaseLock } from './locksupportive.js';
@@ -48,10 +48,8 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
         const regexExpression = new RegExp(regexString, 'g');
         const newConfigUserContent = configUserContent.replace(regexExpression, `$1$2$3${allottedQty}$5`);
         if (configUserContent === newConfigUserContent) {
-            console.log(
-                chalk.white.bgRed.bold(
-                    `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
-                )
+            lgu(
+                `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
             );
             releaseLock(fileToOperateOn, undefined, true);
             process.exit(1);
@@ -132,7 +130,7 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
             const lastRunNumberRegexExpression = new RegExp(lastRunNumberRegexString, 'g');
             newConfigContent = configContent.replace(lastRunNumberRegexExpression, `$1${lastLotNumber}$3`);
             if (configContent === newConfigContent) {
-                console.log(chalk.white.bgRed.bold(`Unable to set lastLotNumber: '${lastLotNumber}'. Serious issue, please contact developer.`));
+                lgu(`Unable to set lastLotNumber: '${lastLotNumber}'. Serious issue, please contact developer.`);
                 releaseLock(fileToOperateOn, undefined, true);
                 process.exit(1);
             }
@@ -144,7 +142,7 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
             const lastRunDateRegexExpression = new RegExp(lastRunDateRegexString, 'g');
             newConfigContent = configContent.replace(lastRunDateRegexExpression, `$1${lastLotDate}$3`);
             if (configContent === newConfigContent) {
-                console.log(chalk.white.bgRed.bold(`Unable to set lastLotDate: '${lastLotDate}'. Serious issue, please contact developer.`));
+                lgu(`Unable to set lastLotDate: '${lastLotDate}'. Serious issue, please contact developer.`);
                 releaseLock(fileToOperateOn, undefined, true);
                 process.exit(1);
             }
@@ -153,7 +151,7 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
         createBackupOfFile(fileToOperateOn, newConfigContent);
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
-        console.log(`${err.message}`);
+        lgu(err.message);
         process.exit(1);
     }
 }

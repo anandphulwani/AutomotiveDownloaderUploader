@@ -50,10 +50,8 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         const newConfigContent = configContent.replace(currentNonCatchErrorRegexExpression, `$1${nonCatchErrorCode}$3`);
 
         if (newConfigContent === undefined) {
-            console.log(
-                chalk.white.bgRed.bold(
-                    `Unable to set nonCatchErrorLogLevels9DigitUniqueId: '${nonCatchErrorCode}'. Serious issue, please contact developer.`
-                )
+            lgccyclicdependency(
+                `Unable to set nonCatchErrorLogLevels9DigitUniqueId: '${nonCatchErrorCode}'. Serious issue, please contact developer.`
             );
             releaseLock(fileToOperateOn, undefined, true);
             process.exit(1);
@@ -61,7 +59,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
-        console.log(`${err.message}`);
+        lgccyclicdependency(err.message);
         process.exit(1);
     }
     return nonCatchErrorCode;
@@ -108,18 +106,14 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
         const newConfigContent = configContent.replace(currentCatchErrorRegexExpression, `$1${catchErrorCode}$3`);
 
         if (newConfigContent === undefined) {
-            console.log(
-                chalk.white.bgRed.bold(
-                    `Unable to set catchErrorLogLevels6DigitUniqueId: '${catchErrorCode}'. Serious issue, please contact developer.`
-                )
-            );
+            lgccyclicdependency(`Unable to set catchErrorLogLevels6DigitUniqueId: '${catchErrorCode}'. Serious issue, please contact developer.`);
             releaseLock(fileToOperateOn, undefined, true);
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
-        console.log(`${err.message}`);
+        lgccyclicdependency(err.message);
         process.exit(1);
     }
     return catchErrorCode;
