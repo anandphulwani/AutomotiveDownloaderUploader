@@ -8,7 +8,7 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { lgc, lgb } from './loggersupportive.js';
+import { lgc, lgb, lgi, lge, lgu } from './loggersupportive.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
@@ -17,6 +17,7 @@ import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js
 import { trimMultipleSpacesInMiddleIntoOne, allTrimString } from './stringformatting.js';
 import { writeFileWithComparingSameLinesWithOldContents } from './filesystem.js';
 import { printSectionSeperator } from './others.js';
+import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -186,12 +187,12 @@ async function downloadBookmarksFromSourceToProcessing() {
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         releaseLock(sourceBookmarkPath, undefined, true);
     } catch (err) {
-        console.log(initialSourceJSONString);
+        lgu(initialSourceJSONString);
         printSectionSeperator();
-        console.log(sourceJSONString);
+        lgu(sourceJSONString);
         printSectionSeperator();
-        console.log(`initialLineCount: ${initialLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
-        console.log(`${err.message}`);
+        lgu(`initialLineCount: ${initialLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
+        lgu(err.message);
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         releaseLock(sourceBookmarkPath, undefined, true);
         process.exit(1);
@@ -209,7 +210,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         return false;
     });
     if (ignoreBookmarkURLObjectFindResults !== undefined) {
-        console.log(chalk.magenta(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`));
+        lgi(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`, Color.magenta);
         return {
             result: false,
             bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark,
@@ -219,7 +220,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
     }
 
     const startingRow = await getRowPosOnTerminal();
-    process.stdout.write(chalk.cyan(`\t${name} : ${URL}\n`));
+    lgi(`\t${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
 
@@ -229,7 +230,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)\n`));
+        lge(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)`);
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Duplicate, Already downloaded)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }
@@ -243,7 +244,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
+        lge(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }

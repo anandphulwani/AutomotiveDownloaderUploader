@@ -7,7 +7,7 @@ import path from 'path';
 import randomstring from 'randomstring';
 
 /* eslint-disable import/extensions */
-import { lgc } from './loggersupportive.js';
+import { lgc, lge, lgs } from './loggersupportive.js';
 import { sleep } from './sleep.js';
 /* eslint-enable import/extensions */
 
@@ -140,7 +140,7 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
     if (!recursiveDelete) {
         const dirPathCount = fs.readdirSync(dirPath).length;
         if (dirPathCount > 0) {
-            console.log(chalk.white.bgRed.bold(`Unable to remove the directory, because it is not empty : ${dirPath}`));
+            lge(`Unable to remove the directory, because it is not empty : ${dirPath}`);
             process.exit(1);
         }
         recursiveDelete = true;
@@ -255,7 +255,7 @@ function getListOfSubfoldersStartingWith(dirPath, startingTxt, isStrict = false)
         const noSuchFileRegex = new RegExp('ENOENT: no such file or directory.*', 'g');
         if (noSuchFileRegex.test(err.message)) {
             if (isStrict) {
-                console.log(chalk.white.bgRed.bold(`getListOfSubfoldersStartingWith${err.message.replace(/^ENOENT: n/, ': N')}`));
+                lgs(`getListOfSubfoldersStartingWith ${err.message.replace(/^ENOENT: n/, ': N')}`);
                 process.exit(1);
             }
         } else {

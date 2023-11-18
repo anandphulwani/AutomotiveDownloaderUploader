@@ -13,6 +13,8 @@ import { incRetryCount } from './others.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
 import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './excelsupportive.js';
+import { lge, lgi, lgu, lgw } from './loggersupportive.js';
+import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
 async function getImagesFromContent(page, lotIndex, username, dealerFolder, debug = false) {
@@ -84,7 +86,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         } else {
             shortFilename = `${dealerFolder}/${VINNumber}/${path.basename(file.path)}`;
         }
-        debug ? '' : process.stdout.write(chalk.white(`${shortFilename} »`));
+        debug ? '' : lgi(`${shortFilename} »`, Color.white, false);
         const shortFilenameTextLength = shortFilename.length + 2;
 
         let checksumOfFile;
@@ -101,12 +103,12 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     err.message === 'read ECONNRESET' ||
                     err.message === 'Page.navigate timed out.'
                 ) {
-                    console.log(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
-                    process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
+                    lgi(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
+                    lgi(` ${logSymbols.warning}`, Color.yellow, false);
                     if (checksumOfFileCnt < 4) {
                         // Sleep for 30 seconds
                         for (let cnt = 0; cnt < 10; cnt++) {
-                            process.stdout.write(chalk.yellow.bold('.'));
+                            lgi('.', Color.yellow, false);
                             await waitForSeconds(3);
                         }
                         incRetryCount();
@@ -116,10 +118,10 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                                 `\nUnable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                             )
                         );
-                        process.stdout.write('  ');
+                        lge('  ', false);
                     }
                 } else {
-                    console.log(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
+                    lgu(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
                     throw err;
                 }
             }
@@ -153,12 +155,12 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     err.message === 'read ECONNRESET' ||
                     err.message === 'Page.navigate timed out.'
                 ) {
-                    console.log(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
-                    process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
+                    lgi(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
+                    lgi(` ${logSymbols.warning}`, Color.yellow, false);
                     if (downloadCnt < 4) {
                         // Sleep for 30 seconds
                         for (let cnt = 0; cnt < 10; cnt++) {
-                            process.stdout.write(chalk.yellow.bold('.'));
+                            lgi('.', Color.yellow, false);
                             await waitForSeconds(3);
                         }
                         incRetryCount();
@@ -168,10 +170,10 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                                 `\nUnable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                             )
                         );
-                        process.stdout.write('  ');
+                        lge('  ', false);
                     }
                 } else {
-                    console.log(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
+                    lgu(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
                     throw err;
                 }
             }
