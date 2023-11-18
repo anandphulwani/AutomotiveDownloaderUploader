@@ -28,7 +28,7 @@ function reformatJSONString(contents) {
     return JSONString;
 }
 
-async function downloadBookmarksFromSourceToProcessing() {
+async function downloadBookmarksFromSourceToProcessing(debug = false) {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
     let initialSourceJSONString;
     let initialLineCount;
@@ -75,7 +75,7 @@ async function downloadBookmarksFromSourceToProcessing() {
             // process.exit(1);
 
             const downloadedBookmarkBlockMatches = processingJSONString.match(downloadedRegexExpression);
-            console.log(`Found downloadedBookmarkBlockMatches: ${downloadedBookmarkBlockMatches.length}`);
+            debug ? console.log(`Found downloadedBookmarkBlockMatches: ${downloadedBookmarkBlockMatches.length}`) : '';
 
             if (downloadedBookmarkBlockMatches !== null) {
                 const doneBookmarksInSource = {};
@@ -90,7 +90,7 @@ async function downloadBookmarksFromSourceToProcessing() {
                     // console.log(`Found bookmark with GUID: ${guid}`);
                     doneBookmarksInSource[guid] = match;
                 }
-                console.log(`Total doneBookmarksInSource: ${Object.keys(doneBookmarksInSource).length}`);
+                debug ? console.log(`Total doneBookmarksInSource: ${Object.keys(doneBookmarksInSource).length}`) : '';
 
                 const doneBookmarksInSourceKeys = Object.keys(doneBookmarksInSource);
                 for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
@@ -182,7 +182,7 @@ async function downloadBookmarksFromSourceToProcessing() {
             throw new Error(`Before writing bookmarks file: initialLineCount and writingLineCount is not the same:\n`);
         }
 
-        console.log('Writing bookmarks file');
+        debug ? console.log('Writing bookmarks file') : '';
         writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initialSourceJSONString);
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         releaseLock(sourceBookmarkPath, undefined, true);
