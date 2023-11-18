@@ -29,9 +29,8 @@ async function gotoURL(page, URL, debug = false) {
                         await waitForSeconds(3);
                     }
                 } else {
-                    console.log(
-                        chalk.white.bgRed.bold(`\nUnable to open the url after 4 retries in interval of 5 mins each (20 mins), found error 500.`)
-                    );
+                    lge('');
+                    lge(`Unable to open the url after 4 retries in interval of 5 mins each (20 mins), found error 500.`);
                     process.exit(0);
                 }
             } else {
@@ -56,10 +55,9 @@ async function gotoURL(page, URL, debug = false) {
                     }
                     incRetryCount();
                 } else {
-                    console.log(
-                        chalk.white.bgRed.bold(
-                            `\nUnable to get the following URL after 5 retries in interval of 30 seconds each, get operation timeout set to 60 seconds: ${URL} .`
-                        )
+                    lge('');
+                    lge(
+                        `Unable to get the following URL after 5 retries in interval of 30 seconds each, get operation timeout set to 60 seconds: ${URL} .`
                     );
                     lge('  ', false);
                 }

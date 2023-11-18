@@ -32,11 +32,8 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     );
 
     if (dealerNameFromDCAsIs !== dealerNameFromPage) {
-        console.log(
-            chalk.white.bgYellow.bold(
-                `\nWARNING: Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`
-            )
-        );
+        lgw('');
+        lgw(`Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`);
         return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0 };
     }
     /**
@@ -47,11 +44,8 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     );
 
     if (!/^[a-zA-Z0-9\-_ ]{1,}$/.test(VINNumber)) {
-        console.log(
-            chalk.white.bgYellow.bold(
-                `\nWARNING: Found an invalid VIN number: ${VINNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`
-            )
-        );
+        lgw('');
+        lgw(`Found an invalid VIN number: ${VINNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Invalid VIN Number, Format Unknown)', imagesDownloaded: 0 };
     }
 
@@ -68,10 +62,10 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     for (let index = 0; index < imageNumbersToDownload.length; index++) {
         const imageNumberToDownload = parseInt(imageNumbersToDownload[index], 10);
         if (imageNumberToDownload > imageOriginalURLS.length) {
-            process.stdout.write(
-                chalk.white.bgYellow.bold(
-                    `\nWARNING: Under ${dealerFolder}/${VINNumber}, Unable to find image number: ${imageNumberToDownload}, Total images under page: ${imageOriginalURLS.length}.`
-                )
+            lgw('');
+            lgw(
+                `Under ${dealerFolder}/${VINNumber}, Unable to find image number: ${imageNumberToDownload}, Total images under page: ${imageOriginalURLS.length}.`,
+                false
             );
             // eslint-disable-next-line no-continue
             continue;
@@ -113,10 +107,9 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                         }
                         incRetryCount();
                     } else {
-                        console.log(
-                            chalk.white.bgRed.bold(
-                                `\nUnable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
-                            )
+                        lge('');
+                        lge(
+                            `Unable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                         );
                         lge('  ', false);
                     }
@@ -165,10 +158,9 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                         }
                         incRetryCount();
                     } else {
-                        console.log(
-                            chalk.white.bgRed.bold(
-                                `\nUnable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
-                            )
+                        lge('');
+                        lge(
+                            `Unable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                         );
                         lge('  ', false);
                     }
@@ -179,10 +171,10 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
             }
         }
     }
-    process.stdout.write(
-        chalk.whiteBright.bgCyan(
-            `\nImages (Downloaded/Requested)  /Available: (${imagesDownloaded}/${imageNumbersToDownload.length})  /${imageOriginalURLS.length}         `
-        )
+    lgi(
+        `Images (Downloaded/Requested)  /Available: (${imagesDownloaded}/${imageNumbersToDownload.length})  /${imageOriginalURLS.length}         `,
+        Color.bgCyan,
+        false
     );
     debug ? '' : process.stdout.write('\n');
     // LOWPRIORITY:  Make sure this removeDir runs properly
