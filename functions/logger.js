@@ -8,6 +8,7 @@ import { getColPosOnTerminal } from './terminal.js';
 import { padStartAndEnd } from './stringformatting.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, printf, errors } = format;
@@ -20,10 +21,12 @@ const logFormatFile = (logFilename) =>
     printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
         // console.log(`logFormatFile Called, level:${level}`);
         const lastWriteLineSep = Object.prototype.hasOwnProperty.call(lastWriteLineSepObj, logFilename) ? lastWriteLineSepObj[logFilename] : true;
-        const { callerHierarchy, uniqueId, lineSep } =
-            sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', lineSep: LineSeparator.true };
+        const { callerHierarchy, uniqueId, loggingPrefix, lineSep } =
+            sp !== undefined
+                ? sp.slice(-1)[0]
+                : { callerHierarchy: '', uniqueId: '', loggingPrefix: LoggingPrefix.true, lineSep: LineSeparator.true };
         let logMesg = [];
-        if (lastWriteLineSep) {
+        if (loggingPrefix.name === true && lastWriteLineSep) {
             ts !== undefined ? logMesg.push(ts) : null;
             uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
             logMesg.push(`[${padStartAndEnd(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}`, 13, ' ')}]`);
@@ -58,12 +61,16 @@ const logFormatFile = (logFilename) =>
 
 const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
     // console.log(`logFormatConsole Called, level:${level}`);
-    const { callerHierarchy, uniqueId, textColor, lineSep } =
-        sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', textColor: undefined, lineSep: LineSeparator.true };
+    const { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep } =
+        sp !== undefined
+            ? sp.slice(-1)[0]
+            : { callerHierarchy: '', uniqueId: '', textColor: undefined, loggingPrefix: LoggingPrefix.true, lineSep: LineSeparator.true };
     let logMesg = [];
-    ts !== undefined ? logMesg.push(ts) : null;
-    if (level === 'catcherror' || level === 'unreachable' || level === 'severe') {
-        uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
+    if (loggingPrefix.name === true) {
+        ts !== undefined ? logMesg.push(ts) : null;
+        if (level === 'catcherror' || level === 'unreachable' || level === 'severe') {
+            uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
+        }
     }
     // If custom message is sent then, the custom message is merged with the first line of error message.
     if (stack !== undefined && stack.length > 0) {
@@ -79,12 +86,14 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         stack = stack.join('\n');
     }
     let levelToPrint = '';
-    if (level === 'warn') {
-        levelToPrint = 'warning';
-    } else if (level === 'info') {
-        levelToPrint = '';
-    } else {
-        levelToPrint = level;
+    if (loggingPrefix.name === true) {
+        if (level === 'warn') {
+            levelToPrint = 'warning';
+        } else if (level === 'info') {
+            levelToPrint = '';
+        } else {
+            levelToPrint = level;
+        }
     }
     if (levelToPrint !== '') {
         logMesg.push(`${levelToPrint}:`.toUpperCase());
