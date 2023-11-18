@@ -7,6 +7,7 @@ import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { getColPosOnTerminal } from './terminal.js';
 import { padStartAndEnd } from './stringformatting.js';
 import Color from '../class/Colors.js';
+import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, printf, errors } = format;
@@ -19,7 +20,8 @@ const logFormatFile = (logFilename) =>
     printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
         // console.log(`logFormatFile Called, level:${level}`);
         const lastWriteLineSep = Object.prototype.hasOwnProperty.call(lastWriteLineSepObj, logFilename) ? lastWriteLineSepObj[logFilename] : true;
-        const { callerHierarchy, uniqueId, lineSep } = sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', lineSep: true };
+        const { callerHierarchy, uniqueId, lineSep } =
+            sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', lineSep: LineSeparator.true };
         let logMesg = [];
         if (lastWriteLineSep) {
             ts !== undefined ? logMesg.push(ts) : null;
@@ -40,24 +42,24 @@ const logFormatFile = (logFilename) =>
             stack = stack.join('\n');
         }
         logMesg.push(message);
-        if (callerHierarchy !== '' && sp !== undefined && lineSep === true) {
+        if (callerHierarchy !== '' && sp !== undefined && lineSep.name === true) {
             logMesg.push(`(${callerHierarchy})`);
         }
         logMesg = logMesg.join(' ');
         if (stack !== undefined && !logMesg.includes(stack)) {
             logMesg = `${logMesg}\n${stack}`;
         }
-        if (lineSep) {
+        if (lineSep.name) {
             logMesg = `${logMesg}\n`;
         }
-        lastWriteLineSepObj[logFilename] = lineSep;
+        lastWriteLineSepObj[logFilename] = lineSep.name;
         return logMesg;
     });
 
 const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
     // console.log(`logFormatConsole Called, level:${level}`);
     const { callerHierarchy, uniqueId, textColor, lineSep } =
-        sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', textColor: undefined, lineSep: true };
+        sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', textColor: undefined, lineSep: LineSeparator.true };
     let logMesg = [];
     ts !== undefined ? logMesg.push(ts) : null;
     if (level === 'catcherror' || level === 'unreachable' || level === 'severe') {
@@ -88,13 +90,18 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         logMesg.push(`${levelToPrint}:`.toUpperCase());
     }
     logMesg.push(message);
-    if ((level === 'catcherror' || level === 'unreachable' || level === 'severe') && callerHierarchy !== '' && sp !== undefined && lineSep === true) {
+    if (
+        (level === 'catcherror' || level === 'unreachable' || level === 'severe') &&
+        callerHierarchy !== '' &&
+        sp !== undefined &&
+        lineSep.name === true
+    ) {
         logMesg.push(`(${callerHierarchy})`);
     }
     logMesg = logMesg.join(' ');
     logMesg = logMesg.split('\n');
     logMesg = logMesg.map((line, index, arr) => {
-        if (index === arr.length - 1 && lineSep === false && !(level === 'catcherror' && stack !== undefined)) {
+        if (index === arr.length - 1 && lineSep.name === false && !(level === 'catcherror' && stack !== undefined)) {
             return line;
         }
         if (index === 0) {
@@ -103,22 +110,22 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         return line.padEnd(120, ' ');
     });
     logMesg = logMesg.join('\n');
-    if (lineSep) {
+    if (lineSep.name) {
         logMesg = `${logMesg}\n`;
     }
     if (stack !== undefined) {
-        if (!lineSep) {
+        if (!lineSep.name) {
             logMesg = `${logMesg}\n`;
         }
         stack = stack.split('\n');
         stack = stack.map((line, index, arr) => {
-            if (index === arr.length - 1 && lineSep === false) {
+            if (index === arr.length - 1 && lineSep.name === false) {
                 return line;
             }
             return line.padEnd(120, ' ');
         });
         stack = stack.join('\n');
-        if (lineSep) {
+        if (lineSep.name) {
             stack = `${stack}\n`;
         }
     }
