@@ -86,7 +86,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     } else {
         levelToPrint = level;
     }
-    if (level !== 'info') {
+    if (levelToPrint !== '') {
         logMesg.push(`${levelToPrint}:`.toUpperCase());
     }
     logMesg.push(message);
