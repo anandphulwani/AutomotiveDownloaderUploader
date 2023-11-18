@@ -25,8 +25,8 @@ function convertArgsToProperOrder(...args) {
     let message = '';
     let error;
     let textColor;
-    let lineSep = true;
     let loggingPrefix = true;
+    let lineSep = true;
 
     args.forEach((arg) => {
         // console.log(typeof arg);
@@ -36,10 +36,10 @@ function convertArgsToProperOrder(...args) {
             error = arg;
         } else if (arg instanceof Color) {
             textColor = arg;
-        } else if (arg instanceof LineSeparator) {
-            lineSep = arg;
         } else if (arg instanceof LoggingPrefix) {
             loggingPrefix = arg;
+        } else if (arg instanceof LineSeparator) {
+            lineSep = arg;
         }
     });
 
