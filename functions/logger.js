@@ -17,7 +17,6 @@ const levels = { unreachable: 0, catcherror: 1, severe: 2, error: 3, warn: 4, in
 const lastWriteLineSepObj = {};
 const logFormatFile = (logFilename) =>
     printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
-        message = message.trim();
         // console.log(`logFormatFile Called, level:${level}`);
         const lastWriteLineSep = Object.prototype.hasOwnProperty.call(lastWriteLineSepObj, logFilename) ? lastWriteLineSepObj[logFilename] : true;
         const { callerHierarchy, uniqueId, lineSep } = sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', lineSep: true };
@@ -30,9 +29,10 @@ const logFormatFile = (logFilename) =>
         if (stack !== undefined && !logMesg.includes(stack)) {
             // If custom message is sent then, the custom message is merged with the first line of error message.
             stack = stack.split('\n');
-            const regex = new RegExp(`^(\\S+?): ${message}$`);
+            const regex = new RegExp(`^(\\S+?):${message}$`);
             if (regex.test(stack[0])) {
                 stack.shift();
+                message = message.trim();
             } else {
                 const errorString = stack[0].replace(/^[a-zA-Z]*Error:/, '').trim();
                 message = message.replace(errorString, '').trim();
@@ -55,7 +55,6 @@ const logFormatFile = (logFilename) =>
     });
 
 const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
-    message = message.trim();
     // console.log(`logFormatConsole Called, level:${level}`);
     const { callerHierarchy, uniqueId, textColor, lineSep } =
         sp !== undefined ? sp.slice(-1)[0] : { callerHierarchy: '', uniqueId: '', textColor: undefined, lineSep: true };
@@ -67,9 +66,10 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     // If custom message is sent then, the custom message is merged with the first line of error message.
     if (stack !== undefined && stack.length > 0) {
         stack = stack.split('\n');
-        const regex = new RegExp(`^(\\S+?): ${message}$`);
+        const regex = new RegExp(`^(\\S+?):${message}$`);
         if (regex.test(stack[0])) {
             stack.shift();
+            message = message.trim();
         } else {
             const errorString = stack[0].replace(/^[a-zA-Z]*Error:/, '').trim();
             message = message.replace(errorString, '').trim();
