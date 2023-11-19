@@ -8,7 +8,7 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { lgc, lgb, lgi, lge, lgu } from './loggersupportive.js';
+import { lgc, lgb, lgi, lge, lgu, lgh } from './loggersupportive.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
@@ -211,7 +211,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         return false;
     });
     if (ignoreBookmarkURLObjectFindResults !== undefined) {
-        lgi(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`, Color.magenta, LoggingPrefix.false);
+        lgh(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`, Color.magenta, LoggingPrefix.false);
         return {
             result: false,
             bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark,
@@ -231,7 +231,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        lge(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)`, LoggingPrefix.false);
+        lgh(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)`, LoggingPrefix.false);
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Duplicate, Already downloaded)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }
@@ -245,7 +245,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        lge(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`, LoggingPrefix.false);
+        lgh(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`, LoggingPrefix.false);
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }

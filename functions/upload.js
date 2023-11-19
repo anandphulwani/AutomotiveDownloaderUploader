@@ -6,7 +6,7 @@ import { URL as URLparser } from 'url';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './datetime.js';
-import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif } from './loggersupportive.js';
+import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif, lgh } from './loggersupportive.js';
 import { config } from '../configs/config.js';
 import { sleep, msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
@@ -59,7 +59,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
         printToLogBuffer.pop();
-        lge(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`, LoggingPrefix.false);
+        lgh(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`, LoggingPrefix.false);
         const VINNumberFromBookmark = name.split(' |#| ')[1].trim();
         const { typeOfVINPath, VINFolderPath, VINFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
         const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, true);
