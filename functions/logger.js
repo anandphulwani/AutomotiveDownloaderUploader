@@ -138,21 +138,8 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
             stack = `${stack}\n`;
         }
     }
-    if (level === 'catcherror') {
-        logMesg = chalk.bgRgb(248, 100, 90).whiteBright(logMesg);
-        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
-    } else if (level === 'unreachable') {
-        logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg);
-        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
-    } else if (level === 'severe') {
-        logMesg = chalk.white.bgRgb(163, 0, 10).bold(logMesg);
-        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
-    } else if (level === 'error') {
-        logMesg = chalk.white.bgRed.bold(logMesg);
-    } else if (level === 'warn') {
-        logMesg = chalk.white.bgYellow.bold(logMesg);
-    } else if (level === 'info') {
-        if (textColor === undefined || textColor.name === 'cyan') {
+    if (textColor !== undefined) {
+        if (textColor.name === 'cyan') {
             logMesg = chalk.cyan(logMesg);
         } else if (textColor.name === 'bgCyan') {
             logMesg = chalk.bgCyan.bold(logMesg);
@@ -179,14 +166,30 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         } else if (textColor.name === 'bgWhite') {
             logMesg = chalk.black.bgWhiteBright(logMesg);
         }
+    }
+    if (level === 'catcherror') {
+        textColor === undefined ? (logMesg = chalk.bgRgb(248, 100, 90).whiteBright(logMesg)) : null;
+        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
+    } else if (level === 'unreachable') {
+        textColor === undefined ? (logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg)) : null;
+        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
+    } else if (level === 'severe') {
+        textColor === undefined ? (logMesg = chalk.white.bgRgb(163, 0, 10).bold(logMesg)) : null;
+        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
+    } else if (level === 'error') {
+        textColor === undefined ? (logMesg = chalk.white.bgRed.bold(logMesg)) : null;
+    } else if (level === 'warn') {
+        textColor === undefined ? (logMesg = chalk.white.bgYellow.bold(logMesg)) : null;
+    } else if (level === 'info') {
+        textColor === undefined ? (logMesg = chalk.cyan(logMesg)) : null;
     } else if (level === 'verbose') {
-        logMesg = chalk.white.bgGreenBright.bold(logMesg);
+        textColor === undefined ? (logMesg = chalk.white.bgGreenBright.bold(logMesg)) : null;
     } else if (level === 'debug') {
-        logMesg = chalk.white.bgMagentaBright.bold(logMesg);
+        textColor === undefined ? (logMesg = chalk.white.bgMagentaBright.bold(logMesg)) : null;
     } else if (level === 'billy') {
-        logMesg = chalk.black.bgWhiteBright(logMesg);
+        textColor === undefined ? (logMesg = chalk.black.bgWhiteBright(logMesg)) : null;
     } else {
-        logMesg = chalk.inverse(logMesg);
+        textColor === undefined ? (logMesg = chalk.inverse(logMesg)) : null;
     }
     return logMesg;
 });
