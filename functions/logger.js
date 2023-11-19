@@ -651,7 +651,7 @@ const loggerFile = {
         severeFileWinston.severe(...args);
     },
     error: (...args) => {
-        // console.log('Logger File Erro');
+        // console.log('Logger File Error');
         errorFileWinston.error(...args);
     },
     warn: (...args) => {
