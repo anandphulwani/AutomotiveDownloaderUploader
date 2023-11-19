@@ -135,9 +135,9 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
             return line;
         }
         if (index === 0) {
-            return line.padEnd(120 - getColPosOnTerminal() + 1, ' ');
+            return line.padEnd(Math.ceil((getColPosOnTerminal() - 1 + line.length) / 120) * 120 - getColPosOnTerminal() + 1, ' ');
         }
-        return line.padEnd(120, ' ');
+        return line.padEnd(Math.ceil(line.length / 120) * 120, ' ');
     });
     logMesg = logMesg.join('\n');
     if (lineSep.name) {
