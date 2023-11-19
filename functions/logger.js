@@ -236,7 +236,7 @@ const infoLogFile = `${instanceRunLogFilePrefix}_info.log`;
 const verboseFile = `${instanceRunLogFilePrefix}_verbose.log`;
 const debugLogFile = `${instanceRunLogFilePrefix}_debug.log`;
 const traceLogFile = `${instanceRunLogFilePrefix}_trace.log`;
-const sillyLogFile = `${instanceRunLogFilePrefix}_billy.log`;
+const billyLogFile = `${instanceRunLogFilePrefix}_billy.log`;
 
 const catcherrorFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
@@ -721,9 +721,9 @@ function addIndividualTransportBillyFileWinston() {
     if (!isIndividualTransportBillyFileWinstonEnabled) {
         billyFileWinston.add(
             new transports.File({
-                ...fileTransportOptions(sillyLogFile),
+                ...fileTransportOptions(billyLogFile),
                 name: 'billy',
-                filename: sillyLogFile,
+                filename: billyLogFile,
                 level: 'billy',
             })
         );
