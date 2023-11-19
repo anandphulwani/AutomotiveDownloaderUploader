@@ -66,6 +66,13 @@ async function downloadFileAndCompareWithChecksum(
                 if (checksumOfFile === hashSum.digest('hex')) {
                     let filePath = file.path;
                     if (isSingleImage) {
+                        /**
+                         * If it's a single image, then get the VIN Number from the path name, and replace the filename
+                         * which is usually 01.jpg, 02.jpg...... likewise, to VINNumber.jpg, for that we need to
+                         * firstly: moveDirOrFile(rename) 01.jpg to VINNumber.jpg in the directory where the file is currently present
+                         * secondly: we have to alter the destinationpath from `somepath/VINNumber/01.jpg` to `somepath/VINNumber.jpg`
+                         * so that the file can be moved without the VINNumber as directory.
+                         */
                         const newFilePath = `${path.dirname(filePath)}/${path.basename(destinationPath)}${path.extname(path.basename(filePath))}`;
                         destinationPath = `${path.dirname(destinationPath)}/`;
                         moveDirOrFile(filePath, newFilePath, true, debug);
