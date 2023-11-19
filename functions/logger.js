@@ -251,7 +251,6 @@ const unreachableFileWinston = createLogger({
             level: 'unreachable',
         }),
         new transports.File({
-            handleExceptions: true,
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
@@ -265,22 +264,13 @@ const catcherrorFileWinston = createLogger({
     level: 'catcherror',
     levels: levels,
     transports: [
-        // new transports.File({
-        //     ...fileTransportOptions,
-        //     name: 'all',
-        //     filename: `${instanceRunLogFilePrefix}.log`,
-        //     level: 'catcherror',
-        // }),
-        // To catch the non catched errors
         new transports.File({
-            handleExceptions: true,
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
             level: 'error',
         }),
         new transports.File({
-            handleExceptions: true,
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
@@ -296,14 +286,12 @@ const severeFileWinston = createLogger({
     transports: [
         // To catch the non catched errors
         new transports.File({
-            handleExceptions: true,
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
             level: 'severe',
         }),
         new transports.File({
-            handleExceptions: true,
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
@@ -323,7 +311,6 @@ const errorFileWinston = createLogger({
             level: 'error',
         }),
         new transports.File({
-            handleExceptions: true,
             ...fileTransportOptions(userErrorsLogFile),
             name: 'all',
             filename: userErrorsLogFile,
@@ -339,14 +326,12 @@ const hiccupFileWinston = createLogger({
     transports: [
         // To catch the non catched errors
         new transports.File({
-            handleExceptions: true,
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
             level: 'hiccup',
         }),
         new transports.File({
-            handleExceptions: true,
             ...fileTransportOptions(userErrorsLogFile),
             name: 'all',
             filename: userErrorsLogFile,
@@ -366,7 +351,6 @@ const warnFileWinston = createLogger({
             level: 'warn',
         }),
         new transports.File({
-            handleExceptions: true,
             ...fileTransportOptions(userErrorsLogFile),
             name: 'all',
             filename: userErrorsLogFile,
@@ -420,7 +404,6 @@ const traceFileWinston = createLogger({
     levels: levels,
     transports: [
         new transports.File({
-            handleExceptions: true,
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
@@ -462,13 +445,7 @@ const catcherrorConsoleWinston = createLogger({
     level: 'catcherror',
     levels: levels,
     transports: [
-        // new transports.Console({
-        //     ...consoleTransportOptions,
-        //     name: 'catcherror',
-        //     level: 'catcherror',
-        // }),
         new transports.Console({
-            handleExceptions: true,
             ...consoleTransportOptions,
             name: 'error',
             level: 'error',
