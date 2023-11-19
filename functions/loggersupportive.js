@@ -91,7 +91,8 @@ const lgs = (...args) => {
 };
 
 /**
- * lge: is for errors which are generated at the user level using the system.
+ * lge: is for errors which are generated at the user level using the system, which a user should focus on.
+ * Can be accompanied by a process.exit(1) also in some situations.
  */
 const lge = (...args) => {
     args = convertArgsToProperOrder(...args);
@@ -104,6 +105,10 @@ const lge = (...args) => {
     loggerFile.error(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
 };
 
+/**
+ * lgw: is for warnings which are generated at the user level using the system, which a user can focus on.
+ * Even if it doesn't it will not disrupt the flow.
+ */
 const lgw = (...args) => {
     args = convertArgsToProperOrder(...args);
     const [, , textColor, loggingPrefix, lineSep] = args;
