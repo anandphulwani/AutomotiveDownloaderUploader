@@ -14,6 +14,7 @@ import {
     addIndividualTransportInfoFileWinston,
     addIndividualTransportVerboseFileWinston,
     addIndividualTransportDebugFileWinston,
+    addIndividualTransportTraceFileWinston,
     addIndividualTransportBillyFileWinston,
 } from './logger.js';
 import { generateAndGetNonCatchErrorLogLevels9DigitUniqueId, generateAndGetCatchErrorLogLevels6DigitUniqueId } from './loggeruniqueidgenerators.js';
@@ -169,6 +170,17 @@ const lgd = (...args) => {
     loggerFile.debug(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
 };
 
+const lgt = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSep] = args;
+    args.splice(-3);
+    addIndividualTransportTraceFileWinston();
+    const callerHierarchy = getCallerHierarchyFormatted(...args);
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerConsole.trace(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
+    loggerFile.trace(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+};
+
 const lgb = (...args) => {
     args = convertArgsToProperOrder(...args);
     const [, , textColor, loggingPrefix, lineSep] = args;
@@ -270,6 +282,16 @@ const lgdf = (...args) => {
     loggerFile.debug(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
 };
 
+const lgtf = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const [, , , loggingPrefix, lineSep] = args;
+    args.splice(-3);
+    addIndividualTransportTraceFileWinston();
+    const callerHierarchy = getCallerHierarchyFormatted(...args);
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerFile.trace(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+};
+
 const lgbf = (...args) => {
     args = convertArgsToProperOrder(...args);
     const [, , , loggingPrefix, lineSep] = args;
@@ -281,4 +303,4 @@ const lgbf = (...args) => {
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { lgc, lgu, lgs, lge, lgh, lgw, lgi, lgv, lgd, lgb, lgcf, lguf, lgsf, lgef, lghf, lgwf, lgif, lgvf, lgdf, lgbf };
+export { lgc, lgu, lgs, lge, lgh, lgw, lgi, lgv, lgd, lgt, lgb, lgcf, lguf, lgsf, lgef, lghf, lgwf, lgif, lgvf, lgdf, lgtf, lgbf };

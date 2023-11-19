@@ -12,7 +12,7 @@ import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, printf, errors } = format;
-const levels = { unreachable: 0, catcherror: 1, severe: 2, error: 3, hiccup: 4, warn: 5, info: 6, verbose: 7, debug: 8, billy: 9 };
+const levels = { unreachable: 0, catcherror: 1, severe: 2, error: 3, hiccup: 4, warn: 5, info: 6, verbose: 7, debug: 8, trace: 9, billy: 10 };
 
 // Define log functions
 /* #region logFormatFile and logFormatConsole : Begin */
@@ -188,6 +188,8 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         textColor === undefined ? (logMesg = chalk.white.bgGreenBright.bold(logMesg)) : null;
     } else if (level === 'debug') {
         textColor === undefined ? (logMesg = chalk.white.bgMagentaBright.bold(logMesg)) : null;
+    } else if (level === 'trace') {
+        textColor === undefined ? (logMesg = chalk.bgRgb(242, 140, 40).bold(logMesg)) : null;
     } else if (level === 'billy') {
         textColor === undefined ? (logMesg = chalk.black.bgWhiteBright(logMesg)) : null;
     } else {
@@ -233,6 +235,7 @@ const warnLogFile = `${instanceRunLogFilePrefix}_warn.log`;
 const infoLogFile = `${instanceRunLogFilePrefix}_info.log`;
 const verboseFile = `${instanceRunLogFilePrefix}_verbose.log`;
 const debugLogFile = `${instanceRunLogFilePrefix}_debug.log`;
+const traceLogFile = `${instanceRunLogFilePrefix}_trace.log`;
 const sillyLogFile = `${instanceRunLogFilePrefix}_billy.log`;
 
 const catcherrorFileWinston = createLogger({
@@ -390,6 +393,21 @@ const debugFileWinston = createLogger({
     ],
 });
 
+const traceFileWinston = createLogger({
+    format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'trace',
+    levels: levels,
+    transports: [
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(mainLogFile),
+            name: 'all',
+            filename: mainLogFile,
+            level: 'trace',
+        }),
+    ],
+});
+
 const billyFileWinston = createLogger({
     level: 'billy',
     levels: levels,
@@ -517,6 +535,19 @@ const debugConsoleWinston = createLogger({
             ...consoleTransportOptions,
             name: 'debug',
             level: 'debug',
+        }),
+    ],
+});
+
+const traceConsoleWinston = createLogger({
+    format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'trace',
+    levels: levels,
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'trace',
+            level: 'trace',
         }),
     ],
 });
@@ -670,6 +701,21 @@ function addIndividualTransportDebugFileWinston() {
     }
 }
 
+let isIndividualTransportTraceFileWinstonEnabled = false;
+function addIndividualTransportTraceFileWinston() {
+    if (!isIndividualTransportTraceFileWinstonEnabled) {
+        traceFileWinston.add(
+            new transports.File({
+                ...fileTransportOptions(traceLogFile),
+                name: 'trace',
+                filename: traceLogFile,
+                level: 'trace',
+            })
+        );
+        isIndividualTransportTraceFileWinstonEnabled = true;
+    }
+}
+
 let isIndividualTransportBillyFileWinstonEnabled = false;
 function addIndividualTransportBillyFileWinston() {
     if (!isIndividualTransportBillyFileWinstonEnabled) {
@@ -724,6 +770,10 @@ const loggerFile = {
         // console.log('Logger File Debug');
         debugFileWinston.debug(...args);
     },
+    trace: (...args) => {
+        // console.log('Logger File Trace');
+        traceFileWinston.trace(...args);
+    },
     billy: (...args) => {
         // console.log('Logger File Billy');
         billyFileWinston.billy(...args);
@@ -767,6 +817,10 @@ const loggerConsole = {
         // console.log('Logger Console Debug');
         debugConsoleWinston.debug(...args);
     },
+    trace: (...args) => {
+        // console.log('Logger Console Trace');
+        traceConsoleWinston.trace(...args);
+    },
     billy: (...args) => {
         // console.log('Logger Console Billy');
         billyConsoleWinston.billy(...args);
@@ -800,5 +854,6 @@ export {
     addIndividualTransportInfoFileWinston,
     addIndividualTransportVerboseFileWinston,
     addIndividualTransportDebugFileWinston,
+    addIndividualTransportTraceFileWinston,
     addIndividualTransportBillyFileWinston,
 };
