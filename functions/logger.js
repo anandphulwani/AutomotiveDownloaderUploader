@@ -51,7 +51,7 @@ const logFormatFile = (logFilename) =>
                 message = message.trim();
             }
             stack = stack.split('\n');
-            const regex = new RegExp(`^(\\S+?):[ ?]${message}$`);
+            const regex = new RegExp(`^(\\S+?):(?:[ ]?)${message}$`);
             if (regex.test(stack[0])) {
                 stack.shift();
                 message = message.trim();
@@ -96,7 +96,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
             message = message.trim();
         }
         stack = stack.split('\n');
-        const regex = new RegExp(`^(\\S+?):[ ?]${message}$`);
+        const regex = new RegExp(`^(\\S+?):(?:[ ]?)${message}$`);
         if (regex.test(stack[0])) {
             stack.shift();
             message = message.trim();
