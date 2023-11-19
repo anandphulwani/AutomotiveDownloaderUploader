@@ -268,13 +268,13 @@ const catcherrorFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'error',
+            level: 'catcherror',
         }),
         new transports.File({
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
-            level: 'error',
+            level: 'catcherror',
         }),
     ],
 });
