@@ -9,6 +9,7 @@ import {
     addIndividualTransportUnreachableFileWinston,
     addIndividualTransportSevereFileWinston,
     addIndividualTransportErrorFileWinston,
+    addIndividualTransportHiccupFileWinston,
     addIndividualTransportWarnFileWinston,
     addIndividualTransportInfoFileWinston,
     addIndividualTransportVerboseFileWinston,
@@ -103,6 +104,21 @@ const lge = (...args) => {
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
     loggerConsole.error(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
     loggerFile.error(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+};
+
+/**
+ * lgh: is for errors which are hiccups generated at the user level, which a user can ignore.
+ * which are assumed and accounted for already, as they are going to occur in almost every instance.
+ */
+const lgh = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSep] = args;
+    args.splice(-3);
+    addIndividualTransportHiccupFileWinston();
+    const callerHierarchy = getCallerHierarchyFormatted(...args);
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerConsole.hiccup(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
+    loggerFile.hiccup(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
 };
 
 /**
@@ -204,6 +220,16 @@ const lgef = (...args) => {
     loggerFile.error(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
 };
 
+const lghf = (...args) => {
+    args = convertArgsToProperOrder(...args);
+    const [, , , loggingPrefix, lineSep] = args;
+    args.splice(-3);
+    addIndividualTransportHiccupFileWinston();
+    const callerHierarchy = getCallerHierarchyFormatted(...args);
+    const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    loggerFile.hiccup(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+};
+
 const lgwf = (...args) => {
     args = convertArgsToProperOrder(...args);
     const [, , , loggingPrefix, lineSep] = args;
@@ -255,4 +281,4 @@ const lgbf = (...args) => {
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { lgc, lgu, lgs, lge, lgw, lgi, lgv, lgd, lgb, lgcf, lguf, lgsf, lgef, lgwf, lgif, lgvf, lgdf, lgbf };
+export { lgc, lgu, lgs, lge, lgh, lgw, lgi, lgv, lgd, lgb, lgcf, lguf, lgsf, lgef, lghf, lgwf, lgif, lgvf, lgdf, lgbf };

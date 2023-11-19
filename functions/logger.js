@@ -12,7 +12,7 @@ import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, printf, errors } = format;
-const levels = { unreachable: 0, catcherror: 1, severe: 2, error: 3, warn: 4, info: 5, verbose: 6, debug: 7, billy: 8 };
+const levels = { unreachable: 0, catcherror: 1, severe: 2, error: 3, hiccup: 4, warn: 5, info: 6, verbose: 7, debug: 8, billy: 9 };
 
 // Define log functions
 /* #region logFormatFile and logFormatConsole : Begin */
@@ -89,7 +89,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     if (loggingPrefix.name === true) {
         if (level === 'warn') {
             levelToPrint = 'warning';
-        } else if (level === 'info') {
+        } else if (level === 'info' || level === 'hiccup') {
             levelToPrint = '';
         } else {
             levelToPrint = level;
@@ -178,6 +178,8 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
         logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     } else if (level === 'error') {
         textColor === undefined ? (logMesg = chalk.white.bgRed.bold(logMesg)) : null;
+    } else if (level === 'hiccup') {
+        textColor === undefined ? (logMesg = chalk.red.bold(logMesg)) : null;
     } else if (level === 'warn') {
         textColor === undefined ? (logMesg = chalk.white.bgYellow.bold(logMesg)) : null;
     } else if (level === 'info') {
@@ -226,6 +228,7 @@ const catchErrorLogFile = `${instanceRunLogFilePrefix}_catcherror.log`;
 const unreachableLogFile = `${instanceRunLogFilePrefix}_unreachable.log`;
 const severeLogFile = `${instanceRunLogFilePrefix}_severe.log`;
 const errorLogFile = `${instanceRunLogFilePrefix}_error.log`;
+const hiccupLogFile = `${instanceRunLogFilePrefix}_hiccup.log`;
 const warnLogFile = `${instanceRunLogFilePrefix}_warn.log`;
 const infoLogFile = `${instanceRunLogFilePrefix}_info.log`;
 const verboseFile = `${instanceRunLogFilePrefix}_verbose.log`;
@@ -315,6 +318,22 @@ const errorFileWinston = createLogger({
             name: 'all',
             filename: mainLogFile,
             level: 'error',
+        }),
+    ],
+});
+
+const hiccupFileWinston = createLogger({
+    format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'hiccup',
+    levels: levels,
+    transports: [
+        // To catch the non catched errors
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(mainLogFile),
+            name: 'all',
+            filename: mainLogFile,
+            level: 'hiccup',
         }),
     ],
 });
@@ -443,6 +462,19 @@ const errorConsoleWinston = createLogger({
     ],
 });
 
+const hiccupConsoleWinston = createLogger({
+    format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'hiccup',
+    levels: levels,
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'hiccup',
+            level: 'hiccup',
+        }),
+    ],
+});
+
 const warnConsoleWinston = createLogger({
     level: 'warn',
     levels: levels,
@@ -563,6 +595,21 @@ function addIndividualTransportErrorFileWinston() {
     }
 }
 
+let isIndividualTransportHiccupFileWinstonEnabled = false;
+function addIndividualTransportHiccupFileWinston() {
+    if (!isIndividualTransportHiccupFileWinstonEnabled) {
+        hiccupFileWinston.add(
+            new transports.File({
+                ...fileTransportOptions(hiccupLogFile),
+                name: 'hiccup',
+                filename: hiccupLogFile,
+                level: 'hiccup',
+            })
+        );
+        isIndividualTransportHiccupFileWinstonEnabled = true;
+    }
+}
+
 let isIndividualTransportWarnFileWinstonEnabled = false;
 function addIndividualTransportWarnFileWinston() {
     if (!isIndividualTransportWarnFileWinstonEnabled) {
@@ -657,6 +704,10 @@ const loggerFile = {
         // console.log('Logger File Error');
         errorFileWinston.error(...args);
     },
+    hiccup: (...args) => {
+        // console.log('Logger File Hiccup');
+        hiccupFileWinston.hiccup(...args);
+    },
     warn: (...args) => {
         // console.log('Logger File Warn');
         warnFileWinston.warn(...args);
@@ -695,6 +746,10 @@ const loggerConsole = {
     error: (...args) => {
         // console.log('Logger Console Error');
         errorConsoleWinston.error(...args);
+    },
+    hiccup: (...args) => {
+        // console.log('Logger Console Hiccup');
+        hiccupConsoleWinston.hiccup(...args);
     },
     warn: (...args) => {
         // console.log('Logger Console Warn');
@@ -740,6 +795,7 @@ export {
     addIndividualTransportUnreachableFileWinston,
     addIndividualTransportSevereFileWinston,
     addIndividualTransportErrorFileWinston,
+    addIndividualTransportHiccupFileWinston,
     addIndividualTransportWarnFileWinston,
     addIndividualTransportInfoFileWinston,
     addIndividualTransportVerboseFileWinston,
