@@ -44,10 +44,14 @@ const logFormatFile = (logFilename) =>
             uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
             logMesg.push(`[${padStartAndEnd(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}`, 13, ' ')}]`);
         }
-        if (stack !== undefined && !logMesg.includes(stack)) {
-            // If custom message is sent then, the custom message is merged with the first line of error message.
+        // If custom message is sent then, the custom message is merged with the first line of error message.
+        if (stack !== undefined && stack.length > 0) {
+            if (message.includes(stack)) {
+                message = message.replace(stack, '');
+                message = message.trim();
+            }
             stack = stack.split('\n');
-            const regex = new RegExp(`^(\\S+?):${message}$`);
+            const regex = new RegExp(`^(\\S+?):[ ?]${message}$`);
             if (regex.test(stack[0])) {
                 stack.shift();
                 message = message.trim();
@@ -87,8 +91,12 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     }
     // If custom message is sent then, the custom message is merged with the first line of error message.
     if (stack !== undefined && stack.length > 0) {
+        if (message.includes(stack)) {
+            message = message.replace(stack, '');
+            message = message.trim();
+        }
         stack = stack.split('\n');
-        const regex = new RegExp(`^(\\S+?):${message}$`);
+        const regex = new RegExp(`^(\\S+?):[ ?]${message}$`);
         if (regex.test(stack[0])) {
             stack.shift();
             message = message.trim();
