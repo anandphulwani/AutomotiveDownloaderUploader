@@ -131,7 +131,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     logMesg = logMesg.join(' ');
     logMesg = logMesg.split('\n');
     logMesg = logMesg.map((line, index, arr) => {
-        if (index === arr.length - 1 && lineSep.name === false && !(level === 'catcherror' && stack !== undefined)) {
+        if (index === arr.length - 1 && lineSep.name === false && stack === undefined) {
             return line;
         }
         if (index === 0) {
