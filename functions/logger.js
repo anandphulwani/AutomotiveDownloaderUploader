@@ -68,7 +68,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     let logMesg = [];
     if (loggingPrefix.name === true) {
         ts !== undefined ? logMesg.push(ts) : null;
-        if (level === 'catcherror' || level === 'unreachable' || level === 'severe') {
+        if (level === 'unreachable' || level === 'catcherror' || level === 'severe') {
             uniqueId !== undefined ? logMesg.push(`[${uniqueId}]`) : null;
         }
     }
@@ -89,7 +89,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     if (loggingPrefix.name === true) {
         if (level === 'warn') {
             levelToPrint = 'warning';
-        } else if (level === 'info' || level === 'hiccup') {
+        } else if (level === 'hiccup' || level === 'info') {
             levelToPrint = '';
         } else {
             levelToPrint = level;
@@ -100,7 +100,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     }
     logMesg.push(message);
     if (
-        (level === 'catcherror' || level === 'unreachable' || level === 'severe') &&
+        (level === 'unreachable' || level === 'catcherror' || level === 'severe') &&
         callerHierarchy !== '' &&
         sp !== undefined &&
         lineSep.name === true
@@ -167,11 +167,11 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
             logMesg = chalk.black.bgWhiteBright(logMesg);
         }
     }
-    if (level === 'catcherror') {
-        textColor === undefined ? (logMesg = chalk.bgRgb(248, 100, 90).whiteBright(logMesg)) : null;
-        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
-    } else if (level === 'unreachable') {
+    if (level === 'unreachable') {
         textColor === undefined ? (logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg)) : null;
+        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
+    } else if (level === 'catcherror') {
+        textColor === undefined ? (logMesg = chalk.bgRgb(248, 100, 90).whiteBright(logMesg)) : null;
         logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     } else if (level === 'severe') {
         textColor === undefined ? (logMesg = chalk.white.bgRgb(163, 0, 10).bold(logMesg)) : null;
@@ -227,8 +227,8 @@ const consoleTransportOptions = {
 const mainLogFile = `${instanceRunLogFilePrefix}.log`;
 const applicationErrorsLogFile = `${instanceRunLogFilePrefix}_applicationerrors.log`;
 const userErrorsLogFile = `${instanceRunLogFilePrefix}_usererrors.log`;
-const catchErrorLogFile = `${instanceRunLogFilePrefix}_catcherror.log`;
 const unreachableLogFile = `${instanceRunLogFilePrefix}_unreachable.log`;
+const catchErrorLogFile = `${instanceRunLogFilePrefix}_catcherror.log`;
 const severeLogFile = `${instanceRunLogFilePrefix}_severe.log`;
 const errorLogFile = `${instanceRunLogFilePrefix}_error.log`;
 const hiccupLogFile = `${instanceRunLogFilePrefix}_hiccup.log`;
@@ -238,6 +238,27 @@ const verboseFile = `${instanceRunLogFilePrefix}_verbose.log`;
 const debugLogFile = `${instanceRunLogFilePrefix}_debug.log`;
 const traceLogFile = `${instanceRunLogFilePrefix}_trace.log`;
 const billyLogFile = `${instanceRunLogFilePrefix}_billy.log`;
+
+const unreachableFileWinston = createLogger({
+    format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'unreachable',
+    levels: levels,
+    transports: [
+        new transports.File({
+            ...fileTransportOptions(mainLogFile),
+            name: 'all',
+            filename: mainLogFile,
+            level: 'unreachable',
+        }),
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(applicationErrorsLogFile),
+            name: 'all',
+            filename: applicationErrorsLogFile,
+            level: 'unreachable',
+        }),
+    ],
+});
 
 const catcherrorFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
@@ -264,27 +285,6 @@ const catcherrorFileWinston = createLogger({
             name: 'all',
             filename: applicationErrorsLogFile,
             level: 'error',
-        }),
-    ],
-});
-
-const unreachableFileWinston = createLogger({
-    format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
-    level: 'unreachable',
-    levels: levels,
-    transports: [
-        new transports.File({
-            ...fileTransportOptions(mainLogFile),
-            name: 'all',
-            filename: mainLogFile,
-            level: 'unreachable',
-        }),
-        new transports.File({
-            handleExceptions: true,
-            ...fileTransportOptions(applicationErrorsLogFile),
-            name: 'all',
-            filename: applicationErrorsLogFile,
-            level: 'unreachable',
         }),
     ],
 });
@@ -444,6 +444,19 @@ const billyFileWinston = createLogger({
 /* #endregion File loggers: catcherror, error, warn, info : End */
 
 /* #region Console loggers: catcherror, error, warn, info : Begin */
+const unreachableConsoleWinston = createLogger({
+    format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'unreachable',
+    levels: levels,
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'unreachable',
+            level: 'unreachable',
+        }),
+    ],
+});
+
 const catcherrorConsoleWinston = createLogger({
     format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'catcherror',
@@ -459,19 +472,6 @@ const catcherrorConsoleWinston = createLogger({
             ...consoleTransportOptions,
             name: 'error',
             level: 'error',
-        }),
-    ],
-});
-
-const unreachableConsoleWinston = createLogger({
-    format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
-    level: 'unreachable',
-    levels: levels,
-    transports: [
-        new transports.Console({
-            ...consoleTransportOptions,
-            name: 'unreachable',
-            level: 'unreachable',
         }),
     ],
 });
@@ -587,21 +587,6 @@ const billyConsoleWinston = createLogger({
 /* #endregion Console loggers: catcherror, error, warn, info : End */
 
 /* #region addIndividualTransport Functions : Begin */
-let isIndividualTransportCatcherrorFileWinstonEnabled = false;
-function addIndividualTransportCatcherrorFileWinston() {
-    if (!isIndividualTransportCatcherrorFileWinstonEnabled) {
-        catcherrorFileWinston.add(
-            new transports.File({
-                ...fileTransportOptions(catchErrorLogFile),
-                name: 'catcherror',
-                filename: catchErrorLogFile,
-                level: 'catcherror',
-            })
-        );
-        isIndividualTransportCatcherrorFileWinstonEnabled = true;
-    }
-}
-
 let isIndividualTransportUnreachableFileWinstonEnabled = false;
 function addIndividualTransportUnreachableFileWinston() {
     if (!isIndividualTransportUnreachableFileWinstonEnabled) {
@@ -614,6 +599,21 @@ function addIndividualTransportUnreachableFileWinston() {
             })
         );
         isIndividualTransportUnreachableFileWinstonEnabled = true;
+    }
+}
+
+let isIndividualTransportCatcherrorFileWinstonEnabled = false;
+function addIndividualTransportCatcherrorFileWinston() {
+    if (!isIndividualTransportCatcherrorFileWinstonEnabled) {
+        catcherrorFileWinston.add(
+            new transports.File({
+                ...fileTransportOptions(catchErrorLogFile),
+                name: 'catcherror',
+                filename: catchErrorLogFile,
+                level: 'catcherror',
+            })
+        );
+        isIndividualTransportCatcherrorFileWinstonEnabled = true;
     }
 }
 
@@ -755,13 +755,13 @@ function addIndividualTransportBillyFileWinston() {
 
 /* #region Main logger functions: loggerFile, loggerConsole : Begin */
 const loggerFile = {
-    catcherror: (...args) => {
-        // console.log('Logger File CatchError');
-        catcherrorFileWinston.catcherror(...args);
-    },
     unreachable: (...args) => {
         // console.log('Logger File Unreachable');
         unreachableFileWinston.unreachable(...args);
+    },
+    catcherror: (...args) => {
+        // console.log('Logger File CatchError');
+        catcherrorFileWinston.catcherror(...args);
     },
     severe: (...args) => {
         // console.log('Logger File Severe');
@@ -802,13 +802,13 @@ const loggerFile = {
 };
 
 const loggerConsole = {
-    catcherror: (...args) => {
-        // console.log('Logger Console CatchError');
-        catcherrorConsoleWinston.catcherror(...args);
-    },
     unreachable: (...args) => {
         // console.log('Logger Console Unreachable');
         unreachableConsoleWinston.unreachable(...args);
+    },
+    catcherror: (...args) => {
+        // console.log('Logger Console CatchError');
+        catcherrorConsoleWinston.catcherror(...args);
     },
     severe: (...args) => {
         // console.log('Logger Console Severe');
@@ -866,8 +866,8 @@ loggerConsole.level = process.env.LOG_LEVEL || 'billy';
 export {
     loggerFile,
     loggerConsole,
-    addIndividualTransportCatcherrorFileWinston,
     addIndividualTransportUnreachableFileWinston,
+    addIndividualTransportCatcherrorFileWinston,
     addIndividualTransportSevereFileWinston,
     addIndividualTransportErrorFileWinston,
     addIndividualTransportHiccupFileWinston,
