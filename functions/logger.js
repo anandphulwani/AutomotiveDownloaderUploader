@@ -188,18 +188,15 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
             logMesg = chalk.black.bgWhiteBright(logMesg);
         }
     }
+    // TODO: create stack color similar to the main color as for catcherror, if a custom color is given, as in the situation above, create similar to the custom color
     if (level === 'unhandledexception') {
         textColor === undefined ? (logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg)) : null;
-        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     } else if (level === 'unreachable') {
         textColor === undefined ? (logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg)) : null;
-        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     } else if (level === 'catcherror') {
         textColor === undefined ? (logMesg = chalk.bgRgb(248, 100, 90).whiteBright(logMesg)) : null;
-        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     } else if (level === 'severe') {
         textColor === undefined ? (logMesg = chalk.white.bgRgb(163, 0, 10).bold(logMesg)) : null;
-        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     } else if (level === 'error') {
         textColor === undefined ? (logMesg = chalk.white.bgRed.bold(logMesg)) : null;
     } else if (level === 'hiccup') {
@@ -219,6 +216,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
     } else {
         textColor === undefined ? (logMesg = chalk.inverse(logMesg)) : null;
     }
+    logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     return logMesg;
 });
 /* #endregion logFormatFile and logFormatConsole : End */
