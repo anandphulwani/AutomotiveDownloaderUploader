@@ -18,6 +18,7 @@ import { trimMultipleSpacesInMiddleIntoOne, allTrimString } from './stringformat
 import { writeFileWithComparingSameLinesWithOldContents } from './filesystem.js';
 import { printSectionSeperator } from './others.js';
 import Color from '../class/Colors.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -210,7 +211,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         return false;
     });
     if (ignoreBookmarkURLObjectFindResults !== undefined) {
-        lgi(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`, Color.magenta);
+        lgi(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`, Color.magenta, LoggingPrefix.false);
         return {
             result: false,
             bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark,
@@ -220,7 +221,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
     }
 
     const startingRow = await getRowPosOnTerminal();
-    lgi(`\t${name} : ${URL}`);
+    lgi(`\t${name} : ${URL}`, LoggingPrefix.false);
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
 
@@ -230,7 +231,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        lge(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)`);
+        lge(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)`, LoggingPrefix.false);
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Duplicate, Already downloaded)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }
@@ -244,7 +245,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        lge(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
+        lge(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`, LoggingPrefix.false);
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }
