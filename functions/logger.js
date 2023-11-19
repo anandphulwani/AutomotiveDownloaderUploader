@@ -271,7 +271,7 @@ const catcherrorFileWinston = createLogger({
 const unreachableFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'unreachable',
-    levels: { unreachable: 0 },
+    levels: levels,
     transports: [
         new transports.File({
             ...fileTransportOptions(mainLogFile),
@@ -293,7 +293,6 @@ const severeFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'severe',
     levels: levels,
-    // levels: { severe: 0, error: 1 },
     transports: [
         // To catch the non catched errors
         new transports.File({
