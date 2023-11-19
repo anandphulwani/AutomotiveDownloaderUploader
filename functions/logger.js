@@ -42,7 +42,7 @@ const logFormatFile = (logFilename) =>
         if (loggingPrefix.name === true && lastWriteLineSep) {
             ts !== undefined ? logMesg.push(ts) : null;
             uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
-            logMesg.push(`[${padStartAndEnd(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}`, 13, ' ')}]`);
+            logMesg.push(`[${padStartAndEnd(`${level.toUpperCase() === 'WARN' ? 'WARNING' : level.toUpperCase()}`, 21, ' ')}]`);
         }
         // If custom message is sent then, the custom message is merged with the first line of error message.
         if (stack !== undefined && stack.length > 0) {
@@ -77,7 +77,7 @@ const logFormatFile = (logFilename) =>
     });
 
 const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol.for('splat')]: sp }) => {
-    // console.log(`logFormatConsole Called, level:${level}`);
+    // console.log(`logFormatConsole Called, level: ${level}, message: ${message}`);
     const { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep } =
         sp !== undefined
             ? sp.slice(-1)[0]
