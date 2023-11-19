@@ -12,7 +12,20 @@ import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, printf, errors } = format;
-const levels = { unreachable: 0, catcherror: 1, severe: 2, error: 3, hiccup: 4, warn: 5, info: 6, verbose: 7, debug: 8, trace: 9, billy: 10 };
+const levels = {
+    unhandledexception: 0,
+    unreachable: 1,
+    catcherror: 2,
+    severe: 3,
+    error: 4,
+    hiccup: 5,
+    warn: 6,
+    info: 7,
+    verbose: 8,
+    debug: 9,
+    trace: 10,
+    billy: 11,
+};
 
 // Define log functions
 /* #region logFormatFile and logFormatConsole : Begin */
@@ -167,7 +180,10 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
             logMesg = chalk.black.bgWhiteBright(logMesg);
         }
     }
-    if (level === 'unreachable') {
+    if (level === 'unhandledexception') {
+        textColor === undefined ? (logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg)) : null;
+        logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
+    } else if (level === 'unreachable') {
         textColor === undefined ? (logMesg = chalk.white.bgRgb(255, 0, 0).bold(logMesg)) : null;
         logMesg += stack !== undefined ? `${chalk.bgRgb(248, 131, 121).whiteBright(stack)}` : '';
     } else if (level === 'catcherror') {
@@ -201,7 +217,18 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
 
 /* #region fileTransportOptions and consoleTransportOptions : Begin */
 const fileTransportOptions = (logFilename) => ({
-    format: combine(timestamp({ format: currentDateTimeReadableFormatted() }), errors({ stack: true }), logFormatFile(logFilename)),
+    format: combine(
+        timestamp({ format: currentDateTimeReadableFormatted() }),
+        errors({ stack: true }),
+        format((info) => {
+            if (info.message.startsWith('uncaughtException: ')) {
+                info.message = info.message.replace(/^uncaughtException: /, '');
+                info.level = 'unhandledexception';
+            }
+            return info;
+        })(),
+        logFormatFile(logFilename)
+    ),
     eol: '',
     maxsize: 10485760, // 10MB
     maxFiles: 5,
@@ -215,6 +242,10 @@ const consoleTransportOptions = {
         errors({ stack: true }),
         format((info) => {
             delete info.timestamp;
+            if (info.message.startsWith('uncaughtException: ')) {
+                info.message = info.message.replace(/^uncaughtException: /, '');
+                info.level = 'unhandledexception';
+            }
             return info;
         })(),
         logFormatConsole
@@ -227,6 +258,7 @@ const consoleTransportOptions = {
 const mainLogFile = `${instanceRunLogFilePrefix}.log`;
 const applicationErrorsLogFile = `${instanceRunLogFilePrefix}_applicationerrors.log`;
 const userErrorsLogFile = `${instanceRunLogFilePrefix}_usererrors.log`;
+const unhandledexceptionLogFile = `${instanceRunLogFilePrefix}_unhandledexception.log`;
 const unreachableLogFile = `${instanceRunLogFilePrefix}_unreachable.log`;
 const catchErrorLogFile = `${instanceRunLogFilePrefix}_catcherror.log`;
 const severeLogFile = `${instanceRunLogFilePrefix}_severe.log`;
@@ -238,6 +270,35 @@ const verboseFile = `${instanceRunLogFilePrefix}_verbose.log`;
 const debugLogFile = `${instanceRunLogFilePrefix}_debug.log`;
 const traceLogFile = `${instanceRunLogFilePrefix}_trace.log`;
 const billyLogFile = `${instanceRunLogFilePrefix}_billy.log`;
+
+const unhandledexceptionFileWinston = createLogger({
+    format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'unhandledexception',
+    levels: levels,
+    transports: [
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(mainLogFile),
+            name: 'all',
+            filename: mainLogFile,
+            level: 'error',
+        }),
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(unhandledexceptionLogFile),
+            name: 'all',
+            filename: unhandledexceptionLogFile,
+            level: 'error',
+        }),
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(applicationErrorsLogFile),
+            name: 'all',
+            filename: applicationErrorsLogFile,
+            level: 'error',
+        }),
+    ],
+});
 
 const unreachableFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
@@ -427,6 +488,20 @@ const billyFileWinston = createLogger({
 /* #endregion File loggers: catcherror, error, warn, info : End */
 
 /* #region Console loggers: catcherror, error, warn, info : Begin */
+const unhandledexceptionConsoleWinston = createLogger({
+    format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
+    level: 'unhandledexception',
+    levels: levels,
+    transports: [
+        new transports.Console({
+            handleExceptions: true,
+            ...consoleTransportOptions,
+            name: 'unhandledexception',
+            level: 'error',
+        }),
+    ],
+});
+
 const unreachableConsoleWinston = createLogger({
     format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'unreachable',
