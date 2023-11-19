@@ -226,6 +226,7 @@ const consoleTransportOptions = {
 /* #region File loggers: catcherror, error, warn, info : Begin */
 const mainLogFile = `${instanceRunLogFilePrefix}.log`;
 const applicationErrorsLogFile = `${instanceRunLogFilePrefix}_applicationerrors.log`;
+const userErrorsLogFile = `${instanceRunLogFilePrefix}_usererrors.log`;
 const catchErrorLogFile = `${instanceRunLogFilePrefix}_catcherror.log`;
 const unreachableLogFile = `${instanceRunLogFilePrefix}_unreachable.log`;
 const severeLogFile = `${instanceRunLogFilePrefix}_severe.log`;
@@ -322,6 +323,13 @@ const errorFileWinston = createLogger({
             filename: mainLogFile,
             level: 'error',
         }),
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(userErrorsLogFile),
+            name: 'all',
+            filename: userErrorsLogFile,
+            level: 'error',
+        }),
     ],
 });
 
@@ -338,6 +346,13 @@ const hiccupFileWinston = createLogger({
             filename: mainLogFile,
             level: 'hiccup',
         }),
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(userErrorsLogFile),
+            name: 'all',
+            filename: userErrorsLogFile,
+            level: 'hiccup',
+        }),
     ],
 });
 
@@ -349,6 +364,13 @@ const warnFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
+            level: 'warn',
+        }),
+        new transports.File({
+            handleExceptions: true,
+            ...fileTransportOptions(userErrorsLogFile),
+            name: 'all',
+            filename: userErrorsLogFile,
             level: 'warn',
         }),
     ],
