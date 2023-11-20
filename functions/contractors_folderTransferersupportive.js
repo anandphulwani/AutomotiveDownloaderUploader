@@ -147,6 +147,9 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
         return;
     }
 
+    /**
+     * Ignore if downloadPath/TodaysDate contains some data.
+     */
     const downloadPathWithTodaysDate = `${config.downloadPath}\\${instanceRunDateFormatted}`;
     if (fs.existsSync(downloadPathWithTodaysDate) && fs.readdirSync(downloadPathWithTodaysDate).length !== 0) {
         return;
@@ -155,15 +158,25 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
     // eslint-disable-next-line no-restricted-syntax
     for (const contractor of Object.keys(config.contractors)) {
         const allWorkDoneFile = `${contractor}_${instanceRunDateFormatted}.txt`;
+        /**
+         * Ignore `contractor` if it the file is created, i.e. its filename is already present `cuttersCompletedAndDoneFileCreated`.
+         */
         if (cuttersCompletedAndDoneFileCreated.includes(allWorkDoneFile)) {
             // eslint-disable-next-line no-continue
             continue;
         }
+        /**
+         * Ignore `contractor` if its contractorsZonePath is not present.
+         */
         const contractorPath = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted);
         if (!fs.existsSync(contractorPath)) {
             // eslint-disable-next-line no-continue
             continue;
         }
+        /**
+         * Ignore if contractorZonePath contains files allotted are already present, i.e. folders except
+         * cuttingDoneFolderName, finishingBufferFolderName, readyToUploadFolderName
+         */
         let contractorPathFiles = fs.readdirSync(contractorPath);
         contractorPathFiles = contractorPathFiles.filter(
             (filename) => ![cuttingDoneFolderName, finishingBufferFolderName, readyToUploadFolderName].includes(filename)
@@ -172,12 +185,17 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
             // eslint-disable-next-line no-continue
             continue;
         }
-
+        /**
+         * Ignore `contractor` if its contractors cuttingDone folder is not present.
+         */
         const contractorPathCuttingDone = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted, cuttingDoneFolderName);
         if (!fs.existsSync(contractorPath)) {
             // eslint-disable-next-line no-continue
             continue;
         }
+        /**
+         * Ignore `contractor` if its contractors cuttingDone folder has files present in the cuttingDone folder.
+         */
         const contractorPathCuttingDoneFiles = fs.readdirSync(contractorPathCuttingDone);
         if (contractorPathCuttingDoneFiles.length !== 0) {
             // eslint-disable-next-line no-continue
