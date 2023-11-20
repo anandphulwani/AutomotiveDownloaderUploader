@@ -5,6 +5,7 @@ import { lgu, lgc, lge, lgw, lgi, lgv, lgd, lgb, lgs, lgh, lgt } from '../functi
 import { sleep, waitForMilliSeconds } from '../functions/sleep.js';
 import { getColPosOnTerminal } from '../functions/terminal.js';
 import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 const errorToTest = new Error('Error to be test here!');
@@ -133,5 +134,20 @@ lgi('Info Folder 09 .........', LineSeparator.false);
 lgi('Info Folder 10 .........', LineSeparator.false);
 lgi('');
 lgi('Info Folder 50 .........');
-
 console.log('------------------------------------------------------------');
+lge(
+    `\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    LoggingPrefix.false
+);
+lge(
+    `\t\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    LoggingPrefix.false
+);
+lge(
+    `\t\t\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    LoggingPrefix.false
+);
+lge(
+    `\t\t\t\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    LoggingPrefix.false
+);
