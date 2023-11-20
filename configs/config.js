@@ -10,6 +10,8 @@ import _ from 'lodash';
 import { configProduction } from './config-production.js';
 import { configDevelopment } from './config-development.js';
 import { configUser } from './config-user.js';
+import { configUniqueIds } from './config-unique-ids.js';
+import { configLotLast } from './config-lot-last.js';
 /* eslint-enable import/extensions */
 
 const configBasic = {
@@ -89,10 +91,6 @@ const configBasic = {
         //
         // },
     ],
-    lotLastRunNumber: '',
-    lotLastRunDate: '',
-    nonCatchErrorLogLevels9DigitUniqueId: '',
-    catchErrorLogLevels6DigitUniqueId: '',
 };
 
 /**
@@ -101,16 +99,15 @@ const configBasic = {
  * config files accordingly.
  *
  */
-let configToExport = '';
+let configToExport = configBasic;
 if (configUser.environment === 'production' || (configUser.environment === undefined && configBasic.environment === 'production')) {
-    configToExport = _.merge(configBasic, configProduction);
-    configToExport = _.merge(configToExport, configUser);
+    configToExport = _.merge(configToExport, configProduction);
 } else if (configUser.environment === 'development' || (configUser.environment === undefined && configBasic.environment === 'development')) {
-    configToExport = _.merge(configBasic, configDevelopment);
-    configToExport = _.merge(configToExport, configUser);
-} else {
-    configToExport = _.merge(configBasic, configUser);
+    configToExport = _.merge(configToExport, configDevelopment);
 }
+configToExport = _.merge(configToExport, configUser);
+configToExport = _.merge(configToExport, configUniqueIds);
+configToExport = _.merge(configToExport, configLotLast);
 
 const config = configToExport;
 
