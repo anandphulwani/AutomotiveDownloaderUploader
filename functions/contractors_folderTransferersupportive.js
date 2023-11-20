@@ -58,7 +58,7 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
             lgi(`[`, LineSeparator.false);
             lgi(currentTimeWOMSFormatted(), Color.bgWhite, LineSeparator.false);
             lgi(`]`, LineSeparator.false);
-            lgi(`${movingMesg}: `);
+            lgi(` ${movingMesg}: `);
             hasMovingToUploadZonePrinted = true;
         }
         if (!isDryRun) {
