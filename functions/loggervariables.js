@@ -28,7 +28,7 @@ if (!fs.existsSync(instanceRunLogFilePrefixDir)) {
 if (!fs.existsSync(instanceRunLogFilePrefix)) {
     fs.writeFileSync(instanceRunLogFilePrefix, '', (err) => {});
 }
-if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
+if (!checkSync(instanceRunLogFilePrefix, { stale: 5000 })) {
     // Stale for 12 hours
     /**
      * This code is inner contents copied from `attainLock` function as
@@ -39,7 +39,7 @@ if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
 
     /* #region */
     try {
-        lockSync(instanceRunLogFilePrefix, { stale: 43200000 });
+        lockSync(instanceRunLogFilePrefix, { stale: 5000 });
     } catch (error) {
         if (error.message.trim() !== 'Lock file is already being held') {
             throw error;

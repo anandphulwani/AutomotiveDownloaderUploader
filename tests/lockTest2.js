@@ -16,11 +16,11 @@ const intervalId = setInterval(() => {
     if (counter % 2 === 0) {
         // Even interval
         process.stdout.write('Performing operation attainLock: ');
-        attainLock(config.processingBookmarkPathWithoutSync, 600000, true);
+        attainLock(config.processingBookmarkPathWithoutSync, 5000, true);
     } else {
         // Odd interval
         process.stdout.write('Performing operation releaseLock: ');
-        releaseLock(config.processingBookmarkPathWithoutSync, 600000, true);
+        releaseLock(config.processingBookmarkPathWithoutSync, 5000, true);
         // Put your code for operation X here
     }
     const currentTime = Date.now();

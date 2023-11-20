@@ -12,7 +12,7 @@ import { getProjectLogsDirPath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
 // Attemp to attainLock, retrying multiple times in a duration of 5 to 10 mins, before timing out
-function attainLock(fileToOperateOn, stale = 300000, debug = false) {
+function attainLock(fileToOperateOn, stale = 5000, debug = false) {
     const callerDetailsList = getCallerDetailsList(new Error().stack).slice(1);
     const callerWithFunctionNameHierarchy = getCallerHierarchyWithFunctionNameFormatted(callerDetailsList);
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;
@@ -79,7 +79,7 @@ function attainLock(fileToOperateOn, stale = 300000, debug = false) {
     }
 }
 
-function releaseLock(fileToOperateOn, stale = 300000, debug = false) {
+function releaseLock(fileToOperateOn, stale = 5000, debug = false) {
     const callerDetailsList = getCallerDetailsList(new Error().stack).slice(1);
     const callerWithFunctionNameHierarchy = getCallerHierarchyWithFunctionNameFormatted(callerDetailsList);
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;

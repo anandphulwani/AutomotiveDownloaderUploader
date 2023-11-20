@@ -64,10 +64,10 @@ import {
  *
  */
 try {
-    if (checkSync('contractors_folderTransferer.js', { stale: 1000 })) {
+    if (checkSync('contractors_folderTransferer.js', { stale: 5000 })) {
         throw new Error('Already has lock');
     }
-    lockSync('contractors_folderTransferer.js', { stale: 1000 });
+    lockSync('contractors_folderTransferer.js', { stale: 5000 });
 } catch (error) {
     process.exit(1);
 }
