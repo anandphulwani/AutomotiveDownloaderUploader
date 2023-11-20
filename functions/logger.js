@@ -135,7 +135,13 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
             return line;
         }
         if (index === 0) {
-            return line.padEnd(Math.ceil((getColPosOnTerminal() - 1 + line.length) / 120) * 120 - getColPosOnTerminal() + 1, ' ');
+            let posOnTerminal = getColPosOnTerminal();
+            let tabIndex = 0;
+            while (line.charAt(tabIndex) === '\t') {
+                tabIndex++;
+            }
+            posOnTerminal += tabIndex * 7;
+            return line.padEnd(Math.ceil((posOnTerminal - 1 + line.length) / 120) * 120 - posOnTerminal + 1, ' ');
         }
         return line.padEnd(Math.ceil(line.length / 120) * 120, ' ');
     });
@@ -152,7 +158,7 @@ const logFormatConsole = printf(({ level, message, timestamp: ts, stack, [Symbol
             if (index === arr.length - 1 && lineSep.name === false) {
                 return line;
             }
-            return line.padEnd(120, ' ');
+            return line.padEnd(Math.ceil(line.length / 120) * 120, ' ');
         });
         stack = stack.join('\n');
         if (lineSep.name) {
