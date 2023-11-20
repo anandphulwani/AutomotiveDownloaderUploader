@@ -35,10 +35,11 @@ const sourceDestinationAccountingTypes = {
 
 function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccountingType, foldersToShift, isDryRun = true) {
     // eslint-disable-next-line prefer-const
-    let { destinationPath, accountingFolder, movingMesg } = sourceDestinationAccountingTypes[sourceDestinationAccountingType];
+    let { accountingFolder, movingMesg } = sourceDestinationAccountingTypes[sourceDestinationAccountingType];
     let hasMovingToUploadZonePrinted = false;
     const foldersToShiftLength = foldersToShift.length;
     for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
+        let { destinationPath } = sourceDestinationAccountingTypes[sourceDestinationAccountingType];
         const { dealerImagesFolder, isOverwrite } = foldersToShift[cnt];
         let contractor;
         let contractorAccountingPath;
