@@ -10,7 +10,7 @@ import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { makeDir } from './filesystem.js';
 import { instanceRunDateFormatted } from './datetime.js';
-import { getProjectConfigFilePath, getProjectConfigLotLastFilePath } from './projectpaths.js';
+import { getProjectConfigFilePath, getProjectConfigLotLastFilePath, getProjectConfigUserFilePath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
 function getCredentialsForUsername(username) {
@@ -33,7 +33,7 @@ function getAppDomain() {
 }
 
 async function setContractorsCurrentAllotted(contractor, allottedQty) {
-    const fileToOperateOn = getProjectConfigFilePath();
+    const fileToOperateOn = getProjectConfigUserFilePath();
     attainLock(fileToOperateOn, undefined, true);
 
     try {
@@ -64,7 +64,7 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
 }
 
 function getContractorsCurrentAllotted(contractor) {
-    const configUserContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
+    const configUserContent = fs.readFileSync(getProjectConfigUserFilePath(), 'utf8');
     const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
     const regexExpression = new RegExp(regexString, 'g');
 
