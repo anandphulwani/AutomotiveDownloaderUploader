@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 /* eslint-disable import/extensions */
-import { getProjectConfigFilePath } from './projectpaths.js';
+import { getProjectConfigUniqueIdsFilePath } from './projectpaths.js';
 import { zeroPad } from './stringformatting.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { lgccyclicdependency } from './loggercyclicdependency.js';
@@ -12,7 +12,7 @@ import { lgccyclicdependency } from './loggercyclicdependency.js';
 // ONPROJECTFINISH: Check if all codes are present in log files which are generated because winston is found to not log in files just before process.exit(1)
 /* #region getLastNonCatchErrorLogLevels9DigitUniqueId(), generateAndGetNonCatchErrorLogLevels9DigitUniqueId() : Begin */
 function getLastNonCatchErrorLogLevels9DigitUniqueId() {
-    const configContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
+    const configContent = fs.readFileSync(getProjectConfigUniqueIdsFilePath(), 'utf8');
     const lastNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',\\r\\n)`;
     const lastNonCatchErrorRegexExpression = new RegExp(lastNonCatchErrorRegexString, 'g');
 
@@ -28,7 +28,7 @@ function getLastNonCatchErrorLogLevels9DigitUniqueId() {
 }
 
 function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
-    const fileToOperateOn = getProjectConfigFilePath();
+    const fileToOperateOn = getProjectConfigUniqueIdsFilePath();
     attainLock(fileToOperateOn, undefined, true);
 
     let nonCatchErrorCode;
@@ -68,7 +68,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
 
 /* #region getLastCatchErrorLogLevels6DigitUniqueId(), generateAndGetCatchErrorLogLevels6DigitUniqueId() : Begin */
 function getLastCatchErrorLogLevels6DigitUniqueId() {
-    const configContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
+    const configContent = fs.readFileSync(getProjectConfigUniqueIdsFilePath(), 'utf8');
     const lastCatchErrorRegexString = `(    catchErrorLogLevels6DigitUniqueId: ')(.*?)(',\\r\\n)`;
     const lastCatchErrorRegexExpression = new RegExp(lastCatchErrorRegexString, 'g');
 
@@ -84,7 +84,7 @@ function getLastCatchErrorLogLevels6DigitUniqueId() {
 }
 
 function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
-    const fileToOperateOn = getProjectConfigFilePath();
+    const fileToOperateOn = getProjectConfigUniqueIdsFilePath();
     attainLock(fileToOperateOn, undefined, true);
 
     let catchErrorCode;

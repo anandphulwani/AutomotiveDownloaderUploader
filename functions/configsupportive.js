@@ -10,7 +10,7 @@ import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { makeDir } from './filesystem.js';
 import { instanceRunDateFormatted } from './datetime.js';
-import { getProjectConfigFilePath } from './projectpaths.js';
+import { getProjectConfigFilePath, getProjectConfigLotLastFilePath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
 function getCredentialsForUsername(username) {
@@ -86,7 +86,7 @@ async function addToContractorsCurrentAllotted(contractor, quantity) {
 }
 
 function getLastLotNumber() {
-    const configContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
+    const configContent = fs.readFileSync(getProjectConfigLotLastFilePath(), 'utf8');
     const lastLotNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\r\\n)`;
     const lastLotNumberRegexExpression = new RegExp(lastLotNumberRegexString, 'g');
 
@@ -99,7 +99,7 @@ function getLastLotNumber() {
 }
 
 function getLastLotDate() {
-    const configContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
+    const configContent = fs.readFileSync(getProjectConfigLotLastFilePath(), 'utf8');
     const lastLotDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\r\\n)`;
     const lastLotDateRegexExpression = new RegExp(lastLotDateRegexString, 'g');
 
@@ -112,7 +112,7 @@ function getLastLotDate() {
 }
 
 async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
-    const fileToOperateOn = getProjectConfigFilePath();
+    const fileToOperateOn = getProjectConfigLotLastFilePath();
     attainLock(fileToOperateOn, undefined, true);
 
     try {

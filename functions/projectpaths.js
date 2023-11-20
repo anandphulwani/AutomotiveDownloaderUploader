@@ -18,4 +18,19 @@ function getProjectConfigFilePath() {
     return path.join(getProjectConfigDirPath(), 'config.js');
 }
 
-export { getProjectRootDirPath, getProjectConfigDirPath, getProjectLogsDirPath, getProjectConfigFilePath };
+function getProjectConfigUniqueIdsFilePath() {
+    return path.join(getProjectConfigDirPath(), 'config-unique-ids.js');
+}
+
+function getProjectConfigLotLastFilePath() {
+    return path.join(getProjectConfigDirPath(), 'config-lot-last.js');
+}
+
+export {
+    getProjectRootDirPath,
+    getProjectConfigDirPath,
+    getProjectLogsDirPath,
+    getProjectConfigFilePath,
+    getProjectConfigUniqueIdsFilePath,
+    getProjectConfigLotLastFilePath,
+};
