@@ -28,7 +28,7 @@ function convertArgsToProperOrder(...args) {
     let error;
     let textColor;
     let loggingPrefix = LoggingPrefix.true;
-    let lineSep = LineSeparator.true;
+    let lineSeparator = LineSeparator.true;
 
     args.forEach((arg) => {
         // console.log(typeof arg);
@@ -41,11 +41,11 @@ function convertArgsToProperOrder(...args) {
         } else if (arg instanceof LoggingPrefix) {
             loggingPrefix = arg;
         } else if (arg instanceof LineSeparator) {
-            lineSep = arg;
+            lineSeparator = arg;
         }
     });
 
-    return [message, error, textColor, loggingPrefix, lineSep];
+    return [message, error, textColor, loggingPrefix, lineSeparator];
 }
 
 /**
@@ -54,13 +54,13 @@ function convertArgsToProperOrder(...args) {
  */
 const lgc = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportCatcherrorFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    loggerConsole.catcherror(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.catcherror(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.catcherror(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.catcherror(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 /**
@@ -69,13 +69,13 @@ const lgc = (...args) => {
  */
 const lgu = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportUnreachableFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    loggerConsole.unreachable(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.unreachable(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.unreachable(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.unreachable(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 /**
@@ -83,13 +83,13 @@ const lgu = (...args) => {
  */
 const lgs = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportSevereFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.severe(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.severe(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.severe(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.severe(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 /**
@@ -98,13 +98,13 @@ const lgs = (...args) => {
  */
 const lge = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportErrorFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.error(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.error(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.error(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.error(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 /**
@@ -113,13 +113,13 @@ const lge = (...args) => {
  */
 const lgh = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportHiccupFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.hiccup(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.hiccup(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.hiccup(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.hiccup(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 /**
@@ -128,178 +128,178 @@ const lgh = (...args) => {
  */
 const lgw = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportWarnFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.warn(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.warn(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.warn(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.warn(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgi = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportInfoFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.info(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.info(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.info(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.info(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgv = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportVerboseFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.verbose(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.verbose(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.verbose(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.verbose(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgd = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportDebugFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.debug(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.debug(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.debug(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.debug(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgt = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportTraceFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.trace(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.trace(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.trace(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.trace(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgb = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSep] = args;
+    const [, , textColor, loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportBillyFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerConsole.billy(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSep });
-    loggerFile.billy(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerConsole.billy(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    loggerFile.billy(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgcf = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportCatcherrorFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    loggerFile.catcherror(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.catcherror(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lguf = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportUnreachableFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    loggerFile.unreachable(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.unreachable(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgsf = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportSevereFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.severe(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.severe(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgef = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportErrorFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.error(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.error(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lghf = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportHiccupFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.hiccup(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.hiccup(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgwf = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportWarnFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.warn(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.warn(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgif = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportInfoFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.info(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.info(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgvf = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportVerboseFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.verbose(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.verbose(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgdf = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportDebugFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.debug(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.debug(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgtf = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportTraceFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.trace(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.trace(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 const lgbf = (...args) => {
     args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSep] = args;
+    const [, , , loggingPrefix, lineSeparator] = args;
     args.splice(-3);
     addIndividualTransportBillyFileWinston();
     const callerHierarchy = getCallerHierarchyFormatted(...args);
     const uniqueId = generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    loggerFile.billy(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSep });
+    loggerFile.billy(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
 };
 
 // eslint-disable-next-line import/prefer-default-export
