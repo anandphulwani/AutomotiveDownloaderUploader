@@ -211,7 +211,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         return false;
     });
     if (ignoreBookmarkURLObjectFindResults !== undefined) {
-        lgh(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`, Color.magenta, LoggingPrefix.false);
+        lgh(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`, Color.magenta);
         return {
             result: false,
             bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark,
@@ -231,7 +231,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        lgh(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)`, LoggingPrefix.false);
+        lgh(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)`);
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Duplicate, Already downloaded)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }
@@ -245,7 +245,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        lgh(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`, LoggingPrefix.false);
+        lgh(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }
