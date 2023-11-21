@@ -6,6 +6,7 @@ import { sleep, waitForMilliSeconds } from '../functions/sleep.js';
 import { getColPosOnTerminal } from '../functions/terminal.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
+import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
 const errorToTest = new Error('Error to be test here!');
@@ -17,8 +18,10 @@ lge('Logging message 04', new Error('Error to be test 04'));
 lge('Logging message 05', new Error('Error to be test 05'), LineSeparator.true);
 lge(new Error('Error to be test 06'));
 console.log('------------------------------------------------------------');
+lge('Logging message 01', LineSeparator.false);
 lge('Logging message 02', LineSeparator.false);
 lge('Logging message 03', LineSeparator.false, new Error('Error to be test 03'));
+lge('Logging message 04', new Error('Error to be test 04'), LineSeparator.false);
 lge('Logging message 05', new Error('Error to be test 05'), LineSeparator.false);
 lge(new Error('Error to be test 06'));
 console.log('------------------------------------------------------------');
@@ -150,4 +153,38 @@ lge(
 lge(
     `\t\t\t\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
     LoggingPrefix.false
+);
+console.log('------------------------------------------------------------');
+lgi(
+    `\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    Color.magenta
+);
+lgi(
+    `\t\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    Color.magenta
+);
+lgi(
+    `\t\t\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    Color.magenta
+);
+lgi(
+    `\t\t\t\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    Color.magenta
+);
+console.log('------------------------------------------------------------');
+lge(
+    `\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    Color.magenta
+);
+lge(
+    `\t\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    Color.magenta
+);
+lge(
+    `\t\t\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    Color.magenta
+);
+lge(
+    `\t\t\t\tKeith Orr Nissan Shreveport - Inventory Online : https://www.homenetiol.com/inventory/vehicle/2254309/1201950521?i=85&r=2254309#general`,
+    Color.magenta
 );
