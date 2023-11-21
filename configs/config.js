@@ -35,13 +35,15 @@ const configBasic = {
     // sourceBookmarkPath Or processingBookmarkPathWithoutSync: '/path/to/Chrome/Bookmark' OR '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks'
     /**
      *   Below option to go for direct manipulation in bookmarks
+     *   sourceBookmarkPath is now shifted to config-production.js/config-development.js
      */
     // sourceBookmarkPath: '.\\datastore\\Bookmarks',
     // processingBookmarkPathWithoutSync: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
     /**
      *   Below option is for syncing
+     *   sourceBookmarkPath is now shifted to config-production.js/config-development.js
      */
-    sourceBookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2\\Bookmarks',
+    // sourceBookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2\\Bookmarks',
     processingBookmarkPathWithoutSync: '.\\datastore\\Bookmarks',
     bookmarkOptions: {
         shouldIncludeFolders: true,
