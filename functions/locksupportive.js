@@ -11,8 +11,18 @@ import { getCallerDetails, getCallerDetailsList, getCallerHierarchyWithFunctionN
 import { getProjectLogsDirPath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
+/**
+ *
+ * stale : 15000
+ * Tried setting stale to 5000 (5 secs) which is the lowest possible threshold, but unable to acquire lock in 5 seconds
+ * and operation failed, so giving stale option of 15000 (15 secs), which is more than enough to acquire the lock. but once the
+ * log is acquired, if the process which has acquired the lock in on, till that time stale has no meaning, stale then comes into
+ * action only when the process holding the lock had ended or released. If the lock is released, stale has no meaning, if it has abruptly
+ * being end then the stale is the time, till which the lock is considered active.
+ *
+ */
 // Attemp to attainLock, retrying multiple times in a duration of 5 to 10 mins, before timing out
-function attainLock(fileToOperateOn, stale = 5000, debug = false) {
+function attainLock(fileToOperateOn, stale = 15000, debug = false) {
     const callerDetailsList = getCallerDetailsList(new Error().stack).slice(1);
     const callerWithFunctionNameHierarchy = getCallerHierarchyWithFunctionNameFormatted(callerDetailsList);
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;
@@ -79,7 +89,7 @@ function attainLock(fileToOperateOn, stale = 5000, debug = false) {
     }
 }
 
-function releaseLock(fileToOperateOn, stale = 5000, debug = false) {
+function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
     const callerDetailsList = getCallerDetailsList(new Error().stack).slice(1);
     const callerWithFunctionNameHierarchy = getCallerHierarchyWithFunctionNameFormatted(callerDetailsList);
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;
