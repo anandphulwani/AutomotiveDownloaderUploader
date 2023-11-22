@@ -3,7 +3,8 @@ import { createLogger, format, transports } from 'winston';
 /* eslint-disable import/extensions */
 import { currentDateTimeReadableFormatted } from './datetime.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
-import { logFormatFile, logFormatConsole } from './loggerLogFormats.js';
+import { logFormatFile, logFormatConsole } from './loggerlogformats.js';
+import LoggerCustomFileSyncTransport from '../class/LoggerCustomFileSyncTransport.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, errors } = format;
@@ -83,21 +84,21 @@ const unhandledexceptionFileWinston = createLogger({
     level: 'unhandledexception',
     levels: levels,
     transports: [
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             handleExceptions: true,
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
             level: 'error',
         }),
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             handleExceptions: true,
             ...fileTransportOptions(unhandledexceptionLogFile),
             name: 'all',
             filename: unhandledexceptionLogFile,
             level: 'error',
         }),
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             handleExceptions: true,
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
@@ -112,13 +113,13 @@ const unreachableFileWinston = createLogger({
     level: 'unreachable',
     levels: levels,
     transports: [
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
             level: 'unreachable',
         }),
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
@@ -132,13 +133,13 @@ const catcherrorFileWinston = createLogger({
     level: 'catcherror',
     levels: levels,
     transports: [
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
             level: 'catcherror',
         }),
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
@@ -153,13 +154,13 @@ const severeFileWinston = createLogger({
     levels: levels,
     transports: [
         // To catch the non catched errors
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
             level: 'severe',
         }),
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
@@ -172,13 +173,13 @@ const errorFileWinston = createLogger({
     level: 'error',
     levels: levels,
     transports: [
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
             level: 'error',
         }),
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(userErrorsLogFile),
             name: 'all',
             filename: userErrorsLogFile,
@@ -193,13 +194,13 @@ const hiccupFileWinston = createLogger({
     levels: levels,
     transports: [
         // To catch the non catched errors
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
             level: 'hiccup',
         }),
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(userErrorsLogFile),
             name: 'all',
             filename: userErrorsLogFile,
@@ -212,13 +213,13 @@ const warnFileWinston = createLogger({
     level: 'warn',
     levels: levels,
     transports: [
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
             level: 'warn',
         }),
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(userErrorsLogFile),
             name: 'all',
             filename: userErrorsLogFile,
@@ -231,7 +232,7 @@ const infoFileWinston = createLogger({
     level: 'info',
     levels: levels,
     transports: [
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
@@ -244,7 +245,7 @@ const verboseFileWinston = createLogger({
     level: 'verbose',
     levels: levels,
     transports: [
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
@@ -257,7 +258,7 @@ const debugFileWinston = createLogger({
     level: 'debug',
     levels: levels,
     transports: [
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
@@ -271,7 +272,7 @@ const traceFileWinston = createLogger({
     level: 'trace',
     levels: levels,
     transports: [
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
@@ -284,7 +285,7 @@ const billyFileWinston = createLogger({
     level: 'billy',
     levels: levels,
     transports: [
-        new transports.File({
+        new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
@@ -450,7 +451,7 @@ let isIndividualTransportUnreachableFileWinstonEnabled = false;
 function addIndividualTransportUnreachableFileWinston() {
     if (!isIndividualTransportUnreachableFileWinstonEnabled) {
         unreachableFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(unreachableLogFile),
                 name: 'unreachable',
                 filename: unreachableLogFile,
@@ -465,7 +466,7 @@ let isIndividualTransportCatcherrorFileWinstonEnabled = false;
 function addIndividualTransportCatcherrorFileWinston() {
     if (!isIndividualTransportCatcherrorFileWinstonEnabled) {
         catcherrorFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(catchErrorLogFile),
                 name: 'catcherror',
                 filename: catchErrorLogFile,
@@ -480,7 +481,7 @@ let isIndividualTransportSevereFileWinstonEnabled = false;
 function addIndividualTransportSevereFileWinston() {
     if (!isIndividualTransportSevereFileWinstonEnabled) {
         severeFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(severeLogFile),
                 name: 'severe',
                 filename: severeLogFile,
@@ -495,7 +496,7 @@ let isIndividualTransportErrorFileWinstonEnabled = false;
 function addIndividualTransportErrorFileWinston() {
     if (!isIndividualTransportErrorFileWinstonEnabled) {
         errorFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(errorLogFile),
                 name: 'error',
                 filename: errorLogFile,
@@ -510,7 +511,7 @@ let isIndividualTransportHiccupFileWinstonEnabled = false;
 function addIndividualTransportHiccupFileWinston() {
     if (!isIndividualTransportHiccupFileWinstonEnabled) {
         hiccupFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(hiccupLogFile),
                 name: 'hiccup',
                 filename: hiccupLogFile,
@@ -525,7 +526,7 @@ let isIndividualTransportWarnFileWinstonEnabled = false;
 function addIndividualTransportWarnFileWinston() {
     if (!isIndividualTransportWarnFileWinstonEnabled) {
         warnFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(warnLogFile),
                 name: 'warn',
                 filename: warnLogFile,
@@ -540,7 +541,7 @@ let isIndividualTransportInfoFileWinstonEnabled = false;
 function addIndividualTransportInfoFileWinston() {
     if (!isIndividualTransportInfoFileWinstonEnabled) {
         infoFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(infoLogFile),
                 name: 'info',
                 filename: infoLogFile,
@@ -555,7 +556,7 @@ let isIndividualTransportVerboseFileWinstonEnabled = false;
 function addIndividualTransportVerboseFileWinston() {
     if (!isIndividualTransportVerboseFileWinstonEnabled) {
         verboseFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(verboseFile),
                 name: 'verbose',
                 filename: verboseFile,
@@ -570,7 +571,7 @@ let isIndividualTransportDebugFileWinstonEnabled = false;
 function addIndividualTransportDebugFileWinston() {
     if (!isIndividualTransportDebugFileWinstonEnabled) {
         debugFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(debugLogFile),
                 name: 'debug',
                 filename: debugLogFile,
@@ -585,7 +586,7 @@ let isIndividualTransportTraceFileWinstonEnabled = false;
 function addIndividualTransportTraceFileWinston() {
     if (!isIndividualTransportTraceFileWinstonEnabled) {
         traceFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(traceLogFile),
                 name: 'trace',
                 filename: traceLogFile,
@@ -600,7 +601,7 @@ let isIndividualTransportBillyFileWinstonEnabled = false;
 function addIndividualTransportBillyFileWinston() {
     if (!isIndividualTransportBillyFileWinstonEnabled) {
         billyFileWinston.add(
-            new transports.File({
+            new LoggerCustomFileSyncTransport({
                 ...fileTransportOptions(billyLogFile),
                 name: 'billy',
                 filename: billyLogFile,
