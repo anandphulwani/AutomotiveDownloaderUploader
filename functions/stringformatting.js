@@ -64,6 +64,14 @@ function padStartAndEnd(str, targetLength, padString) {
     return str;
 }
 
+function escapeSpecialCharacters(str) {
+    return str
+        .replace(/\\/g, '\\\\') // Escape backslashes first
+        .replace(/\n/g, '\\n') // Escape newlines
+        .replace(/\r/g, '\\r') // Escape carriage returns
+        .replace(/\t/g, '\\t'); // Escape tabs
+}
+
 export {
     zeroPad,
     checkForSpaceInBeginOrEnd,
@@ -78,4 +86,5 @@ export {
     trimSingleSpaceInMiddleArray,
     removeDuplicates,
     padStartAndEnd,
+    escapeSpecialCharacters,
 };
