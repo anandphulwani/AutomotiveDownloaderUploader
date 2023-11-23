@@ -148,7 +148,7 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
         logMesg.push(formatMultiLineStringToFixedLength(stack, true, lineSeparator.name === false));
     }
     if (typeOfLogFormat === 'console') {
-        if (textColor !== undefined && Object.prototype.hasOwnProperty.call(stringToChalkColor, textColor)) {
+        if (textColor !== undefined && Object.prototype.hasOwnProperty.call(stringToChalkColor, textColor.name)) {
             logMesg[0] = stringToChalkColor[textColor.name][0](logMesg[0]);
             logMesg[1] !== undefined ? (logMesg[1] = stringToChalkColor[textColor.name][1](logMesg[1])) : null;
         } else if (Object.prototype.hasOwnProperty.call(levelToChalkColor, level)) {
