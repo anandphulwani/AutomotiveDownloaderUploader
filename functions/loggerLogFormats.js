@@ -10,36 +10,35 @@ import LoggingPrefix from '../class/LoggingPrefix.js';
 
 const { printf } = format;
 
-// TODO: create stack color similar to the main color as for catcherror, if a custom color is given, as in the situation above, create similar to the custom color
 const stringToChalkColor = {
-    cyan: [chalk.cyan, chalk.cyan],
-    bgCyan: [chalk.bgCyan.bold, chalk.bgCyan.bold],
-    cyanBold: [chalk.cyan.bold, chalk.cyan.bold],
-    green: [chalk.green.bold, chalk.green.bold],
-    bgGreen: [chalk.white.bgGreen.bold, chalk.white.bgGreen.bold],
-    yellow: [chalk.yellow.bold, chalk.yellow.bold],
-    bgYellow: [chalk.white.bgYellow.bold, chalk.white.bgYellow.bold],
-    red: [chalk.red.bold, chalk.red.bold],
-    bgRed: [chalk.white.bgRed.bold, chalk.white.bgRed.bold],
-    magenta: [chalk.magenta.bold, chalk.magenta.bold],
-    bgMagenta: [chalk.white.bgMagenta.bold, chalk.white.bgMagenta.bold],
-    white: [chalk.whiteBright, chalk.whiteBright],
-    bgWhite: [chalk.black.bgWhiteBright, chalk.black.bgWhiteBright],
+    cyan: [chalk.cyan, chalk.rgb(64, 184, 253)],
+    bgCyan: [chalk.bgCyan.bold, chalk.bgRgb(64, 184, 253).bold],
+    cyanBold: [chalk.cyan.bold, chalk.rgb(102, 246, 246).bold],
+    yellow: [chalk.rgb(219, 195, 0).bold, chalk.rgb(255, 238, 102).bold],
+    bgYellow: [chalk.white.bgYellow.bold, chalk.white.bgRgb(206, 177, 57).bold],
+    green: [chalk.green.bold, chalk.rgb(29, 231, 51).bold],
+    bgGreen: [chalk.white.bgGreen.bold, chalk.white.bgRgb(26, 195, 53).bold],
+    red: [chalk.red.bold, chalk.rgb(232, 109, 122).bold],
+    bgRed: [chalk.white.bgRed.bold, chalk.white.bgRgb(199, 54, 69).bold],
+    magenta: [chalk.magenta.bold, chalk.rgb(182, 39, 192).bold],
+    bgMagenta: [chalk.white.bgMagenta.bold, chalk.white.bgRgb(140, 61, 186).bold],
+    white: [chalk.rgb(220, 220, 220), chalk.rgb(255, 255, 255)],
+    bgWhite: [chalk.black.bgRgb(220, 220, 220), chalk.black.bgRgb(255, 255, 255)],
 };
 
 const levelToChalkColor = {
-    unhandledexception: [chalk.white.bgRgb(255, 0, 0).bold, chalk.white.bgRgb(255, 0, 0).bold],
-    unreachable: [chalk.white.bgRgb(255, 0, 0).bold, chalk.white.bgRgb(255, 0, 0).bold],
-    catcherror: [chalk.bgRgb(248, 100, 90).whiteBright, chalk.bgRgb(248, 100, 90).whiteBright],
-    severe: [chalk.white.bgRgb(163, 0, 10).bold, chalk.white.bgRgb(163, 0, 10).bold],
-    error: [chalk.white.bgRed.bold, chalk.white.bgRed.bold],
-    hiccup: [chalk.red.bold, chalk.red.bold],
-    warning: [chalk.white.bgYellow.bold, chalk.white.bgYellow.bold],
-    info: [chalk.cyan, chalk.cyan],
-    verbose: [chalk.white.bgGreenBright.bold, chalk.white.bgGreenBright.bold],
-    debug: [chalk.white.bgMagentaBright.bold, chalk.white.bgMagentaBright.bold],
-    trace: [chalk.bgRgb(242, 140, 40).bold, chalk.bgRgb(242, 140, 40).bold],
-    billy: [chalk.black.bgWhiteBright, chalk.black.bgWhiteBright],
+    unhandledexception: [chalk.white.bgRgb(163, 0, 0).bold, chalk.white.bgRgb(186, 0, 0).bold],
+    unreachable: [chalk.white.bgRgb(198, 0, 0).bold, chalk.white.bgRgb(209, 0, 0).bold],
+    catcherror: [chalk.bgRgb(232, 0, 0).whiteBright, chalk.bgRgb(255, 0, 0).whiteBright],
+    severe: [chalk.white.bgRgb(255, 46, 46).bold, chalk.white.bgRgb(255, 92, 92).bold],
+    error: [chalk.white.bgRgb(255, 123, 123).bold, chalk.white.bgRgb(255, 153, 153).bold],
+    hiccup: [chalk.red.bold, chalk.rgb(232, 109, 122).bold],
+    warning: [chalk.white.bgYellow.bold, chalk.white.bgRgb(206, 177, 57).bold],
+    info: [chalk.cyan, chalk.rgb(64, 184, 253)],
+    verbose: [chalk.white.bgRgb(21, 149, 15).bold, chalk.white.bgGreenBright.bold],
+    debug: [chalk.white.bgMagentaBright.bold, chalk.white.bgRgb(235, 10, 209).bold],
+    trace: [chalk.bgRgb(242, 140, 40).bold, chalk.bgRgb(246, 173, 101).bold],
+    billy: [chalk.black.bgRgb(220, 220, 220), chalk.black.bgRgb(255, 255, 255)],
 };
 
 /**
