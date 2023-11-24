@@ -297,7 +297,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
                 [
                     'Unable to match regex for fn replaceBookmarksElementByGUIDAndWriteToBookmarksFile()',
                     elementsDetails[element].blockRegex,
-                    '-'.repeat(70) + bookmarksFileText + '-'.repeat(70),
+                    '-'.repeat(120) + bookmarksFileText + '-'.repeat(120),
                 ].join('\n')
             );
             process.exit(1);
@@ -319,8 +319,8 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         if (!returnVal) {
             lgb(
                 [
-                    `${fileContents}\n${'-'.repeat(70)}`,
-                    `${bookmarksFileText}\n${'-'.repeat(70)}`,
+                    `${fileContents}\n${'-'.repeat(120)}`,
+                    `${bookmarksFileText}\n${'-'.repeat(120)}`,
                     `initialLineCount: ${fileContents.trim().split(/\r\n|\r|\n/).length}, finalLineCount: ${
                         bookmarksFileText.split(/\r\n|\r|\n/).length
                     }`,

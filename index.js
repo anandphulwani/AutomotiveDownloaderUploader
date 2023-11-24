@@ -210,10 +210,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                         if (config.updateBookmarksOnceDone) {
                             try {
                                 const bookmarksNotAppendFile = path.join(getProjectLogsDirPath(), 'bookmarksNotAppend.txt');
-                                fs.appendFileSync(
-                                    bookmarksNotAppendFile,
-                                    '--------------------------------------------------------------------------------------------------\n'
-                                );
+                                fs.appendFileSync(bookmarksNotAppendFile, `${'-'.repeat(120)}\n`);
                                 fs.appendFileSync(
                                     bookmarksNotAppendFile,
                                     `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, \nvehicleBookmark.name: ${vehicleBookmark.name}, \nvehicleBookmark.url: ${vehicleBookmark.url}\n`
@@ -222,10 +219,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                                 fs.appendFileSync(bookmarksNotAppendFile, `vehicleBookmark.guid: ${vehicleBookmark.guid}\n`);
                                 fs.appendFileSync(bookmarksNotAppendFile, `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}\n`);
                                 fs.appendFileSync(bookmarksNotAppendFile, `returnObj: ${JSON.stringify(returnObj, null, 2)}\n`);
-                                fs.appendFileSync(
-                                    bookmarksNotAppendFile,
-                                    '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
-                                );
+                                fs.appendFileSync(bookmarksNotAppendFile, `${'+'.repeat(120)}\n`);
                             } catch (err) {
                                 console.error(err);
                             }

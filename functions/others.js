@@ -7,7 +7,7 @@ import { lgi } from './loggersupportive.js';
 
 // TODO: Add functionality that if we want to send parameter that whether its info or error or warn
 function printSectionSeperator() {
-    lgi('-'.repeat(80), Color.bgWhite);
+    lgi('-'.repeat(120), Color.bgWhite);
 }
 
 // ONPROJECTFINISH: Remove retryCount variable and relative functions, when debugging is complete

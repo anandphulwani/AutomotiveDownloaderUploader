@@ -256,7 +256,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
         foldersAlloted
     );
     /* #endregion */
-    lgi(`-----------------------------------------------------`);
+    printSectionSeperator();
     // console.log(contractors);
     // console.log(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}`);
 
