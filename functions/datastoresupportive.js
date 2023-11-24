@@ -215,7 +215,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
 }
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
-    const regexString = `.*? (\\d+) \\(\\#\\d{5}\\)`;
+    const regexString = config.allottedFolderRegex;
     const regexExpression = new RegExp(regexString, 'g');
 
     if (!regexExpression.test(folderName)) {
@@ -224,11 +224,24 @@ function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
     }
 
     const match = folderName.match(regexExpression);
-    return match[0].match(regexString)[1];
+    return match[0].match(regexString)[4];
+}
+
+function getUniqueIDWithHashFromAllottedDealerNumberFolder(folderName) {
+    const regexString = config.allottedFolderRegex;
+    const regexExpression = new RegExp(regexString, 'g');
+
+    if (!regexExpression.test(folderName)) {
+        lgc('Unable to match regex for fn getUniqueIDWithHashFromAllottedDealerNumberFolder()');
+        process.exit(1);
+    }
+
+    const match = folderName.match(regexExpression);
+    return match[0].match(regexString)[5];
 }
 
 function getUniqueIDFromAllottedDealerNumberFolder(folderName) {
-    const regexString = `.*? (\\d+) \\(\\#(\\d{5})\\)`;
+    const regexString = config.allottedFolderRegex;
     const regexExpression = new RegExp(regexString, 'g');
 
     if (!regexExpression.test(folderName)) {
@@ -237,7 +250,7 @@ function getUniqueIDFromAllottedDealerNumberFolder(folderName) {
     }
 
     const match = folderName.match(regexExpression);
-    return match[0].match(regexString)[2];
+    return match[0].match(regexString)[6];
 }
 
 function getUploadRemainingSummary(foldersToUpload) {
@@ -289,6 +302,7 @@ export {
     perVINTimeToUpload,
     autoCleanUpDatastoreZones,
     getNumberOfImagesFromAllottedDealerNumberFolder,
+    getUniqueIDWithHashFromAllottedDealerNumberFolder,
     getUniqueIDFromAllottedDealerNumberFolder,
     getUploadRemainingSummary,
     createBackupOfFile,

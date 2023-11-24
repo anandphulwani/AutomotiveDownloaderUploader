@@ -126,7 +126,9 @@ for (const finisher of finishers) {
         }
 
         // Check ReadyToUpload folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
-        if (/^[O|o][K|k]_AlreadyMoved_(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(finisherReadyToUploadSubFolderAndFiles)) {
+        const regexallottedFolderAlreadyMovedRegexString = config.allottedFolderRegex.replace('^', '^[O|o][K|k]_AlreadyMoved_');
+        const regexallottedFolderAlreadyMovedRegexExpression = new RegExp(regexallottedFolderAlreadyMovedRegexString, 'g');
+        if (regexallottedFolderAlreadyMovedRegexExpression.test(finisherReadyToUploadSubFolderAndFiles)) {
             const folderWithOkAlreadMovedRemoved = path.basename(finisherReadyToUploadSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
             const newFinisherFinishingDoneSubFolderPath = `${path.dirname(finisherReadyToUploadSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
             fs.renameSync(finisherReadyToUploadSubFolderPath, newFinisherFinishingDoneSubFolderPath);
@@ -142,8 +144,8 @@ for (const finisher of finishers) {
         }
 
         // Check ReadyToUpload folder matches the format
-        const regexToMatchFolderName = /^(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/;
-        if (!regexToMatchFolderName.test(finisherReadyToUploadSubFolderAndFiles)) {
+        const regexallottedFolderRegexExpression = new RegExp(config.allottedFolderRegex, 'g');
+        if (!regexallottedFolderRegexExpression.test(finisherReadyToUploadSubFolderAndFiles)) {
             lgw(
                 `Folder in ReadyToUpload but is not in a proper format, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
             );
@@ -160,7 +162,7 @@ for (const finisher of finishers) {
             // eslint-disable-next-line no-continue
             continue;
         }
-        const matches = finisherReadyToUploadSubFolderAndFiles.match(regexToMatchFolderName);
+        const matches = finisherReadyToUploadSubFolderAndFiles.match(config.allottedFolderRegex);
         const uniqueCode = matches[matches.length - 1];
         let cutter = null;
         // eslint-disable-next-line no-restricted-syntax

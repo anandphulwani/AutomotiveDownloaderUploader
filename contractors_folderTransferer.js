@@ -133,7 +133,9 @@ while (true) {
             }
 
             // Check CuttingDone folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
-            if (/^[O|o][K|k]_AlreadyMoved_(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+            const regexallottedFolderAlreadyMovedRegexString = config.allottedFolderRegex.replace('^', '^[O|o][K|k]_AlreadyMoved_');
+            const regexallottedFolderAlreadyMovedRegexExpression = new RegExp(regexallottedFolderAlreadyMovedRegexString, 'g');
+            if (regexallottedFolderAlreadyMovedRegexExpression.test(cutterCuttingDoneSubFolderAndFiles)) {
                 const folderWithOkAlreadMovedRemoved = path.basename(cutterCuttingDoneSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
                 const newCutterCuttingDoneSubFolderPath = `${path.dirname(cutterCuttingDoneSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
                 fs.renameSync(cutterCuttingDoneSubFolderPath, newCutterCuttingDoneSubFolderPath);
@@ -149,7 +151,8 @@ while (true) {
             }
 
             // Check CuttingDone folder matches the format
-            if (!/^(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+            const regexallottedFolderRegexExpression = new RegExp(config.allottedFolderRegex, 'g');
+            if (!regexallottedFolderRegexExpression.test(cutterCuttingDoneSubFolderAndFiles)) {
                 currentSetOfWarnings.add(
                     `Folder in CuttingDone but is not in a proper format, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                 );

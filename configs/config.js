@@ -19,6 +19,7 @@ const configBasic = {
     appDomain: 'https://www.homenetiol.com',
     timezone: 'Asia/Calcutta',
     timeOffsetInMinutesToAvoid: 2,
+    allottedFolderRegex: '^(\\d[\\S]*)(?: ([\\S| ]*))? ([\\S]+) (\\d{1,3}) \\((#(\\d{5}))\\)$',
     browserArgs: {
         headless: false,
         defaultViewport: null,
