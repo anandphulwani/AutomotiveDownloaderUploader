@@ -73,13 +73,13 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
         if (isDryRun) {
             if (isOverwrite === false) {
                 let doesDestinationFolderAlreadyExists = false;
-                let folderExistMesg = `Folder cannot be moved to new location as it already exists, Renaming to 'AlreadyMoved_',\nFolder: ${dealerImagesFolder}\n`;
+                let folderExistMesg = `Folder cannot be moved to new location as it already exists, Renaming to 'AlreadyMoved_',\nFolder: ${dealerImagesFolder}`;
                 if (fs.existsSync(destinationPath)) {
-                    folderExistMesg += `Destination: ${destinationPath}\n`;
+                    folderExistMesg += `\nDestination: ${destinationPath}`;
                     doesDestinationFolderAlreadyExists = true;
                 }
                 if (fs.existsSync(contractorAccountingPath)) {
-                    folderExistMesg += `Destination (Accounting): ${contractorAccountingPath}\n`;
+                    folderExistMesg += `\nDestination (Accounting): ${contractorAccountingPath}`;
                     doesDestinationFolderAlreadyExists = true;
                 }
                 const otherContractors = Object.keys(config.contractors).filter((key) => key !== contractor);
@@ -93,7 +93,7 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
                         path.basename(dealerImagesFolder)
                     );
                     if (fs.existsSync(otherAccountingZonePath)) {
-                        folderExistMesg += `Destination (Other Accounting): ${otherAccountingZonePath}\n`;
+                        folderExistMesg += `\nDestination (Other Accounting): ${otherAccountingZonePath}`;
                         doesDestinationFolderAlreadyExists = true;
                     }
                 }
