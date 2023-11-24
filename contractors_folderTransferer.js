@@ -6,7 +6,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc, lgi, lgif } from './functions/loggersupportive.js';
+import { lgw, lge, lgc, lgi, lgif, lgu } from './functions/loggersupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes, removeDir } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
@@ -179,7 +179,7 @@ while (true) {
     foldersToShift.sort((a, b) => {
         const regex = /(\d+)/;
         if (!regex.test(path.basename(a.dealerImagesFolder)) || !regex.test(path.basename(b.dealerImagesFolder))) {
-            lgc('Unable to match regex of `foldersToShift` while sorting.');
+            lgu('Unable to match regex of `foldersToShift` while sorting.');
             return 0;
         }
         const numA = Number(path.basename(a.dealerImagesFolder).match(regex)[0]);

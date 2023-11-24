@@ -10,6 +10,7 @@ import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination } from './f
 import { lgi, lgu } from './loggersupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
@@ -83,7 +84,7 @@ async function downloadFileAndCompareWithChecksum(
                         ? console.log(chalk.green.bold(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`))
                         : lgi(
                               ` ${logSymbols.success}${' '.repeat(38 - shortFilenameTextLength > 0 ? 38 - shortFilenameTextLength : 0)}`,
-                              Color.green,
+                              LoggingPrefix.false,
                               LineSeparator.false
                           );
                 }

@@ -21,6 +21,7 @@ import {
     returnImageCountFromDealerDirs,
 } from './functions/allotmentsupportive.js';
 import { doAllotment } from './functions/allotment.js';
+import { printSectionSeperator } from './functions/others.js';
 /* eslint-enable import/extensions */
 
 lgif(`region : Validation section 01: BEGIN`);
@@ -237,7 +238,7 @@ if (doesDestinationFolderAlreadyExists) {
 let imagesQtyAllotedInCurrentLot = 0;
 let foldersAlloted = 0;
 
-lgi('');
+console.log('');
 if (keyInYN('To continue with the above allotment press Y, for other options press N.')) {
     /**
      * Alloting minimum DealerFolders for each contractors as per config
@@ -294,7 +295,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
     setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
     /* #endregion */
 } else if (keyInYN('To use manual allotment system press Y, to exit from this process press N.')) {
-    lgi('');
+    console.log('');
     await doAllotment(
         'allotmentByManual',
         undefined,

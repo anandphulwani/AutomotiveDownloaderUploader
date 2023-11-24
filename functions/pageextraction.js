@@ -16,6 +16,7 @@ import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './exce
 import { lge, lgi, lgu, lgw } from './loggersupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 async function getImagesFromContent(page, lotIndex, username, dealerFolder, debug = false) {
@@ -57,7 +58,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     const tempPath = generateTempFolderWithRandomText();
     makeDir(tempPath, debug);
 
-    debug ? '' : process.stdout.write('  ');
+    debug ? '' : lgi('  ', LineSeparator.false);
     const imageNumbersToDownload = getImageNumbersToDownloadFromDC(dealerFolder);
     let imagesDownloaded = 0;
     for (let index = 0; index < imageNumbersToDownload.length; index++) {
@@ -81,7 +82,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         } else {
             shortFilename = `${dealerFolder}/${VINNumber}/${path.basename(file.path)}`;
         }
-        debug ? '' : lgi(`${shortFilename} »`, Color.white, LineSeparator.false);
+        debug ? '' : lgi(`${shortFilename} »`, Color.white, LoggingPrefix.false, LineSeparator.false);
         const shortFilenameTextLength = shortFilename.length + 2;
 
         let checksumOfFile;
@@ -99,7 +100,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     err.message === 'Page.navigate timed out.'
                 ) {
                     lgi(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
-                    lgi(` ${logSymbols.warning}`, Color.yellow, LineSeparator.false);
+                    lgi(` ${logSymbols.warning}`, LineSeparator.false);
                     if (checksumOfFileCnt < 4) {
                         // Sleep for 30 seconds
                         for (let cnt = 0; cnt < 10; cnt++) {
@@ -150,7 +151,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     err.message === 'Page.navigate timed out.'
                 ) {
                     lgi(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
-                    lgi(` ${logSymbols.warning}`, Color.yellow, LineSeparator.false);
+                    lgi(` ${logSymbols.warning}`, LineSeparator.false);
                     if (downloadCnt < 4) {
                         // Sleep for 30 seconds
                         for (let cnt = 0; cnt < 10; cnt++) {
@@ -174,10 +175,8 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     }
     lgi(
         `Images (Downloaded/Requested)  /Available: (${imagesDownloaded}/${imageNumbersToDownload.length})  /${imageOriginalURLS.length}         `,
-        Color.bgCyan,
-        LineSeparator.false
+        Color.bgCyan
     );
-    debug ? '' : process.stdout.write('\n');
     // LOWPRIORITY:  Make sure this removeDir runs properly
     removeDir(tempPath, true, debug);
     return { result: true, bookmarkAppendMesg: VINNumber, imagesDownloaded: imagesDownloaded };

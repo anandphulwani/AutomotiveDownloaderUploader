@@ -22,7 +22,7 @@ async function gotoURL(page, URL, debug = false) {
             // await page.goto(URL, { waitUntil: "networkidle2" });
             const pageContent = await page.content();
             if (pageContent.includes('/Framework/Resources/Images/Layout/Errors/500_error.png')) {
-                lgi(` ${logSymbols.warning}`, Color.yellow, LineSeparator.false);
+                lgi(` ${logSymbols.warning}`, LineSeparator.false);
                 if (gotoCnt < 4) {
                     // Sleep for 5 mins
                     for (let cnt = 0; cnt < 100; cnt++) {
@@ -47,7 +47,7 @@ async function gotoURL(page, URL, debug = false) {
                 err.message === 'Page.navigate timed out.'
             ) {
                 lgi(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
-                lgi(` ${logSymbols.warning}`, Color.yellow, LineSeparator.false);
+                lgi(` ${logSymbols.warning}`, LineSeparator.false);
                 if (gotoCnt < 4) {
                     // Sleep for 30 seconds
                     for (let cnt = 0; cnt < 10; cnt++) {

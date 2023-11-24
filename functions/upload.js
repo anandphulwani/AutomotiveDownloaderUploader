@@ -37,7 +37,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         `fn uploadBookmarkURL() : BEGIN, Params: page: OBJECT, uniqueIdElement: ${uniqueIdElement}, uniqueIdFolderPath: ${uniqueIdFolderPath}, dealerFolder: ${dealerFolder}, name: ${name}, URL: ${URL}, debug: ${debug}`
     );
     const startingRow = await getRowPosOnTerminal();
-    lgi(`\t${userLoggedIn}/`, LineSeparator.false, LoggingPrefix.false);
+    lgi(`\t${userLoggedIn}/`, LoggingPrefix.false, LineSeparator.false);
     lgi(`${dealerFolder}/`, Color.cyanBold, LineSeparator.false);
     lgi(`${name} : ${URL}`);
     printToLogBuffer.push(`\${userLoggedIn}/\${dealerFolder}/\${name} : \${URL}  :   ${userLoggedIn}/${dealerFolder}/${name} : ${URL}`);
@@ -268,7 +268,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     process.stdout.clearLine(diffInRows); // from cursor to end
     process.stdout.cursorTo(0);
     lgi(` Uploading Files(${zeroPad(VINFolderPathList.length, 2)}): `, LineSeparator.false);
-    lgi(`${logSymbols.success}${' '.repeat(3)}`, Color.green, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(3)}`, LineSeparator.false);
     lgi(` Mark Deletion: `, LineSeparator.false);
 
     /* #region: Mark file to delete the older files so as to replace with the newer files later on: Begin */
@@ -324,7 +324,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: End`);
     /* #endregion: Delete the older files to replace with the newer files: End */
 
-    lgi(`${logSymbols.success}${' '.repeat(13)}`, Color.green, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(13)}`, LineSeparator.false);
     lgi(` Move Files To Location: `, LineSeparator.false);
 
     const imageDIVContainer2 = await page.$('.tn-list-container');
@@ -370,7 +370,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Move uploaded files on the correct location: End`);
     /* #endregion: Move uploaded files on the correct location: End */
 
-    lgi(`${logSymbols.success}${' '.repeat(4)}`, Color.green, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(4)}`, LineSeparator.false);
     lgi(`\n Move Files To Last: `, LineSeparator.false);
 
     /* #region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin */
@@ -386,7 +386,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     /* #endregion: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End */
 
-    lgi(`${logSymbols.success}${' '.repeat(4)}`, Color.green, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(4)}`, LineSeparator.false);
     lgi(` Lock The Images Checkbox: `, LineSeparator.false);
 
     /* #region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin */
@@ -414,7 +414,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End`);
     /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */
 
-    lgi(`${logSymbols.success}${' '.repeat(2)}`, Color.green, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(2)}`, LineSeparator.false);
     lgi(` Saving Now: `, LineSeparator.false);
 
     /* #region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin */
@@ -453,12 +453,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     /* #endregion: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End */
 
-    lgi(`${logSymbols.success}${' '.repeat(16)}`, Color.green, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(16)}`, LineSeparator.false);
     lgi(` Saved: `, LineSeparator.false);
 
     await page.waitForNavigation({ timeout: 300000 });
 
-    lgi(`${logSymbols.success}${' '.repeat(5)}`, Color.green, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(5)}`, LineSeparator.false);
 
     const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, false);
     const returnObj = {
@@ -781,7 +781,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
                     lgi(`, `, LineSeparator.false);
                 }
                 lgi(`${zeroPad(cnt, 2)}.`, LineSeparator.false);
-                lgi(`${logSymbols.success} `, Color.green, LineSeparator.false);
+                lgi(`${logSymbols.success} `, LineSeparator.false);
             }
 
             const regexString = `<span class="fileinfo"> - (\\d{1,3}%)</span>`;

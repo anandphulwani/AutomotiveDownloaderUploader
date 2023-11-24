@@ -11,6 +11,7 @@ import { addUploadingToReport } from './reportsupportive.js';
 import { printSectionSeperator } from './others.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 const cuttingDoneFolderName = config.cutterProcessingFolders[0];
@@ -57,16 +58,16 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
 
         if (!isDryRun && !hasMovingToUploadZonePrinted) {
             lgi(`[`, LineSeparator.false);
-            lgi(currentTimeWOMSFormatted(), Color.bgWhite, LineSeparator.false);
-            lgi(`]`, LineSeparator.false);
-            lgi(` ${movingMesg}: `);
+            lgi(currentTimeWOMSFormatted(), Color.bgWhite, LoggingPrefix.false, LineSeparator.false);
+            lgi(`]`, LoggingPrefix.false, LineSeparator.false);
+            lgi(` ${movingMesg}: `, LoggingPrefix.false);
             hasMovingToUploadZonePrinted = true;
         }
         if (!isDryRun) {
             const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
-            lgi(folderNameToPrint, LineSeparator.false);
+            lgi(folderNameToPrint, cnt % 2 === 0 ? LoggingPrefix.true : LoggingPrefix.false, LineSeparator.false);
             for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
-                lgi(`.`, LineSeparator.false);
+                lgi(`.`, LoggingPrefix.false, LineSeparator.false);
             }
         }
         if (isDryRun) {
@@ -128,9 +129,9 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
         }
         if (!isDryRun) {
             if (cnt !== foldersToShiftLength - 1) {
-                lgi(`, `, LineSeparator.false);
+                lgi(`, `, LoggingPrefix.false, LineSeparator.false);
             } else {
-                lgi('');
+                lgi('', LoggingPrefix.false);
                 printSectionSeperator();
             }
         }

@@ -6,7 +6,7 @@ import { URL } from 'url';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc, lgi } from './functions/loggersupportive.js';
+import { lgw, lge, lgc, lgi, lgu } from './functions/loggersupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
@@ -39,6 +39,7 @@ import { attainLock, releaseLock } from './functions/locksupportive.js';
 import { moveFilesFromSourceToDestinationAndAccounting } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
+import LoggingPrefix from './class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 if (config.environment === 'production') {
@@ -211,7 +212,7 @@ for (const finisher of finishers) {
 foldersToShift.sort((a, b) => {
     const regex = /(\d+)/;
     if (!regex.test(path.basename(a.dealerImagesFolder)) || !regex.test(path.basename(b.dealerImagesFolder))) {
-        lgc('Unable to match regex of `foldersToShift` while sorting.');
+        lgu('Unable to match regex of `foldersToShift` while sorting.');
         return 0;
     }
     const numA = Number(path.basename(a.dealerImagesFolder).match(regex)[0]);
@@ -226,7 +227,7 @@ foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', 
 moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
 
 if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
-    lgi(`No data present in the uploading zone, Exiting.`);
+    lgi(`No data present in the uploading zone, Exiting.`, Color.green);
     process.exit(0);
 }
 
@@ -290,7 +291,7 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
         lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
-        lgi(usernameBookmark.name, Color.cyanBold);
+        lgi(usernameBookmark.name, Color.cyanBold, LoggingPrefix.false);
         const credentials = getCredentialsForUsername(usernameBookmark.name);
 
         setCurrentDealerConfiguration(usernameBookmark.name);
@@ -310,9 +311,9 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
             for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
                 // if (isDealerFolderToBeUploaded) {
                 lgi('Uploading bookmarks for the Dealer: ', LineSeparator.false);
-                lgi(dealerLevelBookmarkName, Color.cyanBold, LineSeparator.false);
-                lgi(' from the Username: ', LineSeparator.false);
-                lgi(usernameBookmark.name, Color.cyanBold);
+                lgi(dealerLevelBookmarkName, Color.cyanBold, LoggingPrefix.false, LineSeparator.false);
+                lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
+                lgi(usernameBookmark.name, Color.cyanBold, LoggingPrefix.false);
                 const vehicleBookmarks = dealerLevelBookmark.children;
 
                 // eslint-disable-next-line no-restricted-syntax

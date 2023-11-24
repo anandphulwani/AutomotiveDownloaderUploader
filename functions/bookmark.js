@@ -221,7 +221,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
     }
 
     const startingRow = await getRowPosOnTerminal();
-    lgi(`\t${name} : ${URL}`, LoggingPrefix.false);
+    lgi(`\t${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
 

@@ -36,6 +36,7 @@ import { getProjectLogsDirPath } from './functions/projectpaths.js';
 import { lge, lgi, lgu } from './functions/loggersupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
+import LoggingPrefix from './class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 // const {
@@ -142,7 +143,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
         lgi(`Reading bookmarks for the Username: `, LineSeparator.false);
-        lgi(usernameBookmark.name, Color.cyanBold);
+        lgi(usernameBookmark.name, Color.cyanBold, LoggingPrefix.false);
         const credentials = getCredentialsForUsername(usernameBookmark.name);
 
         setCurrentDealerConfiguration(usernameBookmark.name);
@@ -166,9 +167,9 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                 lotIndex++;
             }
             lgi('Reading bookmarks for the Dealer: ', LineSeparator.false);
-            lgi(dealerLevelBookmarkName, Color.cyanBold, LineSeparator.false);
-            lgi(' from the Username: ', LineSeparator.false);
-            lgi(usernameBookmark.name, Color.cyanBold);
+            lgi(dealerLevelBookmarkName, Color.cyanBold, LoggingPrefix.false, LineSeparator.false);
+            lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
+            lgi(usernameBookmark.name, Color.cyanBold, LoggingPrefix.false);
             const vehicleBookmarks = dealerLevelBookmark.children;
 
             // eslint-disable-next-line no-restricted-syntax
