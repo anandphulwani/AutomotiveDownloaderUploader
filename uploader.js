@@ -32,6 +32,7 @@ import {
     getUploadRemainingSummary,
     getNumberOfImagesFromAllottedDealerNumberFolder,
     getUniqueIDFromAllottedDealerNumberFolder,
+    getUniqueIDWithHashFromAllottedDealerNumberFolder,
 } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
@@ -162,8 +163,7 @@ for (const finisher of finishers) {
             // eslint-disable-next-line no-continue
             continue;
         }
-        const matches = finisherReadyToUploadSubFolderAndFiles.match(config.allottedFolderRegex);
-        const uniqueCode = matches[matches.length - 1];
+        const uniqueCode = getUniqueIDWithHashFromAllottedDealerNumberFolder(finisherReadyToUploadSubFolderAndFiles);
         let cutter = null;
         // eslint-disable-next-line no-restricted-syntax
         for (const contractorInSubLoop of Object.keys(config.contractors)) {
