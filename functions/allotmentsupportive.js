@@ -6,7 +6,7 @@ import path from 'path';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
-import { lgs, lgu } from './loggersupportive.js';
+import { lgs, lgu } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 /* #region : Supporting functions */

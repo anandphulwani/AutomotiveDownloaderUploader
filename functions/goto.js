@@ -5,7 +5,7 @@ import logSymbols from 'log-symbols';
 import { waitForSeconds } from './sleep.js';
 import { incRetryCount } from './others.js';
 import { waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith } from './waiting.js';
-import { lgbf, lge, lgi, lgu } from './loggersupportive.js';
+import { lgbf, lge, lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */

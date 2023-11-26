@@ -8,7 +8,7 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh } from './loggersupportive.js';
+import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh } from './loggerandlocksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';

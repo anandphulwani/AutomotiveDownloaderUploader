@@ -33,7 +33,7 @@ import { validateConfigFile } from './functions/configvalidation.js';
 import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
-import { lge, lgi, lgu } from './functions/loggersupportive.js';
+import { lge, lgi, lgu } from './functions/loggerandlocksupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';

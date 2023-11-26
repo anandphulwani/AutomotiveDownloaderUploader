@@ -6,7 +6,7 @@ import { getCredentialsForUsername } from './configsupportive.js';
 import { getAllUsernamesBookmarks } from './bookmarksupportive.js';
 import { setCurrentDealerConfiguration, getAllDealerNumbers } from './excelsupportive.js';
 import { checkForSpaceInBeginOrEnd, checkForMultipleSpacesInMiddle, allTrimString, trimMultipleSpacesInMiddleIntoOne } from './stringformatting.js';
-import { lge, lgw } from './loggersupportive.js';
+import { lge, lgw } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 function validateBookmarksAndCheckCredentialsPresent(debug = false) {

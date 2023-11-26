@@ -5,7 +5,7 @@ import path from 'path';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
-import { lge, lgi, lgif, lgw } from './loggersupportive.js';
+import { lge, lgi, lgif, lgw } from './loggerandlocksupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFolderSizeInBytes, removeDirIfExists } from './filesystem.js';
 import { addUploadingToReport } from './reportsupportive.js';
 import { printSectionSeperator } from './others.js';

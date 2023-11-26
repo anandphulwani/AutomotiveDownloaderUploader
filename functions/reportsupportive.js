@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 /* eslint-disable import/extensions */
-import { attainLock, releaseLock, lgc, lge } from './loggersupportive.js';
+import { attainLock, releaseLock, lgc, lge } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
 // import { createBackupOfFile } from './datastoresupportive.js';
 import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';

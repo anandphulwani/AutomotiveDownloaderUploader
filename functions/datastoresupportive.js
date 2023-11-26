@@ -8,7 +8,7 @@ import { checkSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted, currentTime } from './datetime.js';
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock, lge, lgc, lgi, lgb } from './loggersupportive.js';
+import { attainLock, releaseLock, lge, lgc, lgi, lgb } from './loggerandlocksupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { getProjectConfigDirPath, getProjectLogsDirPath } from './projectpaths.js';

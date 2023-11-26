@@ -9,7 +9,7 @@ import {
     trimSingleSpaceInMiddleArray,
     removeDuplicates,
 } from './stringformatting.js';
-import { lge, lgw } from './loggersupportive.js';
+import { lge, lgw } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 let resultStatus;

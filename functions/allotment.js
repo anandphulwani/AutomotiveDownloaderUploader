@@ -7,7 +7,7 @@ import { question } from 'readline-sync';
 /* eslint-disable import/extensions */
 import { zeroPad } from './stringformatting.js';
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock, lge, lgi, lgs, lgu } from './loggersupportive.js';
+import { attainLock, releaseLock, lge, lgi, lgs, lgu } from './loggerandlocksupportive.js';
 import { getIndexOfHighestIn2DArrayColumn } from './others.js';
 import { createDirAndCopyFile, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './excelsupportive.js';

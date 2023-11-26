@@ -10,7 +10,7 @@ import cfonts from 'cfonts';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
-import { lge, lgw, lgif, lgi } from './functions/loggersupportive.js';
+import { lge, lgw, lgif, lgi } from './functions/loggerandlocksupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
 import { makeDir, getListOfSubfoldersStartingWith } from './functions/filesystem.js';

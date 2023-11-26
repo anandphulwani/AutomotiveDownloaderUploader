@@ -7,7 +7,7 @@ import logSymbols from 'log-symbols';
 
 /* eslint-disable import/extensions */
 import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
-import { lgi, lgu } from './loggersupportive.js';
+import { lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';

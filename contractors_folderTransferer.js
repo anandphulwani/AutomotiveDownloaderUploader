@@ -6,7 +6,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc, lgi, lgif, lgu } from './functions/loggersupportive.js';
+import { lgw, lge, lgc, lgi, lgif, lgu } from './functions/loggerandlocksupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes, removeDir } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';

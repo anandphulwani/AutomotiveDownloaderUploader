@@ -9,7 +9,7 @@ import {
     trimSingleSpaceInMiddleArrayOfObjects,
     trimSingleSpaceInMiddleArray,
 } from './stringformatting.js';
-import { lge } from './loggersupportive.js';
+import { lge } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 function readDealerConfigurationExcel(username) {

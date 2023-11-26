@@ -1,6 +1,6 @@
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock } from '../functions/loggersupportive.js';
+import { attainLock, releaseLock } from '../functions/loggerandlocksupportive.js';
 import { waitForSeconds } from '../functions/sleep.js';
 /* eslint-enable import/extensions */
 

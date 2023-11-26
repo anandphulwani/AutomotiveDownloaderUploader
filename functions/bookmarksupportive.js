@@ -3,7 +3,7 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { lge } from './loggersupportive.js';
+import { lge } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 function getAllUsernamesBookmarks() {

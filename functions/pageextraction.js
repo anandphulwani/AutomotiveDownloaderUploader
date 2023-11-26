@@ -13,7 +13,7 @@ import { incRetryCount } from './others.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
 import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './excelsupportive.js';
-import { lge, lgi, lgu, lgw } from './loggersupportive.js';
+import { lge, lgi, lgu, lgw } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';

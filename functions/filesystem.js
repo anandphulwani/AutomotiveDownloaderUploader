@@ -7,7 +7,7 @@ import path from 'path';
 import randomstring from 'randomstring';
 
 /* eslint-disable import/extensions */
-import { lgc, lge, lgs } from './loggersupportive.js';
+import { lgc, lge, lgs } from './loggerandlocksupportive.js';
 import { sleep } from './sleep.js';
 /* eslint-enable import/extensions */
 

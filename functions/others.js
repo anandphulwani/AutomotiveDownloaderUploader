@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 /* eslint-disable import/extensions */
 import Color from '../class/Colors.js';
-import { lgi } from './loggersupportive.js';
+import { lgi } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 // TODO: Add functionality that if we want to send parameter that whether its info or error or warn

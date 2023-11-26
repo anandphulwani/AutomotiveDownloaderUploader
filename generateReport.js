@@ -38,7 +38,7 @@ import {
     styleOfVerticalListDealerNumber,
 } from './functions/reportsupportive.js';
 import { copyDirOrFile, makeDir } from './functions/filesystem.js';
-import { attainLock, releaseLock, lge, lgi, lgw } from './functions/loggersupportive.js';
+import { attainLock, releaseLock, lge, lgi, lgw } from './functions/loggerandlocksupportive.js';
 // import {
 //     allTrimStringArrayOfObjects,
 //     trimMultipleSpacesInMiddleIntoOneArrayOfObjects,

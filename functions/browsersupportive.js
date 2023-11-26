@@ -7,7 +7,7 @@ import { getCredentialsForUsername, getAppDomain } from './configsupportive.js';
 import { fillInTextbox, clickOnButton } from './actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitTillCurrentURLStartsWith } from './waiting.js';
 import { gotoPageAndWaitTillCurrentURLStartsWith } from './goto.js';
-import { lge } from './loggersupportive.js';
+import { lge } from './loggerandlocksupportive.js';
 
 /* eslint-enable import/extensions */
 
