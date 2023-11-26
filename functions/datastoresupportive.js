@@ -8,9 +8,8 @@ import { checkSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted, currentTime } from './datetime.js';
 import { config } from '../configs/config.js';
-import { lge, lgc, lgi, lgb } from './loggersupportive.js';
+import { attainLock, releaseLock, lge, lgc, lgi, lgb } from './loggersupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
-import { attainLock, releaseLock } from './locksupportive.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { getProjectConfigDirPath, getProjectLogsDirPath } from './projectpaths.js';
 import LineSeparator from '../class/LineSeparator.js';

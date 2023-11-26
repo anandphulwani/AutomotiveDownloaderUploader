@@ -3,10 +3,9 @@ import fs from 'fs';
 import path from 'path';
 
 /* eslint-disable import/extensions */
-import { lgc, lgs, lgu } from './loggersupportive.js';
+import { attainLock, releaseLock, lgc, lgs, lgu } from './loggersupportive.js';
 import { config } from '../configs/config.js';
 import { waitForMilliSeconds } from './sleep.js';
-import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { makeDir } from './filesystem.js';
 import { instanceRunDateFormatted } from './datetime.js';

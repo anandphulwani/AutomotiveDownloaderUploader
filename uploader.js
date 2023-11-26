@@ -6,7 +6,7 @@ import { URL } from 'url';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc, lgi, lgu } from './functions/loggersupportive.js';
+import { attainLock, releaseLock, lgw, lge, lgc, lgi, lgu } from './functions/loggersupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
@@ -36,7 +36,6 @@ import {
 } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
-import { attainLock, releaseLock } from './functions/locksupportive.js';
 import { moveFilesFromSourceToDestinationAndAccounting } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
