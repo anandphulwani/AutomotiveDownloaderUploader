@@ -18,9 +18,9 @@ const levels = {
     warn: 6,
     info: 7,
     verbose: 8,
-    debug: 9,
-    trace: 10,
-    billy: 11,
+    billy: 9,
+    debug: 10,
+    trace: 11,
 };
 
 /* #region fileTransportOptions and consoleTransportOptions : Begin */
