@@ -112,9 +112,9 @@ async function clickOnButton(page, selector, buttonText = false, isMouseClick = 
                 }
             }, elementToClick);
         } else {
-            // lgif(`Moving to the fromPositionElement: ${fromPositionElement}`);
+            // lgtf(`Moving to the fromPositionElement: ${fromPositionElement}`);
             await page.evaluate((element) => element.scrollIntoView(), elementToClick);
-            // lgif(`Confirming the fromPositionElement is in the browser viewport.`);
+            // lgtf(`Confirming the fromPositionElement is in the browser viewport.`);
             await page.waitForFunction(
                 (element) => {
                     const { top, bottom } = element.getBoundingClientRect();

@@ -10,7 +10,7 @@ import cfonts from 'cfonts';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
-import { lge, lgw, lgif, lgi } from './functions/loggerandlocksupportive.js';
+import { lge, lgw, lgif, lgi, lgtf } from './functions/loggerandlocksupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
 import { makeDir, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
@@ -24,7 +24,7 @@ import { doAllotment } from './functions/allotment.js';
 import { printSectionSeperator } from './functions/others.js';
 /* eslint-enable import/extensions */
 
-lgif(`region : Validation section 01: BEGIN`);
+lgtf(`region : Validation section 01: BEGIN`);
 /* #region : Validation section 01: BEGIN */
 if (process.argv.length < 3) {
     lge(
@@ -43,7 +43,7 @@ if (!Object.keys(config.contractors).length > 0) {
     process.exit(1);
 }
 /* #endregion */
-lgif(`region : Validation section 01: END`);
+lgtf(`region : Validation section 01: END`);
 
 const lotIndex = parseInt(process.argv[2], 10);
 const lotFolderName = `Lot_${zeroPad(lotIndex, 2)}`;
@@ -61,10 +61,10 @@ const lotHeadingOptions = {
     maxLength: '0', // maximum length of the output (0 = unlimited)
 };
 
-lgif(`Printing Lot number in a bold way`);
+lgtf(`Printing Lot number in a bold way`);
 cfonts.say(lotFolderName.replace('_', ' '), lotHeadingOptions);
 
-lgif(`region : Validation section 02: BEGIN`);
+lgtf(`region : Validation section 02: BEGIN`);
 /* #region : Validation section 02 */
 if (!fs.existsSync(lotFolderPath)) {
     lge(`Lot folder path: ${lotFolderPath} does not exist, Please check.`);
@@ -85,7 +85,7 @@ while (!hasLotFirstIndexMatches) {
     }
 }
 /* #endregion */
-lgif(`region : Validation section 02: END`);
+lgtf(`region : Validation section 02: END`);
 
 let dealerDirectories = await validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFolderPath);
 if (config.environment === 'production') {
@@ -108,8 +108,8 @@ dealerDirectories.sort((a, b) => {
     return a[1] > b[1] ? -1 : 1;
 });
 
-lgif(`dealerDirectories: ${JSON.stringify(dealerDirectories)}`);
-lgif(`Object.keys(config.contractors): ${JSON.stringify(Object.keys(config.contractors))}`);
+lgtf(`dealerDirectories: ${JSON.stringify(dealerDirectories)}`);
+lgtf(`Object.keys(config.contractors): ${JSON.stringify(Object.keys(config.contractors))}`);
 
 let contractors = [];
 let totalNoOfNormalThreshold = 0;
@@ -129,7 +129,7 @@ for (const contractor of Object.keys(config.contractors)) {
     contractors.push([contractor, normalThreshold]);
     totalNoOfNormalThreshold += normalThreshold;
 }
-lgif(`contractors from config: ${JSON.stringify(contractors)}`);
+lgtf(`contractors from config: ${JSON.stringify(contractors)}`);
 
 contractors.sort((a, b) => {
     if (a[1] === b[1]) {
@@ -137,10 +137,10 @@ contractors.sort((a, b) => {
     }
     return a[1] > b[1] ? -1 : 1;
 });
-lgif(`contractors sorted: ${JSON.stringify(contractors)}`);
+lgtf(`contractors sorted: ${JSON.stringify(contractors)}`);
 
 contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, totalNoOfNormalThreshold);
-lgif(`contractors ratio calculated: ${JSON.stringify(contractors)}`);
+lgtf(`contractors ratio calculated: ${JSON.stringify(contractors)}`);
 
 /**
  * Reading currentAllotted(ImagesAlloted) from the config, and appending it as the last column to generate `Example01` below.
@@ -177,7 +177,7 @@ contractors.forEach((contractor) => {
         contractor.push(currentAllotted);
     }
 });
-lgif(`contractors currentAlloted set: ${JSON.stringify(contractors)}`);
+lgtf(`contractors currentAlloted set: ${JSON.stringify(contractors)}`);
 
 // Lot Configuration
 const lotsMinimumDealerFoldersForEachContractors = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors;
