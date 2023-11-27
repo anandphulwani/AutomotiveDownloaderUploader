@@ -290,7 +290,10 @@ function getLastNonCatchErrorLogLevels9DigitUniqueId() {
     const lastNonCatchErrorRegexExpression = new RegExp(lastNonCatchErrorRegexString, 'g');
 
     if (!lastNonCatchErrorRegexExpression.test(configContent)) {
-        lgu('Unable to match regex for fn getLastNonCatchErrorLogLevels9DigitUniqueId()', new CallerHierarchyAndUniqueId('', ''));
+        lgu(
+            'Unable to match regex for fn getLastNonCatchErrorLogLevels9DigitUniqueId()',
+            new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block01', '')
+        );
         process.exit(1);
     }
 
@@ -313,7 +316,10 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         const currentNonCatchErrorRegexExpression = new RegExp(currentNonCatchErrorRegexString, 'g');
 
         if (!currentNonCatchErrorRegexExpression.test(configContent)) {
-            lgu('Unable to match regex for fn generateAndGetNonCatchErrorLogLevels9DigitUniqueId()', new CallerHierarchyAndUniqueId('', ''));
+            lgu(
+                'Unable to match regex for fn generateAndGetNonCatchErrorLogLevels9DigitUniqueId()',
+                new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block02', '')
+            );
             process.exit(1);
         }
 
@@ -325,7 +331,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         if (newConfigContent === undefined) {
             lgu(
                 `Unable to set nonCatchErrorLogLevels9DigitUniqueId: '${nonCatchErrorCode}'. Serious issue, please contact developer.`,
-                new CallerHierarchyAndUniqueId('', '')
+                new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block03', '')
             );
             releaseLock(fileToOperateOn, undefined, true);
             process.exit(1);
@@ -333,7 +339,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
-        lgu(err, new CallerHierarchyAndUniqueId('', ''));
+        lgu(err, new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block04', ''));
         process.exit(1);
     }
     return nonCatchErrorCode;
@@ -347,7 +353,10 @@ function getLastCatchErrorLogLevels6DigitUniqueId() {
     const lastCatchErrorRegexExpression = new RegExp(lastCatchErrorRegexString, 'g');
 
     if (!lastCatchErrorRegexExpression.test(configContent)) {
-        lgu('Unable to match regex for fn getLastCatchErrorLogLevels6DigitUniqueId()', new CallerHierarchyAndUniqueId('', ''));
+        lgu(
+            'Unable to match regex for fn getLastCatchErrorLogLevels6DigitUniqueId()',
+            new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block05', '')
+        );
         process.exit(1);
     }
 
@@ -370,7 +379,10 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
         const currentCatchErrorRegexExpression = new RegExp(currentCatchErrorRegexString, 'g');
 
         if (!currentCatchErrorRegexExpression.test(configContent)) {
-            lgu('Unable to match regex for fn generateAndGetCatchErrorLogLevels6DigitUniqueId()', new CallerHierarchyAndUniqueId('', ''));
+            lgu(
+                'Unable to match regex for fn generateAndGetCatchErrorLogLevels6DigitUniqueId()',
+                new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block06', '')
+            );
             process.exit(1);
         }
 
@@ -382,7 +394,7 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
         if (newConfigContent === undefined) {
             lgu(
                 `Unable to set catchErrorLogLevels6DigitUniqueId: '${catchErrorCode}'. Serious issue, please contact developer.`,
-                new CallerHierarchyAndUniqueId('', '')
+                new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block07', '')
             );
             releaseLock(fileToOperateOn, undefined, true);
             process.exit(1);
@@ -390,7 +402,7 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
-        lgu(err, new CallerHierarchyAndUniqueId('', ''));
+        lgu(err, new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block08', ''));
         process.exit(1);
     }
     return catchErrorCode;
