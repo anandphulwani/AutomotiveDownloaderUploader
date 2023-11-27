@@ -193,6 +193,7 @@ while (true) {
     // sleep(15);
     // console.log(foldersToShift);
 
+    // TODO: Check which warning we can give immediately
     historyOfWarnings.shift();
     historyOfWarnings.push(currentSetOfWarnings);
     // eslint-disable-next-line no-restricted-syntax

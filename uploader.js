@@ -104,6 +104,7 @@ for (const finisher of finishers) {
                 fs.renameSync(`${finisherReadyToUploadSubFolderPath} `, finisherReadyToUploadSubFolderPath.trim());
                 unlockedFolders.push(finisherReadyToUploadSubFolderAndFiles);
             } catch (err) {
+                // TODO: Make a if else block, so as to catch err type, otherwise do a lgc error
                 lgw(
                     `Folder in Finisher's ReadyToUpload locked, maybe a contractor working/moving it, Filename: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
                 );
