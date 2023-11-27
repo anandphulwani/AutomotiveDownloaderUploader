@@ -724,8 +724,10 @@ const loggerConsole = {
 // }, 24 * 60 * 60 * 1000); // Rotate logs once per day
 // #endregion
 
-// eslint-disable-next-line import/prefer-default-export
 export {
+    levels,
+    loggerConsoleLevel,
+    loggerFileLevel,
     loggerFile,
     loggerConsole,
     addIndividualTransportUnreachableFileWinston,
