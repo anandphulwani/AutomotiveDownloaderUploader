@@ -79,9 +79,9 @@ const hiccupLogFile = `${instanceRunLogFilePrefix}_hiccup.log`;
 const warnLogFile = `${instanceRunLogFilePrefix}_warn.log`;
 const infoLogFile = `${instanceRunLogFilePrefix}_info.log`;
 const verboseFile = `${instanceRunLogFilePrefix}_verbose.log`;
+const billyLogFile = `${instanceRunLogFilePrefix}_billy.log`;
 const debugLogFile = `${instanceRunLogFilePrefix}_debug.log`;
 const traceLogFile = `${instanceRunLogFilePrefix}_trace.log`;
-const billyLogFile = `${instanceRunLogFilePrefix}_billy.log`;
 
 // TODO: Check unhandledexceptionFileWinston's: `handleExceptions: true` parameter, not being handled in `LoggerCustomFileSyncTransport.js`.
 const unhandledexceptionFileWinston = createLogger({
@@ -259,6 +259,19 @@ const verboseFileWinston = createLogger({
     ],
 });
 
+const billyFileWinston = createLogger({
+    level: 'billy',
+    levels: levels,
+    transports: [
+        new LoggerCustomFileSyncTransport({
+            ...fileTransportOptions(mainLogFile),
+            name: 'all',
+            filename: mainLogFile,
+            level: 'billy',
+        }),
+    ],
+});
+
 const debugFileWinston = createLogger({
     level: 'debug',
     levels: levels,
@@ -282,19 +295,6 @@ const traceFileWinston = createLogger({
             name: 'all',
             filename: mainLogFile,
             level: 'trace',
-        }),
-    ],
-});
-
-const billyFileWinston = createLogger({
-    level: 'billy',
-    levels: levels,
-    transports: [
-        new LoggerCustomFileSyncTransport({
-            ...fileTransportOptions(mainLogFile),
-            name: 'all',
-            filename: mainLogFile,
-            level: 'billy',
         }),
     ],
 });
@@ -415,6 +415,18 @@ const verboseConsoleWinston = createLogger({
     ],
 });
 
+const billyConsoleWinston = createLogger({
+    level: 'billy',
+    levels: levels,
+    transports: [
+        new transports.Console({
+            ...consoleTransportOptions,
+            name: 'billy',
+            level: 'billy',
+        }),
+    ],
+});
+
 const debugConsoleWinston = createLogger({
     level: 'debug',
     levels: levels,
@@ -436,18 +448,6 @@ const traceConsoleWinston = createLogger({
             ...consoleTransportOptions,
             name: 'trace',
             level: 'trace',
-        }),
-    ],
-});
-
-const billyConsoleWinston = createLogger({
-    level: 'billy',
-    levels: levels,
-    transports: [
-        new transports.Console({
-            ...consoleTransportOptions,
-            name: 'billy',
-            level: 'billy',
         }),
     ],
 });
@@ -574,6 +574,21 @@ function addIndividualTransportVerboseFileWinston() {
     }
 }
 
+let isIndividualTransportBillyFileWinstonEnabled = false;
+function addIndividualTransportBillyFileWinston() {
+    if (!isIndividualTransportBillyFileWinstonEnabled) {
+        billyFileWinston.add(
+            new LoggerCustomFileSyncTransport({
+                ...fileTransportOptions(billyLogFile),
+                name: 'billy',
+                filename: billyLogFile,
+                level: 'billy',
+            })
+        );
+        isIndividualTransportBillyFileWinstonEnabled = true;
+    }
+}
+
 let isIndividualTransportDebugFileWinstonEnabled = false;
 function addIndividualTransportDebugFileWinston() {
     if (!isIndividualTransportDebugFileWinstonEnabled) {
@@ -601,21 +616,6 @@ function addIndividualTransportTraceFileWinston() {
             })
         );
         isIndividualTransportTraceFileWinstonEnabled = true;
-    }
-}
-
-let isIndividualTransportBillyFileWinstonEnabled = false;
-function addIndividualTransportBillyFileWinston() {
-    if (!isIndividualTransportBillyFileWinstonEnabled) {
-        billyFileWinston.add(
-            new LoggerCustomFileSyncTransport({
-                ...fileTransportOptions(billyLogFile),
-                name: 'billy',
-                filename: billyLogFile,
-                level: 'billy',
-            })
-        );
-        isIndividualTransportBillyFileWinstonEnabled = true;
     }
 }
 /* #endregion addIndividualTransport Functions : End */
@@ -654,6 +654,10 @@ const loggerFile = {
         // console.log('Logger File Verbose');
         verboseFileWinston.verbose(...args);
     },
+    billy: (...args) => {
+        // console.log('Logger File Billy');
+        billyFileWinston.billy(...args);
+    },
     debug: (...args) => {
         // console.log('Logger File Debug');
         debugFileWinston.debug(...args);
@@ -661,10 +665,6 @@ const loggerFile = {
     trace: (...args) => {
         // console.log('Logger File Trace');
         traceFileWinston.trace(...args);
-    },
-    billy: (...args) => {
-        // console.log('Logger File Billy');
-        billyFileWinston.billy(...args);
     },
 };
 
@@ -701,6 +701,10 @@ const loggerConsole = {
         // console.log('Logger Console Verbose');
         verboseConsoleWinston.verbose(...args);
     },
+    billy: (...args) => {
+        // console.log('Logger Console Billy');
+        billyConsoleWinston.billy(...args);
+    },
     debug: (...args) => {
         // console.log('Logger Console Debug');
         debugConsoleWinston.debug(...args);
@@ -708,10 +712,6 @@ const loggerConsole = {
     trace: (...args) => {
         // console.log('Logger Console Trace');
         traceConsoleWinston.trace(...args);
-    },
-    billy: (...args) => {
-        // console.log('Logger Console Billy');
-        billyConsoleWinston.billy(...args);
     },
 };
 /* #endregion Main logger functions: loggerFile, loggerConsole : End */
@@ -736,7 +736,7 @@ export {
     addIndividualTransportWarnFileWinston,
     addIndividualTransportInfoFileWinston,
     addIndividualTransportVerboseFileWinston,
+    addIndividualTransportBillyFileWinston,
     addIndividualTransportDebugFileWinston,
     addIndividualTransportTraceFileWinston,
-    addIndividualTransportBillyFileWinston,
 };
