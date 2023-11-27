@@ -140,7 +140,7 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
     if (!recursiveDelete) {
         const dirPathCount = fs.readdirSync(dirPath).length;
         if (dirPathCount > 0) {
-            lge(`Unable to remove the directory, because it is not empty : ${dirPath}`);
+            lgs(`Unable to remove the directory, because it is not empty : ${dirPath}`);
             process.exit(1);
         }
         recursiveDelete = true;
@@ -255,7 +255,7 @@ function getListOfSubfoldersStartingWith(dirPath, startingTxt, isStrict = false)
         const noSuchFileRegex = new RegExp('ENOENT: no such file or directory.*', 'g');
         if (noSuchFileRegex.test(err.message)) {
             if (isStrict) {
-                lgs(`getListOfSubfoldersStartingWith ${err.message.replace(/^ENOENT: n/, ': N')}`);
+                lgc(`getListOfSubfoldersStartingWith ${err.message.replace(/^ENOENT: n/, ': N')}`, err);
                 process.exit(1);
             }
         } else {

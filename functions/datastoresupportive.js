@@ -8,7 +8,7 @@ import { checkSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted, currentTime } from './datetime.js';
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock, lge, lgc, lgi, lgb } from './loggerandlocksupportive.js';
+import { attainLock, releaseLock, lge, lgc, lgi, lgb, lgu } from './loggerandlocksupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { getProjectConfigDirPath, getProjectLogsDirPath } from './projectpaths.js';
@@ -218,7 +218,7 @@ function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
     const regexExpression = new RegExp(regexString, 'g');
 
     if (!regexExpression.test(folderName)) {
-        lgc('Unable to match regex for fn getNumberOfImagesFromAllottedDealerNumberFolder()');
+        lgu('Unable to match regex for fn getNumberOfImagesFromAllottedDealerNumberFolder()');
         process.exit(1);
     }
 
@@ -231,7 +231,7 @@ function getUniqueIDWithHashFromAllottedDealerNumberFolder(folderName) {
     const regexExpression = new RegExp(regexString, 'g');
 
     if (!regexExpression.test(folderName)) {
-        lgc('Unable to match regex for fn getUniqueIDWithHashFromAllottedDealerNumberFolder()');
+        lgu('Unable to match regex for fn getUniqueIDWithHashFromAllottedDealerNumberFolder()');
         process.exit(1);
     }
 
@@ -244,7 +244,7 @@ function getUniqueIDFromAllottedDealerNumberFolder(folderName) {
     const regexExpression = new RegExp(regexString, 'g');
 
     if (!regexExpression.test(folderName)) {
-        lgc('Unable to match regex for fn getUniqueIDFromAllottedDealerNumberFolder()');
+        lgu('Unable to match regex for fn getUniqueIDFromAllottedDealerNumberFolder()');
         process.exit(1);
     }
 

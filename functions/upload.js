@@ -6,7 +6,7 @@ import { URL as URLparser } from 'url';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './datetime.js';
-import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif, lgh, lgtf } from './loggerandlocksupportive.js';
+import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif, lgh, lgtf, lgs } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
 import { sleep, msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
@@ -627,7 +627,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                         lgtf(`Breaking now ${fromPositionSubImageVehicleId} === ${currToPositionSubImageVehicleId}`);
                         break;
                     } else {
-                        lgu(
+                        lgs(
                             `Image position changed, but the 'vechileId' from 'fromPositionSubImageVehicleId' and 'currToPositionSubImageVehicleId' doesn't match.` +
                                 `fromPosition > toPosition: ${fromPosition} > ${toPosition}, toPositionSubImageVehicleId === currToPositionNextSubImageVehicleId: ${toPositionSubImageVehicleId} === ${currToPositionNextSubImageVehicleId}` +
                                 `fromPosition < toPosition: ${fromPosition} < ${toPosition}, toPositionSubImageVehicleId === currToPositionPrevSubImageVehicleId: ${toPositionSubImageVehicleId} === ${currToPositionPrevSubImageVehicleId}`
@@ -636,7 +636,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                         process.exit(1);
                     }
                 } else {
-                    lgu(`Image position changed, but the 'vechileId' from previous/next doesn't match.`);
+                    lgs(`Image position changed, but the 'vechileId' from previous/next doesn't match.`);
                     await waitForSeconds(240, true);
                     process.exit(1);
                 }
@@ -707,7 +707,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             isSlow ? await waitForSeconds(1, true) : '';
             oldToPositionElementRectX = toPositionElementRect.x;
             if (lastIndex === 100) {
-                lgu(`Tried changing image position for 100 iterations, but it didn't work.`);
+                lgs(`Tried changing image position for 100 iterations, but it didn't work.`);
                 process.exit(1);
             }
         }

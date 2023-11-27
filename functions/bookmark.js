@@ -180,7 +180,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         lgu(sourceJSONString);
         printSectionSeperator();
         lgu(`initialLineCount: ${initialLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
-        lgu(err.message);
+        lgc(err);
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         releaseLock(sourceBookmarkPath, undefined, true);
         process.exit(1);
@@ -280,7 +280,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
 
         const blockRegexExpression = new RegExp(elementsDetails[element].blockRegex, 'g');
         if (!blockRegexExpression.test(bookmarksFileText)) {
-            lgb(
+            lgu(
                 [
                     'Unable to match regex for fn replaceBookmarksElementByGUIDAndWriteToBookmarksFile()',
                     elementsDetails[element].blockRegex,
@@ -304,7 +304,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         bookmarksFileText = reformatJSONString(bookmarksFileText);
         const returnVal = writeFileWithComparingSameLinesWithOldContents(fileToOperateOn, bookmarksFileText, fileContents);
         if (!returnVal) {
-            lgb(
+            lgu(
                 [
                     `${fileContents}\n${'-'.repeat(120)}`,
                     `${bookmarksFileText}\n${'-'.repeat(120)}`,
@@ -319,7 +319,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         releaseLock(fileToOperateOn, undefined, true);
-        lgb(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block: ${err.message}`);
+        lgc(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block`, err);
         process.exit(1);
     }
 }

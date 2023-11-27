@@ -68,7 +68,7 @@ function getContractorsCurrentAllotted(contractor) {
     const regexExpression = new RegExp(regexString, 'g');
 
     if (!regexExpression.test(configUserContent)) {
-        lgc('Unable to match regex for fn getContractorsCurrentAllotted()');
+        lgu('Unable to match regex for fn getContractorsCurrentAllotted()');
         process.exit(1);
     }
 
@@ -90,7 +90,7 @@ function getLastLotNumber() {
     const lastLotNumberRegexExpression = new RegExp(lastLotNumberRegexString, 'g');
 
     if (!lastLotNumberRegexExpression.test(configContent)) {
-        lgc('Unable to match regex for fn getLastLotNumber()');
+        lgu('Unable to match regex for fn getLastLotNumber()');
         process.exit(1);
     }
     const match = configContent.match(lastLotNumberRegexExpression);
@@ -103,7 +103,7 @@ function getLastLotDate() {
     const lastLotDateRegexExpression = new RegExp(lastLotDateRegexString, 'g');
 
     if (!lastLotDateRegexExpression.test(configContent)) {
-        lgc('Unable to match regex for fn getLastLotDate()');
+        lgu('Unable to match regex for fn getLastLotDate()');
         process.exit(1);
     }
     const match = configContent.match(lastLotDateRegexExpression);
@@ -150,7 +150,7 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
         createBackupOfFile(fileToOperateOn, newConfigContent);
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
-        lgu(err.message);
+        lgc(err);
         process.exit(1);
     }
 }

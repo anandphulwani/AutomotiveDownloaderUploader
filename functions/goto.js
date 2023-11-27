@@ -5,7 +5,7 @@ import logSymbols from 'log-symbols';
 import { waitForSeconds } from './sleep.js';
 import { incRetryCount } from './others.js';
 import { waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith } from './waiting.js';
-import { lgbf, lge, lgi, lgu } from './loggerandlocksupportive.js';
+import { lgbf, lgc, lge, lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
@@ -46,24 +46,24 @@ async function gotoURL(page, URL, debug = false) {
                 err.message === 'read ECONNRESET' ||
                 err.message === 'Page.navigate timed out.'
             ) {
-                lgi(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
-                lgi(` ${logSymbols.warning}`, LineSeparator.false);
+                lgc(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
+                lgc(` ${logSymbols.warning}`, LineSeparator.false);
                 if (gotoCnt < 4) {
                     // Sleep for 30 seconds
                     for (let cnt = 0; cnt < 10; cnt++) {
-                        lgi('.', Color.yellow, LineSeparator.false);
+                        lgc('.', Color.yellow, LineSeparator.false);
                         await waitForSeconds(3);
                     }
                     incRetryCount();
                 } else {
-                    lge('');
-                    lge(
+                    lgc('');
+                    lgc(
                         `Unable to get the following URL after 5 retries in interval of 30 seconds each, get operation timeout set to 60 seconds: ${URL} .`
                     );
-                    lge('  ', LineSeparator.false);
+                    lgc('  ', LineSeparator.false);
                 }
             } else {
-                lgu(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
+                lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
                 throw err;
             }
         }

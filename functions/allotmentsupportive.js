@@ -138,7 +138,7 @@ function getDealerFolderContractorsZonePath(sourcePath, contractorsName, additio
         sourcePath = path.dirname(sourcePath);
     }
     if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
-        lgs(`Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`);
+        lgu(`Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`);
         process.exit(0);
     }
     sourcePathFoldersArr.reverse();
@@ -156,7 +156,7 @@ function getDealerFolderRecordKeepingZonePath(sourcePath, additionalText) {
         sourcePath = path.dirname(sourcePath);
     }
     if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
-        lgs(`Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`);
+        lgu(`Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`);
         process.exit(0);
     }
     sourcePathFoldersArr.reverse();
