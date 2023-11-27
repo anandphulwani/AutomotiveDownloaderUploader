@@ -119,8 +119,8 @@ async function doAllotment(
                     }
                 });
                 lgi('');
-                lgi(`Allot            ${sourceDealerFolderName.padEnd(20, ' ')} To                  ???????`.padEnd(120, ' '), Color.cyanBold);
-                lgi(`${currentPrioritySingleLine}`, Color.cyanBold);
+                lgi(`Allot            ${sourceDealerFolderName.padEnd(20, ' ')} To                  ???????`.padEnd(120, ' '), Color.cyan);
+                lgi(`${currentPrioritySingleLine}`, Color.cyan);
                 // const cancelVal = index === 0 ? 'Exit' : false;
                 // contractorsIndex = keyInSelect(contractorsNames, null, { cancel: cancelVal });
 

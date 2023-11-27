@@ -293,7 +293,7 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
         lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
-        lgi(usernameBookmark.name, Color.cyanBold, LoggingPrefix.false);
+        lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
         const credentials = getCredentialsForUsername(usernameBookmark.name);
 
         setCurrentDealerConfiguration(usernameBookmark.name);
@@ -313,9 +313,9 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
             for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
                 // if (isDealerFolderToBeUploaded) {
                 lgi('Uploading bookmarks for the Dealer: ', LineSeparator.false);
-                lgi(dealerLevelBookmarkName, Color.cyanBold, LoggingPrefix.false, LineSeparator.false);
+                lgi(dealerLevelBookmarkName, Color.cyan, LoggingPrefix.false, LineSeparator.false);
                 lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
-                lgi(usernameBookmark.name, Color.cyanBold, LoggingPrefix.false);
+                lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
                 const vehicleBookmarks = dealerLevelBookmark.children;
 
                 // eslint-disable-next-line no-restricted-syntax

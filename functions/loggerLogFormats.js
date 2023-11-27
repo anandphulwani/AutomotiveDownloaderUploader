@@ -11,9 +11,9 @@ import LoggingPrefix from '../class/LoggingPrefix.js';
 const { printf } = format;
 
 const stringToChalkColor = {
-    cyan: [chalk.cyan, chalk.rgb(64, 184, 253)],
+    cyanNormal: [chalk.cyan, chalk.rgb(64, 184, 253)],
+    cyan: [chalk.cyan.bold, chalk.rgb(102, 246, 246).bold],
     bgCyan: [chalk.bgCyan.bold, chalk.bgRgb(64, 184, 253).bold],
-    cyanBold: [chalk.cyan.bold, chalk.rgb(102, 246, 246).bold],
     yellow: [chalk.rgb(219, 195, 0).bold, chalk.rgb(255, 238, 102).bold],
     bgYellow: [chalk.white.bgYellow.bold, chalk.white.bgRgb(206, 177, 57).bold],
     green: [chalk.green.bold, chalk.rgb(29, 231, 51).bold],

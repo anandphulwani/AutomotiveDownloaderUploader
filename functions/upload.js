@@ -38,7 +38,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     );
     const startingRow = await getRowPosOnTerminal();
     lgi(`\t${userLoggedIn}/`, LoggingPrefix.false, LineSeparator.false);
-    lgi(`${dealerFolder}/`, Color.cyanBold, LineSeparator.false);
+    lgi(`${dealerFolder}/`, Color.cyan, LineSeparator.false);
     lgi(`${name} : ${URL}`);
     printToLogBuffer.push(`\${userLoggedIn}/\${dealerFolder}/\${name} : \${URL}  :   ${userLoggedIn}/${dealerFolder}/${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
@@ -101,7 +101,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         } else if (diffInEstimate > 1.5) {
             currentColor = Color.yellow;
         } else {
-            currentColor = Color.cyan;
+            currentColor = Color.cyanNormal;
         }
         if (newEndingRow - 3 !== endingRow) {
             lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor);
@@ -794,7 +794,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
                 const percentage = currentQueueContent.match(regexExpression)[0].match(regexString)[1];
                 // lgtf(`percentage: ${percentage}`);
                 lgi(`  ${zeroPad(countOfComplete + 1, 2)}.`, LineSeparator.false);
-                lgi(` ${percentage}`, Color.cyanBold, LineSeparator.false);
+                lgi(` ${percentage}`, Color.cyan, LineSeparator.false);
             }
             loopCountOfQueueContent = 0;
         } else {
