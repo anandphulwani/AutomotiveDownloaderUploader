@@ -393,6 +393,7 @@ const warnConsoleWinston = createLogger({
 
 const infoConsoleWinston = createLogger({
     level: 'info',
+    levels: levels,
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
@@ -416,6 +417,7 @@ const verboseConsoleWinston = createLogger({
 
 const debugConsoleWinston = createLogger({
     level: 'debug',
+    levels: levels,
     transports: [
         new transports.Console({
             ...consoleTransportOptions,
