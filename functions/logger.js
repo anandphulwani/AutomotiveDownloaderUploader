@@ -94,21 +94,21 @@ const unhandledexceptionFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'error',
+            level: loggerFileLevel,
         }),
         new LoggerCustomFileSyncTransport({
             handleExceptions: true,
             ...fileTransportOptions(unhandledexceptionLogFile),
             name: 'all',
             filename: unhandledexceptionLogFile,
-            level: 'error',
+            level: loggerFileLevel,
         }),
         new LoggerCustomFileSyncTransport({
             handleExceptions: true,
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
-            level: 'error',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -122,13 +122,13 @@ const unreachableFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'unreachable',
+            level: loggerFileLevel,
         }),
         new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
-            level: 'unreachable',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -142,13 +142,13 @@ const catcherrorFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'catcherror',
+            level: loggerFileLevel,
         }),
         new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
-            level: 'catcherror',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -163,13 +163,13 @@ const severeFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'severe',
+            level: loggerFileLevel,
         }),
         new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(applicationErrorsLogFile),
             name: 'all',
             filename: applicationErrorsLogFile,
-            level: 'severe',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -182,13 +182,13 @@ const errorFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'error',
+            level: loggerFileLevel,
         }),
         new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(userErrorsLogFile),
             name: 'all',
             filename: userErrorsLogFile,
-            level: 'error',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -203,13 +203,13 @@ const hiccupFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'hiccup',
+            level: loggerFileLevel,
         }),
         new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(userErrorsLogFile),
             name: 'all',
             filename: userErrorsLogFile,
-            level: 'hiccup',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -222,13 +222,13 @@ const warnFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'warn',
+            level: loggerFileLevel,
         }),
         new LoggerCustomFileSyncTransport({
             ...fileTransportOptions(userErrorsLogFile),
             name: 'all',
             filename: userErrorsLogFile,
-            level: 'warn',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -241,7 +241,7 @@ const infoFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'info',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -254,7 +254,7 @@ const verboseFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'verbose',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -267,7 +267,7 @@ const billyFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'billy',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -280,7 +280,7 @@ const debugFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'debug',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -294,7 +294,7 @@ const traceFileWinston = createLogger({
             ...fileTransportOptions(mainLogFile),
             name: 'all',
             filename: mainLogFile,
-            level: 'trace',
+            level: loggerFileLevel,
         }),
     ],
 });
@@ -310,7 +310,7 @@ const unhandledexceptionConsoleWinston = createLogger({
             handleExceptions: true,
             ...consoleTransportOptions,
             name: 'unhandledexception',
-            level: 'error',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -323,7 +323,7 @@ const unreachableConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'unreachable',
-            level: 'unreachable',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -336,7 +336,7 @@ const catcherrorConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'error',
-            level: 'error',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -349,7 +349,7 @@ const severeConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'severe',
-            level: 'severe',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -361,7 +361,7 @@ const errorConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'error',
-            level: 'error',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -374,7 +374,7 @@ const hiccupConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'hiccup',
-            level: 'hiccup',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -386,7 +386,7 @@ const warnConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'warn',
-            level: 'warn',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -398,7 +398,7 @@ const infoConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'info',
-            level: 'info',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -410,7 +410,7 @@ const verboseConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'verbose',
-            level: 'verbose',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -422,7 +422,7 @@ const billyConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'billy',
-            level: 'billy',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -434,7 +434,7 @@ const debugConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'debug',
-            level: 'debug',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -447,7 +447,7 @@ const traceConsoleWinston = createLogger({
         new transports.Console({
             ...consoleTransportOptions,
             name: 'trace',
-            level: 'trace',
+            level: loggerConsoleLevel,
         }),
     ],
 });
@@ -462,7 +462,7 @@ function addIndividualTransportUnreachableFileWinston() {
                 ...fileTransportOptions(unreachableLogFile),
                 name: 'unreachable',
                 filename: unreachableLogFile,
-                level: 'unreachable',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportUnreachableFileWinstonEnabled = true;
@@ -477,7 +477,7 @@ function addIndividualTransportCatcherrorFileWinston() {
                 ...fileTransportOptions(catchErrorLogFile),
                 name: 'catcherror',
                 filename: catchErrorLogFile,
-                level: 'catcherror',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportCatcherrorFileWinstonEnabled = true;
@@ -492,7 +492,7 @@ function addIndividualTransportSevereFileWinston() {
                 ...fileTransportOptions(severeLogFile),
                 name: 'severe',
                 filename: severeLogFile,
-                level: 'severe',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportSevereFileWinstonEnabled = true;
@@ -507,7 +507,7 @@ function addIndividualTransportErrorFileWinston() {
                 ...fileTransportOptions(errorLogFile),
                 name: 'error',
                 filename: errorLogFile,
-                level: 'error',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportErrorFileWinstonEnabled = true;
@@ -522,7 +522,7 @@ function addIndividualTransportHiccupFileWinston() {
                 ...fileTransportOptions(hiccupLogFile),
                 name: 'hiccup',
                 filename: hiccupLogFile,
-                level: 'hiccup',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportHiccupFileWinstonEnabled = true;
@@ -537,7 +537,7 @@ function addIndividualTransportWarnFileWinston() {
                 ...fileTransportOptions(warnLogFile),
                 name: 'warn',
                 filename: warnLogFile,
-                level: 'warn',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportWarnFileWinstonEnabled = true;
@@ -552,7 +552,7 @@ function addIndividualTransportInfoFileWinston() {
                 ...fileTransportOptions(infoLogFile),
                 name: 'info',
                 filename: infoLogFile,
-                level: 'info',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportInfoFileWinstonEnabled = true;
@@ -567,7 +567,7 @@ function addIndividualTransportVerboseFileWinston() {
                 ...fileTransportOptions(verboseFile),
                 name: 'verbose',
                 filename: verboseFile,
-                level: 'verbose',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportVerboseFileWinstonEnabled = true;
@@ -582,7 +582,7 @@ function addIndividualTransportBillyFileWinston() {
                 ...fileTransportOptions(billyLogFile),
                 name: 'billy',
                 filename: billyLogFile,
-                level: 'billy',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportBillyFileWinstonEnabled = true;
@@ -597,7 +597,7 @@ function addIndividualTransportDebugFileWinston() {
                 ...fileTransportOptions(debugLogFile),
                 name: 'debug',
                 filename: debugLogFile,
-                level: 'debug',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportDebugFileWinstonEnabled = true;
@@ -612,7 +612,7 @@ function addIndividualTransportTraceFileWinston() {
                 ...fileTransportOptions(traceLogFile),
                 name: 'trace',
                 filename: traceLogFile,
-                level: 'trace',
+                level: loggerFileLevel,
             })
         );
         isIndividualTransportTraceFileWinstonEnabled = true;
