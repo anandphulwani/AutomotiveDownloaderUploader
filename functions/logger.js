@@ -23,6 +23,10 @@ const levels = {
     trace: 11,
 };
 
+// Set logger level based on environment variable (default to billy)
+const loggerFileLevel = process.env.LOG_LEVEL || 'billy';
+const loggerConsoleLevel = process.env.LOG_LEVEL || 'billy';
+
 /* #region fileTransportOptions and consoleTransportOptions : Begin */
 const fileTransportOptions = (logFilename) => ({
     format: combine(
@@ -711,11 +715,6 @@ const loggerConsole = {
 /* #endregion Main logger functions: loggerFile, loggerConsole : End */
 
 // #region
-// Set logger level based on environment variable (default to info)
-// logger.level = process.env.LOG_LEVEL || 'info';
-loggerFile.level = process.env.LOG_LEVEL || 'billy';
-loggerConsole.level = process.env.LOG_LEVEL || 'billy';
-
 // // Rotate logs and persist logs with warn, error, fatal on disk
 // setInterval(() => {
 //     logger.info('Rotating logs');
