@@ -155,7 +155,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
             const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
             const minDealerFolders =
                 config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors *
-                Object.values(config.contractors).filter((contractor) => contractor.normalThreshold > 0).length;
+                Object.values(config.contractors).filter((contractor) => contractor.normalThreshold >= 0).length;
             if (
                 (minDealerFolders === false || dealerFolderCntInLot >= minDealerFolders) &&
                 (config.lot[lotIndex - 1].imagesQty === 0 || imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty)

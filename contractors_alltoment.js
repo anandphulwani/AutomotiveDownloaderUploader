@@ -113,6 +113,13 @@ dealerDirectories.sort((a, b) => {
 lgtf(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`);
 lgtf(`Object.keys(config.contractors): ${beautify(Object.keys(config.contractors), null, 3, 120)}`);
 
+const validContractors = Object.entries(config.contractors)
+    .filter(([_, contractor]) => contractor.normalThreshold >= 0)
+    .reduce((obj, [key, val]) => {
+        obj[key] = val;
+        return obj;
+    }, {});
+
 let contractors = [];
 let totalNoOfNormalThreshold = 0;
 
@@ -123,11 +130,11 @@ createProcessingAndRecordKeepingFolders(lotTodaysDate);
  * Adding all normalThreshold to totalNoOfNormalThreshold
  */
 // eslint-disable-next-line no-restricted-syntax
-for (const contractor of Object.keys(config.contractors)) {
+for (const contractor of Object.keys(validContractors)) {
     if (lotIndex === 1) {
         await setContractorsCurrentAllotted(contractor, '0');
     }
-    const { normalThreshold } = config.contractors[contractor];
+    const { normalThreshold } = validContractors[contractor];
     contractors.push([contractor, normalThreshold]);
     totalNoOfNormalThreshold += normalThreshold;
 }

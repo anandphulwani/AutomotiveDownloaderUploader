@@ -57,6 +57,10 @@ const configUser = {
             credentialsblockSHA1: '',
         },
     ],
+    /**
+     * Setting normalThreshold to `0`, will take the contractor in account for minimumDealerFoldersForEachContractors
+     * Setting normalThreshold to `-1`, will take the contractor out of calculation totally for minimumDealerFoldersForEachContractors and imagesQty
+     */
     contractors: {
         biswas: {
             currentAllotted: 64,
