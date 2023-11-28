@@ -71,7 +71,13 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             moveSource: moveSource,
             moveDestination: moveDestination,
         };
-        lgtf(`fn uploadBookmarkURL() : END( From: Supplied URL doesn't exist ...... (Ignoring)), Returning: returnObj: ${JSON.stringify(returnObj)}`);
+        lgtf(
+            `fn uploadBookmarkURL() : END( From: Supplied URL doesn't exist ...... (Ignoring)), Returning: returnObj: ${JSON.stringify(
+                returnObj,
+                null,
+                3
+            )}`
+        );
         return returnObj;
     }
     printToLogBuffer.map((value) => {
@@ -112,7 +118,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor);
         }
     }
-    lgtf(`fn uploadBookmarkURL() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
+    lgtf(`fn uploadBookmarkURL() : END, Returning: returnObj: ${JSON.stringify(returnObj, null, 3)}`);
     return returnObj;
 }
 
@@ -468,7 +474,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         moveSource: moveSource,
         moveDestination: moveDestination,
     };
-    lgtf(`fn uploadImagesFromFolder() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
+    lgtf(`fn uploadImagesFromFolder() : END, Returning: returnObj: ${JSON.stringify(returnObj, null, 3)}`);
     return returnObj;
 }
 
@@ -520,7 +526,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             return { x, y, width, height };
         }, fromPositionElement);
 
-        lgtf(`fromPositionElementRect: ${JSON.stringify(fromPositionElementRect)}`);
+        lgtf(`fromPositionElementRect: ${JSON.stringify(fromPositionElementRect, null, 3)}`);
 
         // Making sure that the element is selected and its opacity changes to 0.6, which confirms selected.
         while (true) {
@@ -581,7 +587,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                 const { x, y, width, height } = el.getBoundingClientRect();
                 return { x, y, width, height };
             }, toPositionElement);
-            lgtf(`From Element To: toPositionElementRect: ${JSON.stringify(toPositionElementRect)}`);
+            lgtf(`From Element To: toPositionElementRect: ${JSON.stringify(toPositionElementRect, null, 3)}`);
 
             if (oldToPositionElementRectX !== undefined && Math.abs(toPositionElementRect.x - oldToPositionElementRectX) > 50) {
                 const currToPositionPrevIdSelector =

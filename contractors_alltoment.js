@@ -109,8 +109,8 @@ dealerDirectories.sort((a, b) => {
     return a[1] > b[1] ? -1 : 1;
 });
 
-lgtf(`dealerDirectories: ${JSON.stringify(dealerDirectories)}`);
-lgtf(`Object.keys(config.contractors): ${JSON.stringify(Object.keys(config.contractors))}`);
+lgtf(`dealerDirectories: ${JSON.stringify(dealerDirectories, null, 3)}`);
+lgtf(`Object.keys(config.contractors): ${JSON.stringify(Object.keys(config.contractors), null, 3)}`);
 
 let contractors = [];
 let totalNoOfNormalThreshold = 0;
@@ -130,7 +130,7 @@ for (const contractor of Object.keys(config.contractors)) {
     contractors.push([contractor, normalThreshold]);
     totalNoOfNormalThreshold += normalThreshold;
 }
-lgtf(`contractors from config: ${JSON.stringify(contractors)}`);
+lgtf(`contractors from config: ${JSON.stringify(contractors, null, 3)}`);
 
 contractors.sort((a, b) => {
     if (a[1] === b[1]) {
@@ -138,10 +138,10 @@ contractors.sort((a, b) => {
     }
     return a[1] > b[1] ? -1 : 1;
 });
-lgtf(`contractors sorted: ${JSON.stringify(contractors)}`);
+lgtf(`contractors sorted: ${JSON.stringify(contractors, null, 3)}`);
 
 contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, totalNoOfNormalThreshold);
-lgtf(`contractors ratio calculated: ${JSON.stringify(contractors)}`);
+lgtf(`contractors ratio calculated: ${JSON.stringify(contractors, null, 3)}`);
 
 /**
  * Reading currentAllotted(ImagesAlloted) from the config, and appending it as the last column to generate `Example01` below.
@@ -178,7 +178,7 @@ contractors.forEach((contractor) => {
         contractor.push(currentAllotted);
     }
 });
-lgtf(`contractors currentAlloted set: ${JSON.stringify(contractors)}`);
+lgtf(`contractors currentAlloted set: ${JSON.stringify(contractors, null, 3)}`);
 
 // Lot Configuration
 const lotsMinimumDealerFoldersForEachContractors = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors;
