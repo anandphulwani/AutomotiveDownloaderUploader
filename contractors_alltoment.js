@@ -6,6 +6,7 @@ import fs from 'fs';
 import { exec } from 'child_process';
 import { keyInYN } from 'readline-sync';
 import cfonts from 'cfonts';
+import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
@@ -109,8 +110,8 @@ dealerDirectories.sort((a, b) => {
     return a[1] > b[1] ? -1 : 1;
 });
 
-lgtf(`dealerDirectories: ${JSON.stringify(dealerDirectories, null, 3)}`);
-lgtf(`Object.keys(config.contractors): ${JSON.stringify(Object.keys(config.contractors), null, 3)}`);
+lgtf(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`);
+lgtf(`Object.keys(config.contractors): ${beautify(Object.keys(config.contractors), null, 3, 120)}`);
 
 let contractors = [];
 let totalNoOfNormalThreshold = 0;
@@ -130,7 +131,7 @@ for (const contractor of Object.keys(config.contractors)) {
     contractors.push([contractor, normalThreshold]);
     totalNoOfNormalThreshold += normalThreshold;
 }
-lgtf(`contractors from config: ${JSON.stringify(contractors, null, 3)}`);
+lgtf(`contractors from config: ${beautify(contractors, null, 3, 120)}`);
 
 contractors.sort((a, b) => {
     if (a[1] === b[1]) {
@@ -138,10 +139,10 @@ contractors.sort((a, b) => {
     }
     return a[1] > b[1] ? -1 : 1;
 });
-lgtf(`contractors sorted: ${JSON.stringify(contractors, null, 3)}`);
+lgtf(`contractors sorted: ${beautify(contractors, null, 3, 120)}`);
 
 contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, totalNoOfNormalThreshold);
-lgtf(`contractors ratio calculated: ${JSON.stringify(contractors, null, 3)}`);
+lgtf(`contractors ratio calculated: ${beautify(contractors, null, 3, 120)}`);
 
 /**
  * Reading currentAllotted(ImagesAlloted) from the config, and appending it as the last column to generate `Example01` below.
@@ -178,7 +179,7 @@ contractors.forEach((contractor) => {
         contractor.push(currentAllotted);
     }
 });
-lgtf(`contractors currentAlloted set: ${JSON.stringify(contractors, null, 3)}`);
+lgtf(`contractors currentAlloted set: ${beautify(contractors, null, 3, 120)}`);
 
 // Lot Configuration
 const lotsMinimumDealerFoldersForEachContractors = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors;

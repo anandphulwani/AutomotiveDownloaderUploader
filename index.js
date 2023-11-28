@@ -6,6 +6,7 @@ import { exec, spawn } from 'child_process';
 import { keyInYN } from 'readline-sync';
 import { URL as URLparser } from 'url';
 import path from 'path';
+import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
@@ -221,7 +222,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
 
                                 fs.appendFileSync(bookmarksNotAppendFile, `vehicleBookmark.guid: ${vehicleBookmark.guid}\n`);
                                 fs.appendFileSync(bookmarksNotAppendFile, `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}\n`);
-                                fs.appendFileSync(bookmarksNotAppendFile, `returnObj: ${JSON.stringify(returnObj, null, 2)}\n`);
+                                fs.appendFileSync(bookmarksNotAppendFile, `returnObj: ${beautify(returnObj, null, 3, 120)}\n`);
                                 fs.appendFileSync(bookmarksNotAppendFile, `${'+'.repeat(120)}\n`);
                             } catch (err) {
                                 console.error(err);

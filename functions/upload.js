@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import path from 'path';
 import logSymbols from 'log-symbols';
 import { URL as URLparser } from 'url';
+import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './datetime.js';
@@ -72,10 +73,11 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             moveDestination: moveDestination,
         };
         lgtf(
-            `fn uploadBookmarkURL() : END( From: Supplied URL doesn't exist ...... (Ignoring)), Returning: returnObj: ${JSON.stringify(
+            `fn uploadBookmarkURL() : END( From: Supplied URL doesn't exist ...... (Ignoring)), Returning: returnObj: ${beautify(
                 returnObj,
                 null,
-                3
+                3,
+                120
             )}`
         );
         return returnObj;
@@ -118,7 +120,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor);
         }
     }
-    lgtf(`fn uploadBookmarkURL() : END, Returning: returnObj: ${JSON.stringify(returnObj, null, 3)}`);
+    lgtf(`fn uploadBookmarkURL() : END, Returning: returnObj: ${beautify(returnObj, null, 3, 120)}`);
     return returnObj;
 }
 
@@ -474,7 +476,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         moveSource: moveSource,
         moveDestination: moveDestination,
     };
-    lgtf(`fn uploadImagesFromFolder() : END, Returning: returnObj: ${JSON.stringify(returnObj, null, 3)}`);
+    lgtf(`fn uploadImagesFromFolder() : END, Returning: returnObj: ${beautify(returnObj, null, 3, 120)}`);
     return returnObj;
 }
 
@@ -526,7 +528,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             return { x, y, width, height };
         }, fromPositionElement);
 
-        lgtf(`fromPositionElementRect: ${JSON.stringify(fromPositionElementRect, null, 3)}`);
+        lgtf(`fromPositionElementRect: ${beautify(fromPositionElementRect, null, 3, 120)}`);
 
         // Making sure that the element is selected and its opacity changes to 0.6, which confirms selected.
         while (true) {
@@ -587,7 +589,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                 const { x, y, width, height } = el.getBoundingClientRect();
                 return { x, y, width, height };
             }, toPositionElement);
-            lgtf(`From Element To: toPositionElementRect: ${JSON.stringify(toPositionElementRect, null, 3)}`);
+            lgtf(`From Element To: toPositionElementRect: ${beautify(toPositionElementRect, null, 3, 120)}`);
 
             if (oldToPositionElementRectX !== undefined && Math.abs(toPositionElementRect.x - oldToPositionElementRectX) > 50) {
                 const currToPositionPrevIdSelector =
