@@ -1,4 +1,6 @@
-import { lgd } from './loggerandlocksupportive';
+/* eslint-disable import/extensions */
+import { lgd } from './loggerandlocksupportive.js';
+/* eslint-enable import/extensions */
 
 async function fillInTextbox(page, selector, textToFill, debug = false) {
     debug ? lgd(`Waiting for the ${selector} to load: Executing.`) : null;
