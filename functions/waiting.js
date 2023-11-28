@@ -1,13 +1,14 @@
 /* eslint-disable import/extensions */
+import { lgd } from './loggerandlocksupportive.js';
 import { waitForMilliSeconds } from './sleep.js';
 /* eslint-enable import/extensions */
 
 async function waitForElementContainsOrEqualsText(page, selector, elementText, timeoutSeconds = 30, exactMatch = false, debug = false) {
-    debug ? console.log(`Waiting for the ${selector} to load: Executing.`) : '';
+    debug ? lgd(`Waiting for the ${selector} to load: Executing.`) : '';
     await page.waitForSelector(selector, { timeout: 90000 });
-    debug ? console.log(`Waiting for the ${selector} to load: Found.`) : '';
+    debug ? lgd(`Waiting for the ${selector} to load: Found.`) : '';
 
-    debug ? console.log(`Waiting for ${elementText} (${selector}) text to show up: Executing.`) : '';
+    debug ? lgd(`Waiting for ${elementText} (${selector}) text to show up: Executing.`) : '';
     if (exactMatch) {
         // eslint-disable-next-line no-undef
         // await page.waitForFunction((args) => document.querySelector(args[0]).innerText === args[1], { timeout: 90000 }, [selector, elementText]);
@@ -60,15 +61,15 @@ async function waitForElementContainsOrEqualsText(page, selector, elementText, t
             timeoutSeconds
         );
     }
-    debug ? console.log(`Waiting for ${elementText} (${selector}) text to show up: Found.`) : '';
+    debug ? lgd(`Waiting for ${elementText} (${selector}) text to show up: Found.`) : '';
 }
 
 async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, timeoutSeconds = 30, exactMatch = false, debug = false) {
-    debug ? console.log(`Waiting for the ${selector} to load: Executing.`) : '';
+    debug ? lgd(`Waiting for the ${selector} to load: Executing.`) : '';
     await page.waitForSelector(selector, { timeout: 90000 });
-    debug ? console.log(`Waiting for the ${selector} to load: Found.`) : '';
+    debug ? lgd(`Waiting for the ${selector} to load: Found.`) : '';
 
-    debug ? console.log(`Waiting for ${elementHTML} (${selector}) HTML to show up: Executing.`) : '';
+    debug ? lgd(`Waiting for ${elementHTML} (${selector}) HTML to show up: Executing.`) : '';
     if (exactMatch) {
         // eslint-disable-next-line no-undef
         // await page.waitForFunction((args) => document.querySelector(args[0]).innerHTML === args[1], { timeout: 90000 }, [selector, elementHTML]);
@@ -121,11 +122,11 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, t
             timeoutSeconds
         );
     }
-    debug ? console.log(`Waiting for ${elementHTML} (${selector}) text to show up: Found.`) : '';
+    debug ? lgd(`Waiting for ${elementHTML} (${selector}) text to show up: Found.`) : '';
 }
 
 async function waitTillCurrentURLStartsWith(page, partialURL, debug = false) {
-    debug ? console.log(`Waiting for the current URL to start with: ${partialURL}: Executing.`) : '';
+    debug ? lgd(`Waiting for the current URL to start with: ${partialURL}: Executing.`) : '';
     // await page.waitForFunction(`window.location.href.startsWith('${partialURL}')`, { timeout: 90000 });
     const timeout = 90000;
     const startTime = Date.now();
@@ -138,11 +139,11 @@ async function waitTillCurrentURLStartsWith(page, partialURL, debug = false) {
     if (Date.now() - startTime > timeout) {
         throw new Error(`Timeout waiting for URL to start with "${partialURL}"`);
     }
-    debug ? console.log(`Waiting for the current URL to start with: ${partialURL}: Matched.`) : '';
+    debug ? lgd(`Waiting for the current URL to start with: ${partialURL}: Matched.`) : '';
 }
 
 async function waitTillCurrentURLEndsWith(page, partialURL, debug = false) {
-    debug ? console.log(`Waiting for the current URL to ends with: ${partialURL}: Executing.`) : '';
+    debug ? lgd(`Waiting for the current URL to ends with: ${partialURL}: Executing.`) : '';
     // await page.waitForFunction(`window.location.href.endsWith('${partialURL}')`, { timeout: 90000 });
     const timeout = 10000;
     const startTime = Date.now();
@@ -155,7 +156,7 @@ async function waitTillCurrentURLEndsWith(page, partialURL, debug = false) {
     if (Date.now() - startTime > timeout) {
         throw new Error(`Timeout waiting for URL to ends with "${partialURL}"`);
     }
-    debug ? console.log(`Waiting for the current URL to ends with: ${partialURL}: Matched.`) : '';
+    debug ? lgd(`Waiting for the current URL to ends with: ${partialURL}: Matched.`) : '';
 }
 
 export { waitForElementContainsOrEqualsText, waitForElementContainsOrEqualsHTML, waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith };

@@ -5,13 +5,13 @@ import logSymbols from 'log-symbols';
 import { waitForSeconds } from './sleep.js';
 import { incRetryCount } from './others.js';
 import { waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith } from './waiting.js';
-import { lgbf, lgc, lge, lgi, lgu } from './loggerandlocksupportive.js';
+import { lgbf, lgc, lgd, lge, lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 async function gotoURL(page, URL, debug = false) {
-    debug ? console.log(`Navigating to the URL: ${URL}: Executing.`) : '';
+    debug ? lgd(`Navigating to the URL: ${URL}: Executing.`) : '';
     for (let gotoCnt = 0; gotoCnt < 5; gotoCnt++) {
         try {
             // ONPROJECTFINISH: Error 500 is applied here, make sure page.goto is not called anywhere in the project.
@@ -68,7 +68,7 @@ async function gotoURL(page, URL, debug = false) {
             }
         }
     }
-    debug ? console.log(`Navigating to the URL: ${URL}: Done.`) : '';
+    debug ? lgd(`Navigating to the URL: ${URL}: Done.`) : '';
     return page.url();
 }
 

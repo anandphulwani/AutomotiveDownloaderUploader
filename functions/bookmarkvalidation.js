@@ -6,12 +6,12 @@ import { getCredentialsForUsername } from './configsupportive.js';
 import { getAllUsernamesBookmarks } from './bookmarksupportive.js';
 import { setCurrentDealerConfiguration, getAllDealerNumbers } from './excelsupportive.js';
 import { checkForSpaceInBeginOrEnd, checkForMultipleSpacesInMiddle, allTrimString, trimMultipleSpacesInMiddleIntoOne } from './stringformatting.js';
-import { lge, lgw } from './loggerandlocksupportive.js';
+import { lgd, lge, lgw } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 function validateBookmarksAndCheckCredentialsPresent(debug = false) {
     let validationStatus = 'success';
-    debug ? console.log(`Validating bookmarks and checking if credentials are present: Executing.`) : '';
+    debug ? lgd(`Validating bookmarks and checking if credentials are present: Executing.`) : '';
     const allUsernamesBookmarks = getAllUsernamesBookmarks();
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
@@ -36,7 +36,7 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
             }
         }
     }
-    debug ? console.log(`Validating excel file: Done.`) : '';
+    debug ? lgd(`Validating excel file: Done.`) : '';
     return validationStatus;
 }
 

@@ -9,12 +9,12 @@ import {
     trimSingleSpaceInMiddleArray,
     removeDuplicates,
 } from './stringformatting.js';
-import { lge, lgw } from './loggerandlocksupportive.js';
+import { lgd, lge, lgw } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 let resultStatus;
 function validateDealerConfigurationExcelFile(debug = false) {
-    debug ? console.log(`Validating excel file: Executing.`) : '';
+    debug ? lgd(`Validating excel file: Executing.`) : '';
     resultStatus = 'success';
     Object.keys(config.credentials).forEach((credential) => {
         const { username } = config.credentials[credential];
@@ -57,10 +57,10 @@ function validateDealerConfigurationExcelFile(debug = false) {
         const lockTheImageArray = data.map((item) => item['Lock the image (check mark)']);
         validateDealerConfigurationExcelFileColumnBooleanOrBlankOnly(usernameTrimmed, lockTheImageArray, 'Lock the image (check mark)');
 
-        debug ? console.log(`resultStatus: ${resultStatus}`) : '';
+        debug ? lgd(`resultStatus: ${resultStatus}`) : '';
     });
 
-    debug ? console.log(`Validating excel file: Done.`) : '';
+    debug ? lgd(`Validating excel file: Done.`) : '';
     return resultStatus;
 }
 

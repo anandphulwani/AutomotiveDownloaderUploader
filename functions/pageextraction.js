@@ -13,7 +13,7 @@ import { incRetryCount } from './others.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
 import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './excelsupportive.js';
-import { lgc, lge, lgi, lgu, lgw } from './loggerandlocksupportive.js';
+import { lgc, lgd, lge, lgi, lgu, lgw } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
@@ -73,7 +73,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
             continue;
         }
 
-        debug ? console.log(`Downloading image: ${imageOriginalURLS[imageNumberToDownload - 1]}`) : '';
+        debug ? lgd(`Downloading image: ${imageOriginalURLS[imageNumberToDownload - 1]}`) : '';
         const file = fs.createWriteStream(`${tempPath}/${zeroPad(imageNumberToDownload, 3)}.jpg`);
 
         let shortFilename = '';

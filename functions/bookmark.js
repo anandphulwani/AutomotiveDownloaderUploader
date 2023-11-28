@@ -8,7 +8,7 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh } from './loggerandlocksupportive.js';
+import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh, lgd } from './loggerandlocksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
@@ -72,7 +72,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
         if (downloadedRegexExpression.test(processingJSONString)) {
             const downloadedBookmarkBlockMatches = processingJSONString.match(downloadedRegexExpression);
-            debug ? console.log(`Found downloadedBookmarkBlockMatches: ${downloadedBookmarkBlockMatches.length}`) : '';
+            debug ? lgd(`Found downloadedBookmarkBlockMatches: ${downloadedBookmarkBlockMatches.length}`) : '';
 
             if (downloadedBookmarkBlockMatches !== null) {
                 const doneBookmarksInSource = {};
@@ -87,7 +87,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                     // console.log(`Found bookmark with GUID: ${guid}`);
                     doneBookmarksInSource[guid] = match;
                 }
-                debug ? console.log(`Total doneBookmarksInSource: ${Object.keys(doneBookmarksInSource).length}`) : '';
+                debug ? lgd(`Total doneBookmarksInSource: ${Object.keys(doneBookmarksInSource).length}`) : '';
 
                 const doneBookmarksInSourceKeys = Object.keys(doneBookmarksInSource);
                 for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
@@ -170,7 +170,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             throw new Error(`Before writing bookmarks file: initialLineCount and writingLineCount is not the same:\n`);
         }
 
-        debug ? console.log('Writing bookmarks file') : '';
+        debug ? lgd('Writing bookmarks file') : '';
         writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initialSourceJSONString);
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         releaseLock(sourceBookmarkPath, undefined, true);

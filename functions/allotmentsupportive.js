@@ -6,7 +6,7 @@ import path from 'path';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
-import { lgs, lgu } from './loggerandlocksupportive.js';
+import { lgd, lgs, lgu } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 /* #region : Supporting functions */
@@ -197,7 +197,7 @@ async function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDi
 
                         if (fs.statSync(VINFolderPath).isDirectory()) {
                             const VINFolderLength = fs.readdirSync(VINFolderPath).length;
-                            debug ? console.log(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : '';
+                            debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : '';
                             if (VINFolderLength > 0) {
                                 doesLotFolderPathContainsFiles = true;
                             } else {
@@ -239,7 +239,7 @@ async function returnImageCountFromDealerDirs(dealerDirs, debug = false) {
 
                 if (VINFolderStat.isDirectory()) {
                     const VINFolderLength = fs.readdirSync(VINFolderPath).length;
-                    debug ? console.log(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : '';
+                    debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : '';
                     if (VINFolderLength > 0) {
                         totalNoOfDealerFolderFiles += VINFolderLength;
                     } else {

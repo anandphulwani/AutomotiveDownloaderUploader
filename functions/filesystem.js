@@ -7,14 +7,14 @@ import path from 'path';
 import randomstring from 'randomstring';
 
 /* eslint-disable import/extensions */
-import { lgc, lge, lgs } from './loggerandlocksupportive.js';
+import { lgc, lgd, lge, lgs } from './loggerandlocksupportive.js';
 import { sleep } from './sleep.js';
 /* eslint-enable import/extensions */
 
 function makeDir(dirPath, debug = false) {
     try {
         fs.mkdirSync(dirPath, { recursive: true });
-        debug ? console.log(`Folder path created successfully : ${dirPath}`) : '';
+        debug ? lgd(`Folder path created successfully : ${dirPath}`) : '';
     } catch (error) {
         lgc(`Unable to create a directory : ${dirPath}`, error);
         process.exit(1);
@@ -63,26 +63,26 @@ function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
 
 function createDirAndMoveFile(fromPath, toPath, overwrite = false, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
-        debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
+        debug ? lgd(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
         makeDir(`${path.dirname(toPath)}/`, debug);
-        debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
+        debug ? lgd(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
     }
     moveDirOrFile(fromPath, toPath, overwrite, debug);
 }
 
 function createDirAndCopyFile(fromPath, toPath, overwrite = false, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
-        debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
+        debug ? lgd(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
         makeDir(`${path.dirname(toPath)}/`, debug);
-        debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
+        debug ? lgd(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
     }
     copyDirOrFile(fromPath, toPath, overwrite, debug);
 }
 
 function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, destinationPath, overwrite = false, debug = false) {
-    debug ? console.log('Moving file from TempDir to Destination : Executing.') : '';
+    debug ? lgd('Moving file from TempDir to Destination : Executing.') : '';
     createDirAndMoveFile(filePath, filePath.replace(tempPath, destinationPath), overwrite, debug);
-    debug ? console.log('Moving file from TempDir to Destination : Done.') : '';
+    debug ? lgd('Moving file from TempDir to Destination : Done.') : '';
 }
 
 function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, toPath, overwrite = false, recursiveDeleteParentLevel = 1, debug = false) {
@@ -130,7 +130,7 @@ function writeFileWithComparingSameLinesWithOldContents(pathOfFile, fileContents
 }
 
 function removeDir(dirPath, recursiveDelete = false, debug = false) {
-    debug ? console.log('Removing Directory : Executing') : '';
+    debug ? lgd('Removing Directory : Executing') : '';
     /* #region : Patch to delete a folder when recursiveDelete is false */
     /**
      * Note: Setting recursiveDelete to true because setting it to false is
@@ -151,15 +151,15 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
         maxRetries: 120,
         retryDelay: 500,
     });
-    debug ? console.log('Removing Directory : Done') : '';
+    debug ? lgd('Removing Directory : Done') : '';
 }
 
 function removeDirIfExists(dirPath, recursiveDelete = false, debug = false) {
-    debug ? console.log('Removing Directory If Exists : Executing') : '';
+    debug ? lgd('Removing Directory If Exists : Executing') : '';
     if (fs.existsSync(dirPath)) {
         removeDir(dirPath, recursiveDelete, debug);
     }
-    debug ? console.log('Removing Directory If Exists: Done') : '';
+    debug ? lgd('Removing Directory If Exists: Done') : '';
 }
 
 function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, debug = false) {
@@ -177,20 +177,20 @@ function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, debug =
             : '';
         if (parentDirFilesCount === 0) {
             dirPath = parentDir;
-            debug ? console.log(`removeDir ${parentDir}`) : '';
+            debug ? lgd(`removeDir ${parentDir}`) : '';
             removeDir(parentDir, false);
         } else {
-            debug ? console.log(`Directory (${parentDirFilesCount}) not empty: ${dirPath}`) : '';
+            debug ? lgd(`Directory (${parentDirFilesCount}) not empty: ${dirPath}`) : '';
             break;
         }
     }
 }
 
 function removeDirAndRemoveParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, recursiveDelete = false, debug = false) {
-    debug ? console.log('Removing Directory And Removing Parent Directory If Empty : Executing') : '';
+    debug ? lgd('Removing Directory And Removing Parent Directory If Empty : Executing') : '';
     removeDir(dirPath, recursiveDelete, debug);
     removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel, debug);
-    debug ? console.log('Removing Directory And Removing Parent Directory If Empty : Done') : '';
+    debug ? lgd('Removing Directory And Removing Parent Directory If Empty : Done') : '';
 }
 
 function generateTempFolderWithRandomText(debug = false) {
@@ -199,9 +199,9 @@ function generateTempFolderWithRandomText(debug = false) {
         charset: 'alphabetic',
         capitalization: 'lowercase',
     });
-    debug ? console.log(`Generated random folder name : ${randomFolder}`) : '';
+    debug ? lgd(`Generated random folder name : ${randomFolder}`) : '';
     const tempPathWithRandomFolder = `${os.tmpdir()}/${randomFolder}`;
-    debug ? console.log(`Temporary path with suffixed random folder : ${tempPathWithRandomFolder}`) : '';
+    debug ? lgd(`Temporary path with suffixed random folder : ${tempPathWithRandomFolder}`) : '';
     return tempPathWithRandomFolder;
 }
 
