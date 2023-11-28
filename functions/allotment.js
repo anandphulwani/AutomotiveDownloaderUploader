@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
 import { question } from 'readline-sync';
+import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { zeroPad } from './stringformatting.js';
@@ -209,7 +210,7 @@ async function doAllotment(
             debug
                 ? lgd(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted: `)
                 : null;
-            debug ? lgd(contractors) : null;
+            debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
         }
         if (!isDryRun) {
             addAllotmentToReport(allotmentDetailsForReport);

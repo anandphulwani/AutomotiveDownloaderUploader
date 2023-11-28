@@ -2,6 +2,7 @@
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
+import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
@@ -39,7 +40,7 @@ function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalO
             }
         }
     });
-    debug ? lgd(`recalculateRatioOfThreshHoldWithOtherContractors: ${contractorsArr}`) : null;
+    debug ? lgd(`recalculateRatioOfThreshHoldWithOtherContractors: ${beautify(contractorsArr, null, 3, 120)}`) : null;
     return contractorsArr;
 }
 /* #endregion */
