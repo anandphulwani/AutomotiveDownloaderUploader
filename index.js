@@ -152,7 +152,9 @@ for (const usernameBookmark of allUsernamesBookmarks) {
         // eslint-disable-next-line no-restricted-syntax
         for (const dealerLevelBookmark of dealerLevelBookmarks) {
             const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
-            const minDealerFolders = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
+            const minDealerFolders =
+                config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors *
+                Object.values(config.contractors).filter((contractor) => contractor.normalThreshold > 0).length;
             if (
                 (minDealerFolders === false || dealerFolderCntInLot >= minDealerFolders) &&
                 (config.lot[lotIndex - 1].imagesQty === 0 || imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty)
