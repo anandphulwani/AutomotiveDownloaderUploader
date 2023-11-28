@@ -261,7 +261,7 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
     );
     /* #endregion */
     printSectionSeperator();
-    debug ? lgd(`contractors: ${contractors}`) : null;
+    debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
     debug ? lgd(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}`) : null;
 
     /**
