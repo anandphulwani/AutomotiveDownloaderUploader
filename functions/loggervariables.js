@@ -13,6 +13,7 @@ import {
 import { getProjectLogsDirPath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
+// TODO: Check why debug here is set to true.
 const debug = true;
 /**
  *
