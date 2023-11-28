@@ -216,7 +216,7 @@ if (doesDestinationFolderAlreadyExists) {
 }
 debug ? lgd(`dryRunImagesQtyAllotedInCurrentLot: ${dryRunImagesQtyAllotedInCurrentLot}`) : null;
 debug ? lgd(`dryRunFoldersAlloted: ${dryRunFoldersAlloted}`) : null;
-debug ? lgd(`dryRunDealerDirectories: ${dryRunDealerDirectories}`) : null;
+debug ? lgd(`dryRunDealerDirectories: ${beautify(dryRunDealerDirectories, null, 3, 120)}`) : null;
 debug ? lgd(`dryRunContractors: ${beautify(dryRunContractors, null, 3, 120)}`) : null;
 
 debug ? lgd(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`) : null;

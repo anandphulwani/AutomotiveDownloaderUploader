@@ -79,7 +79,7 @@ function recalculateRatioOfImagesAlloted(contractorsArr, debug = false) {
             }
         }
     });
-    debug ? lgd(`recalculateRatioOfImagesAlloted: ${contractorsArr}`) : null;
+    debug ? lgd(`recalculateRatioOfImagesAlloted: ${beautify(contractorsArr, null, 3, 120)}`) : null;
     return contractorsArr;
 }
 /* #endregion */
@@ -117,7 +117,7 @@ function recalculateAllotmentPriority(contractorsArr, debug = false) {
             }
         }
     });
-    debug ? lgd(`recalculateAllotmentPriority: ${contractorsArr}`) : null;
+    debug ? lgd(`recalculateAllotmentPriority: ${beautify(contractorsArr, null, 3, 120)}`) : null;
     return contractorsArr;
 }
 /* #endregion */
