@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 /* eslint-disable import/extensions */
 import Color from '../class/Colors.js';
-import { lgi } from './loggerandlocksupportive.js';
+import { lgd, lgi } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 // TODO: Add functionality that if we want to send parameter that whether its info or error or warn
@@ -28,20 +28,20 @@ function getSumOf2DArrayColumn(arr, columnIndex) {
     return sumOfColumn;
 }
 
-function getIndexOfHighestIn2DArrayColumn(arr, columnIndex) {
+function getIndexOfHighestIn2DArrayColumn(arr, columnIndex, debug = false) {
     let indexOfHighestNumber = null;
     let highestNumber = null;
     arr.forEach((sub, index) => {
         if (indexOfHighestNumber === null && highestNumber === null) {
             indexOfHighestNumber = index;
             highestNumber = sub[columnIndex];
-            // console.log(`Inside1: ${indexOfHighestNumber}:${highestNumber}`);
+            debug ? lgd(`Inside1: ${indexOfHighestNumber}:${highestNumber}`) : null;
         } else if (sub[columnIndex] > highestNumber) {
             indexOfHighestNumber = index;
             highestNumber = sub[columnIndex];
-            // console.log(`Inside2: ${indexOfHighestNumber}:${highestNumber}`);
+            debug ? lgd(`Inside2: ${indexOfHighestNumber}:${highestNumber}`) : null;
         }
-        // console.log(`Outside: ${indexOfHighestNumber}:${highestNumber}`);
+        debug ? lgd(`Outside: ${indexOfHighestNumber}:${highestNumber}`) : null;
     });
     return indexOfHighestNumber;
 }

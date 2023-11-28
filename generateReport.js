@@ -38,7 +38,7 @@ import {
     styleOfVerticalListDealerNumber,
 } from './functions/reportsupportive.js';
 import { copyDirOrFile, makeDir } from './functions/filesystem.js';
-import { attainLock, releaseLock, lge, lgi, lgw } from './functions/loggerandlocksupportive.js';
+import { attainLock, releaseLock, lge, lgi, lgw, lgd } from './functions/loggerandlocksupportive.js';
 // import {
 //     allTrimStringArrayOfObjects,
 //     trimMultipleSpacesInMiddleIntoOneArrayOfObjects,
@@ -47,6 +47,7 @@ import { attainLock, releaseLock, lge, lgi, lgw } from './functions/loggerandloc
 // } from './stringformatting.js';
 /* eslint-enable import/extensions */
 
+const debug = false;
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -774,7 +775,7 @@ for (const typeOfExcel of typesOfExcel) {
                         worksheet[cellAddress].s = styleOfDealerNameHeadingOdd;
                         worksheet[cellAddressAdditionalImages].s = styleOfDealerNameHeadingOdd;
                     } else {
-                        // console.log(worksheet[cellAddress].v);
+                        debug ? lgd(`worksheet[cellAddress].v :${worksheet[cellAddress].v}`) : null;
                         worksheet[cellAddress].s = normalFont;
                         worksheet[cellAddressAdditionalImages].s = normalFont;
                     }

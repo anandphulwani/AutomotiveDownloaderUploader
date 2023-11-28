@@ -7,7 +7,7 @@ import logSymbols from 'log-symbols';
 
 /* eslint-disable import/extensions */
 import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
-import { lgi, lgu } from './loggerandlocksupportive.js';
+import { lgd, lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
@@ -81,7 +81,7 @@ async function downloadFileAndCompareWithChecksum(
                     }
                     createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, true, debug);
                     debug
-                        ? console.log(chalk.green.bold(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`))
+                        ? lgd(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`, Color.green)
                         : lgi(
                               ` ${logSymbols.success}${' '.repeat(38 - shortFilenameTextLength > 0 ? 38 - shortFilenameTextLength : 0)}`,
                               LoggingPrefix.false,

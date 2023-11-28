@@ -6,7 +6,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc, lgi, lgif, lgu } from './functions/loggerandlocksupportive.js';
+import { lgw, lge, lgc, lgi, lgif, lgu, lgd } from './functions/loggerandlocksupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes, removeDir } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
@@ -57,6 +57,7 @@ import {
  *
  */
 
+const debug = false;
 // TODO: Copy this to downloader, uploader, genreate excel script as well
 /**
  *
@@ -191,7 +192,7 @@ while (true) {
     });
     // TODO: This sleep was induced to check folderSizeAfter10Seconds functionality, to be removed if the above locking system works properly.
     // sleep(15);
-    // console.log(foldersToShift);
+    debug ? lgd(`foldersToShift: ${foldersToShift}`) : null;
 
     // TODO: Check which warning we can give immediately
     historyOfWarnings.shift();

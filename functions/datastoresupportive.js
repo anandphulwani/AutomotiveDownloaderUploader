@@ -8,7 +8,7 @@ import { checkSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted, currentTime } from './datetime.js';
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock, lge, lgc, lgi, lgb, lgu } from './loggerandlocksupportive.js';
+import { attainLock, releaseLock, lge, lgc, lgi, lgb, lgu, lgd } from './loggerandlocksupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { getProjectConfigDirPath, getProjectLogsDirPath } from './projectpaths.js';
@@ -23,7 +23,7 @@ instanceRunLogFilePrefix;
 const perImageTimeToUpload = 7.25;
 const perVINTimeToUpload = 7;
 
-function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
+function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
     lgi(`Auto cleaning up the datastore: `, LineSeparator.false);
     const foldersToCleanUp = [
         config.lockingBackupsZonePath,
@@ -137,14 +137,14 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
                 delete groups[key];
             }
         });
-        // console.log(groups);
+        debug ? lgd(`After removing the latest 30 files in each group, groups: ${groups}`) : null;
 
         // Step 4: Identify unique "filename_HHmm" patterns from remaining files
         const remainingFiles = Object.values(groups).flat();
-        // console.log(remainingFiles);
+        debug ? lgd(`remainingFiles: ${remainingFiles}`) : null;
 
         const uniquePatterns = Array.from(new Set(remainingFiles.map((fileName) => fileName.substr(0, fileName.length - 10))));
-        // console.log(uniquePatterns);
+        debug ? lgd(`uniquePatterns: ${uniquePatterns}`) : null;
 
         // Step 5: Sort remaining files by timestamp in descending order
         remainingFiles.sort((a, b) => {
@@ -152,7 +152,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
             const timestampB = parseInt(b.substring(b.lastIndexOf('_') + 1), 10);
             return timestampB - timestampA;
         });
-        // console.log(remainingFiles);
+        debug ? lgd(`Sorted remaining files by timestamp in descending order, remainingFiles: ${remainingFiles}`) : null;
 
         // Step 6: Keep only the first file for each unique "filename_HHmm" pattern
         const finalFiles = [];

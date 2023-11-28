@@ -10,7 +10,7 @@ import cfonts from 'cfonts';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
-import { lge, lgw, lgif, lgi, lgtf } from './functions/loggerandlocksupportive.js';
+import { lge, lgw, lgif, lgi, lgtf, lgd } from './functions/loggerandlocksupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
 import { makeDir, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
@@ -24,6 +24,7 @@ import { doAllotment } from './functions/allotment.js';
 import { printSectionSeperator } from './functions/others.js';
 /* eslint-enable import/extensions */
 
+const debug = false;
 lgtf(`region : Validation section 01: BEGIN`);
 /* #region : Validation section 01: BEGIN */
 if (process.argv.length < 3) {
@@ -182,8 +183,8 @@ lgtf(`contractors currentAlloted set: ${JSON.stringify(contractors)}`);
 // Lot Configuration
 const lotsMinimumDealerFoldersForEachContractors = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors;
 const lotsImagesQty = config.lot[lotIndex - 1].imagesQty;
-// console.log(`configs.minimumDealerFoldersForEachContractors: ${lotsMinimumDealerFoldersForEachContractors}`);
-// console.log(`configs.imagesQty: ${lotsImagesQty}`);
+debug ? lgd(`configs.minimumDealerFoldersForEachContractors: ${lotsMinimumDealerFoldersForEachContractors}`) : null;
+debug ? lgd(`configs.imagesQty: ${lotsImagesQty}`) : null;
 
 let dryRunImagesQtyAllotedInCurrentLot = 0;
 let dryRunFoldersAlloted = 0;
@@ -205,19 +206,13 @@ let doesDestinationFolderAlreadyExists;
 if (doesDestinationFolderAlreadyExists) {
     process.exit(1);
 }
-// console.log(`dryRunImagesQtyAllotedInCurrentLot:`);
-// console.log(dryRunImagesQtyAllotedInCurrentLot);
-// console.log(`dryRunFoldersAlloted:`);
-// console.log(dryRunFoldersAlloted);
-// console.log(`dryRunDealerDirectories:`);
-// console.log(dryRunDealerDirectories);
-// console.log(`dryRunContractors:`);
-// console.log(dryRunContractors);
+debug ? lgd(`dryRunImagesQtyAllotedInCurrentLot: ${dryRunImagesQtyAllotedInCurrentLot}`) : null;
+debug ? lgd(`dryRunFoldersAlloted: ${dryRunFoldersAlloted}`) : null;
+debug ? lgd(`dryRunDealerDirectories: ${dryRunDealerDirectories}`) : null;
+debug ? lgd(`dryRunContractors: ${dryRunContractors}`) : null;
 
-// console.log(`dealerDirectories:`);
-// console.log(dealerDirectories);
-// console.log(`contractors:`);
-// console.log(contractors);
+debug ? lgd(`dealerDirectories: ${dealerDirectories}`) : null;
+debug ? lgd(`contractors: ${contractors}`) : null;
 
 [dryRunDealerDirectories, dryRunContractors, dryRunImagesQtyAllotedInCurrentLot, dryRunFoldersAlloted, doesDestinationFolderAlreadyExists] =
     await doAllotment(
@@ -258,8 +253,8 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
     );
     /* #endregion */
     printSectionSeperator();
-    // console.log(contractors);
-    // console.log(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}`);
+    debug ? lgd(`contractors: ${contractors}`) : null;
+    debug ? lgd(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}`) : null;
 
     /**
      * Once the minimum DealerFolders for each contractors is alloted, using the pre allotted quantity

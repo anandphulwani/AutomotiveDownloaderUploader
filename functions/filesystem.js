@@ -27,10 +27,10 @@ function moveDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
         try {
             const results = fsExtra.moveSync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
             debug
-                ? console.log(
+                ? lgd(
                       `${'Successfully moved  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
                   )
-                : '';
+                : null;
             break;
         } catch (error) {
             if (
@@ -51,10 +51,8 @@ function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     try {
         const results = fsExtra.copySync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
         debug
-            ? console.log(
-                  `${'Successfully copied  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
-              )
-            : '';
+            ? lgd(`Successfully copied  ${results} files from the \n\tSource Directory: ${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`)
+            : null;
     } catch (error) {
         lgc(`${'Unable to copy file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`, error);
         process.exit(1);
@@ -169,12 +167,12 @@ function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, debug =
         const parentDir = path.dirname(dirPath);
         const parentDirFilesCount = fs.readdirSync(parentDir).length;
         debug
-            ? console.log(
+            ? lgd(
                   `parentDir: ${parentDir},    parentDirFilesCount: ${parentDirFilesCount} ${
                       parentDirFilesCount === 0 ? ' (Removing)' : '(Breaking Here)'
                   }`
               )
-            : '';
+            : null;
         if (parentDirFilesCount === 0) {
             dirPath = parentDir;
             debug ? lgd(`removeDir ${parentDir}`) : null;
@@ -205,11 +203,11 @@ function generateTempFolderWithRandomText(debug = false) {
     return tempPathWithRandomFolder;
 }
 
-function getFileCountRecursively(dirPath) {
+function getFileCountRecursively(dirPath, debug = false) {
     let count = 0;
     if (fs.existsSync(dirPath)) {
         const files = fs.readdirSync(dirPath);
-        // console.log(`files.length${files.length}`);
+        debug ? lgd(`files.length: ${files.length}`) : null;
         // eslint-disable-next-line no-restricted-syntax
         for (const file of files) {
             const filePath = path.join(dirPath, file);
@@ -221,7 +219,7 @@ function getFileCountRecursively(dirPath) {
             }
         }
     }
-    // console.log(`count${count}`);
+    debug ? lgd(`count: ${count}`) : null;
     return count;
 }
 

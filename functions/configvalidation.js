@@ -11,9 +11,7 @@ import { lgd, lge } from './loggerandlocksupportive.js';
 
 function validateConfigFile(debug = false) {
     let validationStatus = 'success';
-    debug
-        ? console.log(`Making sure that 'config.sourceBookmarkPath' and 'config.processingBookmarkPathWithoutSync' are not same file: Executing.`)
-        : '';
+    debug ? lgd(`Making sure that 'config.sourceBookmarkPath' and 'config.processingBookmarkPathWithoutSync' are not same file: Executing.`) : null;
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
     if (path.resolve(sourceBookmarkPath) === path.resolve(processingBookmarkPathWithoutSync)) {
         validationStatus = 'error';

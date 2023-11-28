@@ -29,7 +29,7 @@ import { lgd, lgs, lgu } from './loggerandlocksupportive.js';
  */
 /* #endregion */
 /* #region : CodeAbstract */
-function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalOfNormalThreshold) {
+function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalOfNormalThreshold, debug = false) {
     contractorsArr.forEach((contractorEle) => {
         if (contractorEle.length >= 2) {
             if (contractorEle.length === 2) {
@@ -39,8 +39,7 @@ function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalO
             }
         }
     });
-    // console.log(`recalculateRatioOfThreshHoldWithOtherContractors: `);
-    // console.log(contractorsArr);
+    debug ? lgd(`recalculateRatioOfThreshHoldWithOtherContractors: ${contractorsArr}`) : null;
     return contractorsArr;
 }
 /* #endregion */
@@ -66,7 +65,7 @@ function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalO
  */
 /* #endregion */
 /* #region : CodeAbstract */
-function recalculateRatioOfImagesAlloted(contractorsArr) {
+function recalculateRatioOfImagesAlloted(contractorsArr, debug = false) {
     const totalImgsAlloted = contractorsArr.map((row) => row[3]).reduce((accumulator, currentValue) => accumulator + currentValue);
     contractorsArr.forEach((contractorEle) => {
         if (contractorEle.length >= 4) {
@@ -79,8 +78,7 @@ function recalculateRatioOfImagesAlloted(contractorsArr) {
             }
         }
     });
-    // console.log(`recalculateRatioOfImagesAlloted: `);
-    // console.log(contractorsArr);
+    debug ? lgd(`recalculateRatioOfImagesAlloted: ${contractorsArr}`) : null;
     return contractorsArr;
 }
 /* #endregion */
@@ -106,7 +104,7 @@ function recalculateRatioOfImagesAlloted(contractorsArr) {
  */
 /* #endregion */
 /* #region : CodeAbstract */
-function recalculateAllotmentPriority(contractorsArr) {
+function recalculateAllotmentPriority(contractorsArr, debug = false) {
     contractorsArr.forEach((contractorEle) => {
         if (contractorEle.length >= 5) {
             let allotmentPriority = contractorEle[2] - contractorEle[4];
@@ -118,8 +116,7 @@ function recalculateAllotmentPriority(contractorsArr) {
             }
         }
     });
-    // console.log(`recalculateAllotmentPriority: `);
-    // console.log(contractorsArr);
+    debug ? lgd(`recalculateAllotmentPriority: ${contractorsArr}`) : null;
     return contractorsArr;
 }
 /* #endregion */

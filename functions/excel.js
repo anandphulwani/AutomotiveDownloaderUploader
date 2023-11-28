@@ -9,10 +9,10 @@ import {
     trimSingleSpaceInMiddleArrayOfObjects,
     trimSingleSpaceInMiddleArray,
 } from './stringformatting.js';
-import { lge } from './loggerandlocksupportive.js';
+import { lgd, lge } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
-function readDealerConfigurationExcel(username) {
+function readDealerConfigurationExcel(username, debug = false) {
     const excelFilename = `${config.dealerConfigurationFolder}\\${username}.xlsx`;
     if (!fs.existsSync(excelFilename)) {
         lge(`Dealer configuration excel file: ${excelFilename} does not exist, Please check.`);
@@ -31,14 +31,15 @@ function readDealerConfigurationExcel(username) {
             data.push(res);
         });
     }
-    return data; // console.log(data); // Printing data
+    debug ? lgd(data) : null;
+    return data;
 }
 
-function readDealerConfigurationFormatted(username) {
+function readDealerConfigurationFormatted(username, debug = false) {
     let data = readDealerConfigurationExcel(username);
     data = allTrimStringArrayOfObjects(data);
     data = trimMultipleSpacesInMiddleIntoOneArrayOfObjects(data);
-    // console.log(data);
+    debug ? lgd(data) : null;
     return data;
 }
 

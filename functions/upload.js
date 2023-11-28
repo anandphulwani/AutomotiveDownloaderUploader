@@ -472,7 +472,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     return returnObj;
 }
 
-async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosition, isSlow = false, debug = true) {
+async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosition, isSlow = false, debug = false) {
     lgtf(
         `fn moveImageToPositionNumber() : BEGIN, Params: page: OBJECT, totalImages: ${totalImages}, fromPosition: ${fromPosition}, toPosition: ${toPosition}, isSlow: ${isSlow}, debug: ${debug}`
     );

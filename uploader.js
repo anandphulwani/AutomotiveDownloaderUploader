@@ -6,7 +6,7 @@ import { URL } from 'url';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { attainLock, releaseLock, lgw, lge, lgc, lgi, lgu } from './functions/loggerandlocksupportive.js';
+import { attainLock, releaseLock, lgw, lge, lgc, lgi, lgu, lgd } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
@@ -42,6 +42,7 @@ import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
+const debug = false;
 if (config.environment === 'production') {
     checkTimezone();
     printSectionSeperator();
@@ -223,7 +224,7 @@ foldersToShift.sort((a, b) => {
 });
 // TODO: This sleep was induced to check folderSizeAfter10Seconds functionality, to be removed if the above locking system works properly.
 // sleep(15);
-// console.log(foldersToShift);
+debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
 
 foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
 moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
@@ -240,7 +241,7 @@ for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZ
     const uploadingZoneStat = fs.statSync(uploadingZoneSubFolderPath);
 
     if (uploadingZoneStat.isDirectory()) {
-        // console.log(uploadingZoneSubFolderPath);
+        debug ? lgd(`uploadingZoneSubFolderPath: ${uploadingZoneSubFolderPath}`) : null;
         const uniqueId = getUniqueIDFromAllottedDealerNumberFolder(uploadingZoneSubFolderAndFiles);
         const numberOfImagesAcToFolderName = parseInt(getNumberOfImagesFromAllottedDealerNumberFolder(uploadingZoneSubFolderAndFiles), 10);
         foldersToUpload[uniqueId] = {
@@ -251,18 +252,11 @@ for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZ
     }
 }
 
-// foldersToShift = foldersToShift.map((folderToShift) => folderToShift.slice(0, -1));
-// const foldersToShiftObj = foldersToShift.reduce((foldersToShiftArr, [value, key]) => {
-//     foldersToShiftArr[key] = value;
-//     return foldersToShiftArr;
-// }, {});
-
 // TODO: Shift folders here to uploaddirectory
-// console.log(foldersToShift);
-// console.log(foldersToShiftObj);
+debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
 
 const uniqueIdOfFoldersShifted = Object.keys(foldersToUpload); // foldersToShift.map((item) => item[1]);
-// console.log(uniqueIdOfFoldersShifted);
+debug ? lgd(`uniqueIdOfFoldersShifted :${uniqueIdOfFoldersShifted}`) : null;
 
 if (
     !(
@@ -300,7 +294,7 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
         const allottedDealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) => dealerLevelBookmark.name.includes(' |#| '));
         // eslint-disable-next-line no-restricted-syntax
         for (const dealerLevelBookmark of allottedDealerLevelBookmarks) {
-            // console.log(dealerLevelBookmark.name);
+            debug ? lgd(`dealerLevelBookmark.name :${dealerLevelBookmark.name}`) : null;
             // eslint-disable-next-line no-continue
             // continue;
 
@@ -346,7 +340,7 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
                             userLoggedIn = usernameBookmark.name;
                         }
 
-                        // console.log(vehicleBookmark.name);
+                        debug ? lgd(`vehicleBookmark.name :${vehicleBookmark.name}`) : null;
                         const returnObj = await uploadBookmarkURL(
                             page,
                             uniqueIdElement,

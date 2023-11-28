@@ -7,7 +7,7 @@ import { question } from 'readline-sync';
 /* eslint-disable import/extensions */
 import { zeroPad } from './stringformatting.js';
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock, lge, lgi, lgs, lgu } from './loggerandlocksupportive.js';
+import { attainLock, releaseLock, lge, lgi, lgs, lgu, lgd } from './loggerandlocksupportive.js';
 import { getIndexOfHighestIn2DArrayColumn } from './others.js';
 import { createDirAndCopyFile, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './excelsupportive.js';
@@ -39,7 +39,8 @@ async function doAllotment(
     foldersAlloted,
 
     isDryRun = false,
-    isAutomaticAllotment = true
+    isAutomaticAllotment = true,
+    debug = false
 ) {
     let doesDestinationFolderAlreadyExists = false;
     if (
@@ -72,7 +73,7 @@ async function doAllotment(
             index++
         ) {
             const allotmentDetailForReport = [];
-            // console.log(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`);
+            debug ? lgd(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`) : null;
             const dealerFolderPath = dealerDirectories[0][0];
             const dealerFolderFilesCount = dealerDirectories[0][1];
             const usernameFolder = path.basename(path.dirname(dealerFolderPath));
@@ -205,8 +206,10 @@ async function doAllotment(
             imagesQtyAllotedInCurrentLot += dealerFolderFilesCount;
             dealerDirectories.shift();
 
-            // console.log(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted: `);
-            // console.log(contractors);
+            debug
+                ? lgd(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted: `)
+                : null;
+            debug ? lgd(contractors) : null;
         }
         if (!isDryRun) {
             addAllotmentToReport(allotmentDetailsForReport);

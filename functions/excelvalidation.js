@@ -22,16 +22,21 @@ function validateDealerConfigurationExcelFile(debug = false) {
 
         const data = readDealerConfigurationExcel(usernameTrimmed);
 
-        // Array of values of the specified column name
-        // console.log(data.map((item) => item['Dealer Number']));
-
-        // Array of objects, with row number as key, column name and column value as object
-        // const test = Object.fromEntries(data.map((entry, index) => [index + 1, { 'Dealer Number': entry['Dealer Number'] }]));
-        // console.log(test);
-
-        // Array of objects, without any key, column name and column value as object
-        // const redux1 = (list) => list.map((o) => Object.fromEntries(['Dealer Number'].map((k) => [k, o[k]])));
-        // console.log(redux1(data));
+        debug ? lgd(`Array of values of the specified column name: ${data.map((item) => item['Dealer Number'])}`) : null;
+        debug
+            ? lgd(
+                  `Array of objects, with row number as key, column name and column value as object: ${Object.fromEntries(
+                      data.map((entry, index) => [index + 1, { 'Dealer Number': entry['Dealer Number'] }])
+                  )}`
+              )
+            : null;
+        debug
+            ? lgd(
+                  `Array of objects, without any key, column name and column value as object: ${data.map((o) =>
+                      Object.fromEntries(['Dealer Number'].map((k) => [k, o[k]]))
+                  )}`
+              )
+            : null;
 
         const dealerNumberArray = data.map((item) => item['Dealer Number']);
         validateDealerConfigurationExcelFileColumnDealerNumber(usernameTrimmed, dealerNumberArray, 'Dealer Number');
