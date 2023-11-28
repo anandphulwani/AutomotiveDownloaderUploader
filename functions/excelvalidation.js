@@ -14,7 +14,7 @@ import { lgd, lge, lgw } from './loggerandlocksupportive.js';
 
 let resultStatus;
 function validateDealerConfigurationExcelFile(debug = false) {
-    debug ? lgd(`Validating excel file: Executing.`) : '';
+    debug ? lgd(`Validating excel file: Executing.`) : null;
     resultStatus = 'success';
     Object.keys(config.credentials).forEach((credential) => {
         const { username } = config.credentials[credential];
@@ -57,10 +57,10 @@ function validateDealerConfigurationExcelFile(debug = false) {
         const lockTheImageArray = data.map((item) => item['Lock the image (check mark)']);
         validateDealerConfigurationExcelFileColumnBooleanOrBlankOnly(usernameTrimmed, lockTheImageArray, 'Lock the image (check mark)');
 
-        debug ? lgd(`resultStatus: ${resultStatus}`) : '';
+        debug ? lgd(`resultStatus: ${resultStatus}`) : null;
     });
 
-    debug ? lgd(`Validating excel file: Done.`) : '';
+    debug ? lgd(`Validating excel file: Done.`) : null;
     return resultStatus;
 }
 

@@ -11,7 +11,7 @@ import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 async function gotoURL(page, URL, debug = false) {
-    debug ? lgd(`Navigating to the URL: ${URL}: Executing.`) : '';
+    debug ? lgd(`Navigating to the URL: ${URL}: Executing.`) : null;
     for (let gotoCnt = 0; gotoCnt < 5; gotoCnt++) {
         try {
             // ONPROJECTFINISH: Error 500 is applied here, make sure page.goto is not called anywhere in the project.
@@ -68,7 +68,7 @@ async function gotoURL(page, URL, debug = false) {
             }
         }
     }
-    debug ? lgd(`Navigating to the URL: ${URL}: Done.`) : '';
+    debug ? lgd(`Navigating to the URL: ${URL}: Done.`) : null;
     return page.url();
 }
 

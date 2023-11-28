@@ -11,7 +11,7 @@ import { lgd, lge, lgw } from './loggerandlocksupportive.js';
 
 function validateBookmarksAndCheckCredentialsPresent(debug = false) {
     let validationStatus = 'success';
-    debug ? lgd(`Validating bookmarks and checking if credentials are present: Executing.`) : '';
+    debug ? lgd(`Validating bookmarks and checking if credentials are present: Executing.`) : null;
     const allUsernamesBookmarks = getAllUsernamesBookmarks();
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
@@ -36,7 +36,7 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
             }
         }
     }
-    debug ? lgd(`Validating excel file: Done.`) : '';
+    debug ? lgd(`Validating excel file: Done.`) : null;
     return validationStatus;
 }
 

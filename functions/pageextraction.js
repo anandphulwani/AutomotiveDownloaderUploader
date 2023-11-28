@@ -73,7 +73,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
             continue;
         }
 
-        debug ? lgd(`Downloading image: ${imageOriginalURLS[imageNumberToDownload - 1]}`) : '';
+        debug ? lgd(`Downloading image: ${imageOriginalURLS[imageNumberToDownload - 1]}`) : null;
         const file = fs.createWriteStream(`${tempPath}/${zeroPad(imageNumberToDownload, 3)}.jpg`);
 
         let shortFilename = '';

@@ -197,7 +197,7 @@ async function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDi
 
                         if (fs.statSync(VINFolderPath).isDirectory()) {
                             const VINFolderLength = fs.readdirSync(VINFolderPath).length;
-                            debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : '';
+                            debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : null;
                             if (VINFolderLength > 0) {
                                 doesLotFolderPathContainsFiles = true;
                             } else {
@@ -239,7 +239,7 @@ async function returnImageCountFromDealerDirs(dealerDirs, debug = false) {
 
                 if (VINFolderStat.isDirectory()) {
                     const VINFolderLength = fs.readdirSync(VINFolderPath).length;
-                    debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : '';
+                    debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : null;
                     if (VINFolderLength > 0) {
                         totalNoOfDealerFolderFiles += VINFolderLength;
                     } else {
