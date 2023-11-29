@@ -30,13 +30,13 @@ lgtf(`region : Validation section 01: BEGIN`);
 /* #region : Validation section 01: BEGIN */
 if (process.argv.length < 3) {
     lge(
-        `Please start the program with right parameter 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD'.`
+        `Please start the program with right parameter 'node contractors_allotment.js lotNoIndex' or 'node contractors_allotment.js lotNoIndex YYYY-MM-DD'.`
     );
     process.exit(1);
 }
 if (Number.isNaN(Number(process.argv[2]))) {
     lge(
-        `Please start the program with proper parameters 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD', The first parameter(lotNoIndex) has to be a number.`
+        `Please start the program with proper parameters 'node contractors_allotment.js lotNoIndex' or 'node contractors_allotment.js lotNoIndex YYYY-MM-DD', The first parameter(lotNoIndex) has to be a number.`
     );
     process.exit(1);
 }
