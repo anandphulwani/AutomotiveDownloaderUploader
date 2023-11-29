@@ -227,9 +227,7 @@ async function doAllotment(
                 : null;
             lgtf(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted.`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
         }
-        if (!isDryRun) {
-            addAllotmentToReport(allotmentDetailsForReport);
-        }
+        isDryRun ? null : addAllotmentToReport(allotmentDetailsForReport);
     } else if (
         (allotmentSystem === 'allotmentByImagesQty' || allotmentSystem === 'allotmentByManual') &&
         lotsImagesQty > 0 &&
