@@ -7,7 +7,7 @@ import beautify from 'json-beautify';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
-import { lgd, lgs, lgu } from './loggerandlocksupportive.js';
+import { lgd, lgs, lgtf, lgu } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 /* #region : Supporting functions */
@@ -40,6 +40,7 @@ function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalO
             }
         }
     });
+    lgtf(`recalculateRatioOfThreshHoldWithOtherContractors: ${beautify(contractorsArr, null, 3, 120)}`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
     debug ? lgd(`recalculateRatioOfThreshHoldWithOtherContractors: ${beautify(contractorsArr, null, 3, 120)}`) : null;
     return contractorsArr;
 }
@@ -117,6 +118,7 @@ function recalculateAllotmentPriority(contractorsArr, debug = false) {
             }
         }
     });
+    lgtf(`recalculateAllotmentPriority: ${beautify(contractorsArr, null, 3, 120)}`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
     debug ? lgd(`recalculateAllotmentPriority: ${beautify(contractorsArr, null, 3, 120)}`) : null;
     return contractorsArr;
 }

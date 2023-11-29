@@ -8,7 +8,7 @@ import beautify from 'json-beautify';
 /* eslint-disable import/extensions */
 import { zeroPad } from './stringformatting.js';
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock, lge, lgi, lgs, lgu, lgd } from './loggerandlocksupportive.js';
+import { attainLock, releaseLock, lge, lgi, lgs, lgu, lgd, lgtf } from './loggerandlocksupportive.js';
 import { getIndexOfHighestIn2DArrayColumn } from './others.js';
 import { createDirAndCopyFile, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './excelsupportive.js';
@@ -74,6 +74,7 @@ async function doAllotment(
             index++
         ) {
             const allotmentDetailForReport = [];
+            lgtf(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
             debug ? lgd(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`) : null;
             const dealerFolderPath = dealerDirectories[0][0];
             const dealerFolderFilesCount = dealerDirectories[0][1];
@@ -192,6 +193,12 @@ async function doAllotment(
                 ),
                 Color.bgCyan
             );
+            lgtf(
+                `${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`.padEnd(
+                    120,
+                    ' '
+                )
+            ); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
             if (!isDryRun) {
                 await addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
                 allotmentDetailForReport[0] = `#${uniqueIdOfFolder}`;
@@ -217,6 +224,7 @@ async function doAllotment(
                       )}`
                   )
                 : null;
+            lgtf(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted.`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
         }
         if (!isDryRun) {
             addAllotmentToReport(allotmentDetailsForReport);
