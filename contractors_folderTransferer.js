@@ -66,7 +66,7 @@ const debug = false;
  */
 try {
     if (checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
-        throw new Error('Already has lock');
+        throw new Error('Lock already held, another instace is already running.');
     }
     lockSync('contractors_folderTransferer.js', { stale: 15000 });
 } catch (error) {
