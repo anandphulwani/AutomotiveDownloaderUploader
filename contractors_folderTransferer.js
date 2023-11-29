@@ -58,7 +58,6 @@ import {
  */
 
 const debug = false;
-// TODO: Copy this to downloader, uploader, genreate excel script as well
 /**
  *
  * Only make a single instance run of the script.

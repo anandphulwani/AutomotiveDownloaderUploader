@@ -7,6 +7,7 @@ import { keyInYN } from 'readline-sync';
 import { URL as URLparser } from 'url';
 import path from 'path';
 import beautify from 'json-beautify';
+import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
@@ -45,6 +46,20 @@ import LoggingPrefix from './class/LoggingPrefix.js';
 // } = config;
 // console.log(`${host}:${port}/${name}`);
 // console.log(config);
+
+/**
+ *
+ * Only make a single instance run of the script.
+ *
+ */
+try {
+    if (checkSync('downloader.js', { stale: 15000 })) {
+        throw new Error('Lock already held, another instace is already running.');
+    }
+    lockSync('downloader.js', { stale: 15000 });
+} catch (error) {
+    process.exit(1);
+}
 
 if (config.environment === 'production') {
     checkTimezone();

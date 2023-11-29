@@ -3,6 +3,7 @@ import path from 'path';
 import xlsx from 'xlsx-js-style';
 import readline from 'readline';
 import { addDays, startOfMonth, endOfMonth, format as formatDateDateFNS, parse as parseDateDateFNS } from 'date-fns';
+import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
@@ -49,6 +50,20 @@ import { printSectionSeperator } from './functions/others.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
+/**
+ *
+ * Only make a single instance run of the script.
+ *
+ */
+try {
+    if (checkSync('generateReport.js', { stale: 15000 })) {
+        throw new Error('Lock already held, another instace is already running.');
+    }
+    lockSync('generateReport.js', { stale: 15000 });
+} catch (error) {
+    process.exit(1);
+}
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
