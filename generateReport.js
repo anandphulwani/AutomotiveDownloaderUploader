@@ -39,6 +39,7 @@ import {
 } from './functions/reportsupportive.js';
 import { copyDirOrFile, makeDir } from './functions/filesystem.js';
 import { attainLock, releaseLock, lge, lgi, lgw, lgd } from './functions/loggerandlocksupportive.js';
+import { printSectionSeperator } from './functions/others.js';
 // import {
 //     allTrimStringArrayOfObjects,
 //     trimMultipleSpacesInMiddleIntoOneArrayOfObjects,
@@ -125,7 +126,8 @@ if (missingDates.length > 0) {
         missingDatesString += missingDate;
         missingDatesString += ` ${' '.repeat(11 - missingDate.length > 0 ? 11 - missingDate.length : 0)}`;
     }
-    lgw(`${missingDatesString}\r\n`);
+    lgw(missingDatesString);
+    printSectionSeperator();
 }
 
 const typesOfExcel = ['individual', 'merged'];
@@ -224,8 +226,8 @@ for (const typeOfExcel of typesOfExcel) {
 
                 if (Object.keys(allotmentAndUploadedMismatchJSONObj).length > 0) {
                     let allotmentAndUploadedMismatchString =
-                        `Allotment and Uploaded folders mismatch, folder allotted but never received back for uploading,\r\n` +
-                        `  unable to take it in into accounting: (${path.basename(reportJSONFilePath)})\r\n`;
+                        `Allotment and Uploaded folders mismatch, folder allotted but never received back for uploading,\n` +
+                        `unable to take it in into accounting: (${path.basename(reportJSONFilePath)})\n`;
                     allotmentAndUploadedMismatchString += `  `;
                     // eslint-disable-next-line no-restricted-syntax
                     for (const key in allotmentAndUploadedMismatchJSONObj) {
@@ -238,7 +240,10 @@ for (const typeOfExcel of typesOfExcel) {
                             )}`;
                         }
                     }
-                    typeOfExcel === 'individual' ? lgw(`${allotmentAndUploadedMismatchString}\r\n`) : null;
+                    if (typeOfExcel === 'individual') {
+                        lgw(allotmentAndUploadedMismatchString);
+                        printSectionSeperator();
+                    }
                 }
             }
             /* #endregion */
@@ -253,8 +258,8 @@ for (const typeOfExcel of typesOfExcel) {
              */
             if (Object.keys(reportJSONObj).length !== 0) {
                 let remainingUnconsumedFoldersString =
-                    `Folders remaining in JSON file but are not consumed by the report,\r\n` +
-                    `  probably because of missing dealer number is config's excel: (${path.basename(reportJSONFilePath)})\r\n`;
+                    `Folders remaining in JSON file but are not consumed by the report,\n` +
+                    `probably because of missing dealer number is config's excel: (${path.basename(reportJSONFilePath)})\n`;
                 remainingUnconsumedFoldersString += `  `;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const key in reportJSONObj) {
@@ -267,7 +272,10 @@ for (const typeOfExcel of typesOfExcel) {
                         )}`;
                     }
                 }
-                typeOfExcel === 'individual' ? lgw(`${remainingUnconsumedFoldersString}\r\n`) : null;
+                if (typeOfExcel === 'individual') {
+                    lgw(remainingUnconsumedFoldersString);
+                    printSectionSeperator();
+                }
             }
             /* #endregion */
         }
