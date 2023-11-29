@@ -34,5 +34,30 @@ function getAllUsernamesBookmarks() {
     return allUsernamesBookmarks;
 }
 
+function getRemainingBookmarksNotDownloaded() {
+    const allUsernamesBookmarks = getAllUsernamesBookmarks();
+    // Filter out bookmarks based on vehicleBookmark condition
+    const filteredBookmarks = allUsernamesBookmarks
+        .map((usernameBookmark) => ({
+            ...usernameBookmark,
+            children: usernameBookmark.children
+                .map((dealerLevelBookmark) => ({
+                    ...dealerLevelBookmark,
+                    children: dealerLevelBookmark.children.filter((vehicleBookmark) => !vehicleBookmark.name.includes('|#|')),
+                }))
+                .filter((dealerLevelBookmark) => dealerLevelBookmark.children.length > 0),
+        }))
+        .filter((usernameBookmark) => usernameBookmark.children.length > 0);
+    return filteredBookmarks;
+}
+function getRemainingBookmarksNotDownloadedLength() {
+    return getRemainingBookmarksNotDownloaded().reduce(
+        (total, usernameBookmark) =>
+            // Sum up all the lengths of the vehicleBookmark arrays in each dealerLevelBookmark
+            total + usernameBookmark.children.reduce((subtotal, dealerLevelBookmark) => subtotal + dealerLevelBookmark.children.length, 0),
+        0
+    );
+}
+
 // eslint-disable-next-line import/prefer-default-export
-export { getAllUsernamesBookmarks };
+export { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloaded, getRemainingBookmarksNotDownloadedLength };
