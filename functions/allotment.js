@@ -121,7 +121,7 @@ async function doAllotment(
                         currentPrioritySingleLine += contractorSection;
                     }
                 });
-                lgi('');
+                console.log('');
                 lgi(`Allot            ${sourceDealerFolderName.padEnd(20, ' ')} To                  ???????`.padEnd(120, ' '), Color.cyan);
                 lgi(`${currentPrioritySingleLine}`, Color.cyan);
                 // const cancelVal = index === 0 ? 'Exit' : false;

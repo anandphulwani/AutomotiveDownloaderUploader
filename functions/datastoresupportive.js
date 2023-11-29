@@ -168,7 +168,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
             try {
                 fs.unlinkSync(path.join(lockingBackupsDirWithTodaysDate, filePath));
             } catch (error) {
-                console.error(`Failed to delete file: ${filePath}`, error);
+                lgc(`Failed to delete file: ${filePath}`, error);
             }
         });
     }
