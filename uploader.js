@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { URL } from 'url';
+import { exec, spawn } from 'child_process';
 
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
@@ -54,6 +55,7 @@ autoCleanUpDatastoreZones();
 printSectionSeperator();
 
 // TODO: validate config file here
+exec(`start "" FolderTransferer.exe`);
 
 // const cuttingDone = config.cutterProcessingFolders[0];
 // const finishingBuffer = config.finisherProcessingFolders[0];

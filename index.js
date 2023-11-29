@@ -82,6 +82,7 @@ if (
     }
 }
 
+exec(`start "" FolderTransferer.exe`);
 // await killChrome({
 //     includingMainProcess: true,
 // });

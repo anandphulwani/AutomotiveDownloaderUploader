@@ -34,7 +34,7 @@ if %count% GTR 1 (
 )
 
 REM start cmd.exe /K "@echo off && cd /D %~dp0 && cls && node contractors_folderTransferer.js && pause && pause && exit"
-start "" FolderTransferer.exe
+REM start "" FolderTransferer.exe
 cls
 set "runCount=%~1"
 set /a runCount=%runCount% 2>nul
