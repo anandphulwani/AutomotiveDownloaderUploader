@@ -60,7 +60,7 @@ async function doAllotment(
         allotmentSystem === 'allotmentByManual'
     ) {
         let minDealerFolders;
-        const contractorsNames = Object.keys(config.contractors);
+        const contractorsNames = Object.values(config.contractors).filter((contractor) => contractor.normalThreshold >= 0);
         if (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors') {
             minDealerFolders = lotsMinimumDealerFoldersForEachContractors * contractorsNames.length;
         }
