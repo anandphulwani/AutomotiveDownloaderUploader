@@ -48,7 +48,7 @@ if defined error (
     exit /b
 )
 for /L %%i in (1,1,%runCount%) do (
-    node index.js
+    node downloader.js
 )
 pause
 pause
