@@ -127,6 +127,7 @@ async function doAllotment(
                 // const cancelVal = index === 0 ? 'Exit' : false;
                 // contractorsIndex = keyInSelect(contractorsNames, null, { cancel: cancelVal });
 
+                // ONPROJECTFINISH: Check if you can replace this with lg* function below
                 let allotmentQuestion = `\n${contractorsNames
                     .map((contractorsName, contractorInnerIndex) =>
                         contractorsSortedByPriority[0][0] === contractorsName
