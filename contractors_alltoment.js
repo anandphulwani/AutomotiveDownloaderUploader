@@ -138,7 +138,14 @@ for (const contractor of Object.keys(validContractors)) {
     contractors.push([contractor, normalThreshold]);
     totalNoOfNormalThreshold += normalThreshold;
 }
-lgtf(`contractors from config: ${beautify(contractors, null, 3, 120)}`);
+lgtf(
+    `contractors from config after removing contractors whose normalThreshold is not -1 and is above or equal to 0: ${beautify(
+        contractors,
+        null,
+        3,
+        120
+    )}`
+);
 
 contractors.sort((a, b) => {
     if (a[1] === b[1]) {

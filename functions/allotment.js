@@ -208,9 +208,15 @@ async function doAllotment(
             dealerDirectories.shift();
 
             debug
-                ? lgd(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted: `)
+                ? lgd(
+                      `imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted: ${beautify(
+                          contractors,
+                          null,
+                          3,
+                          120
+                      )}`
+                  )
                 : null;
-            debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
         }
         if (!isDryRun) {
             addAllotmentToReport(allotmentDetailsForReport);
