@@ -148,7 +148,7 @@ contractors.sort((a, b) => {
 });
 lgtf(`contractors sorted: ${beautify(contractors, null, 3, 120)}`);
 
-contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, totalNoOfNormalThreshold);
+contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, totalNoOfNormalThreshold, debug);
 lgtf(`contractors ratio calculated: ${beautify(contractors, null, 3, 120)}`);
 
 /**
@@ -204,12 +204,16 @@ let doesDestinationFolderAlreadyExists;
         'allotmentByMinimumDealerFoldersForEachContractors',
         lotsMinimumDealerFoldersForEachContractors,
         undefined,
+
         dryRunDealerDirectories,
         dryRunContractors,
         lotIndex,
         dryRunImagesQtyAllotedInCurrentLot,
         dryRunFoldersAlloted,
-        true
+
+        true,
+        undefined,
+        debug
     );
 if (doesDestinationFolderAlreadyExists) {
     process.exit(1);
@@ -227,12 +231,16 @@ debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
         'allotmentByImagesQty',
         undefined,
         lotsImagesQty,
+
         dryRunDealerDirectories,
         dryRunContractors,
         lotIndex,
         dryRunImagesQtyAllotedInCurrentLot,
         dryRunFoldersAlloted,
-        true
+
+        true,
+        undefined,
+        debug
     );
 if (doesDestinationFolderAlreadyExists) {
     process.exit(1);
@@ -253,11 +261,16 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
         'allotmentByMinimumDealerFoldersForEachContractors',
         lotsMinimumDealerFoldersForEachContractors,
         undefined,
+
         dealerDirectories,
         contractors,
         lotIndex,
         imagesQtyAllotedInCurrentLot,
-        foldersAlloted
+        foldersAlloted,
+
+        undefined,
+        undefined,
+        debug
     );
     /* #endregion */
     printSectionSeperator();
@@ -289,11 +302,16 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
         'allotmentByImagesQty',
         undefined,
         lotsImagesQty,
+
         dealerDirectories,
         contractors,
         lotIndex,
         imagesQtyAllotedInCurrentLot,
-        foldersAlloted
+        foldersAlloted,
+
+        undefined,
+        undefined,
+        debug
     );
     setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
     /* #endregion */
@@ -303,13 +321,16 @@ if (keyInYN('To continue with the above allotment press Y, for other options pre
         'allotmentByManual',
         undefined,
         lotsImagesQty,
+
         dealerDirectories,
         contractors,
         lotIndex,
         imagesQtyAllotedInCurrentLot,
         foldersAlloted,
+
         false,
-        false
+        false,
+        debug
     );
     setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
 }
