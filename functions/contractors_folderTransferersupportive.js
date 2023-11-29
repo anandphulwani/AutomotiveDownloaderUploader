@@ -12,6 +12,7 @@ import { printSectionSeperator } from './others.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
+import { getRemainingBookmarksNotDownloadedLength } from './bookmarksupportive.js';
 /* eslint-enable import/extensions */
 
 const cuttingDoneFolderName = config.cutterProcessingFolders[0];
@@ -145,6 +146,14 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
     const reportDateFolder = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted);
     const reportJSONFilePath = path.join(reportDateFolder, `${instanceRunDateFormatted}_report.json`);
     if (!fs.existsSync(reportJSONFilePath)) {
+        return;
+    }
+
+    /**
+     * Ignore if Bookmarks file contains some URLs which are not downloaded yet.
+     */
+    const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength();
+    if (remainingBookmarksNotDownloadedLength !== 0) {
         return;
     }
 
