@@ -24,6 +24,42 @@ import {
 import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
+/* #region Validation Checks, fn validationDoAllotment() */
+function validationDoAllotment(allotmentSystem, lotsMinimumDealerFoldersForEachContractors, lotsImagesQty, imagesQtyAllotedInCurrentLot) {
+    if (
+        allotmentSystem !== 'allotmentByMinimumDealerFoldersForEachContractors' &&
+        allotmentSystem !== 'allotmentByImagesQty' &&
+        allotmentSystem !== 'allotmentByManual'
+    ) {
+        lgu(
+            `Unknown allotment system: '${allotmentSystem}' used, available systems are 'allotmentByMinimumDealerFoldersForEachContractors' and 'allotmentByImagesQty'.`
+        );
+        process.exit(1);
+    }
+    if (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors' && lotsMinimumDealerFoldersForEachContractors === undefined) {
+        lgu(`Using allotment system: '${allotmentSystem}', 'lotsMinimumDealerFoldersForEachContractors' is undefined.`);
+        process.exit(1);
+    }
+    if (allotmentSystem === 'allotmentByImagesQty' && lotsImagesQty > 0 && lotsImagesQty > imagesQtyAllotedInCurrentLot) {
+        lgu(
+            `Using allotment system: '${allotmentSystem}', condition is false: 'lotsImagesQty(${lotsImagesQty}) > 0 && lotsImagesQty(${lotsImagesQty}) > imagesQtyAllotedInCurrentLot(${imagesQtyAllotedInCurrentLot})'.`
+        );
+        process.exit(1);
+    }
+    if (
+        (allotmentSystem === 'allotmentByImagesQty' || allotmentSystem === 'allotmentByManual') &&
+        lotsImagesQty !== undefined &&
+        imagesQtyAllotedInCurrentLot >= lotsImagesQty
+    ) {
+        lgu(
+            `While alloting by 'allotmentByImagesQty', found no of images alloted in the current lot (imagesQtyAllotedInCurrentLot): ${imagesQtyAllotedInCurrentLot} exceeded lot's image quantity (lotsImagesQty): ${lotsImagesQty}.` +
+                `\nPossible chances of manual intervention of adding folder or images by the user in the lot folder`
+        );
+        process.exit(1);
+    }
+}
+/* #endregion */
+
 let earlierLoopUsernameFolder = '';
 
 // allotmentSystem = allotmentByImagesQty
@@ -43,22 +79,8 @@ async function doAllotment(
     isAutomaticAllotment = true,
     debug = false
 ) {
+    validationDoAllotment(allotmentSystem, lotsMinimumDealerFoldersForEachContractors, lotsImagesQty, imagesQtyAllotedInCurrentLot);
     let doesDestinationFolderAlreadyExists = false;
-    if (
-        allotmentSystem !== 'allotmentByMinimumDealerFoldersForEachContractors' &&
-        allotmentSystem !== 'allotmentByImagesQty' &&
-        allotmentSystem !== 'allotmentByManual'
-    ) {
-        lgu(
-            `Unknown allotment system: '${allotmentSystem}' used, available systems are 'allotmentByMinimumDealerFoldersForEachContractors' and 'allotmentByImagesQty'.`
-        );
-        process.exit(1);
-    }
-    if (
-        (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors' && lotsMinimumDealerFoldersForEachContractors !== false) ||
-        (allotmentSystem === 'allotmentByImagesQty' && lotsImagesQty > 0 && lotsImagesQty > imagesQtyAllotedInCurrentLot) ||
-        allotmentSystem === 'allotmentByManual'
-    ) {
         let minDealerFolders;
         const contractorsNames = Object.values(config.contractors).filter((contractor) => contractor.normalThreshold >= 0);
         if (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors') {
@@ -228,16 +250,6 @@ async function doAllotment(
             lgtf(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted.`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
         }
         isDryRun ? null : addAllotmentToReport(allotmentDetailsForReport);
-    } else if (
-        (allotmentSystem === 'allotmentByImagesQty' || allotmentSystem === 'allotmentByManual') &&
-        lotsImagesQty > 0 &&
-        imagesQtyAllotedInCurrentLot >= lotsImagesQty
-    ) {
-        lgs(
-            `While alloting by 'allotmentByImagesQty', found no of images alloted in the current lot (imagesQtyAllotedInCurrentLot): ${imagesQtyAllotedInCurrentLot} exceeded lot's image quantity (lotsImagesQty): ${lotsImagesQty}.` +
-                `\nPossible chances of manual intervention of adding folder or images by the user in the lot folder`
-        );
-    }
     return [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted, doesDestinationFolderAlreadyExists];
 }
 
