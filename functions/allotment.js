@@ -87,14 +87,12 @@ async function doAllotment(
     if (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors') {
         minDealerFolders = lotsMinimumDealerFoldersForEachContractors * contractorsNames.length;
     }
-    const allotmentDetailsForReport = [];
 
     for (
         let index = 0;
         dealerDirectories.length > 0 && (allotmentSystem !== 'allotmentByMinimumDealerFoldersForEachContractors' || index < minDealerFolders);
         index++
     ) {
-        const allotmentDetailForReport = [];
         lgtf(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
         debug ? lgd(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`) : null;
         const [dealerFolderPath, dealerFolderFilesCount] = dealerDirectories[0];
@@ -220,12 +218,15 @@ async function doAllotment(
         ); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
         if (!isDryRun) {
             await addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
-            allotmentDetailForReport[0] = `#${uniqueIdOfFolder}`;
-            allotmentDetailForReport[1] = sourceDealerFolderName;
-            allotmentDetailForReport[2] = contractorAlloted;
-            allotmentDetailForReport[3] = dealerFolderFilesCount;
-            allotmentDetailForReport[4] = path.basename(destinationDealerFolderName);
-            allotmentDetailsForReport.push(allotmentDetailForReport);
+            addAllotmentToReport([
+                [
+                    `#${uniqueIdOfFolder}`,
+                    sourceDealerFolderName,
+                    contractorAlloted,
+                    dealerFolderFilesCount,
+                    path.basename(destinationDealerFolderName),
+                ],
+            ]);
         }
         foldersAlloted++;
 
@@ -245,7 +246,6 @@ async function doAllotment(
             : null;
         lgtf(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted.`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
     }
-    isDryRun ? null : addAllotmentToReport(allotmentDetailsForReport);
     return [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted, doesDestinationFolderAlreadyExists];
 }
 
