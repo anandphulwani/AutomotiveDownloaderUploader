@@ -24,6 +24,8 @@ import {
 import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
+const contractorsNames = Object.values(config.contractors).filter((contractor) => contractor.normalThreshold >= 0);
+
 /* #region Validation Checks, fn validationDoAllotment() */
 function validationDoAllotment(allotmentSystem, lotsMinimumDealerFoldersForEachContractors, lotsImagesQty, imagesQtyAllotedInCurrentLot) {
     if (
@@ -82,7 +84,6 @@ async function doAllotment(
     validationDoAllotment(allotmentSystem, lotsMinimumDealerFoldersForEachContractors, lotsImagesQty, imagesQtyAllotedInCurrentLot);
     let doesDestinationFolderAlreadyExists = false;
     let minDealerFolders;
-    const contractorsNames = Object.values(config.contractors).filter((contractor) => contractor.normalThreshold >= 0);
     if (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors') {
         minDealerFolders = lotsMinimumDealerFoldersForEachContractors * contractorsNames.length;
     }
@@ -90,16 +91,13 @@ async function doAllotment(
 
     for (
         let index = 0;
-        (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors' && index < minDealerFolders && dealerDirectories.length > 0) ||
-        (allotmentSystem === 'allotmentByImagesQty' && dealerDirectories.length > 0) ||
-        (allotmentSystem === 'allotmentByManual' && dealerDirectories.length > 0);
+        dealerDirectories.length > 0 && (allotmentSystem !== 'allotmentByMinimumDealerFoldersForEachContractors' || index < minDealerFolders);
         index++
     ) {
         const allotmentDetailForReport = [];
         lgtf(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
         debug ? lgd(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`) : null;
-        const dealerFolderPath = dealerDirectories[0][0];
-        const dealerFolderFilesCount = dealerDirectories[0][1];
+        const [dealerFolderPath, dealerFolderFilesCount] = dealerDirectories[0];
         const usernameFolder = path.basename(path.dirname(dealerFolderPath));
         if (usernameFolder !== earlierLoopUsernameFolder) {
             setCurrentDealerConfiguration(usernameFolder);
@@ -107,9 +105,8 @@ async function doAllotment(
         }
         const sourceDealerFolderName = `${usernameFolder}/${path.basename(dealerFolderPath)}`;
 
-        if (allotmentSystem === 'allotmentByImagesQty' || allotmentSystem === 'allotmentByManual') {
-            contractors = recalculateRatioOfImagesAlloted(contractors);
-            contractors = recalculateAllotmentPriority(contractors);
+        if (allotmentSystem !== 'allotmentByMinimumDealerFoldersForEachContractors') {
+            contractors = recalculateAllotmentPriority(recalculateRatioOfImagesAlloted(contractors));
         }
 
         let contractorsIndex;
@@ -200,13 +197,12 @@ async function doAllotment(
             createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
             createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, false, 3);
         } else {
-            if (fs.existsSync(`${destinationRecordKeepingPath}`)) {
-                lge(`Folder: ${destinationRecordKeepingPath} already exists, cannot copy ${dealerFolderPath} to its location.`);
-                doesDestinationFolderAlreadyExists = true;
-            }
-            if (fs.existsSync(`${destinationPath}`)) {
-                lge(`Folder: ${destinationPath} already exists, cannot move ${dealerFolderPath} to its location.`);
-                doesDestinationFolderAlreadyExists = true;
+            const pathsToCheck = [destinationRecordKeepingPath, destinationPath];
+            for (let i = 0; i < pathsToCheck.length; i++) {
+                if (fs.existsSync(pathsToCheck[i])) {
+                    lge(`Folder: ${pathsToCheck[i]} already exists, cannot process ${dealerFolderPath} to its location.`);
+                    doesDestinationFolderAlreadyExists = true;
+                }
             }
         }
         lgi(
