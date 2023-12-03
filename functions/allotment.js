@@ -194,6 +194,16 @@ async function doAllotment(
 
             createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
             createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, false, 3);
+            await addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
+            addAllotmentToReport([
+                [
+                    `#${uniqueIdOfFolder}`,
+                    sourceDealerFolderName,
+                    contractorAlloted,
+                    dealerFolderFilesCount,
+                    path.basename(destinationDealerFolderName),
+                ],
+            ]);
         } else {
             const pathsToCheck = [destinationRecordKeepingPath, destinationPath];
             for (let i = 0; i < pathsToCheck.length; i++) {
@@ -216,18 +226,6 @@ async function doAllotment(
                 ' '
             )
         ); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
-        if (!isDryRun) {
-            await addToContractorsCurrentAllotted(contractorAlloted, dealerFolderFilesCount);
-            addAllotmentToReport([
-                [
-                    `#${uniqueIdOfFolder}`,
-                    sourceDealerFolderName,
-                    contractorAlloted,
-                    dealerFolderFilesCount,
-                    path.basename(destinationDealerFolderName),
-                ],
-            ]);
-        }
         foldersAlloted++;
 
         contractors[contractorsIndex][3] += dealerFolderFilesCount;
