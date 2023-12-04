@@ -93,8 +93,6 @@ async function doAllotment(
         dealerDirectories.length > 0 && (allotmentSystem !== 'allotmentByMinimumDealerFoldersForEachContractors' || index < minDealerFolders);
         index++
     ) {
-        lgtf(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
-        debug ? lgd(`minDealerFolders: ${minDealerFolders}             dealerDirectories.length: ${dealerDirectories.length}`) : null;
         const [dealerFolderPath, dealerFolderFilesCount] = dealerDirectories[0];
         const usernameFolder = path.basename(path.dirname(dealerFolderPath));
         if (usernameFolder !== earlierLoopUsernameFolder) {
@@ -220,29 +218,12 @@ async function doAllotment(
             ),
             Color.bgCyan
         );
-        lgtf(
-            `${sourceDealerFolderName.padEnd(30, ' ')}  Alloted To         ${`${contractorAlloted} (${destinationDealerFolderName})`}`.padEnd(
-                120,
-                ' '
-            )
-        ); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
         foldersAlloted++;
 
         contractors[contractorsIndex][3] += dealerFolderFilesCount;
         imagesQtyAllotedInCurrentLot += dealerFolderFilesCount;
         dealerDirectories.shift();
 
-        debug
-            ? lgd(
-                  `imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted: ${beautify(
-                      contractors,
-                      null,
-                      3,
-                      120
-                  )}`
-              )
-            : null;
-        lgtf(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted.`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
     }
     return [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted, doesDestinationFolderAlreadyExists];
 }
