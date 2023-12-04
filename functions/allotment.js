@@ -51,6 +51,7 @@ function validationDoAllotment(allotmentSystem, lotsMinimumDealerFoldersForEachC
     if (
         (allotmentSystem === 'allotmentByImagesQty' || allotmentSystem === 'allotmentByManual') &&
         lotsImagesQty !== undefined &&
+        lotsImagesQty > 0 &&
         imagesQtyAllotedInCurrentLot >= lotsImagesQty
     ) {
         lgu(
