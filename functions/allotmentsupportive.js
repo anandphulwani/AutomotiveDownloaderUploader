@@ -210,7 +210,7 @@ function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lot
                         }
                     }
                     if (fs.existsSync(dealerFolderPath)) {
-                        dealerDirs.push([dealerFolderPath, 0]);
+                        dealerDirs.push(dealerFolderPath);
                     }
                 }
             }
