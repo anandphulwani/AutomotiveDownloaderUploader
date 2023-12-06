@@ -89,14 +89,14 @@ while (!hasLotFirstIndexMatches) {
 /* #endregion */
 lgtf(`region : Validation section 02: END`);
 
-let dealerDirectories = await validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFolderPath);
 if (config.environment === 'production') {
     exec(`explorer.exe ${process.cwd()}\\${lotFolderPath}"`);
     while (!keyInYN('Please review your lot folders, to remove any unneccesary photos, press Y to continue?')) {
         sleep(1);
     }
 }
-dealerDirectories = await returnImageCountFromDealerDirs(dealerDirectories);
+
+const dealerDirectories = validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFolderPath);
 
 if (!dealerDirectories.length > 0) {
     lge(`Lot folder path: ${lotFolderPath} does not contain any subfolders (dealer Folder), Please check.`);
