@@ -3,11 +3,17 @@ import { readDealerConfigurationExcel, readDealerConfigurationFormatted } from '
 
 let dealerConfiguration = [];
 let dealerConfigurationAsIs = [];
+let currentActiveDealerConfigurationsUsername = '';
 
 function setCurrentDealerConfiguration(username) {
-    const usernameTrimmed = username.includes('@') ? username.split('@')[0] : username;
-    dealerConfiguration = readDealerConfigurationFormatted(usernameTrimmed);
-    dealerConfigurationAsIs = readDealerConfigurationExcel(usernameTrimmed);
+    const usernameTrimmed = getUsernameTrimmed(username);
+    if (getCurrentActiveDealerConfigurationsUsername() !== usernameTrimmed) {
+        console.log('setCurrentDealerConfiguration executed');
+        dealerConfiguration = readDealerConfigurationFormatted(usernameTrimmed);
+        dealerConfigurationAsIs = readDealerConfigurationExcel(usernameTrimmed);
+        currentActiveDealerConfigurationsUsername = usernameTrimmed;
+    }
+}
 }
 
 function getSettingValueFromDC(filterBySettingName, filterBySettingValue, settingToExtract) {
