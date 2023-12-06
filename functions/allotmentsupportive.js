@@ -176,8 +176,9 @@ function getDealerFolderRecordKeepingZonePath(sourcePath, additionalText) {
  * Also make sure one dealerDirectory with single file exists in the lot
  * Return all dealerDirs with an additional column of '0', later to be used to put image count
  */
+// TODO: Check if the calls to the function is making sense.
 /* #region : validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs (lotFldrPath, debug = false) {...} */
-async function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFldrPath, debug = false) {
+function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFldrPath, debug = false) {
     let doesLotFolderPathContainsFiles = false;
     const dealerDirs = [];
     // eslint-disable-next-line no-restricted-syntax
@@ -191,6 +192,7 @@ async function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDi
                 const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
 
                 if (fs.statSync(dealerFolderPath).isDirectory()) {
+                    // TODO: Replace below variable VINFolder to VINFolderOrFile
                     // eslint-disable-next-line no-restricted-syntax
                     for (const VINFolder of fs.readdirSync(dealerFolderPath)) {
                         const VINFolderPath = path.join(dealerFolderPath, VINFolder);
