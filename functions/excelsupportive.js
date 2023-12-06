@@ -14,6 +14,13 @@ function setCurrentDealerConfiguration(username) {
         currentActiveDealerConfigurationsUsername = usernameTrimmed;
     }
 }
+
+function getCurrentActiveDealerConfigurationsUsername() {
+    return currentActiveDealerConfigurationsUsername;
+}
+
+function getUsernameTrimmed(username) {
+    return username.includes('@') ? username.split('@')[0] : username;
 }
 
 function getSettingValueFromDC(filterBySettingName, filterBySettingValue, settingToExtract) {
@@ -67,6 +74,14 @@ function getAddTextToFolderNameFromDC(dealerNumber) {
         return '';
     }
     return addTextToFolderName;
+}
+
+function getAddTextToFolderNameByUsernameFromDC(dealerNumber, username) {
+    const usernameTrimmed = getUsernameTrimmed(username);
+    if (getCurrentActiveDealerConfigurationsUsername() !== usernameTrimmed) {
+        setCurrentDealerConfiguration(usernameTrimmed);
+    }
+    return getAddTextToFolderNameFromDC(dealerNumber);
 }
 
 function getAllDealerNumbers() {
@@ -131,6 +146,8 @@ function getLockTheImagesCheckMarkFromDC(dealerNumber) {
 
 // eslint-disable-next-line import/prefer-default-export
 export {
+    getCurrentActiveDealerConfigurationsUsername,
+    getAddTextToFolderNameByUsernameFromDC,
     setCurrentDealerConfiguration,
     getImageNumbersToDownloadFromDC,
     getAddTextToFolderNameFromDC,
