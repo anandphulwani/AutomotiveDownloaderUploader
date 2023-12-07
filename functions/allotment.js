@@ -45,6 +45,18 @@ function getLotConfigPropertiesValues(lotIndex) {
     return { lotCfgMinDealerFolders, lotCfgImagesQty };
 }
 
+async function executeSingleFolderAllotment(dealerDirectoryObj) {
+    const { imageCount, username, dealerFolderPath, usernameAndDealerFolderName, contractorAlloted } = dealerDirectoryObj;
+    const { uniqueId, destinationPath, destinationRecordKeepingPath, destinationFolderName } = dealerDirectoryObj;
+    const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(username, path.basename(dealerFolderPath));
+    replaceBookmarksElementByGUIDAndWriteToBookmarksFile('foldername', bookmarkFolderGUID, uniqueId);
+
+    createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
+    createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, false, 3);
+    await addToContractorsCurrentAllotted(contractorAlloted, imageCount);
+    addAllotmentToReport([[`#${uniqueId}`, usernameAndDealerFolderName, contractorAlloted, imageCount, destinationFolderName]]);
+}
+
 let earlierLoopUsernameFolder = '';
 
 // allotmentSystem = allotmentByImagesQty
