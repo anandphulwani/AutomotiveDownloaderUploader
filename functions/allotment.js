@@ -26,43 +26,6 @@ import Color from '../class/Colors.js';
 
 const contractorsNames = Object.values(config.contractors).filter((contractor) => contractor.normalThreshold >= 0);
 
-/* #region Validation Checks, fn validationDoAllotment() */
-function validationDoAllotment(allotmentSystem, lotsMinimumDealerFoldersForEachContractors, lotsImagesQty, imagesQtyAllotedInCurrentLot) {
-    if (
-        allotmentSystem !== 'allotmentByMinimumDealerFoldersForEachContractors' &&
-        allotmentSystem !== 'allotmentByImagesQty' &&
-        allotmentSystem !== 'allotmentByManual'
-    ) {
-        lgu(
-            `Unknown allotment system: '${allotmentSystem}' used, available systems are 'allotmentByMinimumDealerFoldersForEachContractors' and 'allotmentByImagesQty'.`
-        );
-        process.exit(1);
-    }
-    if (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors' && lotsMinimumDealerFoldersForEachContractors === undefined) {
-        lgu(`Using allotment system: '${allotmentSystem}', 'lotsMinimumDealerFoldersForEachContractors' is undefined.`);
-        process.exit(1);
-    }
-    if (allotmentSystem === 'allotmentByImagesQty' && lotsImagesQty > 0 && lotsImagesQty > imagesQtyAllotedInCurrentLot) {
-        lgu(
-            `Using allotment system: '${allotmentSystem}', condition is false: 'lotsImagesQty(${lotsImagesQty}) > 0 && lotsImagesQty(${lotsImagesQty}) > imagesQtyAllotedInCurrentLot(${imagesQtyAllotedInCurrentLot})'.`
-        );
-        process.exit(1);
-    }
-    if (
-        (allotmentSystem === 'allotmentByImagesQty' || allotmentSystem === 'allotmentByManual') &&
-        lotsImagesQty !== undefined &&
-        lotsImagesQty > 0 &&
-        imagesQtyAllotedInCurrentLot >= lotsImagesQty
-    ) {
-        lgu(
-            `While alloting by 'allotmentByImagesQty', found no of images alloted in the current lot (imagesQtyAllotedInCurrentLot): ${imagesQtyAllotedInCurrentLot} exceeded lot's image quantity (lotsImagesQty): ${lotsImagesQty}.` +
-                `\nPossible chances of manual intervention of adding folder or images by the user in the lot folder`
-        );
-        process.exit(1);
-    }
-}
-/* #endregion */
-
 let earlierLoopUsernameFolder = '';
 
 // allotmentSystem = allotmentByImagesQty
