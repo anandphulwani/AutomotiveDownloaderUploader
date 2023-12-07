@@ -26,6 +26,25 @@ import Color from '../class/Colors.js';
 
 const contractorsNames = Object.values(config.contractors).filter((contractor) => contractor.normalThreshold >= 0);
 
+function getDealerDirectoryObjWithMaxImageCount(dealerDirectories) {
+    return dealerDirectories.reduce((max, obj) => {
+        if (obj.contractorAlloted !== null) {
+            return max;
+        }
+        return max && max.imageCount > obj.imageCount ? max : obj;
+    }, null);
+}
+
+function getLotConfigPropertiesValues(lotIndex) {
+    const { minimumDealerFoldersForEachContractors } = config.lot[lotIndex - 1];
+    const lotCfgImagesQty = config.lot[lotIndex - 1].imagesQty;
+    const lotCfgMinDealerFolders =
+        minimumDealerFoldersForEachContractors === false || minimumDealerFoldersForEachContractors === undefined
+            ? undefined
+            : minimumDealerFoldersForEachContractors * contractorsNames.length;
+    return { lotCfgMinDealerFolders, lotCfgImagesQty };
+}
+
 let earlierLoopUsernameFolder = '';
 
 // allotmentSystem = allotmentByImagesQty
