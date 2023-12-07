@@ -57,6 +57,15 @@ async function executeSingleFolderAllotment(dealerDirectoryObj) {
     addAllotmentToReport([[`#${uniqueId}`, usernameAndDealerFolderName, contractorAlloted, imageCount, destinationFolderName]]);
 }
 
+function getAllotmentMesgForFolder(dealerDirectoryObj, isDryRun) {
+    let allotmentMesg = dealerDirectoryObj.usernameAndDealerFolderName.padEnd(30, ' ');
+    allotmentMesg += isDryRun ? `  Prefferring To         ` : `  Alloted To         `;
+    allotmentMesg += dealerDirectoryObj.contractorAlloted;
+    allotmentMesg += ` (${dealerDirectoryObj.destinationFolderNameWithDate})`;
+    allotmentMesg = allotmentMesg.padEnd(120, ' ');
+    return allotmentMesg;
+}
+
 let earlierLoopUsernameFolder = '';
 
 // allotmentSystem = allotmentByImagesQty
