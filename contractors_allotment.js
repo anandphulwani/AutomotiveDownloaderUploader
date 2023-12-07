@@ -104,10 +104,10 @@ if (!dealerDirectories.length > 0) {
 }
 
 dealerDirectories.sort((a, b) => {
-    if (a[1] === b[1]) {
+    if (a === b) {
         return 0;
     }
-    return a[1] > b[1] ? -1 : 1;
+    return a < b ? -1 : 1;
 });
 
 lgtf(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`);
