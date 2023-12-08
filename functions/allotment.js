@@ -177,7 +177,7 @@ async function doAllotment(
             } else if (lotCfgMinDealerFolders !== undefined && index < lotCfgMinDealerFolders) {
                 /* allotment by minimum dealerFolders for each contractors as per config */
                 contractorsIndex = index % contractors.length;
-            } else if (lotCfgImagesQty !== undefined && lotCfgImagesQty > 0) {
+            } else if (lotCfgImagesQty !== undefined) {
                 /* allotment by imagesQty */
                 contractors = recalculateAllotmentPriority(recalculateRatioOfImagesAllotted(contractors));
                 contractorsIndex = getIndexOfHighestIn2DArrayColumn(contractors, 5);
@@ -191,7 +191,7 @@ async function doAllotment(
                     `lotCfgMinDealerFolders(${lotCfgMinDealerFolders}) !== undefined && index(${index}) < lotCfgMinDealerFolders(${lotCfgMinDealerFolders})`
                 );
                 mesg.push(`    c. It is not in 'allotment by imagesQty', because the below condition is false`);
-                mesg.push(`lotCfgImagesQty(${lotCfgImagesQty}) !== undefined && lotCfgImagesQty(${lotCfgImagesQty}) > 0`);
+                mesg.push(`lotCfgImagesQty(${lotCfgImagesQty}) !== undefined`);
                 /* #endregion */
                 lgu(mesg.join('\n'));
                 process.exit(1);

@@ -160,8 +160,8 @@ const contractorsNames = Object.entries(config.contractors)
     .map(([key]) => key);
 
 function getLotConfigPropertiesValues(lotIndex) {
-    const { minimumDealerFoldersForEachContractors } = config.lot[lotIndex - 1];
-    const lotCfgImagesQty = config.lot[lotIndex - 1].imagesQty;
+    const { minimumDealerFoldersForEachContractors, imagesQty } = config.lot[lotIndex - 1];
+    const lotCfgImagesQty = imagesQty === 0 ? undefined : imagesQty;
     const lotCfgMinDealerFolders =
         minimumDealerFoldersForEachContractors === false || minimumDealerFoldersForEachContractors === undefined
             ? undefined
