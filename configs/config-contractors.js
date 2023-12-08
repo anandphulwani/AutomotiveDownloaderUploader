@@ -69,6 +69,12 @@ const configContractors = {
             extraProcessingFolders: [],
             finisher: 'monika',
         },
+        dinesh: {
+            currentAllotted: 0,
+            normalThreshold: -1,
+            extraProcessingFolders: [],
+            finisher: 'dinesh',
+        },
         // rohan: {
         //     currentAllotted: 0,
         //     normalThreshold: 500,
