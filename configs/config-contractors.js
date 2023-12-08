@@ -65,7 +65,7 @@ const configContractors = {
         },
         monika: {
             currentAllotted: 0,
-            normalThreshold: 180,
+            normalThreshold: 100,
             extraProcessingFolders: [],
             finisher: 'monika',
         },
