@@ -224,3 +224,12 @@ for (let index = 0; index < 2; index++) {
     console.log('');
 }
 
+if (keyInYN('To use manual allotment system press Y, to exit from this process press N.')) {
+    dealerDirectoriesObjects = dealerDirectories.map((dealerFolderPath) => new FolderToBeAllotted(dealerFolderPath));
+    for (let index = 0; index < 2; index++) {
+        console.log('');
+        await doAllotment(dealerDirectoriesObjects, contractors, lotIndex, true, false, debug);
+        printSectionSeperator();
+    }
+    setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
+}
