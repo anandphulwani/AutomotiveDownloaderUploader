@@ -75,12 +75,6 @@ const configContractors = {
             extraProcessingFolders: [],
             finisher: 'karan',
         },
-        rohanMinus1: {
-            currentAllotted: 0,
-            normalThreshold: -1,
-            extraProcessingFolders: [],
-            finisher: 'karan',
-        },
     },
 };
 
