@@ -48,9 +48,9 @@ function getLotConfigPropertiesValues(lotIndex) {
 }
 
 async function executeSingleFolderAllotment(dealerDirectoryObj) {
-    const { imageCount, username, dealerFolderPath, usernameAndDealerFolderName, contractorAlloted } = dealerDirectoryObj;
+    const { imageCount, username, dealerFolderName, dealerFolderPath, usernameAndDealerFolderName, contractorAlloted } = dealerDirectoryObj;
     const { uniqueId, destinationPath, destinationRecordKeepingPath, destinationFolderName } = dealerDirectoryObj;
-    const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(username, path.basename(dealerFolderPath));
+    const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerFolderName);
     replaceBookmarksElementByGUIDAndWriteToBookmarksFile('foldername', bookmarkFolderGUID, uniqueId);
 
     createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
