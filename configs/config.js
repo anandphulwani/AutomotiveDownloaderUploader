@@ -12,6 +12,8 @@ import { configDevelopment } from './config-development.js';
 import { configUser } from './config-user.js';
 import { configUniqueIds } from './config-unique-ids.js';
 import { configLotLast } from './config-lot-last.js';
+import { configContractors } from './config-contractors.js';
+import { configLot } from './config-lot.js';
 /* eslint-enable import/extensions */
 
 const configBasic = {
@@ -71,30 +73,6 @@ const configBasic = {
     cutterRecordKeepingFolders: ['002_CuttingAccounting'], // The index of this array are used to detect the folder types, so check before you change
     finisherProcessingFolders: ['003_FinishingBuffer', '004_ReadyToUpload'], // The index of this array are used to detect the folder types, so check before you change
     finisherRecordKeepingFolders: ['005_FinishingAccounting'], // The index of this array are used to detect the folder types, so check before you change
-    contractors: {
-        // ram: {
-        //     currentAllotted: 0,
-        //     normalThreshold: 500,
-        //     extraProcessingFolders: [],
-        //     finisher: 'karan',
-        // },
-        // karan: {
-        //     currentAllotted: 0,
-        //     normalThreshold: 500,
-        //     extraProcessingFolders: [],
-        //     finisher: 'karan',
-        // },
-    },
-    lot: [
-        // {
-        //
-        //
-        // },
-        // {
-        //
-        //
-        // },
-    ],
 };
 
 /**
@@ -112,6 +90,8 @@ if (configUser.environment === 'production' || (configUser.environment === undef
 configToExport = _.merge(configToExport, configUser);
 configToExport = _.merge(configToExport, configUniqueIds);
 configToExport = _.merge(configToExport, configLotLast);
+configToExport = _.merge(configToExport, configLot);
+configToExport = _.merge(configToExport, configContractors);
 
 const config = configToExport;
 
