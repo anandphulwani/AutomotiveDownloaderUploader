@@ -155,6 +155,20 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
     }
 }
 
+const contractorsNames = Object.entries(config.contractors)
+    .filter(([, value]) => value.normalThreshold >= 0)
+    .map(([key]) => key);
+
+function getLotConfigPropertiesValues(lotIndex) {
+    const { minimumDealerFoldersForEachContractors } = config.lot[lotIndex - 1];
+    const lotCfgImagesQty = config.lot[lotIndex - 1].imagesQty;
+    const lotCfgMinDealerFolders =
+        minimumDealerFoldersForEachContractors === false || minimumDealerFoldersForEachContractors === undefined
+            ? undefined
+            : minimumDealerFoldersForEachContractors * contractorsNames.length;
+    return { lotCfgMinDealerFolders, lotCfgImagesQty };
+}
+
 /**
  *
  * Creating folders according to cutter or finisher(cutter+finisher)
@@ -227,5 +241,6 @@ export {
     getContractorsCurrentAllotted,
     addToContractorsCurrentAllotted,
     setLastLotNumberAndDate,
+    getLotConfigPropertiesValues,
     createProcessingAndRecordKeepingFolders,
 };

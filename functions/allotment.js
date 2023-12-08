@@ -12,7 +12,7 @@ import { attainLock, releaseLock, lge, lgi, lgs, lgu, lgd, lgtf } from './logger
 import { getIndexOfHighestIn2DArrayColumn } from './others.js';
 import { createDirAndCopyFile, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
 import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './excelsupportive.js';
-import { addToContractorsCurrentAllotted } from './configsupportive.js';
+import { addToContractorsCurrentAllotted, getLotConfigPropertiesValues } from './configsupportive.js';
 import { addAllotmentToReport } from './reportsupportive.js';
 import { getBookmarkFolderGUIDFromUsernameDealerNumber, replaceBookmarksElementByGUIDAndWriteToBookmarksFile } from './bookmark.js';
 import {
@@ -35,16 +35,6 @@ function getDealerDirectoryObjWithMaxImageCount(dealerDirectories) {
         }
         return max && max.imageCount > obj.imageCount ? max : obj;
     }, null);
-}
-
-function getLotConfigPropertiesValues(lotIndex) {
-    const { minimumDealerFoldersForEachContractors } = config.lot[lotIndex - 1];
-    const lotCfgImagesQty = config.lot[lotIndex - 1].imagesQty;
-    const lotCfgMinDealerFolders =
-        minimumDealerFoldersForEachContractors === false || minimumDealerFoldersForEachContractors === undefined
-            ? undefined
-            : minimumDealerFoldersForEachContractors * contractorsNames.length;
-    return { lotCfgMinDealerFolders, lotCfgImagesQty };
 }
 
 async function executeSingleFolderAllotment(dealerDirectoryObj) {
