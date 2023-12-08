@@ -8,7 +8,6 @@ let currentActiveDealerConfigurationsUsername = '';
 function setCurrentDealerConfiguration(username) {
     const usernameTrimmed = getUsernameTrimmed(username);
     if (getCurrentActiveDealerConfigurationsUsername() !== usernameTrimmed) {
-        console.log('setCurrentDealerConfiguration executed');
         dealerConfiguration = readDealerConfigurationFormatted(usernameTrimmed);
         dealerConfigurationAsIs = readDealerConfigurationExcel(usernameTrimmed);
         currentActiveDealerConfigurationsUsername = usernameTrimmed;
