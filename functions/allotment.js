@@ -68,5 +68,61 @@ function getAllotmentMesgForFolder(dealerDirectoryObj, isDryRun) {
     return allotmentMesg;
 }
 
+function getManualAllotmentContractorIndex(usernameAndDealerFolderName, imageCount, contractors) {
+    let contractorsIndex;
+    const contractorsSortedByPriority = contractors.map((contractor) => [...contractor]);
+    contractorsSortedByPriority.sort((a, b) => {
+        if (a[5] === b[5]) {
+            return 0;
+        }
+        return a[5] > b[5] ? -1 : 1;
+    });
+    let currentPrioritySingleLine = 'Current priority: ';
+    // eslint-disable-next-line no-loop-func
+    contractorsSortedByPriority.forEach((value, innerIndex) => {
+        const indexOfContractor = contractorsNames.indexOf(value[0]) + 1;
+        let contractorSection = `[${indexOfContractor}]${value[0]} (${value[3]}/${value[5]})`;
+        contractorSection += innerIndex < contractorsSortedByPriority.length - 1 ? '    ' : '';
+        const lineNo = Math.floor(currentPrioritySingleLine.length / 120);
+        const lineNoAfterAddingContractor = Math.floor((currentPrioritySingleLine.length + contractorSection.length) / 120);
+        if (lineNo !== lineNoAfterAddingContractor) {
+            currentPrioritySingleLine += `${' '.repeat(
+                120 * lineNoAfterAddingContractor - currentPrioritySingleLine.length
+            )}                  ${contractorSection}`;
+        } else {
+            currentPrioritySingleLine += contractorSection;
+        }
+    });
+    lgi(
+        `Allot            ${`${usernameAndDealerFolderName} (Qty:${imageCount})`.padEnd(20, ' ')}` +
+            `                            To                            ???????`,
+        Color.bgCyan
+    );
+    lgi(`${currentPrioritySingleLine}`, Color.cyan);
+
+    let allotmentQuestion = `${contractorsNames
+        .map((contractorsName, contractorInnerIndex) =>
+            contractorsSortedByPriority[0][0] === contractorsName
+                ? chalk.black.bgWhiteBright(`[${contractorInnerIndex + 1}] ${contractorsName}`)
+                : `[${contractorInnerIndex + 1}] ${contractorsName}`
+        )
+        .join('\n')}\n`;
+    allotmentQuestion += `[0] EXIT\n`;
+    lgi(allotmentQuestion, Color.white);
+    const indexOfPriorityContractor = contractorsNames.indexOf(contractorsSortedByPriority[0][0]) + 1;
+    do {
+        contractorsIndex = question('', { defaultInput: indexOfPriorityContractor.toString() });
+        if (Number.isNaN(Number(contractorsIndex)) || Number(contractorsIndex) < 0 || Number(contractorsIndex) > contractorsNames.length) {
+            lge('Invalid input, please try again: ');
+        }
+    } while (Number.isNaN(Number(contractorsIndex)) || Number(contractorsIndex) < 0 || Number(contractorsIndex) > contractorsNames.length);
+    contractorsIndex--;
+
+    contractorsIndex = contractors.findIndex((innerArr) => innerArr.indexOf(contractorsNames[contractorsIndex]) !== -1);
+    if (contractorsIndex === -1) {
+        process.exit(0);
+    }
+    return contractorsIndex;
+}
 // eslint-disable-next-line import/prefer-default-export
 export { doAllotment };
