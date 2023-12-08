@@ -39,16 +39,16 @@ function addAllotmentToReport(allotmentDetails) {
             }
             const dealerName = getDealerNameFromDC(folderName);
 
-            const allotedTo = allotmentDetail[2];
+            const allottedTo = allotmentDetail[2];
             const qty = allotmentDetail[3];
             const allotmentFolderName = allotmentDetail[4];
             reportJSONObj[allotmentId] = {
-                isAlloted: true,
+                isAllotted: true,
                 username: username,
                 folderName: folderName,
                 allotmentFolderName: allotmentFolderName,
                 dealerName: dealerName,
-                allotedTo: allotedTo,
+                allottedTo: allottedTo,
                 qty: qty,
                 isFinished: false,
             };

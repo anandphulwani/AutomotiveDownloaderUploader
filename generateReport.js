@@ -227,10 +227,10 @@ for (const typeOfExcel of typesOfExcel) {
                 }
             }
 
-            /* #region Display Allotment and Uploaded mismatch, where a folder was alloted but not uploaded, so has half the details. */
+            /* #region Display Allotment and Uploaded mismatch, where a folder was allotted but not uploaded, so has half the details. */
             /**
              *
-             * Display Allotment and Uploaded mismatch, where a folder was alloted but not uploaded, so has half the details.
+             * Display Allotment and Uploaded mismatch, where a folder was allotted but not uploaded, so has half the details.
              *
              */
             if (Object.keys(reportJSONObj).length !== 0) {
@@ -247,11 +247,11 @@ for (const typeOfExcel of typesOfExcel) {
                     // eslint-disable-next-line no-restricted-syntax
                     for (const key in allotmentAndUploadedMismatchJSONObj) {
                         if (Object.prototype.hasOwnProperty.call(allotmentAndUploadedMismatchJSONObj, key)) {
-                            const allotedFolderName = allotmentAndUploadedMismatchJSONObj[key].allotmentFolderName;
-                            const usernameWithAllotedFolderName = `${username}/${allotedFolderName}`;
-                            allotmentAndUploadedMismatchString += usernameWithAllotedFolderName;
+                            const allottedFolderName = allotmentAndUploadedMismatchJSONObj[key].allotmentFolderName;
+                            const usernameWithAllottedFolderName = `${username}/${allottedFolderName}`;
+                            allotmentAndUploadedMismatchString += usernameWithAllottedFolderName;
                             allotmentAndUploadedMismatchString += ` ${' '.repeat(
-                                59 - usernameWithAllotedFolderName.length > 0 ? 59 - usernameWithAllotedFolderName.length : 0
+                                59 - usernameWithAllottedFolderName.length > 0 ? 59 - usernameWithAllottedFolderName.length : 0
                             )}`;
                         }
                     }
@@ -279,11 +279,11 @@ for (const typeOfExcel of typesOfExcel) {
                 // eslint-disable-next-line no-restricted-syntax
                 for (const key in reportJSONObj) {
                     if (Object.prototype.hasOwnProperty.call(reportJSONObj, key)) {
-                        const allotedFolderName = reportJSONObj[key].allotmentFolderName;
-                        const usernameWithAllotedFolderName = `${username}/${allotedFolderName}`;
-                        remainingUnconsumedFoldersString += usernameWithAllotedFolderName;
+                        const allottedFolderName = reportJSONObj[key].allotmentFolderName;
+                        const usernameWithAllottedFolderName = `${username}/${allottedFolderName}`;
+                        remainingUnconsumedFoldersString += usernameWithAllottedFolderName;
                         remainingUnconsumedFoldersString += ` ${' '.repeat(
-                            59 - usernameWithAllotedFolderName.length > 0 ? 59 - usernameWithAllotedFolderName.length : 0
+                            59 - usernameWithAllottedFolderName.length > 0 ? 59 - usernameWithAllottedFolderName.length : 0
                         )}`;
                     }
                 }

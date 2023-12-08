@@ -16,7 +16,7 @@ import { addToContractorsCurrentAllotted } from './configsupportive.js';
 import { addAllotmentToReport } from './reportsupportive.js';
 import { getBookmarkFolderGUIDFromUsernameDealerNumber, replaceBookmarksElementByGUIDAndWriteToBookmarksFile } from './bookmark.js';
 import {
-    recalculateRatioOfImagesAlloted,
+    recalculateRatioOfImagesAllotted,
     recalculateAllotmentPriority,
     getDealerFolderContractorsZonePath,
     getDealerFolderRecordKeepingZonePath,
@@ -30,7 +30,7 @@ const contractorsNames = Object.entries(config.contractors)
 
 function getDealerDirectoryObjWithMaxImageCount(dealerDirectories) {
     return dealerDirectories.reduce((max, obj) => {
-        if (obj.contractorAlloted !== null) {
+        if (obj.contractorAllotted !== null) {
             return max;
         }
         return max && max.imageCount > obj.imageCount ? max : obj;
@@ -48,21 +48,21 @@ function getLotConfigPropertiesValues(lotIndex) {
 }
 
 async function executeSingleFolderAllotment(dealerDirectoryObj) {
-    const { imageCount, username, dealerFolderName, dealerFolderPath, usernameAndDealerFolderName, contractorAlloted } = dealerDirectoryObj;
+    const { imageCount, username, dealerFolderName, dealerFolderPath, usernameAndDealerFolderName, contractorAllotted } = dealerDirectoryObj;
     const { uniqueId, destinationPath, destinationRecordKeepingPath, destinationFolderName } = dealerDirectoryObj;
     const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerFolderName);
     replaceBookmarksElementByGUIDAndWriteToBookmarksFile('foldername', bookmarkFolderGUID, uniqueId);
 
     createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, false, 3);
-    await addToContractorsCurrentAllotted(contractorAlloted, imageCount);
-    addAllotmentToReport([[`#${uniqueId}`, usernameAndDealerFolderName, contractorAlloted, imageCount, destinationFolderName]]);
+    await addToContractorsCurrentAllotted(contractorAllotted, imageCount);
+    addAllotmentToReport([[`#${uniqueId}`, usernameAndDealerFolderName, contractorAllotted, imageCount, destinationFolderName]]);
 }
 
 function getAllotmentMesgForFolder(dealerDirectoryObj, isDryRun) {
     let allotmentMesg = dealerDirectoryObj.usernameAndDealerFolderName.padEnd(30, ' ');
-    allotmentMesg += isDryRun ? `  Prefferring To         ` : `  Alloted To         `;
-    allotmentMesg += dealerDirectoryObj.contractorAlloted;
+    allotmentMesg += isDryRun ? `  Prefferring To         ` : `  Allotted To         `;
+    allotmentMesg += dealerDirectoryObj.contractorAllotted;
     allotmentMesg += ` (${dealerDirectoryObj.destinationFolderNameWithDate})`;
     allotmentMesg = allotmentMesg.padEnd(120, ' ');
     return allotmentMesg;
@@ -126,8 +126,8 @@ function getManualAllotmentContractorIndex(usernameAndDealerFolderName, imageCou
 }
 
 /**
- * Once the minimum DealerFolders for each contractors is alloted, using the pre allotted quantity
- * as the initial alloted quantity for the contractors, continuing there on
+ * Once the minimum DealerFolders for each contractors is allotted, using the pre allotted quantity
+ * as the initial allotted quantity for the contractors, continuing there on
  * alloting to contractors as per config as in to maintain ratios, devised from the
  * quantity(ImagesQty) parameters in the config, to generate `Example03` below,
  * and updating the columns
@@ -136,7 +136,7 @@ function getManualAllotmentContractorIndex(usernameAndDealerFolderName, imageCou
 /**
  * `Example03`
  * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAlloted, RatioOfImagesAlloted, AllotmentPriority(RatioOfThreshHoldWithOtherContractors - RatioOfImagesAlloted) ],
+ * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAllotted, RatioOfImagesAllotted, AllotmentPriority(RatioOfThreshHoldWithOtherContractors - RatioOfImagesAllotted) ],
  *    [ 'ram', 300, 43, 50, 26, 17 ],
  *    [ 'karan', 100, 14, 40, 21, -7 ],
  *    [ 'pavan', 100, 14, 40, 21, -7 ],
@@ -160,19 +160,19 @@ async function doAllotment(
         /** Running a dry run */
         /* #region validation checks */
         if (lotCfgImagesQty !== undefined) {
-            let imagesQtyAllotedInCurrentLot = 0;
+            let imagesQtyAllottedInCurrentLot = 0;
             for (let index = 0; index < dealerDirectories.length; index++) {
                 if (lotCfgMinDealerFolders !== undefined && index < lotCfgMinDealerFolders) {
                     // eslint-disable-next-line no-continue
                     continue;
                 }
-                if (imagesQtyAllotedInCurrentLot > lotCfgImagesQty) {
+                if (imagesQtyAllottedInCurrentLot > lotCfgImagesQty) {
                     lgu(
-                        `Unable to continue the allotment because the condition is true: imagesQtyAllotedInCurrentLot(${imagesQtyAllotedInCurrentLot}) > lotCfgImagesQty(${lotCfgImagesQty})`
+                        `Unable to continue the allotment because the condition is true: imagesQtyAllottedInCurrentLot(${imagesQtyAllottedInCurrentLot}) > lotCfgImagesQty(${lotCfgImagesQty})`
                     );
                     process.exit(1);
                 }
-                imagesQtyAllotedInCurrentLot += dealerDirectories[index].imageCount;
+                imagesQtyAllottedInCurrentLot += dealerDirectories[index].imageCount;
             }
         }
         /* #endregion */
@@ -181,7 +181,7 @@ async function doAllotment(
             let contractorsIndex;
 
             if (isManualAllotment) {
-                contractors = recalculateAllotmentPriority(recalculateRatioOfImagesAlloted(contractors));
+                contractors = recalculateAllotmentPriority(recalculateRatioOfImagesAllotted(contractors));
                 const { usernameAndDealerFolderName, imageCount } = currentDealerDirectoryObj;
                 contractorsIndex = getManualAllotmentContractorIndex(usernameAndDealerFolderName, imageCount, contractors);
             } else if (lotCfgMinDealerFolders !== undefined && index < lotCfgMinDealerFolders) {
@@ -189,7 +189,7 @@ async function doAllotment(
                 contractorsIndex = index % contractors.length;
             } else if (lotCfgImagesQty !== undefined && lotCfgImagesQty > 0) {
                 /* allotment by imagesQty */
-                contractors = recalculateAllotmentPriority(recalculateRatioOfImagesAlloted(contractors));
+                contractors = recalculateAllotmentPriority(recalculateRatioOfImagesAllotted(contractors));
                 contractorsIndex = getIndexOfHighestIn2DArrayColumn(contractors, 5);
             } else {
                 /* #region unreachable error mesg creation */
@@ -206,8 +206,8 @@ async function doAllotment(
                 lgu(mesg.join('\n'));
                 process.exit(1);
             }
-            const [contractorAlloted] = contractors[contractorsIndex];
-            currentDealerDirectoryObj.contractorAlloted = contractorAlloted;
+            const [contractorAllotted] = contractors[contractorsIndex];
+            currentDealerDirectoryObj.contractorAllotted = contractorAllotted;
             /* Adding allotment of images to the currentAllotment for all contractors */
             contractors[contractorsIndex][3] += currentDealerDirectoryObj.imageCount;
         }

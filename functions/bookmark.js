@@ -122,15 +122,15 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         /**
          * Copying the names of bookmarks folders which are allotted
          */
-        const allotedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
-        const allotedFolderRegexExpression = new RegExp(allotedFolderRegexString, 'g');
-        if (allotedFolderRegexExpression.test(processingJSONString)) {
-            const allotedFolderBookmarkBlockMatches = processingJSONString.match(allotedFolderRegexExpression);
-            if (allotedFolderBookmarkBlockMatches !== null) {
+        const allottedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
+        const allottedFolderRegexExpression = new RegExp(allottedFolderRegexString, 'g');
+        if (allottedFolderRegexExpression.test(processingJSONString)) {
+            const allottedFolderBookmarkBlockMatches = processingJSONString.match(allottedFolderRegexExpression);
+            if (allottedFolderBookmarkBlockMatches !== null) {
                 const doneBookmarkFoldersInSource = {};
-                // allotedFolderBookmarkBlockMatches.forEach((match) => {
-                for (let i = 0; i < allotedFolderBookmarkBlockMatches.length; i++) {
-                    const match = allotedFolderBookmarkBlockMatches[i];
+                // allottedFolderBookmarkBlockMatches.forEach((match) => {
+                for (let i = 0; i < allottedFolderBookmarkBlockMatches.length; i++) {
+                    const match = allottedFolderBookmarkBlockMatches[i];
 
                     if (match.split(/\r\n|\r|\n/).length > 9) {
                         throw new Error(`Bookmarks Folders Allotted Section: match's length is more than 9:\n ${match}`);

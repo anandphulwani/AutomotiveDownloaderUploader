@@ -80,7 +80,7 @@ while (!hasLotFirstIndexMatches) {
     LotFirstIndex = LotFirstIndex.length > 0 ? parseInt(LotFirstIndex[0].substring(4), 10) : 1;
     if (LotFirstIndex !== lotIndex) {
         lge(`Please allot earlier lot folders 'Lot_${zeroPad(LotFirstIndex, 2)}', before alloting this lot folder '${lotFolderName}'.`);
-        if (!keyInYN('Do you want to try again if you alloted to earlier lot folders (press Y), or exit the program entirely (press N)?')) {
+        if (!keyInYN('Do you want to try again if you allotted to earlier lot folders (press Y), or exit the program entirely (press N)?')) {
             process.exit(0);
         }
     } else {
@@ -160,14 +160,14 @@ contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, tota
 lgtf(`contractors ratio calculated: ${beautify(contractors, null, 3, 120)}`);
 
 /**
- * Reading currentAllotted(ImagesAlloted) from the config, and appending it as the last column to generate `Example01` below.
+ * Reading currentAllotted(ImagesAllotted) from the config, and appending it as the last column to generate `Example01` below.
  * And appending a 0 to all the last column if the Lot is 01, to generate `Example02` below, since config is old read.
  */
 /* #region: Examples */
 /**
  * `Example01`
  * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAlloted ],
+ * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAllotted ],
  *    [ 'ram', 300, 43, 50 ],
  *    [ 'karan', 100, 14, 40 ],
  *    [ 'pavan', 100, 14, 40 ],
@@ -177,7 +177,7 @@ lgtf(`contractors ratio calculated: ${beautify(contractors, null, 3, 120)}`);
  *
  * `Example02`
  * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAlloted ],
+ * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAllotted ],
  *    [ 'ram', 300, 43, 0 ],
  *    [ 'karan', 100, 14, 0 ],
  *    [ 'pavan', 100, 14, 0 ],
@@ -194,7 +194,7 @@ contractors.forEach((contractor) => {
         contractor.push(currentAllotted);
     }
 });
-lgtf(`contractors currentAlloted set: ${beautify(contractors, null, 3, 120)}`);
+lgtf(`contractors currentAllotted set: ${beautify(contractors, null, 3, 120)}`);
 
 let dealerDirectoriesObjects = dealerDirectories.map((dealerFolderPath) => new FolderToBeAllotted(dealerFolderPath));
 for (let index = 0; index < 2; index++) {

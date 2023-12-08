@@ -50,14 +50,14 @@ function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalO
 
 /**
  * 002
- * Added ratio of images alloted to all contractors as the fifth column(RatioOfImagesAlloted) to generate something like in `Example`
+ * Added ratio of images allotted to all contractors as the fifth column(RatioOfImagesAllotted) to generate something like in `Example`
  */
-/* #region : recalculateRatioOfImagesAlloted(contractorsArr) {...} */
+/* #region : recalculateRatioOfImagesAllotted(contractorsArr) {...} */
 
 /* #region : Examples */
 /**
  * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAlloted, RatioOfImagesAlloted ],
+ * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAllotted, RatioOfImagesAllotted ],
  *    [ 'ram', 300, 43, 50, 26 ],
  *    [ 'karan', 100, 14, 40, 21 ],
  *    [ 'pavan', 100, 14, 40, 21 ],
@@ -67,11 +67,11 @@ function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalO
  */
 /* #endregion */
 /* #region : CodeAbstract */
-function recalculateRatioOfImagesAlloted(contractorsArr, debug = false) {
-    const totalImgsAlloted = contractorsArr.map((row) => row[3]).reduce((accumulator, currentValue) => accumulator + currentValue);
+function recalculateRatioOfImagesAllotted(contractorsArr, debug = false) {
+    const totalImgsAllotted = contractorsArr.map((row) => row[3]).reduce((accumulator, currentValue) => accumulator + currentValue);
     contractorsArr.forEach((contractorEle) => {
         if (contractorEle.length >= 4) {
-            let ratio = Math.round((contractorEle[3] / totalImgsAlloted) * 100);
+            let ratio = Math.round((contractorEle[3] / totalImgsAllotted) * 100);
             ratio = Number.isNaN(ratio) ? 0 : ratio;
             if (contractorEle.length === 4) {
                 contractorEle.push(ratio);
@@ -80,7 +80,7 @@ function recalculateRatioOfImagesAlloted(contractorsArr, debug = false) {
             }
         }
     });
-    debug ? lgd(`recalculateRatioOfImagesAlloted: ${beautify(contractorsArr, null, 3, 120)}`) : null;
+    debug ? lgd(`recalculateRatioOfImagesAllotted: ${beautify(contractorsArr, null, 3, 120)}`) : null;
     return contractorsArr;
 }
 /* #endregion */
@@ -89,14 +89,14 @@ function recalculateRatioOfImagesAlloted(contractorsArr, debug = false) {
 
 /**
  * 003
- * Calculated sixth column (AllotmentPriority) by subtracting RatioOfThreshHoldWithOtherContractors and RatioOfImagesAlloted to generate something like in `Example`
+ * Calculated sixth column (AllotmentPriority) by subtracting RatioOfThreshHoldWithOtherContractors and RatioOfImagesAllotted to generate something like in `Example`
  */
 /* #region : recalculateAllotmentPriority (contractorsArr){...} */
 
 /* #region : Examples */
 /**
  * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAlloted, RatioOfImagesAlloted,  AllotmentPriority(RatioOfThreshHoldWithOtherContractors - RatioOfImagesAlloted)],
+ * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAllotted, RatioOfImagesAllotted,  AllotmentPriority(RatioOfThreshHoldWithOtherContractors - RatioOfImagesAllotted)],
  *    [ 'ram', 300, 43, 50, 26, 17 ],
  *    [ 'karan', 100, 14, 40, 21, -7 ],
  *    [ 'pavan', 100, 14, 40, 21, -7 ],
@@ -272,7 +272,7 @@ function returnImageCountFromDealerDirs(dealerDirs, debug = false) {
 // eslint-disable-next-line import/prefer-default-export
 export {
     recalculateRatioOfThreshHoldWithOtherContractors,
-    recalculateRatioOfImagesAlloted,
+    recalculateRatioOfImagesAllotted,
     recalculateAllotmentPriority,
     getDealerFolderContractorsZonePath,
     getDealerFolderRecordKeepingZonePath,

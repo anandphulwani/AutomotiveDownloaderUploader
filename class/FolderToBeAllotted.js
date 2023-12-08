@@ -19,7 +19,7 @@ export default class FolderToBeAllotted {
         this._usernameAndDealerFolderName = this.computeUsernameAndDealerFolderName();
         this._addTextToFolderName = this.computerAddTextToFolderName();
 
-        this._contractorAlloted = null;
+        this._contractorAllotted = null;
 
         this._uniqueId = null;
     }
@@ -86,12 +86,12 @@ export default class FolderToBeAllotted {
      *
      *
      */
-    get contractorAlloted() {
-        return this._contractorAlloted;
+    get contractorAllotted() {
+        return this._contractorAllotted;
     }
 
-    set contractorAlloted(value) {
-        this._contractorAlloted = value;
+    set contractorAllotted(value) {
+        this._contractorAllotted = value;
     }
 
     /**
@@ -132,12 +132,12 @@ export default class FolderToBeAllotted {
     }
 
     computeSuffixTextToFolderName() {
-        return `${this._addTextToFolderName} ${this._contractorAlloted} ${this._imageCount} (#${this._uniqueId})`.trim();
+        return `${this._addTextToFolderName} ${this._contractorAllotted} ${this._imageCount} (#${this._uniqueId})`.trim();
     }
 
     computeDestinationPath() {
         // TODO: Bring this function to this class, if this function isnt used anywhere.
-        return getDealerFolderContractorsZonePath(this._dealerFolderPath, this._contractorAlloted, this._suffixTextToFolderName);
+        return getDealerFolderContractorsZonePath(this._dealerFolderPath, this._contractorAllotted, this._suffixTextToFolderName);
     }
 
     computeDestinationRecordKeepingPath() {
@@ -154,8 +154,8 @@ export default class FolderToBeAllotted {
         return path.join(dateFromDestinationFolderPath, this._destinationFolderName);
     }
 
-    // const contractorAlloted = contractors[contractorsIndex][0];
-    // const uniqueIdOfFolder = zeroPad(lotIndex, 2) + zeroPad(foldersAlloted + 1, 3);
+    // const contractorAllotted = contractors[contractorsIndex][0];
+    // const uniqueIdOfFolder = zeroPad(lotIndex, 2) + zeroPad(foldersAllotted + 1, 3);
 
     // const destinationRecordKeepingPath = getDealerFolderRecordKeepingZonePath(dealerFolderPath, addTextToFolderName);
     // const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
