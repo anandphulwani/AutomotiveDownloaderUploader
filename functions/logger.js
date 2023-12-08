@@ -5,6 +5,7 @@ import { currentDateTimeReadableFormatted } from './datetime.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { logFormatFile, logFormatConsole } from './loggerlogformats.js';
 import LoggerCustomFileSyncTransport from '../class/LoggerCustomFileSyncTransport.js';
+import { config } from '../configs/config.js';
 /* eslint-enable import/extensions */
 
 const { combine, timestamp, errors } = format;
@@ -24,8 +25,8 @@ const levels = {
 };
 
 // Set logger level based on environment variable (default to billy)
-const loggerFileLevel = process.env.LOG_LEVEL || 'billy';
-const loggerConsoleLevel = process.env.LOG_LEVEL || 'billy';
+const loggerFileLevel = config.loggingLevel || 'billy';
+const loggerConsoleLevel = config.loggingLevel || 'billy';
 
 /* #region fileTransportOptions and consoleTransportOptions : Begin */
 const fileTransportOptions = (logFilename) => ({

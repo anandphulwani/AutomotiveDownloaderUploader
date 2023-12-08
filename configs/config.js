@@ -20,6 +20,7 @@ const configBasic = {
     timezone: 'Asia/Calcutta',
     timeOffsetInMinutesToAvoid: 2,
     allottedFolderRegex: '^(\\d[\\S]*)(?: ([\\S| ]*))? ([\\S]+) (\\d{1,3}) \\((#(\\d{5}))\\)$',
+    loggingLevel: 'billy',
     browserArgs: {
         headless: false,
         defaultViewport: null,
