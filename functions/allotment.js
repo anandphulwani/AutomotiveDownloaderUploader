@@ -24,7 +24,9 @@ import {
 import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
-const contractorsNames = Object.values(config.contractors).filter((contractor) => contractor.normalThreshold >= 0);
+const contractorsNames = Object.entries(config.contractors)
+    .filter(([, value]) => value.normalThreshold >= 0)
+    .map(([key]) => key);
 
 function getDealerDirectoryObjWithMaxImageCount(dealerDirectories) {
     return dealerDirectories.reduce((max, obj) => {
