@@ -23,6 +23,7 @@ import {
 } from './functions/allotmentsupportive.js';
 import { doAllotment } from './functions/allotment.js';
 import { printSectionSeperator } from './functions/others.js';
+import FolderToBeAllotted from './class/FolderToBeAllotted.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
@@ -194,3 +195,32 @@ contractors.forEach((contractor) => {
     }
 });
 lgtf(`contractors currentAlloted set: ${beautify(contractors, null, 3, 120)}`);
+
+let dealerDirectoriesObjects = dealerDirectories.map((dealerFolderPath) => new FolderToBeAllotted(dealerFolderPath));
+for (let index = 0; index < 2; index++) {
+    debug ? lgd(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`) : null;
+    debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
+
+    const doesDestinationFolderAlreadyExists = await doAllotment(
+        dealerDirectoriesObjects,
+        contractors.map((subArr) => [...subArr]),
+        lotIndex,
+        false,
+        debug
+    );
+    if (doesDestinationFolderAlreadyExists) {
+        process.exit(1);
+    }
+    if (index === 1) {
+        printSectionSeperator();
+        debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
+        process.exit(0);
+    }
+    printSectionSeperator();
+    console.log('');
+    if (!keyInYN('To continue with the above allotment press Y, for other options press N.')) {
+        break;
+    }
+    console.log('');
+}
+
