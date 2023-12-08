@@ -6,80 +6,61 @@
 const configLot = {
     lot: [
         {
-            imagesQty: 0,
             minimumDealerFoldersForEachContractors: 1,
         },
         {
-            imagesQty: 0,
             minimumDealerFoldersForEachContractors: 1,
         },
         {
-            imagesQty: 0,
             minimumDealerFoldersForEachContractors: 1,
         },
         {
             imagesQty: 300,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 300,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 300,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 400,
-            minimumDealerFoldersForEachContractors: false,
         },
         {
             imagesQty: 5000,
-            minimumDealerFoldersForEachContractors: false,
         },
     ],
 };
