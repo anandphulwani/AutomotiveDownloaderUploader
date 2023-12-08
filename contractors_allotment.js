@@ -23,6 +23,7 @@ import {
 } from './functions/allotmentsupportive.js';
 import { doAllotment } from './functions/allotment.js';
 import { printSectionSeperator } from './functions/others.js';
+import FolderToBeAllotted from './class/FolderToBeAllotted.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
@@ -30,13 +31,13 @@ lgtf(`region : Validation section 01: BEGIN`);
 /* #region : Validation section 01: BEGIN */
 if (process.argv.length < 3) {
     lge(
-        `Please start the program with right parameter 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD'.`
+        `Please start the program with right parameter 'node contractors_allotment.js lotNoIndex' or 'node contractors_allotment.js lotNoIndex YYYY-MM-DD'.`
     );
     process.exit(1);
 }
 if (Number.isNaN(Number(process.argv[2]))) {
     lge(
-        `Please start the program with proper parameters 'node contractors_alltoment.js lotNoIndex' or 'node contractors_alltoment.js lotNoIndex YYYY-MM-DD', The first parameter(lotNoIndex) has to be a number.`
+        `Please start the program with proper parameters 'node contractors_allotment.js lotNoIndex' or 'node contractors_allotment.js lotNoIndex YYYY-MM-DD', The first parameter(lotNoIndex) has to be a number.`
     );
     process.exit(1);
 }
@@ -89,14 +90,14 @@ while (!hasLotFirstIndexMatches) {
 /* #endregion */
 lgtf(`region : Validation section 02: END`);
 
-let dealerDirectories = await validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFolderPath);
 if (config.environment === 'production') {
     exec(`explorer.exe ${process.cwd()}\\${lotFolderPath}"`);
     while (!keyInYN('Please review your lot folders, to remove any unneccesary photos, press Y to continue?')) {
         sleep(1);
     }
 }
-dealerDirectories = await returnImageCountFromDealerDirs(dealerDirectories);
+
+const dealerDirectories = validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFolderPath);
 
 if (!dealerDirectories.length > 0) {
     lge(`Lot folder path: ${lotFolderPath} does not contain any subfolders (dealer Folder), Please check.`);
@@ -104,10 +105,10 @@ if (!dealerDirectories.length > 0) {
 }
 
 dealerDirectories.sort((a, b) => {
-    if (a[1] === b[1]) {
+    if (a === b) {
         return 0;
     }
-    return a[1] > b[1] ? -1 : 1;
+    return a < b ? -1 : 1;
 });
 
 lgtf(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`);
@@ -195,151 +196,40 @@ contractors.forEach((contractor) => {
 });
 lgtf(`contractors currentAlloted set: ${beautify(contractors, null, 3, 120)}`);
 
-// Lot Configuration
-const lotsMinimumDealerFoldersForEachContractors = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors;
-const lotsImagesQty = config.lot[lotIndex - 1].imagesQty;
-debug ? lgd(`configs.minimumDealerFoldersForEachContractors: ${lotsMinimumDealerFoldersForEachContractors}`) : null;
-debug ? lgd(`configs.imagesQty: ${lotsImagesQty}`) : null;
-
-let dryRunImagesQtyAllotedInCurrentLot = 0;
-let dryRunFoldersAlloted = 0;
-let dryRunDealerDirectories = [...dealerDirectories];
-let dryRunContractors = contractors.map((contractor) => [...contractor]);
-let doesDestinationFolderAlreadyExists;
-[dryRunDealerDirectories, dryRunContractors, dryRunImagesQtyAllotedInCurrentLot, dryRunFoldersAlloted, doesDestinationFolderAlreadyExists] =
-    await doAllotment(
-        'allotmentByMinimumDealerFoldersForEachContractors',
-        lotsMinimumDealerFoldersForEachContractors,
-        undefined,
-
-        dryRunDealerDirectories,
-        dryRunContractors,
-        lotIndex,
-        dryRunImagesQtyAllotedInCurrentLot,
-        dryRunFoldersAlloted,
-
-        true,
-        undefined,
-        debug
-    );
-if (doesDestinationFolderAlreadyExists) {
-    process.exit(1);
-}
-debug ? lgd(`dryRunImagesQtyAllotedInCurrentLot: ${dryRunImagesQtyAllotedInCurrentLot}`) : null;
-debug ? lgd(`dryRunFoldersAlloted: ${dryRunFoldersAlloted}`) : null;
-debug ? lgd(`dryRunDealerDirectories: ${beautify(dryRunDealerDirectories, null, 3, 120)}`) : null;
-debug ? lgd(`dryRunContractors: ${beautify(dryRunContractors, null, 3, 120)}`) : null;
-
-debug ? lgd(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`) : null;
-debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
-
-[dryRunDealerDirectories, dryRunContractors, dryRunImagesQtyAllotedInCurrentLot, dryRunFoldersAlloted, doesDestinationFolderAlreadyExists] =
-    await doAllotment(
-        'allotmentByImagesQty',
-        undefined,
-        lotsImagesQty,
-
-        dryRunDealerDirectories,
-        dryRunContractors,
-        lotIndex,
-        dryRunImagesQtyAllotedInCurrentLot,
-        dryRunFoldersAlloted,
-
-        true,
-        undefined,
-        debug
-    );
-if (doesDestinationFolderAlreadyExists) {
-    process.exit(1);
-}
-
-let imagesQtyAllotedInCurrentLot = 0;
-let foldersAlloted = 0;
-
-console.log('');
-if (keyInYN('To continue with the above allotment press Y, for other options press N.')) {
-    /**
-     * Alloting minimum DealerFolders for each contractors as per config
-     * Adding allotment of images to the currentAllotment for all contractors in the last column.
-     */
-    /* #region: CodeAbstract */
-
-    [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted, doesDestinationFolderAlreadyExists] = await doAllotment(
-        'allotmentByMinimumDealerFoldersForEachContractors',
-        lotsMinimumDealerFoldersForEachContractors,
-        undefined,
-
-        dealerDirectories,
-        contractors,
-        lotIndex,
-        imagesQtyAllotedInCurrentLot,
-        foldersAlloted,
-
-        undefined,
-        undefined,
-        debug
-    );
-    /* #endregion */
-    printSectionSeperator();
+let dealerDirectoriesObjects = dealerDirectories.map((dealerFolderPath) => new FolderToBeAllotted(dealerFolderPath));
+for (let index = 0; index < 2; index++) {
+    debug ? lgd(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`) : null;
     debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
-    debug ? lgd(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}`) : null;
 
-    /**
-     * Once the minimum DealerFolders for each contractors is alloted, using the pre allotted quantity
-     * as the initial alloted quantity for the contractors, continuing there on
-     * alloting to contractors as per config as in to maintain ratios, devised from the
-     * quantity(ImagesQty) parameters in the config, to generate `Example03` below,
-     * and updating the columns
-     */
-    /* #region: Examples */
-    /**
-     * `Example03`
-     * [
-     * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAlloted, RatioOfImagesAlloted, AllotmentPriority(RatioOfThreshHoldWithOtherContractors - RatioOfImagesAlloted) ],
-     *    [ 'ram', 300, 43, 50, 26, 17 ],
-     *    [ 'karan', 100, 14, 40, 21, -7 ],
-     *    [ 'pavan', 100, 14, 40, 21, -7 ],
-     *    [ 'arjun', 100, 14, 30, 16, -2 ],
-     *    [ 'om', 100, 14, 30, 16, -2 ]
-     * ]
-     */
-    /* #endregion */
-    /* #region: CodeAbstract */
-    [dealerDirectories, contractors, imagesQtyAllotedInCurrentLot, foldersAlloted, doesDestinationFolderAlreadyExists] = await doAllotment(
-        'allotmentByImagesQty',
-        undefined,
-        lotsImagesQty,
-
-        dealerDirectories,
-        contractors,
+    const doesDestinationFolderAlreadyExists = await doAllotment(
+        dealerDirectoriesObjects,
+        contractors.map((subArr) => [...subArr]),
         lotIndex,
-        imagesQtyAllotedInCurrentLot,
-        foldersAlloted,
-
-        undefined,
-        undefined,
+        false,
         debug
     );
-    setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
-    /* #endregion */
-} else if (keyInYN('To use manual allotment system press Y, to exit from this process press N.')) {
+    if (doesDestinationFolderAlreadyExists) {
+        process.exit(1);
+    }
+    if (index === 1) {
+        printSectionSeperator();
+        debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
+        process.exit(0);
+    }
+    printSectionSeperator();
     console.log('');
-    await doAllotment(
-        'allotmentByManual',
-        undefined,
-        lotsImagesQty,
-
-        dealerDirectories,
-        contractors,
-        lotIndex,
-        imagesQtyAllotedInCurrentLot,
-        foldersAlloted,
-
-        false,
-        false,
-        debug
-    );
-    setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
+    if (!keyInYN('To continue with the above allotment press Y, for other options press N.')) {
+        break;
+    }
+    console.log('');
 }
 
-/* #endregion */
+if (keyInYN('To use manual allotment system press Y, to exit from this process press N.')) {
+    dealerDirectoriesObjects = dealerDirectories.map((dealerFolderPath) => new FolderToBeAllotted(dealerFolderPath));
+    for (let index = 0; index < 2; index++) {
+        console.log('');
+        await doAllotment(dealerDirectoriesObjects, contractors, lotIndex, true, false, debug);
+        printSectionSeperator();
+    }
+    setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
+}

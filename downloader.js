@@ -7,6 +7,7 @@ import { keyInYN } from 'readline-sync';
 import { URL as URLparser } from 'url';
 import path from 'path';
 import beautify from 'json-beautify';
+import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
@@ -34,7 +35,7 @@ import { validateConfigFile } from './functions/configvalidation.js';
 import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
-import { lge, lgi, lgu } from './functions/loggerandlocksupportive.js';
+import { lgc, lge, lgi, lgu } from './functions/loggerandlocksupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
@@ -45,6 +46,20 @@ import LoggingPrefix from './class/LoggingPrefix.js';
 // } = config;
 // console.log(`${host}:${port}/${name}`);
 // console.log(config);
+
+/**
+ *
+ * Only make a single instance run of the script.
+ *
+ */
+try {
+    if (checkSync('downloader.js', { stale: 15000 })) {
+        throw new Error('Lock already held, another instace is already running.');
+    }
+    lockSync('downloader.js', { stale: 15000 });
+} catch (error) {
+    process.exit(1);
+}
 
 if (config.environment === 'production') {
     checkTimezone();
@@ -82,6 +97,7 @@ if (
     }
 }
 
+exec(`start "" FolderTransferer.exe`);
 // await killChrome({
 //     includingMainProcess: true,
 // });
@@ -102,7 +118,7 @@ for (const LotIndexEle of LotIndexArray) {
     const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
     if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\${LotIndexEle}`)) {
         exec(
-            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndexToAllot} ${instanceRunDateFormatted} && pause && pause && exit"`
+            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndexToAllot} ${instanceRunDateFormatted} && pause && pause && exit"`
         );
     }
     sleep(3);
@@ -162,7 +178,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
             ) {
                 if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
                     exec(
-                        `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
+                        `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
                     );
                 }
                 dealerFolderCntInLot = 0;
@@ -225,7 +241,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                                 fs.appendFileSync(bookmarksNotAppendFile, `returnObj: ${beautify(returnObj, null, 3, 120)}\n`);
                                 fs.appendFileSync(bookmarksNotAppendFile, `${'+'.repeat(120)}\n`);
                             } catch (err) {
-                                console.error(err);
+                                lgc(err);
                             }
                         }
                     }
@@ -246,7 +262,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
     if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
         if (!keyInYN('Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?')) {
             exec(
-                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
+                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
             );
         }
     }

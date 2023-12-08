@@ -58,7 +58,6 @@ import {
  */
 
 const debug = false;
-// TODO: Copy this to downloader, uploader, genreate excel script as well
 /**
  *
  * Only make a single instance run of the script.
@@ -66,7 +65,7 @@ const debug = false;
  */
 try {
     if (checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
-        throw new Error('Already has lock');
+        throw new Error('Lock already held, another instace is already running.');
     }
     lockSync('contractors_folderTransferer.js', { stale: 15000 });
 } catch (error) {

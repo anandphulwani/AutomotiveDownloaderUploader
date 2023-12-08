@@ -196,6 +196,7 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
             } else if (lockTryIndex !== 0 && lockTryIndex % 1500 === 0) {
                 lgs(`Trying to get a lock on: \n${fileToOperateOn}    ......`);
             } else if (lockTryIndex !== 0 && lockTryIndex % 300 === 0) {
+                // ONPROJECTFINISH: Check if you can replace this with lg* function, you will have to check for proper lineSeperators so that it logs properly.
                 process.stdout.write(chalk.cyan(` ■`));
             }
             if (checkSync(fileToOperateOn, { stale: stale })) {

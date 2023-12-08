@@ -2,6 +2,8 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { URL } from 'url';
+import { exec, spawn } from 'child_process';
+import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
@@ -43,6 +45,20 @@ import LoggingPrefix from './class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
+/**
+ *
+ * Only make a single instance run of the script.
+ *
+ */
+try {
+    if (checkSync('uploader.js', { stale: 15000 })) {
+        throw new Error('Lock already held, another instace is already running.');
+    }
+    lockSync('uploader.js', { stale: 15000 });
+} catch (error) {
+    process.exit(1);
+}
+
 if (config.environment === 'production') {
     checkTimezone();
     printSectionSeperator();
@@ -54,6 +70,7 @@ autoCleanUpDatastoreZones();
 printSectionSeperator();
 
 // TODO: validate config file here
+exec(`start "" FolderTransferer.exe`);
 
 // const cuttingDone = config.cutterProcessingFolders[0];
 // const finishingBuffer = config.finisherProcessingFolders[0];

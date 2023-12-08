@@ -7,7 +7,7 @@ import beautify from 'json-beautify';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
-import { lgd, lgs, lgu } from './loggerandlocksupportive.js';
+import { lgd, lgs, lgtf, lgu } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 /* #region : Supporting functions */
@@ -40,6 +40,7 @@ function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalO
             }
         }
     });
+    lgtf(`recalculateRatioOfThreshHoldWithOtherContractors: ${beautify(contractorsArr, null, 3, 120)}`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
     debug ? lgd(`recalculateRatioOfThreshHoldWithOtherContractors: ${beautify(contractorsArr, null, 3, 120)}`) : null;
     return contractorsArr;
 }
@@ -117,6 +118,7 @@ function recalculateAllotmentPriority(contractorsArr, debug = false) {
             }
         }
     });
+    lgtf(`recalculateAllotmentPriority: ${beautify(contractorsArr, null, 3, 120)}`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
     debug ? lgd(`recalculateAllotmentPriority: ${beautify(contractorsArr, null, 3, 120)}`) : null;
     return contractorsArr;
 }
@@ -174,8 +176,9 @@ function getDealerFolderRecordKeepingZonePath(sourcePath, additionalText) {
  * Also make sure one dealerDirectory with single file exists in the lot
  * Return all dealerDirs with an additional column of '0', later to be used to put image count
  */
+// TODO: Check if the calls to the function is making sense.
 /* #region : validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs (lotFldrPath, debug = false) {...} */
-async function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFldrPath, debug = false) {
+function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFldrPath, debug = false) {
     let doesLotFolderPathContainsFiles = false;
     const dealerDirs = [];
     // eslint-disable-next-line no-restricted-syntax
@@ -189,6 +192,7 @@ async function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDi
                 const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
 
                 if (fs.statSync(dealerFolderPath).isDirectory()) {
+                    // TODO: Replace below variable VINFolder to VINFolderOrFile
                     // eslint-disable-next-line no-restricted-syntax
                     for (const VINFolder of fs.readdirSync(dealerFolderPath)) {
                         const VINFolderPath = path.join(dealerFolderPath, VINFolder);
@@ -206,7 +210,7 @@ async function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDi
                         }
                     }
                     if (fs.existsSync(dealerFolderPath)) {
-                        dealerDirs.push([dealerFolderPath, 0]);
+                        dealerDirs.push(dealerFolderPath);
                     }
                 }
             }
@@ -224,31 +228,42 @@ async function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDi
  * 006
  * Get total image count from a dealer directory, which includes VIN folders and VIN files
  */
+/* #region : returnImageCountFromDealerDir (lotFldrPath, debug = false) {...} */
+function returnImageCountFromDealerDir(dealerDir, debug = false) {
+    let totalNoOfDealerFolderFiles = 0;
+    if (fs.existsSync(dealerDir)) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const VINFolder of fs.readdirSync(dealerDir)) {
+            const VINFolderPath = path.join(dealerDir, VINFolder);
+            const VINFolderStat = fs.statSync(VINFolderPath);
+
+            if (VINFolderStat.isDirectory()) {
+                const VINFolderLength = fs.readdirSync(VINFolderPath).length;
+                debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : null;
+                if (VINFolderLength > 0) {
+                    totalNoOfDealerFolderFiles += VINFolderLength;
+                } else {
+                    removeDirAndRemoveParentDirIfEmpty(VINFolderPath, 3, true);
+                }
+            } else {
+                totalNoOfDealerFolderFiles += 1;
+            }
+        }
+    }
+    return totalNoOfDealerFolderFiles;
+}
+/* #endregion */
+
+/**
+ * 007
+ * Get total image count from an array of dealer directories, which includes VIN folders and VIN files
+ */
+// TODO: Check if the calls to the function is making sense.
 /* #region : returnImageCountFromDealerDirs (lotFldrPath, debug = false) {...} */
-async function returnImageCountFromDealerDirs(dealerDirs, debug = false) {
+function returnImageCountFromDealerDirs(dealerDirs, debug = false) {
     // eslint-disable-next-line no-restricted-syntax
     for (const dealerDir of dealerDirs) {
-        if (fs.existsSync(dealerDir[0])) {
-            let totalNoOfDealerFolderFiles = 0;
-            // eslint-disable-next-line no-restricted-syntax
-            for (const VINFolder of fs.readdirSync(dealerDir[0])) {
-                const VINFolderPath = path.join(dealerDir[0], VINFolder);
-                const VINFolderStat = fs.statSync(VINFolderPath);
-
-                if (VINFolderStat.isDirectory()) {
-                    const VINFolderLength = fs.readdirSync(VINFolderPath).length;
-                    debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : null;
-                    if (VINFolderLength > 0) {
-                        totalNoOfDealerFolderFiles += VINFolderLength;
-                    } else {
-                        removeDirAndRemoveParentDirIfEmpty(VINFolderPath, 3, true);
-                    }
-                } else {
-                    totalNoOfDealerFolderFiles += 1;
-                }
-            }
-            dealerDir[1] = totalNoOfDealerFolderFiles;
-        }
+        dealerDir[1] = returnImageCountFromDealerDir(dealerDir, debug);
     }
     return dealerDirs;
 }
@@ -262,5 +277,6 @@ export {
     getDealerFolderContractorsZonePath,
     getDealerFolderRecordKeepingZonePath,
     validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs,
+    returnImageCountFromDealerDir,
     returnImageCountFromDealerDirs,
 };
