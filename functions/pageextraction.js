@@ -94,6 +94,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                 if (
                     err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
                     err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
+                    err.message.match(/connect ETIMEDOUT .*/g) ||
                     err.message === 'socket hang up' ||
                     err.message === 'aborted' ||
                     err.message === 'read ECONNRESET' ||
@@ -145,6 +146,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                 if (
                     err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
                     err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
+                    err.message.match(/connect ETIMEDOUT .*/g) ||
                     err.message === 'socket hang up' ||
                     err.message === 'aborted' ||
                     err.message === 'read ECONNRESET' ||
