@@ -3,7 +3,7 @@
  * Configuration in this file will override settings in main config file
  *
  */
-const configLot = {
+const configLots = {
     lot: [
         {
             minimumDealerFoldersForEachContractors: 1,
@@ -66,4 +66,4 @@ const configLot = {
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { configLot };
+export { configLots };

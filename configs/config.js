@@ -13,7 +13,7 @@ import { configUser } from './config-user.js';
 import { configUniqueIds } from './config-unique-ids.js';
 import { configLotLast } from './config-lot-last.js';
 import { configContractors } from './config-contractors.js';
-import { configLot } from './config-lot.js';
+import { configLots } from './config-lots.js';
 /* eslint-enable import/extensions */
 
 const configBasic = {
@@ -90,7 +90,7 @@ if (configUser.environment === 'production' || (configUser.environment === undef
 configToExport = _.merge(configToExport, configUser);
 configToExport = _.merge(configToExport, configUniqueIds);
 configToExport = _.merge(configToExport, configLotLast);
-configToExport = _.merge(configToExport, configLot);
+configToExport = _.merge(configToExport, configLots);
 configToExport = _.merge(configToExport, configContractors);
 
 const config = configToExport;
