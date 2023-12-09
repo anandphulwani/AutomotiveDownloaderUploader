@@ -5,9 +5,10 @@ import logSymbols from 'log-symbols';
 import { waitForSeconds } from './sleep.js';
 import { incRetryCount } from './others.js';
 import { waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith } from './waiting.js';
-import { lgbf, lgc, lgd, lge, lgi, lgu } from './loggerandlocksupportive.js';
+import { lgbf, lgc, lgcf, lgd, lge, lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 async function gotoURL(page, URL, debug = false) {
@@ -22,11 +23,11 @@ async function gotoURL(page, URL, debug = false) {
             // await page.goto(URL, { waitUntil: "networkidle2" });
             const pageContent = await page.content();
             if (pageContent.includes('/Framework/Resources/Images/Layout/Errors/500_error.png')) {
-                lgi(` ${logSymbols.warning}`, LineSeparator.false);
+                lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
                 if (gotoCnt < 4) {
                     // Sleep for 5 mins
                     for (let cnt = 0; cnt < 100; cnt++) {
-                        lgi('.', Color.yellow, LineSeparator.false);
+                        lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
                         await waitForSeconds(3);
                     }
                 } else {
@@ -47,12 +48,12 @@ async function gotoURL(page, URL, debug = false) {
                 err.message === 'read ECONNRESET' ||
                 err.message === 'Page.navigate timed out.'
             ) {
-                lgc(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
-                lgc(` ${logSymbols.warning}`, LineSeparator.false);
+                lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
+                lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
                 if (gotoCnt < 4) {
                     // Sleep for 30 seconds
                     for (let cnt = 0; cnt < 10; cnt++) {
-                        lgc('.', Color.yellow, LineSeparator.false);
+                        lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
                         await waitForSeconds(3);
                     }
                     incRetryCount();

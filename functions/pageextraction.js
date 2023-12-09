@@ -13,7 +13,7 @@ import { incRetryCount } from './others.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
 import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './excelsupportive.js';
-import { lgc, lgd, lge, lgi, lgu, lgw } from './loggerandlocksupportive.js';
+import { lgc, lgcf, lgd, lge, lgi, lgu, lgw } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
@@ -100,12 +100,12 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     err.message === 'read ECONNRESET' ||
                     err.message === 'Page.navigate timed out.'
                 ) {
-                    lgc(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
-                    lgc(` ${logSymbols.warning}`, LineSeparator.false);
+                    lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
+                    lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
                     if (checksumOfFileCnt < 4) {
                         // Sleep for 30 seconds
                         for (let cnt = 0; cnt < 10; cnt++) {
-                            lgc('.', Color.yellow, LineSeparator.false);
+                            lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
                             await waitForSeconds(3);
                         }
                         incRetryCount();
@@ -152,12 +152,12 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                     err.message === 'read ECONNRESET' ||
                     err.message === 'Page.navigate timed out.'
                 ) {
-                    lgc(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
-                    lgc(` ${logSymbols.warning}`, LineSeparator.false);
+                    lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
+                    lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
                     if (downloadCnt < 4) {
                         // Sleep for 30 seconds
                         for (let cnt = 0; cnt < 10; cnt++) {
-                            lgc('.', Color.yellow, LineSeparator.false);
+                            lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
                             await waitForSeconds(3);
                         }
                         incRetryCount();
