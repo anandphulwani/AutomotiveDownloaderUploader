@@ -41,20 +41,20 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
             releaseLock(fileToOperateOn, undefined, true);
             return;
         }
-        const configUserContent = fs.readFileSync(fileToOperateOn, 'utf8');
+        const configContractorsContent = fs.readFileSync(fileToOperateOn, 'utf8');
 
-        const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+        const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
         const regexExpression = new RegExp(regexString, 'g');
-        const newConfigUserContent = configUserContent.replace(regexExpression, `$1$2$3${allottedQty}$5`);
-        if (configUserContent === newConfigUserContent) {
+        const newconfigContractorsContent = configContractorsContent.replace(regexExpression, `$1$2$3${allottedQty}$5`);
+        if (configContractorsContent === newconfigContractorsContent) {
             lgu(
                 `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
             );
             releaseLock(fileToOperateOn, undefined, true);
             process.exit(1);
         }
-        fs.writeFileSync(fileToOperateOn, newConfigUserContent, 'utf8');
-        createBackupOfFile(fileToOperateOn, newConfigUserContent);
+        fs.writeFileSync(fileToOperateOn, newconfigContractorsContent, 'utf8');
+        createBackupOfFile(fileToOperateOn, newconfigContractorsContent);
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         lgc(err);
@@ -63,16 +63,16 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
 }
 
 function getContractorsCurrentAllotted(contractor) {
-    const configUserContent = fs.readFileSync(getProjectConfigContractorsFilePath(), 'utf8');
-    const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+    const configContractorsContent = fs.readFileSync(getProjectConfigContractorsFilePath(), 'utf8');
+    const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
     const regexExpression = new RegExp(regexString, 'g');
 
-    if (!regexExpression.test(configUserContent)) {
+    if (!regexExpression.test(configContractorsContent)) {
         lgu('Unable to match regex for fn getContractorsCurrentAllotted()');
         process.exit(1);
     }
 
-    const match = configUserContent.match(regexExpression);
+    const match = configContractorsContent.match(regexExpression);
     const currentAllotted = match[0].match(regexString)[4];
     return currentAllotted;
 }
