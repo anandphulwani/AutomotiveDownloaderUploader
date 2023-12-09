@@ -128,90 +128,101 @@ dealerDirectories.sort((a, b) => {
 lgtf(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`);
 lgtf(`Object.keys(config.contractors): ${beautify(Object.keys(config.contractors), null, 3, 120)}`);
 
-const validContractors = Object.entries(config.contractors)
-    .filter(([_, contractor]) => contractor.normalThreshold >= 0)
-    .reduce((obj, [key, val]) => {
-        obj[key] = val;
-        return obj;
-    }, {});
-
-let contractors = [];
-let totalNoOfNormalThreshold = 0;
-
 createProcessingAndRecordKeepingFolders(lotTodaysDate);
-/**
- * Set contractors currentstatus to 0 if lot no is 1
- * Reading all name and normalThreshold to contractors array
- * Adding all normalThreshold to totalNoOfNormalThreshold
- */
-// eslint-disable-next-line no-restricted-syntax
-for (const contractor of Object.keys(validContractors)) {
-    if (lotIndex === 1) {
-        await setContractorsCurrentAllotted(contractor, '0');
-    }
-    const { normalThreshold } = validContractors[contractor];
-    contractors.push([contractor, normalThreshold]);
-    totalNoOfNormalThreshold += normalThreshold;
-}
-lgtf(
-    `contractors from config after removing contractors whose normalThreshold is not -1 and is above or equal to 0: ${beautify(
-        contractors,
-        null,
-        3,
-        120
-    )}`
-);
 
-contractors.sort((a, b) => {
-    if (a[1] === b[1]) {
-        return 0;
-    }
-    return a[1] > b[1] ? -1 : 1;
-});
-lgtf(`contractors sorted: ${beautify(contractors, null, 3, 120)}`);
-
-contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, totalNoOfNormalThreshold, debug);
-lgtf(`contractors ratio calculated: ${beautify(contractors, null, 3, 120)}`);
-
-/**
- * Reading currentAllotted(ImagesAllotted) from the config, and appending it as the last column to generate `Example01` below.
- * And appending a 0 to all the last column if the Lot is 01, to generate `Example02` below, since config is old read.
- */
-/* #region: Examples */
-/**
- * `Example01`
- * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAllotted ],
- *    [ 'ram', 300, 43, 50 ],
- *    [ 'karan', 100, 14, 40 ],
- *    [ 'pavan', 100, 14, 40 ],
- *    [ 'arjun', 100, 14, 30 ],
- *    [ 'om', 100, 14, 30 ]
- * ]
- *
- * `Example02`
- * [
- * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAllotted ],
- *    [ 'ram', 300, 43, 0 ],
- *    [ 'karan', 100, 14, 0 ],
- *    [ 'pavan', 100, 14, 0 ],
- *    [ 'arjun', 100, 14, 0 ],
- *    [ 'om', 100, 14, 0 ]
- * ]
- */
-/* #endregion */
-contractors.forEach((contractor) => {
-    if (lotIndex === 1) {
-        contractor.push(0);
+function getContractors(onlyValid) {
+    let contractors = [];
+    let totalNoOfNormalThreshold = 0;
+    let contractorsFromConfig;
+    if (onlyValid) {
+        contractorsFromConfig = Object.entries(config.contractors)
+            .filter(([_, contractor]) => contractor.normalThreshold >= 0)
+            .reduce((obj, [key, val]) => {
+                obj[key] = val;
+                return obj;
+            }, {});
     } else {
-        const { currentAllotted } = config.contractors[contractor[0]];
-        contractor.push(currentAllotted);
+        contractorsFromConfig = Object.entries(config.contractors).reduce((obj, [key, val]) => {
+            obj[key] = val;
+            return obj;
+        }, {});
     }
-});
-lgtf(`contractors currentAllotted set: ${beautify(contractors, null, 3, 120)}`);
+    /**
+     * Set contractors currentstatus to 0 if lot no is 1
+     * Reading all name and normalThreshold to contractors array
+     * Adding all normalThreshold to totalNoOfNormalThreshold
+     */
+    // eslint-disable-next-line no-restricted-syntax
+    for (const contractor of Object.keys(contractorsFromConfig)) {
+        if (lotIndex === 1) {
+            setContractorsCurrentAllotted(contractor, '0');
+        }
+        const { normalThreshold } = contractorsFromConfig[contractor];
+        contractors.push([contractor, normalThreshold]);
+        totalNoOfNormalThreshold += normalThreshold;
+    }
+    lgtf(
+        `contractors from config after removing contractors whose normalThreshold is not -1 and is above or equal to 0: ${beautify(
+            contractors,
+            null,
+            3,
+            120
+        )}`
+    );
+
+    contractors.sort((a, b) => {
+        if (a[1] === b[1]) {
+            return 0;
+        }
+        return a[1] > b[1] ? -1 : 1;
+    });
+    lgtf(`contractors sorted: ${beautify(contractors, null, 3, 120)}`);
+
+    contractors = recalculateRatioOfThreshHoldWithOtherContractors(contractors, totalNoOfNormalThreshold, debug);
+    lgtf(`contractors ratio calculated: ${beautify(contractors, null, 3, 120)}`);
+
+    /**
+     * Reading currentAllotted(ImagesAllotted) from the config, and appending it as the last column to generate `Example01` below.
+     * And appending a 0 to all the last column if the Lot is 01, to generate `Example02` below, since config is old read.
+     */
+    /* #region: Examples */
+    /**
+     * `Example01`
+     * [
+     * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAllotted ],
+     *    [ 'ram', 300, 43, 50 ],
+     *    [ 'karan', 100, 14, 40 ],
+     *    [ 'pavan', 100, 14, 40 ],
+     *    [ 'arjun', 100, 14, 30 ],
+     *    [ 'om', 100, 14, 30 ]
+     * ]
+     *
+     * `Example02`
+     * [
+     * // [ 'NameOfContractor', NormalThreshold, RatioOfThreshHoldWithOtherContractors, ImagesAllotted ],
+     *    [ 'ram', 300, 43, 0 ],
+     *    [ 'karan', 100, 14, 0 ],
+     *    [ 'pavan', 100, 14, 0 ],
+     *    [ 'arjun', 100, 14, 0 ],
+     *    [ 'om', 100, 14, 0 ]
+     * ]
+     */
+    /* #endregion */
+    contractors.forEach((contractor) => {
+        if (lotIndex === 1) {
+            contractor.push(0);
+        } else {
+            const { currentAllotted } = config.contractors[contractor[0]];
+            contractor.push(currentAllotted);
+        }
+    });
+    lgtf(`contractors currentAllotted set: ${beautify(contractors, null, 3, 120)}`);
+    return contractors;
+}
 
 let dealerDirectoriesObjects = dealerDirectories.map((dealerFolderPath) => new FolderToBeAllotted(dealerFolderPath));
 for (let index = 0; index < 2; index++) {
+    const contractors = getContractors(true);
     debug ? lgd(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`) : null;
     debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
 
@@ -239,6 +250,7 @@ for (let index = 0; index < 2; index++) {
 }
 
 if (keyInYN('To use manual allotment system press Y, to exit from this process press N.')) {
+    const contractors = getContractors(false);
     dealerDirectoriesObjects = dealerDirectories.map((dealerFolderPath) => new FolderToBeAllotted(dealerFolderPath));
     for (let index = 0; index < 2; index++) {
         console.log('');
