@@ -34,7 +34,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     );
 
     if (dealerNameFromDCAsIs !== dealerNameFromPage) {
-        lgw('');
+        console.log('');
         lgw(`Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`);
         return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0 };
     }
@@ -46,7 +46,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     );
 
     if (!/^[a-zA-Z0-9\-_ ]{1,}$/.test(VINNumber)) {
-        lgw('');
+        console.log('');
         lgw(`Found an invalid VIN number: ${VINNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Invalid VIN Number, Format Unknown)', imagesDownloaded: 0 };
     }
@@ -64,7 +64,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     for (let index = 0; index < imageNumbersToDownload.length; index++) {
         const imageNumberToDownload = parseInt(imageNumbersToDownload[index], 10);
         if (imageNumberToDownload > imageOriginalURLS.length) {
-            lgw('');
+            console.log('');
             lgw(
                 `Under ${dealerFolder}/${VINNumber}, Unable to find image number: ${imageNumberToDownload}, Total images under page: ${imageOriginalURLS.length}.`,
                 LineSeparator.false
@@ -110,11 +110,10 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                         }
                         incRetryCount();
                     } else {
-                        lgc('');
+                        console.log('');
                         lgc(
                             `Unable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                         );
-                        lgc('  ', LineSeparator.false);
                     }
                 } else {
                     lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
@@ -162,11 +161,10 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                         }
                         incRetryCount();
                     } else {
-                        lgc('');
+                        console.log('');
                         lgc(
                             `Unable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                         );
-                        lgc('  ', LineSeparator.false);
                     }
                 } else {
                     lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
