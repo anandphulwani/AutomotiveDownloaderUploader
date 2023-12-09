@@ -31,7 +31,7 @@ function getAppDomain() {
     return config.appDomain;
 }
 
-async function setContractorsCurrentAllotted(contractor, allottedQty) {
+function setContractorsCurrentAllotted(contractor, allottedQty) {
     const fileToOperateOn = getProjectConfigContractorsFilePath();
     attainLock(fileToOperateOn, undefined, true);
 
@@ -77,11 +77,11 @@ function getContractorsCurrentAllotted(contractor) {
     return currentAllotted;
 }
 
-async function addToContractorsCurrentAllotted(contractor, quantity) {
+function addToContractorsCurrentAllotted(contractor, quantity) {
     let newQuantity = getContractorsCurrentAllotted(contractor);
     newQuantity = parseInt(newQuantity, 10);
     newQuantity += quantity;
-    await setContractorsCurrentAllotted(contractor, newQuantity);
+    setContractorsCurrentAllotted(contractor, newQuantity);
 }
 
 function getLastLotNumber() {
@@ -110,7 +110,7 @@ function getLastLotDate() {
     return match[0].match(lastLotDateRegexString)[2];
 }
 
-async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
+function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
     const fileToOperateOn = getProjectConfigLotLastFilePath();
     attainLock(fileToOperateOn, undefined, true);
 
