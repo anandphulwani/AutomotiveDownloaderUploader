@@ -26,6 +26,14 @@ function getProjectConfigUniqueIdsFilePath() {
     return path.join(getProjectConfigDirPath(), 'config-unique-ids.js');
 }
 
+function getProjectConfigContractorsFilePath() {
+    return path.join(getProjectConfigDirPath(), 'config-contractors.js');
+}
+
+function getProjectConfigLotsFilePath() {
+    return path.join(getProjectConfigDirPath(), 'config-lots.js');
+}
+
 function getProjectConfigLotLastFilePath() {
     return path.join(getProjectConfigDirPath(), 'config-lot-last.js');
 }
@@ -37,5 +45,7 @@ export {
     getProjectConfigFilePath,
     getProjectConfigUserFilePath,
     getProjectConfigUniqueIdsFilePath,
+    getProjectConfigContractorsFilePath,
+    getProjectConfigLotsFilePath,
     getProjectConfigLotLastFilePath,
 };
