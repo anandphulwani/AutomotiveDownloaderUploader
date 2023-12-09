@@ -24,10 +24,6 @@ import {
 import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
-const contractorsNames = Object.entries(config.contractors)
-    .filter(([, value]) => value.normalThreshold >= 0)
-    .map(([key]) => key);
-
 function getDealerDirectoryObjWithMaxImageCount(dealerDirectories) {
     return dealerDirectories.reduce((max, obj) => {
         if (obj.contractorAllotted !== null) {
@@ -58,6 +54,7 @@ function getAllotmentMesgForFolder(dealerDirectoryObj, isDryRun) {
     return allotmentMesg;
 }
 
+const contractorsNames = Object.keys(config.contractors);
 function getManualAllotmentContractorIndex(usernameAndDealerFolderName, imageCount, contractors) {
     let contractorsIndex;
     const contractorsSortedByPriority = contractors.map((contractor) => [...contractor]);
