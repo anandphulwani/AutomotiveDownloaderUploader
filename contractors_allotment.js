@@ -24,6 +24,7 @@ import {
 import { doAllotment } from './functions/allotment.js';
 import { printSectionSeperator } from './functions/others.js';
 import FolderToBeAllotted from './class/FolderToBeAllotted.js';
+import path from 'path';
 /* eslint-enable import/extensions */
 
 const debug = false;
@@ -105,10 +106,23 @@ if (!dealerDirectories.length > 0) {
 }
 
 dealerDirectories.sort((a, b) => {
-    if (a === b) {
+    const folderNameA = path.dirname(a).split(path.sep).pop();
+    const folderNameB = path.dirname(b).split(path.sep).pop();
+    // Compare folder names
+    if (folderNameA < folderNameB) return -1;
+    if (folderNameA > folderNameB) return 1;
+
+    // If folder names are equal, compare based on numerical part in basename
+    const regex = /\d+/;
+    const baseNameA = path.basename(a);
+    const baseNameB = path.basename(b);
+    const numberA = parseInt(baseNameA.match(regex)[0], 10);
+    const numberB = parseInt(baseNameB.match(regex)[0], 10);
+
+    if (numberA === numberB) {
         return 0;
     }
-    return a < b ? -1 : 1;
+    return numberA - numberB;
 });
 
 lgtf(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`);
