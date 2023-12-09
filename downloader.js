@@ -12,7 +12,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { getCredentialsForUsername, getAppDomain } from './functions/configsupportive.js';
+import { getCredentialsForUsername, getAppDomain, getLotConfigPropertiesValues } from './functions/configsupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
@@ -169,12 +169,10 @@ for (const usernameBookmark of allUsernamesBookmarks) {
         // eslint-disable-next-line no-restricted-syntax
         for (const dealerLevelBookmark of dealerLevelBookmarks) {
             const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
-            const minDealerFolders =
-                config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors *
-                Object.values(config.contractors).filter((contractor) => contractor.normalThreshold >= 0).length;
+            const { lotCfgMinDealerFolders, lotCfgImagesQty } = getLotConfigPropertiesValues(lotIndex);
             if (
-                (minDealerFolders === false || dealerFolderCntInLot >= minDealerFolders) &&
-                (config.lot[lotIndex - 1].imagesQty === 0 || imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty)
+                (lotCfgMinDealerFolders === undefined || dealerFolderCntInLot >= lotCfgMinDealerFolders) &&
+                (lotCfgImagesQty === undefined || imagesQtyInLot >= lotCfgImagesQty)
             ) {
                 if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
                     exec(
