@@ -2,7 +2,7 @@
 /* #region : Supporting functions */ /* #endregion */
 import chalk from 'chalk';
 import fs from 'fs';
-
+import path from 'path';
 import { exec } from 'child_process';
 import { keyInYN } from 'readline-sync';
 import cfonts from 'cfonts';
@@ -24,7 +24,6 @@ import {
 import { doAllotment } from './functions/allotment.js';
 import { printSectionSeperator } from './functions/others.js';
 import FolderToBeAllotted from './class/FolderToBeAllotted.js';
-import path from 'path';
 /* eslint-enable import/extensions */
 
 const debug = false;
