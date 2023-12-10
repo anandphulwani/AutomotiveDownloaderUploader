@@ -8,6 +8,7 @@ import {
     instanceRunDateFormatted,
     instanceRunDateTimeSeparated,
     instanceRunDateTimeWOMSSeparated,
+    instanceRunTime,
     instanceRunTimeWOMS,
 } from './datetime.js';
 import { getProjectLogsDirPath } from './projectpaths.js';
@@ -15,13 +16,35 @@ import { getProjectLogsDirPath } from './projectpaths.js';
 
 // TODO: Check why debug here is set to true.
 const debug = true;
+
+function getPrefixAcToProcess() {
+    const scriptName = path.basename(process.argv[1]);
+    if (scriptName === 'downloader.js') return 'downloader';
+    if (scriptName === 'uploader.js') return 'uploader';
+    if (scriptName === 'contractors_allotment.js') return 'allotment';
+    if (scriptName === 'contractors_folderTransferer.js') return 'folderTransferer';
+    if (scriptName === 'generateReport.js') return 'report';
+    return scriptName.replace(/\.[^/.]+$/, '');
+}
 /**
  *
  * Acquire a lock on `instanceRunLogFilePrefix` (without any extenstion) so as to avoid deletion
  * of logs files created by same prefix by the current instance itself.
  *
  */
-const instanceRunLogFilePrefix = path.join(getProjectLogsDirPath(), instanceRunDateFormatted, instanceRunDateTimeSeparated);
+const instanceRunLogFilePrefix = path.join(
+    getProjectLogsDirPath(),
+    instanceRunDateFormatted,
+    [
+        instanceRunTimeWOMS,
+        '-',
+        getPrefixAcToProcess(),
+        '(',
+        // Convert MS (milliseconds) to a unique string, so it is a shorter in the filename
+        parseInt(instanceRunTime.substring(instanceRunTime.length - 3), 10).toString(36),
+        ')',
+    ].join('')
+);
 const instanceRunLogFilePrefixDir = path.dirname(instanceRunLogFilePrefix);
 if (!fs.existsSync(instanceRunLogFilePrefixDir)) {
     fs.mkdirSync(instanceRunLogFilePrefixDir, { recursive: true });
