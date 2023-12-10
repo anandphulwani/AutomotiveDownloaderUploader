@@ -83,9 +83,16 @@ async function getCurrentUser(page) {
 
     if (logoutButtonSelectorExists) {
         const usernameSelector = '#bridge-bar-user-menu > div.bb-popover > div > section.bb-userdata > dl:nth-child(1) > dt.bb-userdatum__value';
-        await page.waitForSelector(usernameSelector, { timeout: 30000 });
-        const usernameHTML = await page.$eval(usernameSelector, (element) => element.innerHTML);
-        return usernameHTML.toLowerCase();
+        try {
+            await page.waitForSelector(usernameSelector, { timeout: 30000 });
+            const usernameHTML = await page.$eval(usernameSelector, (element) => element.innerHTML);
+            return usernameHTML.toLowerCase();
+        } catch (err) {
+            if (err.name === 'TimeoutError') {
+                return null;
+            }
+            throw err;
+        }
     }
     return null;
 }
