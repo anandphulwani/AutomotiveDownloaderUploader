@@ -16,6 +16,7 @@ import { getImagesFromContent } from './pageextraction.js';
 import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
 import { trimMultipleSpacesInMiddleIntoOne, allTrimString } from './stringformatting.js';
 import { writeFileWithComparingSameLinesWithOldContents } from './filesystem.js';
+import { printSectionSeperator } from './others.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -28,8 +29,12 @@ function reformatJSONString(contents) {
 
 async function downloadBookmarksFromSourceToProcessing() {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
-    attainLock(sourceBookmarkPath, 600000, true);
-    attainLock(processingBookmarkPathWithoutSync, 600000, true);
+    let initialSourceJSONString;
+    let initialLineCount;
+    let sourceJSONString;
+
+    attainLock(sourceBookmarkPath, undefined, true);
+    attainLock(processingBookmarkPathWithoutSync, undefined, true);
 
     try {
         // Read the contents of both JSON files into memory
@@ -41,20 +46,26 @@ async function downloadBookmarksFromSourceToProcessing() {
         const processingObj = JSON.parse(processingContents);
 
         // eslint-disable-next-line no-restricted-syntax
+        for (const key in sourceObj) {
+            if (key !== 'roots') {
+                delete sourceObj[key];
+            }
+        }
+        // eslint-disable-next-line no-restricted-syntax
         for (const key in sourceObj.roots) {
             if (key !== 'bookmark_bar') {
                 delete sourceObj.roots[key];
             }
         }
 
-        let sourceJSONString = JSON.stringify(sourceObj, null, 3);
+        sourceJSONString = JSON.stringify(sourceObj, null, 3);
         const processingJSONString = JSON.stringify(processingObj, null, 3);
 
-        const initalSourceJSONString = sourceJSONString;
-        const initalLineCount = sourceJSONString.split(/\r\n|\r|\n/).length;
+        initialSourceJSONString = sourceJSONString;
+        initialLineCount = sourceJSONString.trim().split(/\r\n|\r|\n/).length;
 
         /**
-         * Copying the names of bookmarks which are done
+         * Copying the names of bookmark urls which are downloaded
          */
         const downloadedRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
         const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
@@ -71,10 +82,7 @@ async function downloadBookmarksFromSourceToProcessing() {
                     const match = downloadedBookmarkBlockMatches[i];
 
                     if (match.split(/\r\n|\r|\n/).length > 15) {
-                        console.log(match);
-                        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-                        releaseLock(sourceBookmarkPath, 600000, true);
-                        process.exit(0);
+                        throw new Error(`Bookmarks URL Done Section: match's length is more than 15:\n ${match}`);
                     }
 
                     const guid = match.match(/"guid": "(.*?)"/)[1];
@@ -108,23 +116,15 @@ async function downloadBookmarksFromSourceToProcessing() {
                 }
             }
         }
-        sourceJSONString = JSON.parse(sourceJSONString);
-        sourceJSONString = removeChecksumFromBookmarksObj(sourceJSONString);
-        sourceJSONString = JSON.stringify(sourceJSONString, null, 3);
 
-        if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
-            console.log(initalSourceJSONString);
-            console.log(`${'-'.repeat(70)}`);
-            console.log(sourceJSONString);
-            console.log(`${'-'.repeat(70)}`);
-            console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
-            releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-            releaseLock(sourceBookmarkPath, 600000, true);
-            process.exit(0);
+        if (initialLineCount - sourceJSONString.trim().split(/\r\n|\r|\n/).length !== 0) {
+            throw new Error(
+                `Before Copying the names of bookmarks folders which are allotted: initialLineCount and sourceJSONStringLineCount is not the same:\n`
+            );
         }
 
         /**
-         * Copying the names of bookmarks folders which are done
+         * Copying the names of bookmarks folders which are allotted
          */
         const allotedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
         const allotedFolderRegexExpression = new RegExp(allotedFolderRegexString, 'g');
@@ -141,10 +141,7 @@ async function downloadBookmarksFromSourceToProcessing() {
                     const match = allotedFolderBookmarkBlockMatches[i];
 
                     if (match.split(/\r\n|\r|\n/).length > 9) {
-                        console.log(match);
-                        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-                        releaseLock(sourceBookmarkPath, 600000, true);
-                        process.exit(0);
+                        throw new Error(`Bookmarks Folders Allotted Section: match's length is more than 9:\n ${match}`);
                     }
                     const guid = match.match(/"guid": "(.*?)"/)[1];
                     // console.log(`Found bookmark with GUID: ${guid}`);
@@ -179,29 +176,24 @@ async function downloadBookmarksFromSourceToProcessing() {
                 }
             }
         }
-        sourceJSONString = JSON.parse(sourceJSONString);
-        sourceJSONString = removeChecksumFromBookmarksObj(sourceJSONString);
-        sourceJSONString = JSON.stringify(sourceJSONString, null, 3);
 
-        if (Math.abs(initalLineCount - sourceJSONString.split(/\r\n|\r|\n/).length) > 1) {
-            console.log(initalSourceJSONString);
-            console.log(`${'-'.repeat(70)}`);
-            console.log(sourceJSONString);
-            console.log(`${'-'.repeat(70)}`);
-            console.log(`initalLineCount: ${initalLineCount}, finalLineCount: ${sourceJSONString.split(/\r\n|\r|\n/).length}`);
-            releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-            releaseLock(sourceBookmarkPath, 600000, true);
-            process.exit(0);
+        if (initialLineCount - sourceJSONString.trim().split(/\r\n|\r|\n/).length !== 0) {
+            throw new Error(`Before writing bookmarks file: initialLineCount and writingLineCount is not the same:\n`);
         }
 
         console.log('Writing bookmarks file');
-        fs.writeFileSync(processingBookmarkPathWithoutSync, sourceJSONString);
-        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-        releaseLock(sourceBookmarkPath, 600000, true);
+        writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initialSourceJSONString);
+        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+        releaseLock(sourceBookmarkPath, undefined, true);
     } catch (err) {
+        console.log(initialSourceJSONString);
+        printSectionSeperator();
+        console.log(sourceJSONString);
+        printSectionSeperator();
+        console.log(`initialLineCount: ${initialLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
         console.log(`${err.message}`);
-        releaseLock(processingBookmarkPathWithoutSync, 600000, true);
-        releaseLock(sourceBookmarkPath, 600000, true);
+        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+        releaseLock(sourceBookmarkPath, undefined, true);
         process.exit(1);
     }
 }
@@ -271,7 +263,7 @@ function removeChecksumFromBookmarksObj(bookmarksObj) {
     return JSON.parse(jsonString);
 }
 
-function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, appendText, useLockingMechanism) {
+function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, appendText) {
     const elementsDetails = {
         name: {
             blockRegex: `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`,
@@ -287,9 +279,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         },
     };
     const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-    if (useLockingMechanism) {
-        attainLock(fileToOperateOn, undefined, true);
-    }
+    attainLock(fileToOperateOn, undefined, true);
     try {
         const fileContents = fs.readFileSync(fileToOperateOn, 'utf8');
 
@@ -330,7 +320,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
                 [
                     `${fileContents}\n${'-'.repeat(70)}`,
                     `${bookmarksFileText}\n${'-'.repeat(70)}`,
-                    `initalLineCount: ${fileContents.trim().split(/\r\n|\r|\n/).length}, finalLineCount: ${
+                    `initialLineCount: ${fileContents.trim().split(/\r\n|\r|\n/).length}, finalLineCount: ${
                         bookmarksFileText.split(/\r\n|\r|\n/).length
                     }`,
                 ].join('\n')
@@ -338,9 +328,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
             process.exit(1);
         }
         createBackupOfFile(fileToOperateOn, bookmarksFileText);
-        if (useLockingMechanism) {
-            releaseLock(fileToOperateOn, undefined, true);
-        }
+        releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         releaseLock(fileToOperateOn, undefined, true);
         lgs(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block: ${err.message}`);

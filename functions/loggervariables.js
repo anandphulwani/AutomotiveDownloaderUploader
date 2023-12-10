@@ -24,9 +24,11 @@ if (!fs.existsSync(instanceRunLogFilePrefix)) {
 if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
     // Stale for 12 hours
     /**
-     * This code is copied from attainLock as calling it here
-     * creates a cyclic dependency problem.
+     * This code is inner contents copied from `attainLock` function as
+     * calling `attainLock()` here directly creates a cyclic dependency problem.
      */
+    // ONPROJECTFINISH: Copy attainLock contents again, to incorporate the final changes in attainLock function if any.
+    // ONPROJECTFINISH: Also switching debug to false, and switching debug from config file.
 
     /* #region */
     try {

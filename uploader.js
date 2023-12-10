@@ -4,9 +4,9 @@ import path from 'path';
 import { URL } from 'url';
 
 /* eslint-disable import/extensions */
-import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
+import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc } from './functions/loggersupportive.js';
+import { lgw, lge, lgc, lgi } from './functions/loggersupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
@@ -36,6 +36,7 @@ import {
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
 import { attainLock, releaseLock } from './functions/locksupportive.js';
+import { moveFilesFromContractorsToUploadingZoneAndFinishingAccounting } from './functions/contractors_folderTransferersupportive.js';
 /* eslint-enable import/extensions */
 
 if (config.environment === 'production') {
@@ -55,7 +56,7 @@ printSectionSeperator();
 const readyToUpload = config.finisherProcessingFolders[1];
 
 const cuttingAccounting = config.cutterRecordKeepingFolders[0];
-const finishingAccounting = config.finisherRecordKeepingFolders[0];
+// const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
 const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
 let reportJSONObj;
@@ -75,7 +76,7 @@ try {
     process.exit(1);
 }
 
-const foldersToShift = [];
+let foldersToShift = [];
 const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
 
 // eslint-disable-next-line no-restricted-syntax
@@ -108,8 +109,9 @@ for (const finisher of finishers) {
     }
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const finisherReadyToUploadSubFolderAndFiles of unlockedFolders) {
-        const finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
+    for (let finisherReadyToUploadSubFolderAndFiles of unlockedFolders) {
+        let isOverwrite = false;
+        let finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
         const finisherReadyToUploadStat = fs.statSync(finisherReadyToUploadSubFolderPath);
         // Check ReadyToUpload item is a folder
         if (!finisherReadyToUploadStat.isDirectory()) {
@@ -119,8 +121,25 @@ for (const finisher of finishers) {
             // eslint-disable-next-line no-continue
             continue;
         }
+
+        // Check ReadyToUpload folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
+        if (/^[O|o][K|k]_AlreadyMoved_(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(finisherReadyToUploadSubFolderAndFiles)) {
+            const folderWithOkAlreadMovedRemoved = path.basename(finisherReadyToUploadSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
+            const newFinisherFinishingDoneSubFolderPath = `${path.dirname(finisherReadyToUploadSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
+            fs.renameSync(finisherReadyToUploadSubFolderPath, newFinisherFinishingDoneSubFolderPath);
+            finisherReadyToUploadSubFolderAndFiles = folderWithOkAlreadMovedRemoved;
+            finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
+            isOverwrite = true;
+        }
+
+        // Check ReadyToUpload folder has AlreadyMoved_ prefixed to it, if has ignore the folder
+        if (/^AlreadyMoved_.*$/.test(finisherReadyToUploadSubFolderAndFiles)) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+
         // Check ReadyToUpload folder matches the format
-        const regexToMatchFolderName = /^.* (([^\s]* )*)[^\s]+ \d{1,3} \((#\d{5})\)$/;
+        const regexToMatchFolderName = /^(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/;
         if (!regexToMatchFolderName.test(finisherReadyToUploadSubFolderAndFiles)) {
             lgw(
                 `Folder in ReadyToUpload but is not in a proper format, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
@@ -182,6 +201,7 @@ for (const finisher of finishers) {
             uniqueCode: uniqueCode,
             cuttingDoneBy: cuttingDoneBy,
             finisher: finisher,
+            isOverwrite: isOverwrite,
         });
     }
 }
@@ -200,63 +220,8 @@ foldersToShift.sort((a, b) => {
 // sleep(15);
 // console.log(foldersToShift);
 
-async function moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(isDryRun = true) {
-    let doesDestinationFolderAlreadyExists = false;
-    let hasMovingToUploadZonePrinted = false;
-    const foldersToShiftLength = foldersToShift.length;
-    for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
-        const { dealerImagesFolder, folderSize, uniqueCode, cuttingDoneBy, finisher } = foldersToShift[cnt];
-        // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system works properly.
-        const folderSizeAfter10Seconds = getFolderSizeInBytes(dealerImagesFolder);
-        if (folderSizeAfter10Seconds !== folderSize) {
-            foldersToShift.splice(foldersToShift[cnt]);
-        } else {
-            if (!isDryRun && !hasMovingToUploadZonePrinted) {
-                process.stdout.write(chalk.cyan('Moving folders to UploadingZone and FinishingAccounting: \n'));
-                hasMovingToUploadZonePrinted = true;
-            }
-            if (!isDryRun) {
-                const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
-                process.stdout.write(chalk.cyan(folderNameToPrint));
-                for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
-                    process.stdout.write(chalk.cyan(`.`));
-                }
-            }
-            const newUploadingZonePath = `${config.uploadingZonePath}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
-            const newFinishingAccountingZonePath = `${
-                config.contractorsRecordKeepingPath
-            }\\${finisher}_Acnt\\${finishingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
-            if (isDryRun) {
-                if (fs.existsSync(`${newFinishingAccountingZonePath}`)) {
-                    lge(`Folder: ${newFinishingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
-                    doesDestinationFolderAlreadyExists = true;
-                }
-                if (fs.existsSync(`${newUploadingZonePath}`)) {
-                    lge(`Folder: ${newUploadingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
-                    doesDestinationFolderAlreadyExists = true;
-                }
-            } else {
-                addUploadingToReport([path.basename(dealerImagesFolder), uniqueCode, cuttingDoneBy, finisher]);
-                createDirAndCopyFile(dealerImagesFolder, newFinishingAccountingZonePath);
-                createDirAndMoveFile(dealerImagesFolder, newUploadingZonePath);
-            }
-            if (!isDryRun) {
-                if (cnt !== foldersToShiftLength - 1) {
-                    process.stdout.write(chalk.cyan(`, `));
-                } else {
-                    process.stdout.write(chalk.cyan(`\n`));
-                }
-            }
-        }
-    }
-    return doesDestinationFolderAlreadyExists;
-}
-
-const doesDestinationFolderAlreadyExists = await moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(true);
-if (doesDestinationFolderAlreadyExists) {
-    process.exit(1);
-}
-await moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(false);
+foldersToShift = moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersToShift, true);
+moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersToShift, false);
 
 if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
     console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));

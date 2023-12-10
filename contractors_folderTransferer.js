@@ -4,14 +4,18 @@ import path from 'path';
 import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { currentTimeWOSSMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
+import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc } from './functions/loggersupportive.js';
+import { lgw, lge, lgc, lgi, lgif } from './functions/loggersupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
-import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes } from './functions/filesystem.js';
+import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes, removeDir } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
+import {
+    checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer,
+    moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting,
+} from './functions/contractors_folderTransferersupportive.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -60,10 +64,10 @@ import { printSectionSeperator } from './functions/others.js';
  *
  */
 try {
-    if (checkSync('contractors_folderTransferer.js', { stale: 43200000 })) {
+    if (checkSync('contractors_folderTransferer.js', { stale: 10000 })) {
         throw new Error('Already has lock');
     }
-    lockSync('contractors_folderTransferer.js', { stale: 43200000 });
+    lockSync('contractors_folderTransferer.js', { stale: 10000 });
 } catch (error) {
     process.exit(1);
 }
@@ -72,70 +76,19 @@ try {
 
 const cuttingDone = config.cutterProcessingFolders[0];
 const finishingBuffer = config.finisherProcessingFolders[0];
-// const readyToUpload = config.finisherProcessingFolders[1]
+// const readyToUpload = config.finisherProcessingFolders[1];
 
 const cuttingAccounting = config.cutterRecordKeepingFolders[0];
 // const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
-async function moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, isDryRun = true) {
-    let doesDestinationFolderAlreadyExists = false;
-    let hasMovingToUploadZonePrinted = false;
-    const foldersToShiftLength = foldersToShift.length;
-    for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
-        const { dealerImagesFolder, folderSize, cutter, cuttersFinisher } = foldersToShift[cnt];
-        // TODO: Removed the folderSizeAfter10Seconds functionality if the above locking system with the message `Folder in Cutter's CuttingDone locked, maybe a contractor working/moving it` works properly.
-        const folderSizeAfter10Seconds = getFolderSizeInBytes(dealerImagesFolder);
-        if (folderSizeAfter10Seconds !== folderSize) {
-            foldersToShift.splice(foldersToShift[cnt]);
-        } else {
-            if (!isDryRun && !hasMovingToUploadZonePrinted) {
-                process.stdout.write(chalk.cyan(`[${currentTimeWOSSMSFormatted()}] Moving folders to FinishingBuffer and CuttingAccounting: \n`));
-                hasMovingToUploadZonePrinted = true;
-            }
-            if (!isDryRun) {
-                const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
-                process.stdout.write(chalk.cyan(folderNameToPrint));
-                for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
-                    process.stdout.write(chalk.cyan(`.`));
-                }
-            }
-            const newFinishingBufferPath = `${
-                config.contractorsZonePath
-            }\\${cuttersFinisher}\\${instanceRunDateFormatted}\\${finishingBuffer}\\${path.basename(dealerImagesFolder)}`;
-            const newCuttingAccountingZonePath = `${
-                config.contractorsRecordKeepingPath
-            }\\${cutter}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${path.basename(dealerImagesFolder)}`;
-            if (isDryRun) {
-                if (fs.existsSync(`${newFinishingBufferPath}`)) {
-                    lge(`Folder: ${newFinishingBufferPath} already exists, cannot move ${dealerImagesFolder} to its location.`);
-                    doesDestinationFolderAlreadyExists = true;
-                }
-                if (fs.existsSync(`${newCuttingAccountingZonePath}`)) {
-                    lge(`Folder: ${newCuttingAccountingZonePath} already exists, cannot move ${dealerImagesFolder} to its location.`);
-                    doesDestinationFolderAlreadyExists = true;
-                }
-            } else {
-                createDirAndCopyFile(dealerImagesFolder, newCuttingAccountingZonePath);
-                createDirAndMoveFile(dealerImagesFolder, newFinishingBufferPath);
-            }
-            if (!isDryRun) {
-                if (cnt !== foldersToShiftLength - 1) {
-                    process.stdout.write(chalk.cyan(`, `));
-                } else {
-                    process.stdout.write(chalk.cyan(`\n`));
-                    printSectionSeperator();
-                }
-            }
-        }
-    }
-    return doesDestinationFolderAlreadyExists;
-}
+const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set()]; // Array of sets for the last three iterations
 
 // eslint-disable-next-line no-constant-condition
 while (true) {
+    const currentSetOfWarnings = new Set();
     createProcessingAndRecordKeepingFolders(instanceRunDateFormatted);
 
-    const foldersToShift = [];
+    let foldersToShift = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const cutter of Object.keys(config.contractors)) {
         const cuttersFinisher = config.contractors[cutter].finisher;
@@ -159,7 +112,7 @@ while (true) {
                     fs.renameSync(`${cutterCuttingDoneSubFolderPath} `, cutterCuttingDoneSubFolderPath.trim());
                     unlockedFolders.push(cutterCuttingDoneSubFolderAndFiles);
                 } catch (err) {
-                    lgw(
+                    currentSetOfWarnings.add(
                         `Folder in Cutter's CuttingDone locked, maybe a contractor working/moving it, Filename: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                     );
                 }
@@ -167,20 +120,38 @@ while (true) {
         }
 
         // eslint-disable-next-line no-restricted-syntax
-        for (const cutterCuttingDoneSubFolderAndFiles of unlockedFolders) {
-            const cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
+        for (let cutterCuttingDoneSubFolderAndFiles of unlockedFolders) {
+            let isOverwrite = false;
+            let cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
             const cutterCuttingDoneStat = fs.statSync(cutterCuttingDoneSubFolderPath);
-            // Check ReadyToUpload item is a folder
+            // Check CuttingDone item is a folder
             if (!cutterCuttingDoneStat.isDirectory()) {
-                lgw(
+                currentSetOfWarnings.add(
                     `Found a file in Cutter's CuttingDone directory, Filename: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                 );
                 // eslint-disable-next-line no-continue
                 continue;
             }
-            // Check ReadyToUpload folder matches the format
-            if (!/^.* (([^\s]* )*)[^\s]+ \d{1,3} \(#\d{5}\)$/.test(cutterCuttingDoneSubFolderAndFiles)) {
-                lgw(
+
+            // Check CuttingDone folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
+            if (/^[O|o][K|k]_AlreadyMoved_(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+                const folderWithOkAlreadMovedRemoved = path.basename(cutterCuttingDoneSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
+                const newCutterCuttingDoneSubFolderPath = `${path.dirname(cutterCuttingDoneSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
+                fs.renameSync(cutterCuttingDoneSubFolderPath, newCutterCuttingDoneSubFolderPath);
+                cutterCuttingDoneSubFolderAndFiles = folderWithOkAlreadMovedRemoved;
+                cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
+                isOverwrite = true;
+            }
+
+            // Check CuttingDone folder has AlreadyMoved_ prefixed to it, if has ignore the folder
+            if (/^AlreadyMoved_.*$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+
+            // Check CuttingDone folder matches the format
+            if (!/^(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+                currentSetOfWarnings.add(
                     `Folder in CuttingDone but is not in a proper format, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                 );
                 // eslint-disable-next-line no-continue
@@ -188,9 +159,9 @@ while (true) {
             }
             const numberOfImagesAcToFolderName = parseInt(getNumberOfImagesFromAllottedDealerNumberFolder(cutterCuttingDoneSubFolderAndFiles), 10);
             const numberOfImagesAcToFileCount = getFileCountRecursively(cutterCuttingDoneSubFolderPath);
-            // Check ReadyToUpload folder filecount matches as mentioned in the folder
+            // Check CuttingDone folder filecount matches as mentioned in the folder
             if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
-                lgw(
+                currentSetOfWarnings.add(
                     `Folder in CuttingDone but images quantity does not match, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
                 );
                 // eslint-disable-next-line no-continue
@@ -202,6 +173,7 @@ while (true) {
                 folderSize: folderSize,
                 cutter: cutter,
                 cuttersFinisher: cuttersFinisher,
+                isOverwrite: isOverwrite,
             });
         }
     }
@@ -220,10 +192,38 @@ while (true) {
     // sleep(15);
     // console.log(foldersToShift);
 
-    const doesDestinationFolderAlreadyExists = await moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, true);
-    if (doesDestinationFolderAlreadyExists) {
-        process.exit(1);
+    historyOfWarnings.shift();
+    historyOfWarnings.push(currentSetOfWarnings);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const warning of currentSetOfWarnings) {
+        if (
+            historyOfWarnings[0].has(warning) &&
+            historyOfWarnings[1].has(warning) &&
+            historyOfWarnings[2].has(warning) &&
+            historyOfWarnings[3].has(warning) &&
+            historyOfWarnings[4].has(warning) &&
+            historyOfWarnings[5].has(warning) &&
+            historyOfWarnings[6].has(warning) &&
+            historyOfWarnings[7].has(warning) &&
+            historyOfWarnings[8].has(warning) &&
+            historyOfWarnings[9].has(warning)
+        ) {
+            lgw(warning);
+            historyOfWarnings[0].delete(warning);
+            historyOfWarnings[1].delete(warning);
+            historyOfWarnings[2].delete(warning);
+            historyOfWarnings[3].delete(warning);
+            historyOfWarnings[4].delete(warning);
+            historyOfWarnings[5].delete(warning);
+            historyOfWarnings[6].delete(warning);
+            historyOfWarnings[7].delete(warning);
+            historyOfWarnings[8].delete(warning);
+            historyOfWarnings[9].delete(warning);
+        }
     }
-    await moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, false);
+
+    foldersToShift = moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, true);
+    moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, false);
+    checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer();
     await waitForSeconds(30);
 }

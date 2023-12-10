@@ -164,22 +164,11 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
         recursiveDelete = true;
     }
     /* #endregion */
-    fs.rmSync(
-        dirPath,
-        {
-            recursive: recursiveDelete,
-            maxRetries: 120,
-            retryDelay: 500,
-        },
-        (error) => {
-            if (error) {
-                console.log(chalk.white.bgRed.bold(`Unable to remove a directory : ${dirPath}`));
-                process.exit(1);
-            } else {
-                debug ? console.log(`Folder path removed successfully : ${dirPath}`) : '';
-            }
-        }
-    );
+    fs.rmSync(dirPath, {
+        recursive: recursiveDelete,
+        maxRetries: 120,
+        retryDelay: 500,
+    });
     debug ? console.log('Removing Directory : Done') : '';
 }
 

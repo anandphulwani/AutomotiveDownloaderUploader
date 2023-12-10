@@ -64,8 +64,6 @@ async function doAllotment(
         if (allotmentSystem === 'allotmentByMinimumDealerFoldersForEachContractors') {
             minDealerFolders = lotsMinimumDealerFoldersForEachContractors * contractorsNames.length;
         }
-        const { processingBookmarkPathWithoutSync } = config;
-        attainLock(processingBookmarkPathWithoutSync, undefined, true);
         const allotmentDetailsForReport = [];
 
         for (
@@ -215,7 +213,6 @@ async function doAllotment(
             // console.log(`imagesQtyAllotedInCurrentLot: ${imagesQtyAllotedInCurrentLot}, contractors after folder ${foldersAlloted} allotted: `);
             // console.log(contractors);
         }
-        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         if (!isDryRun) {
             addAllotmentToReport(allotmentDetailsForReport);
         }
@@ -226,7 +223,7 @@ async function doAllotment(
     ) {
         console.log(
             chalk.white.bgRed.bold(
-                `ERROR: While alloting by 'allotmentByImagesQty', found no of images alloted in the curretn lot (imagesQtyAllotedInCurrentLot): ${imagesQtyAllotedInCurrentLot} exceeded lot's image quantity (lotsImagesQty): ${lotsImagesQty}.` +
+                `ERROR: While alloting by 'allotmentByImagesQty', found no of images alloted in the current lot (imagesQtyAllotedInCurrentLot): ${imagesQtyAllotedInCurrentLot} exceeded lot's image quantity (lotsImagesQty): ${lotsImagesQty}.` +
                     `\nPossible chances of manual intervention of adding folder or images by the user in the lot folder`
             )
         );
