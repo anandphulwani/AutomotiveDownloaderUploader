@@ -83,6 +83,7 @@ const cuttingDone = config.cutterProcessingFolders[0];
 
 const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set()]; // Array of sets for the last three iterations
 
+let lastLockTime = Date.now();
 // eslint-disable-next-line no-constant-condition
 while (true) {
     const currentSetOfWarnings = new Set();
@@ -227,5 +228,17 @@ while (true) {
     foldersToShift = moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, true);
     moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, false);
     checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer();
+
+    /**
+     * Check if downloader and uploader is not running for 2 hours,
+     * if yes then exit the script
+     */
+    const downloaderLocked = checkSync('downloader.js', { stale: 15000 });
+    const uploaderLocked = checkSync('uploader.js', { stale: 15000 });
+    if (downloaderLocked && uploaderLocked) {
+        lastLockTime = Date.now();
+    } else if (Date.now() - lastLockTime > 2 * 60 * 60 * 1000 /** 2 hours in milliseconds */) {
+        break;
+    }
     await waitForSeconds(30);
 }
