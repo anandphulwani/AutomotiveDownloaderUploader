@@ -258,8 +258,6 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
             blockRegex: `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`,
             elementRegex: `"name": "(.*)"`,
             elementSubstitutionValue: `"name": "$1 |#| ${appendText}"`,
-            elementAlreadySubstituedCheckRegex: `"name": .* \\|#\\| .*`,
-            elementAlreadySubstituedSubstitutionValue: `"name": "$1,${appendText}"`,
         },
         foldername: {
             blockRegex: `[ ]*"date_added"[^\\{\\}\\]\\[]*?"guid": "${guid}",[^\\{\\}\\]\\[]*?"type": "folder"`,
@@ -291,13 +289,16 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         }
         const bookmarkBlockText = bookmarksFileText.match(blockRegexExpression)[0];
 
-        const elementAlreadySubstituedCheckRegexExpression = new RegExp(elementsDetails[element].elementAlreadySubstituedCheckRegex, 'g');
-        const nameRegexExpression = new RegExp(elementsDetails[element].elementRegex, 'g');
         let bookmarkBlockNewText;
-        if (elementAlreadySubstituedCheckRegexExpression.test(bookmarkBlockText)) {
-            bookmarkBlockNewText = bookmarkBlockText.replace(nameRegexExpression, elementsDetails[element].elementAlreadySubstituedSubstitutionValue);
-        } else {
-            bookmarkBlockNewText = bookmarkBlockText.replace(nameRegexExpression, elementsDetails[element].elementSubstitutionValue);
+        const regexExpression = new RegExp(elementsDetails[element].elementRegex, 'g');
+        if (elementsDetails[element].elementAlreadySubstituedCheckRegex) {
+            const elementAlreadySubstituedCheckRegexExpression = new RegExp(elementsDetails[element].elementAlreadySubstituedCheckRegex, 'g');
+            if (elementAlreadySubstituedCheckRegexExpression.test(bookmarkBlockText)) {
+                bookmarkBlockNewText = bookmarkBlockText.replace(regexExpression, elementsDetails[element].elementAlreadySubstituedSubstitutionValue);
+            }
+        }
+        if (bookmarkBlockNewText === undefined) {
+            bookmarkBlockNewText = bookmarkBlockText.replace(regexExpression, elementsDetails[element].elementSubstitutionValue);
         }
 
         bookmarksFileText = bookmarksFileText.replace(bookmarkBlockText, bookmarkBlockNewText);

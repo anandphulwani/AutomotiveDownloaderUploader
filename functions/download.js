@@ -66,6 +66,7 @@ async function downloadFileAndCompareWithChecksum(
                 hashSum.update(fileBuffer);
                 if (checksumOfFile === hashSum.digest('hex')) {
                     let filePath = file.path;
+                    lgvf('============================================BLOCK START============================================');
                     if (isSingleImage) {
                         /**
                          * If it's a single image, then get the VIN Number from the path name, and replace the filename
@@ -75,11 +76,23 @@ async function downloadFileAndCompareWithChecksum(
                          * so that the file can be moved without the VINNumber as directory.
                          */
                         const newFilePath = `${path.dirname(filePath)}/${path.basename(destinationPath)}${path.extname(path.basename(filePath))}`;
+                        lgvf(`Mod newFilePath: ${newFilePath}`);
                         destinationPath = `${path.dirname(destinationPath)}/`;
+                        lgvf(`Mod destinationPath: ${destinationPath}`);
+                        lgvf(`does filePath Exists: ${fs.existsSync(filePath)}`);
                         moveDirOrFile(filePath, newFilePath, true, debug);
                         filePath = newFilePath;
+                        lgvf(`Exit filePath: ${filePath}`);
+                        lgvf('==============IS SINGLE IMAGE END==============');
                     }
+                    lgvf('==============OUTSIDE IF BLOCK START==============');
+                    lgvf(`Original filePath: ${filePath}`);
+                    lgvf(`Original tempPath: ${tempPath}/`);
+                    lgvf(`Original destinationPath: ${destinationPath}`);
+                    lgvf(`does filePath Exists: ${fs.existsSync(filePath)}`);
                     createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, true, debug);
+                    lgvf('==============OUTSIDE IF BLOCK END==============');
+                    lgvf('============================================BLOCK END============================================');
                     debug
                         ? lgd(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`, Color.green)
                         : lgi(
