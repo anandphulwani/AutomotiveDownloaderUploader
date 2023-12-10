@@ -149,8 +149,8 @@ for (const usernameBookmark of allUsernamesBookmarks) {
 }
 
 // try{
+let lotIndex = LotLastIndex;
 (async () => {
-    let lotIndex = LotLastIndex;
     let dealerFolderCntInLot = 0;
     let imagesQtyInLot = 0;
 
@@ -257,18 +257,19 @@ for (const usernameBookmark of allUsernamesBookmarks) {
             }
         }
     }
-    if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
-        if (!keyInYN('Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?')) {
-            exec(
-                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
-            );
-        }
-    }
     if (typeof browser !== 'boolean') {
         lgi('Waiting for the browser to close, in order to continue.');
         await browser.close();
     }
 })();
+
+if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(`lotIndex`, 2)}`)) {
+    if (!keyInYN('Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?')) {
+        exec(
+            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
+        );
+    }
+}
 // TODO: Enable this error catching, and copy it in the uploading section as well
 // } catch (error)
 // {
