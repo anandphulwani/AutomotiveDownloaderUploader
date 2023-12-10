@@ -18,6 +18,7 @@ import { writeFileWithComparingSameLinesWithOldContents } from './filesystem.js'
 import { printSectionSeperator } from './others.js';
 import Color from '../class/Colors.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
+import LineSeparator from '../class/LineSeparator.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -29,6 +30,7 @@ function reformatJSONString(contents) {
 }
 
 async function downloadBookmarksFromSourceToProcessing(debug = false) {
+    lgi(`Fetching bookmarks from the source: `, LineSeparator.false);
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
     let initialSourceJSONString;
     let initialLineCount;
@@ -36,12 +38,14 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
 
     attainLock(sourceBookmarkPath, undefined, true);
     attainLock(processingBookmarkPathWithoutSync, undefined, true);
+    lgi(`01:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
     try {
         // Read the contents of both JSON files into memory
         const sourceContents = fs.readFileSync(sourceBookmarkPath, 'utf8');
         const processingContents = fs.readFileSync(processingBookmarkPathWithoutSync, 'utf8');
 
+        lgi(`02:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
         // Parse the contents of both JSON files into JavaScript objects
         const sourceObj = JSON.parse(sourceContents);
         const processingObj = JSON.parse(processingContents);
@@ -64,6 +68,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
 
         initialSourceJSONString = sourceJSONString;
         initialLineCount = sourceJSONString.trim().split(/\r\n|\r|\n/).length;
+        lgi(`03:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
         /**
          * Copying the names of bookmark urls which are downloaded
@@ -118,6 +123,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                 `Before Copying the names of bookmarks folders which are allotted: initialLineCount and sourceJSONStringLineCount is not the same:\n`
             );
         }
+        lgi(`04:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
         /**
          * Copying the names of bookmarks folders which are allotted
@@ -169,11 +175,13 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         if (initialLineCount - sourceJSONString.trim().split(/\r\n|\r|\n/).length !== 0) {
             throw new Error(`Before writing bookmarks file: initialLineCount and writingLineCount is not the same:\n`);
         }
+        lgi(`05:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
         debug ? lgd('Writing bookmarks file') : null;
         writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initialSourceJSONString);
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         releaseLock(sourceBookmarkPath, undefined, true);
+        lgi(`06:${logSymbols.success} `, LoggingPrefix.false);
     } catch (err) {
         lgu(initialSourceJSONString);
         printSectionSeperator();
