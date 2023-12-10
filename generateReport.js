@@ -995,6 +995,13 @@ for (const typeOfExcel of typesOfExcel) {
             xlsx.utils.book_append_sheet(verticalDealerListAndSumWorkbook, verticalDealerListAndSumWorksheet, 'Sheet1');
             xlsx.writeFile(verticalDealerListAndSumWorkbook, verticalDealerListAndSumExcelFullPath, { sheetStubs: true });
         }
+
+        if (typeOfExcel === 'merged') {
+            if (!fs.existsSync(config.mergedReportCopyPath)) {
+                makeDir(config.mergedReportCopyPath);
+            }
+            copyDirOrFile(excelFullPath, config.mergedReportCopyPath, true);
+        }
     }
     // eslint-disable-next-line no-nested-ternary
     // isIndividualOrMerged = isIndividualOrMerged === 'individual' ? 'merged' : isIndividualOrMerged === 'merged' ? false : null;
