@@ -265,6 +265,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
         }
     }
     if (typeof browser !== 'boolean') {
+        lgi('Waiting for the browser to close, in order to continue.');
         await browser.close();
     }
 })();
