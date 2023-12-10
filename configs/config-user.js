@@ -52,11 +52,11 @@ const configUser = {
     // mergedReportCopyPath: '.\\datastore\\Reports\\mergedcopy',
     automaticClickSaveButtonOnUpload: true,
     credentials: [
-        {
-            username: 'dinesharora80@gmail.com',
-            password: 'kunsh123',
-            credentialsblockSHA1: '',
-        },
+        // {
+        //     username: 'dinesharora80@gmail.com',
+        //     password: 'kunsh123',
+        //     credentialsblockSHA1: '',
+        // },
         {
             username: 'cute996@gmail.com',
             password: 'hello*123',
