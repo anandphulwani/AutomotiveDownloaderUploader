@@ -932,7 +932,6 @@ for (const typeOfExcel of typesOfExcel) {
             verticalDealerListAndSumWorksheet['!cols'] = [];
 
             const totalSumCellAddress = xlsx.utils.encode_cell({ r: transposedData.length - 1, c: 3 });
-            console.log(totalSumCellAddress);
             xlsx.utils.sheet_add_json(worksheet, [{ text: '' }], { origin: totalSumCellAddress, skipHeader: true });
 
             const dealerTotalRangeFrom = xlsx.utils.encode_cell({ r: 1, c: 3 });

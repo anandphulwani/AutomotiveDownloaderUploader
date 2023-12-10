@@ -36,7 +36,7 @@ import {
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
 import { attainLock, releaseLock } from './functions/locksupportive.js';
-import { moveFilesFromContractorsToUploadingZoneAndFinishingAccounting } from './functions/contractors_folderTransferersupportive.js';
+import { moveFilesFromSourceToDestinationAndAccounting } from './functions/contractors_folderTransferersupportive.js';
 /* eslint-enable import/extensions */
 
 if (config.environment === 'production') {
@@ -159,17 +159,17 @@ for (const finisher of finishers) {
         }
         const matches = finisherReadyToUploadSubFolderAndFiles.match(regexToMatchFolderName);
         const uniqueCode = matches[matches.length - 1];
-        let cuttingDoneBy = null;
+        let cutter = null;
         // eslint-disable-next-line no-restricted-syntax
         for (const contractorInSubLoop of Object.keys(config.contractors)) {
             const contractorDoneSubFolderDir = `${config.contractorsRecordKeepingPath}\\${contractorInSubLoop}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${finisherReadyToUploadSubFolderAndFiles}`;
             // const contractorDoneSubFolderDir = `${config.contractorsZonePath}\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\000_Done\\${contractorReadyToUploadSubFolderAndFiles}`;
             if (fs.existsSync(contractorDoneSubFolderDir)) {
-                cuttingDoneBy = contractorInSubLoop;
+                cutter = contractorInSubLoop;
                 break;
             }
         }
-        if (cuttingDoneBy == null) {
+        if (cutter == null) {
             lgw(
                 `Folder present in 'ReadyToUpload' but not present in 'CuttingAccounting' folder for reporting, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
             );
@@ -199,7 +199,7 @@ for (const finisher of finishers) {
             dealerImagesFolder: finisherReadyToUploadSubFolderPath,
             folderSize: folderSize,
             uniqueCode: uniqueCode,
-            cuttingDoneBy: cuttingDoneBy,
+            cutter: cutter,
             finisher: finisher,
             isOverwrite: isOverwrite,
         });
@@ -220,8 +220,8 @@ foldersToShift.sort((a, b) => {
 // sleep(15);
 // console.log(foldersToShift);
 
-foldersToShift = moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersToShift, true);
-moveFilesFromContractorsToUploadingZoneAndFinishingAccounting(foldersToShift, false);
+foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
+moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
 
 if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
     console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));

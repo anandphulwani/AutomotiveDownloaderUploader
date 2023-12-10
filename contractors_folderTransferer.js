@@ -14,7 +14,7 @@ import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import {
     checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer,
-    moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting,
+    moveFilesFromSourceToDestinationAndAccounting,
 } from './functions/contractors_folderTransferersupportive.js';
 /* eslint-enable import/extensions */
 
@@ -91,7 +91,6 @@ while (true) {
     let foldersToShift = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const cutter of Object.keys(config.contractors)) {
-        const cuttersFinisher = config.contractors[cutter].finisher;
         const cutterCuttingDoneDir = `${config.contractorsZonePath}\\${cutter}\\${instanceRunDateFormatted}\\${cuttingDone}`;
         // Check CuttingDone folder exists.
         if (!fs.existsSync(cutterCuttingDoneDir)) {
@@ -172,7 +171,6 @@ while (true) {
                 dealerImagesFolder: cutterCuttingDoneSubFolderPath,
                 folderSize: folderSize,
                 cutter: cutter,
-                cuttersFinisher: cuttersFinisher,
                 isOverwrite: isOverwrite,
             });
         }
@@ -222,8 +220,8 @@ while (true) {
         }
     }
 
-    foldersToShift = moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, true);
-    moveFilesFromCuttingDoneToFinishingBufferCuttingAccounting(foldersToShift, false);
+    foldersToShift = moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, true);
+    moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, false);
     checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer();
     await waitForSeconds(30);
 }
