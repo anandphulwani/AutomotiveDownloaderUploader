@@ -27,7 +27,8 @@ async function checkTimeWithNTP() {
     lgi('Check if time is in sync with online NTP servers.: Executing.');
     const timeSync = NtpTimeSync.getInstance();
     await timeSync.getTime().then((result) => {
-        lgi(`Current System time: ${new Date()},\nReal time (NTP Servers): ${result.now}`);
+        lgi(`Current System time: ${new Date()},`);
+        lgi(`Real time (NTP Servers): ${result.now}`);
         const offsetInSeconds = Math.abs(Math.round(result.offset / 1000));
         if (offsetInSeconds > config.timeOffsetInMinutesToAvoid * 60) {
             lge(
