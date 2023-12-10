@@ -14,6 +14,7 @@ const configDevelopment = {
     contractorsZonePath: '.\\datastore\\ContractorsZone',
     contractorsRecordKeepingPath: '.\\datastore\\ContractorsRecordKeeping',
     sourceBookmarkPath: '.\\datastore\\Bookmarks_Source',
+    mergedReportCopyPath: '.\\datastore\\Reports\\mergedcopy',
 };
 
 // eslint-disable-next-line import/prefer-default-export

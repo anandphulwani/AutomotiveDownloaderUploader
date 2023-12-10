@@ -71,6 +71,7 @@ const configBasic = {
     recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
     lockingBackupsZonePath: '.\\datastore\\LockingBackupsZone',
     reportsPath: '.\\datastore\\Reports',
+    mergedReportCopyPath: '.\\datastore\\Reports\\mergedcopy',
     automaticClickSaveButtonOnUpload: true,
     cutterProcessingFolders: ['001_CuttingDone'], // The index of this array are used to detect the folder types, so check before you change
     cutterRecordKeepingFolders: ['002_CuttingAccounting'], // The index of this array are used to detect the folder types, so check before you change

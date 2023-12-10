@@ -49,6 +49,7 @@ const configUser = {
     // recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
     // lockingBackupsZonePath: '.\\datastore\\LockingBackupsZone',
     // reportsPath: '.\\datastore\\Reports',
+    // mergedReportCopyPath: '.\\datastore\\Reports\\mergedcopy',
     automaticClickSaveButtonOnUpload: true,
     credentials: [
         {
