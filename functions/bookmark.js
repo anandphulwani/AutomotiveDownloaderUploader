@@ -8,8 +8,7 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { lgc, lgb } from './loggersupportive.js';
-import { attainLock, releaseLock } from './locksupportive.js';
+import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh, lgd } from './loggerandlocksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
@@ -17,6 +16,8 @@ import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js
 import { trimMultipleSpacesInMiddleIntoOne, allTrimString } from './stringformatting.js';
 import { writeFileWithComparingSameLinesWithOldContents } from './filesystem.js';
 import { printSectionSeperator } from './others.js';
+import Color from '../class/Colors.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -27,7 +28,7 @@ function reformatJSONString(contents) {
     return JSONString;
 }
 
-async function downloadBookmarksFromSourceToProcessing() {
+async function downloadBookmarksFromSourceToProcessing(debug = false) {
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
     let initialSourceJSONString;
     let initialLineCount;
@@ -70,11 +71,8 @@ async function downloadBookmarksFromSourceToProcessing() {
         const downloadedRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
         const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
         if (downloadedRegexExpression.test(processingJSONString)) {
-            // lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 1');
-            // process.exit(1);
-
             const downloadedBookmarkBlockMatches = processingJSONString.match(downloadedRegexExpression);
-            console.log(`Found downloadedBookmarkBlockMatches: ${downloadedBookmarkBlockMatches.length}`);
+            debug ? lgd(`Found downloadedBookmarkBlockMatches: ${downloadedBookmarkBlockMatches.length}`) : null;
 
             if (downloadedBookmarkBlockMatches !== null) {
                 const doneBookmarksInSource = {};
@@ -86,10 +84,10 @@ async function downloadBookmarksFromSourceToProcessing() {
                     }
 
                     const guid = match.match(/"guid": "(.*?)"/)[1];
-                    // console.log(`Found bookmark with GUID: ${guid}`);
+                    debug ? lgd(`Found bookmark with GUID: ${guid}`) : null;
                     doneBookmarksInSource[guid] = match;
                 }
-                console.log(`Total doneBookmarksInSource: ${Object.keys(doneBookmarksInSource).length}`);
+                debug ? lgd(`Total doneBookmarksInSource: ${Object.keys(doneBookmarksInSource).length}`) : null;
 
                 const doneBookmarksInSourceKeys = Object.keys(doneBookmarksInSource);
                 for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
@@ -99,8 +97,6 @@ async function downloadBookmarksFromSourceToProcessing() {
                     const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
 
                     if (GUIDRegexExpression.test(sourceJSONString)) {
-                        // lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 2');
-                        // process.exit(1);
                         const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
                         if (GUIDBookmarkBlockMatches !== null) {
                             const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
@@ -109,7 +105,7 @@ async function downloadBookmarksFromSourceToProcessing() {
                                 /("name": ")(.*?)( \|#\|.*")/,
                                 `$1${nameInGUIDMatch}$3`
                             );
-                            // console.log(`Doing replacement for GUID: ${guid}`);
+                            debug ? lgd(`Doing replacement for GUID: ${guid}`) : null;
                             sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarksInSource[guid]);
                         }
                     }
@@ -126,25 +122,21 @@ async function downloadBookmarksFromSourceToProcessing() {
         /**
          * Copying the names of bookmarks folders which are allotted
          */
-        const allotedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
-        const allotedFolderRegexExpression = new RegExp(allotedFolderRegexString, 'g');
-        if (allotedFolderRegexExpression.test(processingJSONString)) {
-            // lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 3');
-            // process.exit(1);
-
-            const allotedFolderBookmarkBlockMatches = processingJSONString.match(allotedFolderRegexExpression);
-
-            if (allotedFolderBookmarkBlockMatches !== null) {
+        const allottedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
+        const allottedFolderRegexExpression = new RegExp(allottedFolderRegexString, 'g');
+        if (allottedFolderRegexExpression.test(processingJSONString)) {
+            const allottedFolderBookmarkBlockMatches = processingJSONString.match(allottedFolderRegexExpression);
+            if (allottedFolderBookmarkBlockMatches !== null) {
                 const doneBookmarkFoldersInSource = {};
-                // allotedFolderBookmarkBlockMatches.forEach((match) => {
-                for (let i = 0; i < allotedFolderBookmarkBlockMatches.length; i++) {
-                    const match = allotedFolderBookmarkBlockMatches[i];
+                // allottedFolderBookmarkBlockMatches.forEach((match) => {
+                for (let i = 0; i < allottedFolderBookmarkBlockMatches.length; i++) {
+                    const match = allottedFolderBookmarkBlockMatches[i];
 
                     if (match.split(/\r\n|\r|\n/).length > 9) {
                         throw new Error(`Bookmarks Folders Allotted Section: match's length is more than 9:\n ${match}`);
                     }
                     const guid = match.match(/"guid": "(.*?)"/)[1];
-                    // console.log(`Found bookmark with GUID: ${guid}`);
+                    debug ? lgd(`Found bookmark with GUID: ${guid}`) : null;
                     doneBookmarkFoldersInSource[guid] = match;
                 }
                 // });
@@ -156,23 +148,20 @@ async function downloadBookmarksFromSourceToProcessing() {
                     const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
 
                     if (GUIDRegexExpression.test(sourceJSONString)) {
-                        // lgc('Unable to match regex for fn downloadBookmarksFromSourceToProcessing() Block 4');
-                        // process.exit(1);
-
                         const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
                         if (GUIDBookmarkBlockMatches !== null) {
                             const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
                             const nameInGUIDMatch = GUIDBookmarkBlockMatch.match(/"name": "(.*?)"/)[1];
-                            // console.log(doneBookmarkFoldersInSource[guid]);
+                            debug ? lgd(doneBookmarkFoldersInSource[guid]) : null;
                             doneBookmarkFoldersInSource[guid] = doneBookmarkFoldersInSource[guid].replace(
                                 /("name": ")(.*?)( \|#\|.*")/,
                                 `$1${nameInGUIDMatch}$3`
                             );
-                            // console.log(doneBookmarkFoldersInSource[guid]);
+                            debug ? lgd(doneBookmarkFoldersInSource[guid]) : null;
                             sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarkFoldersInSource[guid]);
                         }
                     }
-                    // console.log(guid, doneBookmarksInSource[guid]);
+                    debug ? lgd(`${guid}, ${doneBookmarkFoldersInSource[guid]}`) : null;
                 }
             }
         }
@@ -181,17 +170,17 @@ async function downloadBookmarksFromSourceToProcessing() {
             throw new Error(`Before writing bookmarks file: initialLineCount and writingLineCount is not the same:\n`);
         }
 
-        console.log('Writing bookmarks file');
+        debug ? lgd('Writing bookmarks file') : null;
         writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initialSourceJSONString);
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         releaseLock(sourceBookmarkPath, undefined, true);
     } catch (err) {
-        console.log(initialSourceJSONString);
+        lgu(initialSourceJSONString);
         printSectionSeperator();
-        console.log(sourceJSONString);
+        lgu(sourceJSONString);
         printSectionSeperator();
-        console.log(`initialLineCount: ${initialLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
-        console.log(`${err.message}`);
+        lgu(`initialLineCount: ${initialLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
+        lgc(err);
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         releaseLock(sourceBookmarkPath, undefined, true);
         process.exit(1);
@@ -209,7 +198,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         return false;
     });
     if (ignoreBookmarkURLObjectFindResults !== undefined) {
-        console.log(chalk.magenta(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`));
+        lgh(`\t${name} : ${URL} : ${ignoreBookmarkURLObjectFindResults.ignoreMesgInConsole}`, Color.magenta);
         return {
             result: false,
             bookmarkAppendMesg: ignoreBookmarkURLObjectFindResults.ignoreMesgInBookmark,
@@ -219,7 +208,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
     }
 
     const startingRow = await getRowPosOnTerminal();
-    process.stdout.write(chalk.cyan(`\t${name} : ${URL}\n`));
+    lgi(`\t${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
 
@@ -229,7 +218,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)\n`));
+        lgh(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)`);
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Duplicate, Already downloaded)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }
@@ -243,7 +232,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
+        lgh(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
         await waitForSeconds(5);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Does not Exist)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
     }
@@ -289,11 +278,11 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
 
         const blockRegexExpression = new RegExp(elementsDetails[element].blockRegex, 'g');
         if (!blockRegexExpression.test(bookmarksFileText)) {
-            lgb(
+            lgu(
                 [
                     'Unable to match regex for fn replaceBookmarksElementByGUIDAndWriteToBookmarksFile()',
                     elementsDetails[element].blockRegex,
-                    '-'.repeat(70) + bookmarksFileText + '-'.repeat(70),
+                    '-'.repeat(120) + bookmarksFileText + '-'.repeat(120),
                 ].join('\n')
             );
             process.exit(1);
@@ -316,10 +305,10 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         bookmarksFileText = reformatJSONString(bookmarksFileText);
         const returnVal = writeFileWithComparingSameLinesWithOldContents(fileToOperateOn, bookmarksFileText, fileContents);
         if (!returnVal) {
-            lgb(
+            lgu(
                 [
-                    `${fileContents}\n${'-'.repeat(70)}`,
-                    `${bookmarksFileText}\n${'-'.repeat(70)}`,
+                    `${fileContents}\n${'-'.repeat(120)}`,
+                    `${bookmarksFileText}\n${'-'.repeat(120)}`,
                     `initialLineCount: ${fileContents.trim().split(/\r\n|\r|\n/).length}, finalLineCount: ${
                         bookmarksFileText.split(/\r\n|\r|\n/).length
                     }`,
@@ -331,7 +320,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         releaseLock(fileToOperateOn, undefined, true);
-        lgb(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block: ${err.message}`);
+        lgc(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block`, err);
         process.exit(1);
     }
 }

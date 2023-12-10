@@ -6,7 +6,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc, lgi, lgif } from './functions/loggersupportive.js';
+import { lgw, lge, lgc, lgi, lgif, lgu, lgd } from './functions/loggerandlocksupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes, removeDir } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
@@ -57,17 +57,17 @@ import {
  *
  */
 
-// TODO: Copy this to downloader, uploader, genreate excel script as well
+const debug = false;
 /**
  *
  * Only make a single instance run of the script.
  *
  */
 try {
-    if (checkSync('contractors_folderTransferer.js', { stale: 1000 })) {
-        throw new Error('Already has lock');
+    if (checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
+        throw new Error('Lock already held, another instace is already running.');
     }
-    lockSync('contractors_folderTransferer.js', { stale: 1000 });
+    lockSync('contractors_folderTransferer.js', { stale: 15000 });
 } catch (error) {
     process.exit(1);
 }
@@ -133,7 +133,9 @@ while (true) {
             }
 
             // Check CuttingDone folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
-            if (/^[O|o][K|k]_AlreadyMoved_(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+            const regexallottedFolderAlreadyMovedRegexString = config.allottedFolderRegex.replace('^', '^[O|o][K|k]_AlreadyMoved_');
+            const regexallottedFolderAlreadyMovedRegexExpression = new RegExp(regexallottedFolderAlreadyMovedRegexString, 'g');
+            if (regexallottedFolderAlreadyMovedRegexExpression.test(cutterCuttingDoneSubFolderAndFiles)) {
                 const folderWithOkAlreadMovedRemoved = path.basename(cutterCuttingDoneSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
                 const newCutterCuttingDoneSubFolderPath = `${path.dirname(cutterCuttingDoneSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
                 fs.renameSync(cutterCuttingDoneSubFolderPath, newCutterCuttingDoneSubFolderPath);
@@ -149,7 +151,8 @@ while (true) {
             }
 
             // Check CuttingDone folder matches the format
-            if (!/^(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(cutterCuttingDoneSubFolderAndFiles)) {
+            const regexallottedFolderRegexExpression = new RegExp(config.allottedFolderRegex, 'g');
+            if (!regexallottedFolderRegexExpression.test(cutterCuttingDoneSubFolderAndFiles)) {
                 currentSetOfWarnings.add(
                     `Folder in CuttingDone but is not in a proper format, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
                 );
@@ -179,7 +182,7 @@ while (true) {
     foldersToShift.sort((a, b) => {
         const regex = /(\d+)/;
         if (!regex.test(path.basename(a.dealerImagesFolder)) || !regex.test(path.basename(b.dealerImagesFolder))) {
-            lgc('Unable to match regex of `foldersToShift` while sorting.');
+            lgu('Unable to match regex of `foldersToShift` while sorting.');
             return 0;
         }
         const numA = Number(path.basename(a.dealerImagesFolder).match(regex)[0]);
@@ -188,8 +191,9 @@ while (true) {
     });
     // TODO: This sleep was induced to check folderSizeAfter10Seconds functionality, to be removed if the above locking system works properly.
     // sleep(15);
-    // console.log(foldersToShift);
+    debug ? lgd(`foldersToShift: ${foldersToShift}`) : null;
 
+    // TODO: Check which warning we can give immediately
     historyOfWarnings.shift();
     historyOfWarnings.push(currentSetOfWarnings);
     // eslint-disable-next-line no-restricted-syntax

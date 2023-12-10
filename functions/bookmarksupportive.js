@@ -3,6 +3,7 @@ import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
+import { lge } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 function getAllUsernamesBookmarks() {
@@ -11,7 +12,7 @@ function getAllUsernamesBookmarks() {
 
     let bookmarksBarData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
     if (bookmarksBarData.length <= 0) {
-        console.log(chalk.white.bgRed.bold(`ERROR: Bookmarks section doesn't contain bookmarks bar.`));
+        lge(`Bookmarks section doesn't contain bookmarks bar.`);
         process.exit(1);
     } else if (bookmarksBarData.length > 1) {
         bookmarksBarData = bookmarksBarData.reduce((earliest, current) => {
@@ -27,11 +28,36 @@ function getAllUsernamesBookmarks() {
         allUsernamesFromConfig.includes(usernameLevelBookmark.name)
     );
     if (!allUsernamesBookmarks.length > 0) {
-        console.log(chalk.white.bgRed.bold(`ERROR: Bookmarks bar doesn't contain folders of the usernames available in the config.`));
+        lge(`Bookmarks bar doesn't contain folders of the usernames available in the config.`);
         process.exit(1);
     }
     return allUsernamesBookmarks;
 }
 
+function getRemainingBookmarksNotDownloaded() {
+    const allUsernamesBookmarks = getAllUsernamesBookmarks();
+    // Filter out bookmarks based on vehicleBookmark condition
+    const filteredBookmarks = allUsernamesBookmarks
+        .map((usernameBookmark) => ({
+            ...usernameBookmark,
+            children: usernameBookmark.children
+                .map((dealerLevelBookmark) => ({
+                    ...dealerLevelBookmark,
+                    children: dealerLevelBookmark.children.filter((vehicleBookmark) => !vehicleBookmark.name.includes('|#|')),
+                }))
+                .filter((dealerLevelBookmark) => dealerLevelBookmark.children.length > 0),
+        }))
+        .filter((usernameBookmark) => usernameBookmark.children.length > 0);
+    return filteredBookmarks;
+}
+function getRemainingBookmarksNotDownloadedLength() {
+    return getRemainingBookmarksNotDownloaded().reduce(
+        (total, usernameBookmark) =>
+            // Sum up all the lengths of the vehicleBookmark arrays in each dealerLevelBookmark
+            total + usernameBookmark.children.reduce((subtotal, dealerLevelBookmark) => subtotal + dealerLevelBookmark.children.length, 0),
+        0
+    );
+}
+
 // eslint-disable-next-line import/prefer-default-export
-export { getAllUsernamesBookmarks };
+export { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloaded, getRemainingBookmarksNotDownloadedLength };

@@ -8,12 +8,12 @@ import { checkSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted, currentTime } from './datetime.js';
 import { config } from '../configs/config.js';
-import { lge, lgc } from './loggersupportive.js';
+import { attainLock, releaseLock, lge, lgc, lgi, lgb, lgu, lgd } from './loggerandlocksupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
-import { attainLock, releaseLock } from './locksupportive.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { getProjectConfigDirPath, getProjectLogsDirPath } from './projectpaths.js';
-
+import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -23,8 +23,8 @@ instanceRunLogFilePrefix;
 const perImageTimeToUpload = 7.25;
 const perVINTimeToUpload = 7;
 
-function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
-    process.stdout.write(chalk.cyan(`Auto cleaning up the datastore: `));
+function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
+    lgi(`Auto cleaning up the datastore: `, LineSeparator.false);
     const foldersToCleanUp = [
         config.lockingBackupsZonePath,
         config.downloadPath,
@@ -74,7 +74,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         }
     }
     /* #endregion: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
-    process.stdout.write(chalk.cyan(`01:${logSymbols.success} `));
+    lgi(`01:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
     /* #region: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
     if (fs.existsSync(config.lockingBackupsZonePath)) {
@@ -101,7 +101,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         }
     }
     /* #endregion: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
-    process.stdout.write(chalk.cyan(`02:${logSymbols.success} `));
+    lgi(`02:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
     /* #region: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
     const lockingBackupsDirWithTodaysDate = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}`;
@@ -137,14 +137,14 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
                 delete groups[key];
             }
         });
-        // console.log(groups);
+        debug ? lgd(`After removing the latest 30 files in each group, groups: ${groups}`) : null;
 
         // Step 4: Identify unique "filename_HHmm" patterns from remaining files
         const remainingFiles = Object.values(groups).flat();
-        // console.log(remainingFiles);
+        debug ? lgd(`remainingFiles: ${remainingFiles}`) : null;
 
         const uniquePatterns = Array.from(new Set(remainingFiles.map((fileName) => fileName.substr(0, fileName.length - 10))));
-        // console.log(uniquePatterns);
+        debug ? lgd(`uniquePatterns: ${uniquePatterns}`) : null;
 
         // Step 5: Sort remaining files by timestamp in descending order
         remainingFiles.sort((a, b) => {
@@ -152,7 +152,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
             const timestampB = parseInt(b.substring(b.lastIndexOf('_') + 1), 10);
             return timestampB - timestampA;
         });
-        // console.log(remainingFiles);
+        debug ? lgd(`Sorted remaining files by timestamp in descending order, remainingFiles: ${remainingFiles}`) : null;
 
         // Step 6: Keep only the first file for each unique "filename_HHmm" pattern
         const finalFiles = [];
@@ -168,12 +168,12 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
             try {
                 fs.unlinkSync(path.join(lockingBackupsDirWithTodaysDate, filePath));
             } catch (error) {
-                console.error(`Failed to delete file: ${filePath}`, error);
+                lgc(`Failed to delete file: ${filePath}`, error);
             }
         });
     }
     /* #endregion: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
-    process.stdout.write(chalk.cyan(`03:${logSymbols.success} `));
+    lgi(`03:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
     // eslint-disable-next-line no-restricted-syntax
     for (const dateDir of fs.readdirSync(getProjectLogsDirPath())) {
@@ -210,33 +210,46 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
             }
         }
     }
-    process.stdout.write(chalk.cyan(`04:${logSymbols.success}\n`));
+    lgi(`04:${logSymbols.success}`, LoggingPrefix.false);
 }
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
-    const regexString = `.*? (\\d+) \\(\\#\\d{5}\\)`;
+    const regexString = config.allottedFolderRegex;
     const regexExpression = new RegExp(regexString, 'g');
 
     if (!regexExpression.test(folderName)) {
-        lgc('Unable to match regex for fn getNumberOfImagesFromAllottedDealerNumberFolder()');
+        lgu('Unable to match regex for fn getNumberOfImagesFromAllottedDealerNumberFolder()');
         process.exit(1);
     }
 
     const match = folderName.match(regexExpression);
-    return match[0].match(regexString)[1];
+    return match[0].match(regexString)[4];
+}
+
+function getUniqueIDWithHashFromAllottedDealerNumberFolder(folderName) {
+    const regexString = config.allottedFolderRegex;
+    const regexExpression = new RegExp(regexString, 'g');
+
+    if (!regexExpression.test(folderName)) {
+        lgu('Unable to match regex for fn getUniqueIDWithHashFromAllottedDealerNumberFolder()');
+        process.exit(1);
+    }
+
+    const match = folderName.match(regexExpression);
+    return match[0].match(regexString)[5];
 }
 
 function getUniqueIDFromAllottedDealerNumberFolder(folderName) {
-    const regexString = `.*? (\\d+) \\(\\#(\\d{5})\\)`;
+    const regexString = config.allottedFolderRegex;
     const regexExpression = new RegExp(regexString, 'g');
 
     if (!regexExpression.test(folderName)) {
-        lgc('Unable to match regex for fn getUniqueIDFromAllottedDealerNumberFolder()');
+        lgu('Unable to match regex for fn getUniqueIDFromAllottedDealerNumberFolder()');
         process.exit(1);
     }
 
     const match = folderName.match(regexExpression);
-    return match[0].match(regexString)[2];
+    return match[0].match(regexString)[6];
 }
 
 function getUploadRemainingSummary(foldersToUpload) {
@@ -288,6 +301,7 @@ export {
     perVINTimeToUpload,
     autoCleanUpDatastoreZones,
     getNumberOfImagesFromAllottedDealerNumberFolder,
+    getUniqueIDWithHashFromAllottedDealerNumberFolder,
     getUniqueIDFromAllottedDealerNumberFolder,
     getUploadRemainingSummary,
     createBackupOfFile,

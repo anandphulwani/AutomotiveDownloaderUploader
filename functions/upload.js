@@ -3,10 +3,11 @@ import chalk from 'chalk';
 import path from 'path';
 import logSymbols from 'log-symbols';
 import { URL as URLparser } from 'url';
+import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './datetime.js';
-import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif } from './loggersupportive.js';
+import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif, lgh, lgtf, lgs } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
 import { sleep, msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
@@ -25,16 +26,21 @@ import { waitForElementContainsOrEqualsHTML, waitTillCurrentURLEndsWith } from '
 import { zeroPad } from './stringformatting.js';
 import { perImageTimeToUpload, perVINTimeToUpload } from './datastoresupportive.js';
 import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
+import Color from '../class/Colors.js';
+import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 const printToLogBuffer = [];
 
 async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, URL, userLoggedIn, debug = false) {
-    lgif(
+    lgtf(
         `fn uploadBookmarkURL() : BEGIN, Params: page: OBJECT, uniqueIdElement: ${uniqueIdElement}, uniqueIdFolderPath: ${uniqueIdFolderPath}, dealerFolder: ${dealerFolder}, name: ${name}, URL: ${URL}, debug: ${debug}`
     );
     const startingRow = await getRowPosOnTerminal();
-    process.stdout.write(chalk.cyan(`\t${userLoggedIn}/`) + chalk.cyan.bold(`${dealerFolder}/`) + chalk.cyan(`${name} : ${URL}\n`));
+    lgi(`\t${userLoggedIn}/`, LoggingPrefix.false, LineSeparator.false);
+    lgi(`${dealerFolder}/`, Color.cyan, LineSeparator.false);
+    lgi(`${name} : ${URL}`);
     printToLogBuffer.push(`\${userLoggedIn}/\${dealerFolder}/\${name} : \${URL}  :   ${userLoggedIn}/${dealerFolder}/${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
@@ -45,7 +51,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     let parsedCurrentUrlWOQueryParams = new URLparser(page.url());
     parsedCurrentUrlWOQueryParams = parsedCurrentUrlWOQueryParams.host + parsedCurrentUrlWOQueryParams.pathname;
 
-    lgif(`vehicleBookmarkUrlWOQueryParams: ${vehicleBookmarkUrlWOQueryParams}, parsedCurrentUrlWOQueryParams: ${parsedCurrentUrlWOQueryParams}`);
+    lgtf(`vehicleBookmarkUrlWOQueryParams: ${vehicleBookmarkUrlWOQueryParams}, parsedCurrentUrlWOQueryParams: ${parsedCurrentUrlWOQueryParams}`);
     if (parsedCurrentUrlWOQueryParams !== vehicleBookmarkUrlWOQueryParams) {
         await gotoURL(page, URL, debug);
     }
@@ -54,8 +60,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
         printToLogBuffer.pop();
-        lgef(`${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
-        process.stdout.write(chalk.red.bold(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)\n`));
+        lgh(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
         const VINNumberFromBookmark = name.split(' |#| ')[1].trim();
         const { typeOfVINPath, VINFolderPath, VINFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
         const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, true);
@@ -67,11 +72,18 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             moveSource: moveSource,
             moveDestination: moveDestination,
         };
-        lgif(`fn uploadBookmarkURL() : END( From: Supplied URL doesn't exist ...... (Ignoring)), Returning: returnObj: ${JSON.stringify(returnObj)}`);
+        lgtf(
+            `fn uploadBookmarkURL() : END( From: Supplied URL doesn't exist ...... (Ignoring)), Returning: returnObj: ${beautify(
+                returnObj,
+                null,
+                3,
+                120
+            )}`
+        );
         return returnObj;
     }
     printToLogBuffer.map((value) => {
-        lgif(value);
+        lgtf(value);
         return value;
     });
     printToLogBuffer.length = 0;
@@ -91,36 +103,36 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         const totalTimeEstimatedInSeconds = Math.round(perImageTimeToUpload * returnObj.imagesUploaded + perVINTimeToUpload);
         const diffInEstimate = Math.round((elapsedTimeInSeconds / totalTimeEstimatedInSeconds) * 10) / 10;
         if (diffInEstimate > 3) {
-            currentColor = chalk.bgRed.white;
+            currentColor = Color.bgRed;
         } else if (diffInEstimate > 2) {
-            currentColor = chalk.red.bold;
+            currentColor = Color.red;
         } else if (diffInEstimate > 1.5) {
-            currentColor = chalk.yellow.bold;
+            currentColor = Color.yellow;
         } else {
-            currentColor = chalk.cyan;
+            currentColor = Color.cyanNormal;
         }
         if (newEndingRow - 3 !== endingRow) {
-            console.log(currentColor(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`));
+            lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor);
         } else {
             debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
             debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
             debug ? '' : process.stdout.cursorTo(0);
-            process.stdout.write(currentColor(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}\n`));
+            lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor);
         }
     }
-    lgif(`fn uploadBookmarkURL() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
+    lgtf(`fn uploadBookmarkURL() : END, Returning: returnObj: ${beautify(returnObj, null, 3, 120)}`);
     return returnObj;
 }
 
 async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, debug = false) {
-    lgif(`fn uploadImagesFromFolder: Begin : (${uniqueIdElement}, ${uniqueIdFolderPath}, ${dealerFolder}, ${name}, ${debug})`);
+    lgtf(`fn uploadImagesFromFolder: Begin : (${uniqueIdElement}, ${uniqueIdFolderPath}, ${dealerFolder}, ${name}, ${debug})`);
     const imageNumbersToDownloadFromDC = getImageNumbersToDownloadFromDC(dealerFolder);
     const deleteOriginalFromDC = getDeleteOriginalFromDC(dealerFolder);
     const shiftOriginalFirstPositionToLastPositionFromDC = getShiftOriginalFirstPositionToLastPositionFromDC(dealerFolder);
     const putFirstPositionEditedImageInTheLastPositionAlsoFromDC = getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerFolder);
     const lockTheImagesCheckMarkFromDC = getLockTheImagesCheckMarkFromDC(dealerFolder);
 
-    lgif(
+    lgtf(
         `Parameters from excel: imageNumbersToDownloadFromDC: ${imageNumbersToDownloadFromDC}, deleteOriginalFromDC: ${deleteOriginalFromDC}, shiftOriginalFirstPositionToLastPositionFromDC: ${shiftOriginalFirstPositionToLastPositionFromDC}, putFirstPositionEditedImageInTheLastPositionAlsoFromDC: ${putFirstPositionEditedImageInTheLastPositionAlsoFromDC}, lockTheImagesCheckMarkFromDC: ${lockTheImagesCheckMarkFromDC},`
     );
 
@@ -169,7 +181,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         await clickOnButton(page, '.vehicle-detail-tab.vehicle-detail-tab-imagery');
         await waitTillCurrentURLEndsWith(page, '#imagery');
     }
-    lgif(`uniqueIdFolderPath\\VINNumberFromBookmark: ${uniqueIdFolderPath}\\${VINNumberFromBookmark}`);
+    lgtf(`uniqueIdFolderPath\\VINNumberFromBookmark: ${uniqueIdFolderPath}\\${VINNumberFromBookmark}`);
 
     // TODO: Total bookmarks number do not change while writing
     // TODO: Shift images into date folders in all zones
@@ -182,17 +194,17 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // Later: error handling if stuck delete all previous images and start again.
 
     const startingRow = await getRowPosOnTerminal();
-    process.stdout.write(chalk.cyan(` Uploading Files`));
+    lgi(` Uploading Files`, LineSeparator.false);
 
     /* #region: Uploading the files: Begin */
-    lgif(`region: Uploading the files: Begin`);
+    lgtf(`region: Uploading the files: Begin`);
     let firstImage;
     const imagesToUpload = [];
     let VINFolderPathList;
     // eslint-disable-next-line no-useless-catch
     try {
         VINFolderPathList = typeOfVINPath === 'VINFolder' ? fs.readdirSync(VINFolderPath) : [VINFilePath];
-        process.stdout.write(chalk.cyan(`(${zeroPad(VINFolderPathList.length, 2)}): `));
+        lgi(`(${zeroPad(VINFolderPathList.length, 2)}): `, LineSeparator.false);
 
         // eslint-disable-next-line no-restricted-syntax
         for (const VINFolderSubFolderAndFiles of VINFolderPathList) {
@@ -203,11 +215,11 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             if (firstImage === undefined) {
                 firstImage = VINFolderSubFolderAndFiles;
             }
-            lgif(`VINFolderSubFolderAndFiles: ${VINFolderSubFolderAndFiles}, VINFolderSubFolderAndFilesPath: ${VINFolderSubFolderAndFilesPath}`);
+            lgtf(`VINFolderSubFolderAndFiles: ${VINFolderSubFolderAndFiles}, VINFolderSubFolderAndFilesPath: ${VINFolderSubFolderAndFilesPath}`);
             const VINFolderSubFolderAndFilesStat = fs.statSync(VINFolderSubFolderAndFilesPath);
 
             if (VINFolderSubFolderAndFilesStat.isFile()) {
-                lgif(`It is a VINFile.`);
+                lgtf(`It is a VINFile.`);
                 await page.bringToFront();
                 const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
                 await fileChooser.accept([path.resolve(VINFolderSubFolderAndFilesPath)]);
@@ -220,18 +232,18 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             } else {
                 imageNumber = 1;
             }
-            lgif(`imagesToUpload.push(imageNumber: ${imageNumber})`);
+            lgtf(`imagesToUpload.push(imageNumber: ${imageNumber})`);
             imagesToUpload.push(imageNumber);
         }
         await showUploadFilesAndPercentages(page, startingRow, VINFolderPathList.length, false);
         await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', 30, true);
-        lgif(`putFirstPositionEditedImageInTheLastPositionAlsoFromDC: ${putFirstPositionEditedImageInTheLastPositionAlsoFromDC}`);
-        lgif(
+        lgtf(`putFirstPositionEditedImageInTheLastPositionAlsoFromDC: ${putFirstPositionEditedImageInTheLastPositionAlsoFromDC}`);
+        lgtf(
             `imageNumbersToDownloadFromDC.length === 1: ${imageNumbersToDownloadFromDC.length === 1}, imageNumbersToDownloadFromDC.length: ${
                 imageNumbersToDownloadFromDC.length
             }`
         );
-        lgif(
+        lgtf(
             `imageNumbersToDownloadFromDC.length > 1 ${
                 imageNumbersToDownloadFromDC.length > 1
             }, firstImage.startsWith('001.'): ${firstImage.startsWith('001.')}, imageNumbersToDownloadFromDC.length ${
@@ -242,7 +254,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             putFirstPositionEditedImageInTheLastPositionAlsoFromDC &&
             (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
         ) {
-            lgif(`Uploading a copy now`);
+            lgtf(`Uploading a copy now`);
             const firstImagePath = typeOfVINPath === 'VINFolder' ? path.join(VINFolderPath, firstImage) : path.join(uniqueIdFolderPath, firstImage);
             await page.bringToFront();
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
@@ -254,7 +266,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     } catch (error) {
         lgc(`region: Uploading the files, Try Error: `, error);
     }
-    lgif(`region: Uploading the files: End`);
+    lgtf(`region: Uploading the files: End`);
     // TODO: Verify all files are uploaded in qty, also rename bookmarks by giving quantity while download
     /* #endregion: Uploading the files: End */
 
@@ -263,18 +275,18 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     process.stdout.moveCursor(0, -diffInRows); // up one line
     process.stdout.clearLine(diffInRows); // from cursor to end
     process.stdout.cursorTo(0);
-    process.stdout.write(chalk.cyan(` Uploading Files(${zeroPad(VINFolderPathList.length, 2)}): `));
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(3)}`));
-    process.stdout.write(chalk.cyan(` Mark Deletion: `));
+    lgi(` Uploading Files(${zeroPad(VINFolderPathList.length, 2)}): `, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(3)}`, LineSeparator.false);
+    lgi(` Mark Deletion: `, LineSeparator.false);
 
     /* #region: Mark file to delete the older files so as to replace with the newer files later on: Begin */
-    lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: Begin`);
+    lgtf(`region: Mark file to delete the older files so as to replace with the newer files later on: Begin`);
     if (deleteOriginalFromDC) {
-        lgif(`deleteOriginalFromDC is set to True: ${deleteOriginalFromDC}`);
+        lgtf(`deleteOriginalFromDC is set to True: ${deleteOriginalFromDC}`);
         // eslint-disable-next-line no-restricted-syntax
         for (const imageToUpload of imagesToUpload) {
             if (shiftOriginalFirstPositionToLastPositionFromDC && imageToUpload === 1) {
-                lgif(
+                lgtf(
                     `shiftOriginalFirstPositionToLastPositionFromDC && imageToUpload === 1, continuing for next loop, imageToUpload: ${imageToUpload}`
                 );
                 // eslint-disable-next-line no-continue
@@ -287,10 +299,10 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                         imageToUpload - 1,
                         2
                     )}_Img1`;
-                    lgif(`waiting for enableAndClickOnButton on ${imageToUpload}`);
+                    lgtf(`waiting for enableAndClickOnButton on ${imageToUpload}`);
                     await enableAndClickOnButton(page, deleteId);
 
-                    lgif(`waiting for delete to be set`);
+                    lgtf(`waiting for delete to be set`);
                     await page.waitForFunction(
                         // eslint-disable-next-line no-loop-func
                         (selector, attributeName, expectedValue) => {
@@ -306,7 +318,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                         'title',
                         'click to RESTORE this photo.'
                     );
-                    lgif(`deletion set`);
+                    lgtf(`deletion set`);
                 } catch (error) {
                     lgc(`region: Mark file to delete the older files so as to replace with the newer files later on, Try Error: `, error);
                     // eslint-disable-next-line no-continue
@@ -316,12 +328,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             }
         }
     }
-    lgif(`imagesToUpload at Delete: ${imagesToUpload}`);
-    lgif(`region: Mark file to delete the older files so as to replace with the newer files later on: End`);
+    lgtf(`imagesToUpload at Delete: ${imagesToUpload}`);
+    lgtf(`region: Mark file to delete the older files so as to replace with the newer files later on: End`);
     /* #endregion: Delete the older files to replace with the newer files: End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(13)}`));
-    process.stdout.write(chalk.cyan(` Move Files To Location: `));
+    lgi(`${logSymbols.success}${' '.repeat(13)}`, LineSeparator.false);
+    lgi(` Move Files To Location: `, LineSeparator.false);
 
     const imageDIVContainer2 = await page.$('.tn-list-container');
     const imageULContainer2 = await imageDIVContainer2.$('.container.tn-list.sortable.deletable.ui-sortable');
@@ -329,22 +341,22 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     const imageOriginalURLSLength2 = imageOriginalURLS2.length;
 
     /* #region: Move uploaded files on the correct location: Begin */
-    lgif(`region: Move uploaded files on the correct location: Begin`);
-    lgif(`imagesToUpload before move: ${imagesToUpload}`);
-    lgif(`Moving uploaded files section: Start`);
+    lgtf(`region: Move uploaded files on the correct location: Begin`);
+    lgtf(`imagesToUpload before move: ${imagesToUpload}`);
+    lgtf(`Moving uploaded files section: Start`);
     // eslint-disable-next-line no-restricted-syntax
     for (let imageToUploadIndex = imagesToUpload.length; imageToUploadIndex > 0; imageToUploadIndex--) {
         if (
             putFirstPositionEditedImageInTheLastPositionAlsoFromDC &&
             (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
         ) {
-            lgif(`Loop 01 If`);
-            lgif(
+            lgtf(`Loop 01 If`);
+            lgtf(
                 `imageToUploadIndex: ${imageToUploadIndex}, imageToUploadIndex - 1: ${
                     imageToUploadIndex - 1
                 }, imagesToUpload[imageToUploadIndex - 1]: ${imagesToUpload[imageToUploadIndex - 1]}`
             );
-            lgif(`Moving image from ${imageOriginalURLSLength2 - 1} To ${imagesToUpload[imageToUploadIndex - 1]}`);
+            lgtf(`Moving image from ${imageOriginalURLSLength2 - 1} To ${imagesToUpload[imageToUploadIndex - 1]}`);
             await moveImageToPositionNumber(
                 page,
                 imageOriginalURLSLength2,
@@ -353,50 +365,50 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 false
             );
         } else {
-            lgif(`Loop 01 Else`);
-            lgif(
+            lgtf(`Loop 01 Else`);
+            lgtf(
                 `imageToUploadIndex: ${imageToUploadIndex}, imageToUploadIndex - 1: ${
                     imageToUploadIndex - 1
                 }, imagesToUpload[imageToUploadIndex - 1]: ${imagesToUpload[imageToUploadIndex - 1]}`
             );
-            lgif(`Moving image from ${imageOriginalURLSLength2} To ${imagesToUpload[imageToUploadIndex - 1]}`);
+            lgtf(`Moving image from ${imageOriginalURLSLength2} To ${imagesToUpload[imageToUploadIndex - 1]}`);
             await moveImageToPositionNumber(page, imageOriginalURLSLength2, imageOriginalURLSLength2, imagesToUpload[imageToUploadIndex - 1], false);
         }
     }
-    lgif(`region: Move uploaded files on the correct location: End`);
+    lgtf(`region: Move uploaded files on the correct location: End`);
     /* #endregion: Move uploaded files on the correct location: End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(4)}`));
-    process.stdout.write(chalk.cyan(`\n Move Files To Last: `));
+    lgi(`${logSymbols.success}${' '.repeat(4)}`, LineSeparator.false);
+    lgi(`\n Move Files To Last: `, LineSeparator.false);
 
     /* #region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin */
-    lgif(
+    lgtf(
         `region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin`
     );
     if (shiftOriginalFirstPositionToLastPositionFromDC) {
-        lgif(`Shift Original First Position Moving image from ${imagesToUpload[0] + 1} To ${imageOriginalURLSLength2}`);
+        lgtf(`Shift Original First Position Moving image from ${imagesToUpload[0] + 1} To ${imageOriginalURLSLength2}`);
         await moveImageToPositionNumber(page, imageOriginalURLSLength2, imagesToUpload[0] + 1, imageOriginalURLSLength2);
     }
-    lgif(
+    lgtf(
         `region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End`
     );
     /* #endregion: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(4)}`));
-    process.stdout.write(chalk.cyan(` Lock The Images Checkbox: `));
+    lgi(`${logSymbols.success}${' '.repeat(4)}`, LineSeparator.false);
+    lgi(` Lock The Images Checkbox: `, LineSeparator.false);
 
     /* #region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin */
-    lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin`);
+    lgtf(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin`);
 
     const imagesAreLockedFromWeb = await page.evaluate(
         // eslint-disable-next-line no-undef
         (selector) => document.querySelector(selector).checked,
         'input[type="checkbox"].vp[property-name="ImagesAreLocked"]'
     );
-    lgif(`Current ImagesAreLockedFromWeb: ${imagesAreLockedFromWeb}`);
+    lgtf(`Current ImagesAreLockedFromWeb: ${imagesAreLockedFromWeb}`);
 
     if (lockTheImagesCheckMarkFromDC !== null && lockTheImagesCheckMarkFromDC !== imagesAreLockedFromWeb) {
-        lgif(`clickOnButton: lockTheImagesCheckMarkFromDC: ${lockTheImagesCheckMarkFromDC}, imagesAreLockedFromWeb : ${imagesAreLockedFromWeb}`);
+        lgtf(`clickOnButton: lockTheImagesCheckMarkFromDC: ${lockTheImagesCheckMarkFromDC}, imagesAreLockedFromWeb : ${imagesAreLockedFromWeb}`);
         let currImagesAreLockedFromWeb = imagesAreLockedFromWeb;
         while (imagesAreLockedFromWeb === currImagesAreLockedFromWeb) {
             await clickOnButton(page, 'input[type="checkbox"].vp[property-name="ImagesAreLocked"]', undefined, true);
@@ -407,14 +419,14 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             );
         }
     }
-    lgif(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End`);
+    lgtf(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End`);
     /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(2)}`));
-    process.stdout.write(chalk.cyan(` Saving Now: `));
+    lgi(`${logSymbols.success}${' '.repeat(2)}`, LineSeparator.false);
+    lgi(` Saving Now: `, LineSeparator.false);
 
     /* #region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin */
-    lgif(
+    lgtf(
         `region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin`
     );
     const saveButtonSelector = `#aspnetForm > div.canvas.standard-canvas.viewport > div.canvas-body.canvas-body-no-padding.container > div > div.vehicle-details-body.container > div.vehicle-actions > ul:nth-child(2) > li:nth-child(3) > a`;
@@ -444,17 +456,17 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             steps: 1,
         });
     }
-    lgif(
+    lgtf(
         `region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End`
     );
     /* #endregion: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End */
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(16)}`));
-    process.stdout.write(chalk.cyan(` Saved: `));
+    lgi(`${logSymbols.success}${' '.repeat(16)}`, LineSeparator.false);
+    lgi(` Saved: `, LineSeparator.false);
 
     await page.waitForNavigation({ timeout: 300000 });
 
-    process.stdout.write(chalk.green.bold(`${logSymbols.success}${' '.repeat(5)}`));
+    lgi(`${logSymbols.success}${' '.repeat(5)}`, LineSeparator.false);
 
     const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, false);
     const returnObj = {
@@ -464,12 +476,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         moveSource: moveSource,
         moveDestination: moveDestination,
     };
-    lgif(`fn uploadImagesFromFolder() : END, Returning: returnObj: ${JSON.stringify(returnObj)}`);
+    lgtf(`fn uploadImagesFromFolder() : END, Returning: returnObj: ${beautify(returnObj, null, 3, 120)}`);
     return returnObj;
 }
 
-async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosition, isSlow = false, debug = true) {
-    lgif(
+async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosition, isSlow = false, debug = false) {
+    lgtf(
         `fn moveImageToPositionNumber() : BEGIN, Params: page: OBJECT, totalImages: ${totalImages}, fromPosition: ${fromPosition}, toPosition: ${toPosition}, isSlow: ${isSlow}, debug: ${debug}`
     );
     try {
@@ -493,12 +505,12 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         );
         const toPositionSubImageVehicleId = await page.$eval(toPositionSubImageSelector, (element, attr) => element.getAttribute(attr), 'vehicleid');
 
-        lgif(`fromPositionSubImageVehicleId: ${fromPositionSubImageVehicleId}`);
-        lgif(`toPositionSubImageVehicleId: ${toPositionSubImageVehicleId}`);
+        lgtf(`fromPositionSubImageVehicleId: ${fromPositionSubImageVehicleId}`);
+        lgtf(`toPositionSubImageVehicleId: ${toPositionSubImageVehicleId}`);
 
-        lgif(`Moving to the fromPositionElement: ${fromPositionElement}`);
+        lgtf(`Moving to the fromPositionElement: ${fromPositionElement}`);
         await page.evaluate((element) => element.scrollIntoView(), fromPositionElement);
-        lgif(`Confirming the fromPositionElement is in the browser viewport.`);
+        lgtf(`Confirming the fromPositionElement is in the browser viewport.`);
         await page.waitForFunction(
             (element) => {
                 const { top, bottom } = element.getBoundingClientRect();
@@ -516,11 +528,11 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             return { x, y, width, height };
         }, fromPositionElement);
 
-        lgif(`fromPositionElementRect: ${JSON.stringify(fromPositionElementRect)}`);
+        lgtf(`fromPositionElementRect: ${beautify(fromPositionElementRect, null, 3, 120)}`);
 
         // Making sure that the element is selected and its opacity changes to 0.6, which confirms selected.
         while (true) {
-            lgif(
+            lgtf(
                 `Moving the image little bit to check opacity: X: ${fromPositionElementRect.x + fromPositionElementRect.width / 2}, Y: ${
                     fromPositionElementRect.y + fromPositionElementRect.height / 2
                 }`
@@ -547,7 +559,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             if (opacity === '0.6') {
                 break;
             } else {
-                lgif(`opacity: ${opacity} is still not 0.6, so sleeping for 350ms.`);
+                lgtf(`opacity: ${opacity} is still not 0.6, so sleeping for 350ms.`);
                 msleep(50);
                 await page.mouse.up();
                 msleep(300);
@@ -555,9 +567,9 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         }
         isSlow ? await waitForSeconds(4, true) : '';
 
-        lgif(`Moving to the toPositionElement: ${toPositionElement}`);
+        lgtf(`Moving to the toPositionElement: ${toPositionElement}`);
         await page.evaluate((element) => element.scrollIntoView(), toPositionElement);
-        lgif(`Confirming the toPositionElement is in the browser viewport.`);
+        lgtf(`Confirming the toPositionElement is in the browser viewport.`);
         await page.waitForFunction(
             (element) => {
                 const { top, bottom } = element.getBoundingClientRect();
@@ -577,19 +589,19 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                 const { x, y, width, height } = el.getBoundingClientRect();
                 return { x, y, width, height };
             }, toPositionElement);
-            lgif(`From Element To: toPositionElementRect: ${JSON.stringify(toPositionElementRect)}`);
+            lgtf(`From Element To: toPositionElementRect: ${beautify(toPositionElementRect, null, 3, 120)}`);
 
             if (oldToPositionElementRectX !== undefined && Math.abs(toPositionElementRect.x - oldToPositionElementRectX) > 50) {
                 const currToPositionPrevIdSelector =
                     toPosition !== 1
                         ? `${imagesULSelector} > li:nth-child(${zeroPad(fromPosition < toPosition ? toPosition : toPosition - 1, 2)})`
                         : false;
-                lgif(`toPosition !== 1: ${toPosition} !== 1       currToPositionPrevIdSelector: ${currToPositionPrevIdSelector}`);
+                lgtf(`toPosition !== 1: ${toPosition} !== 1       currToPositionPrevIdSelector: ${currToPositionPrevIdSelector}`);
                 const currToPositionNextIdSelector =
                     totalImages !== toPosition
                         ? `${imagesULSelector} > li:nth-child(${zeroPad(fromPosition < toPosition ? toPosition + 2 : toPosition + 1, 2)})`
                         : false;
-                lgif(
+                lgtf(
                     `totalImages !== toPosition: ${totalImages} !== ${toPosition}       currToPositionNextIdSelector: ${currToPositionNextIdSelector}`
                 );
                 const currToPositionPrevSubImageVehicleId =
@@ -600,7 +612,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                     currToPositionNextIdSelector !== false
                         ? await page.$eval(`${currToPositionNextIdSelector} > div > img`, (element, attr) => element.getAttribute(attr), 'vehicleid')
                         : false;
-                lgif(
+                lgtf(
                     `currToPositionPrevSubImageVehicleId: ${currToPositionPrevSubImageVehicleId}, currToPositionNextSubImageVehicleId: ${currToPositionNextSubImageVehicleId}`
                 );
 
@@ -616,37 +628,31 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                         (element, attr) => element.getAttribute(attr),
                         'vehicleid'
                     );
-                    lgif(
+                    lgtf(
                         `fromPositionSubImageVehicleId: ${fromPositionSubImageVehicleId},  currToPositionSubImageVehicleId: ${currToPositionSubImageVehicleId}`
                     );
                     if (fromPositionSubImageVehicleId === currToPositionSubImageVehicleId) {
-                        lgif(`Breaking now ${fromPositionSubImageVehicleId} === ${currToPositionSubImageVehicleId}`);
+                        lgtf(`Breaking now ${fromPositionSubImageVehicleId} === ${currToPositionSubImageVehicleId}`);
                         break;
                     } else {
-                        lgu(
+                        lgs(
                             `Image position changed, but the 'vechileId' from 'fromPositionSubImageVehicleId' and 'currToPositionSubImageVehicleId' doesn't match.` +
                                 `fromPosition > toPosition: ${fromPosition} > ${toPosition}, toPositionSubImageVehicleId === currToPositionNextSubImageVehicleId: ${toPositionSubImageVehicleId} === ${currToPositionNextSubImageVehicleId}` +
                                 `fromPosition < toPosition: ${fromPosition} < ${toPosition}, toPositionSubImageVehicleId === currToPositionPrevSubImageVehicleId: ${toPositionSubImageVehicleId} === ${currToPositionPrevSubImageVehicleId}`
-                        );
-                        console.log(
-                            chalk.white.bgRed.bold(
-                                `Image position changed, but the 'vechileId' from 'fromPositionSubImageVehicleId' and 'currToPositionSubImageVehicleId' doesn't match.`
-                            )
                         );
                         await waitForSeconds(240, true);
                         process.exit(1);
                     }
                 } else {
-                    console.log(chalk.white.bgRed.bold(`Image position changed, but the 'vechileId' from previous/next doesn't match.`));
-                    lgu(`Image position changed, but the 'vechileId' from previous/next doesn't match.`);
+                    lgs(`Image position changed, but the 'vechileId' from previous/next doesn't match.`);
                     await waitForSeconds(240, true);
                     process.exit(1);
                 }
             }
 
-            lgif(`toPosition: ${toPosition},        (toPosition + 1) % 5 === 1:  ${(toPosition + 1) % 5 === 1}`);
+            lgtf(`toPosition: ${toPosition},        (toPosition + 1) % 5 === 1:  ${(toPosition + 1) % 5 === 1}`);
             if ((toPosition + 1) % 5 === 1) {
-                lgif(
+                lgtf(
                     `Moving to the end of the row, Moving Element To:        X:${
                         toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex
                     }, Y:${toPositionElementRect.y + toPositionElementRect.height / 2}`
@@ -657,7 +663,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                     { steps: 1 }
                 );
             } else {
-                lgif(
+                lgtf(
                     `Moving to NOT THE end of the row, ${
                         fromPosition > toPosition ? 'Coming from down to up' : 'Coming from up to down'
                     }, Moving Element To:        X:${
@@ -672,7 +678,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             }
             /* #region Old code */
             // if (fromPosition > toPosition) {
-            //     lgif(`Coming from down to up`);
+            //     lgtf(`Coming from down to up`);
             //     if ((toPosition + 1) % 5 === 1) {
             //         await page.mouse.move(
             //             toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex,
@@ -687,16 +693,16 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             //         );
             //     }
             // } else {
-            //     lgif(`Coming from up to down`);
+            //     lgtf(`Coming from up to down`);
             //     if ((toPosition + 1) % 5 === 1) {
-            //         lgif(`Moving to the end of the row`);
+            //         lgtf(`Moving to the end of the row`);
             //         await page.mouse.move(
             //             toPositionElementRect.x + toPositionElementRect.width / 2 + 5 - lastIndex,
             //             toPositionElementRect.y + toPositionElementRect.height / 2,
             //             { steps: 1 }
             //         );
             //     } else {
-            //         lgif(`Moving to not the end of the row`);
+            //         lgtf(`Moving to not the end of the row`);
             //         await page.mouse.move(
             //             toPositionElementRect.x + toPositionElementRect.width / 2 + lastIndex,
             //             toPositionElementRect.y + toPositionElementRect.height / 2,
@@ -709,8 +715,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             isSlow ? await waitForSeconds(1, true) : '';
             oldToPositionElementRectX = toPositionElementRect.x;
             if (lastIndex === 100) {
-                console.log(chalk.white.bgRed.bold(`Tried changing image position for 100 iterations, but it didn't work.`));
-                lgu(`Tried changing image position for 100 iterations, but it didn't work.`);
+                lgs(`Tried changing image position for 100 iterations, but it didn't work.`);
                 process.exit(1);
             }
         }
@@ -719,43 +724,43 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         lgc('fn moveImageToPositionNumber() Try Error: ', error);
         await waitForSeconds(240, true);
     }
-    lgif(`fn moveImageToPositionNumber() : END`);
+    lgtf(`fn moveImageToPositionNumber() : END`);
 }
 
 function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
-    lgif(
+    lgtf(
         `fn typeOfVINPathAndOtherVars() : BEGIN, Params: uniqueIdFolderPath: ${uniqueIdFolderPath}, VINNumberFromBookmark: ${VINNumberFromBookmark}`
     );
     const VINFolderPath = `${uniqueIdFolderPath}\\${VINNumberFromBookmark}`;
     let VINFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${VINNumberFromBookmark}.`));
     VINFilePath = VINFilePath.length === 1 ? VINFilePath[0] : undefined;
     const typeOfVINPath = VINFilePath === undefined ? 'VINFolder' : 'VINFile';
-    lgif(
+    lgtf(
         `fn typeOfVINPathAndOtherVars() : END, Returning: typeOfVINPath: ${typeOfVINPath}, VINFolderPath: ${VINFolderPath}, VINFilePath: ${VINFilePath}`
     );
     return { typeOfVINPath: typeOfVINPath, VINFolderPath: VINFolderPath, VINFilePath: VINFilePath };
 }
 
 function getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, isURLDoesNotExist) {
-    lgif(
+    lgtf(
         `fn getSourceAndDestinationFrom() : BEGIN, Params: typeOfVINPath: ${typeOfVINPath}, VINFolderPath: ${VINFolderPath}, uniqueIdFolderPath: ${uniqueIdFolderPath}, VINFilePath: ${VINFilePath}, isURLDoesNotExist: ${isURLDoesNotExist}`
     );
     let moveSource;
     let moveDestination;
     if (typeOfVINPath === 'VINFolder') {
-        lgif('typeOfVINPath is VINFolder');
+        lgtf('typeOfVINPath is VINFolder');
         moveSource = `${VINFolderPath}\\`;
         moveDestination = `${config.finishedUploadingZonePath}\\${
             isURLDoesNotExist ? 'DeletedURLs\\' : ''
         }${instanceRunDateFormatted}\\${path.basename(path.dirname(VINFolderPath))}\\${path.basename(VINFolderPath)}`;
     } else {
-        lgif('typeOfVINPath IS NOT VINFolder');
+        lgtf('typeOfVINPath IS NOT VINFolder');
         moveSource = `${uniqueIdFolderPath}\\${VINFilePath}`;
         moveDestination = `${config.finishedUploadingZonePath}\\${
             isURLDoesNotExist ? 'DeletedURLs\\' : ''
         }${instanceRunDateFormatted}\\${path.basename(uniqueIdFolderPath)}\\${VINFilePath}`;
     }
-    lgif(`fn getSourceAndDestinationFrom() : END, Returning: moveSource: ${moveSource}, moveDestination: ${moveDestination}`);
+    lgtf(`fn getSourceAndDestinationFrom() : END, Returning: moveSource: ${moveSource}, moveDestination: ${moveDestination}`);
     return { moveSource: moveSource, moveDestination: moveDestination };
 }
 
@@ -768,49 +773,50 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
         currentQueueContent = await page.$eval('#uploadifive-fileInput-queue', (element) => element.innerHTML);
         if (currentQueueContent !== '' && previousQueueContent === currentQueueContent) {
             loopCountOfQueueContent++;
-            lgif(`loopCountOfQueueContent : ${loopCountOfQueueContent}`);
+            lgtf(`loopCountOfQueueContent : ${loopCountOfQueueContent}`);
         } else if (currentQueueContent !== '') {
             const countOfComplete = await uploadifiveFileInputQueueEle.$$eval('.complete', (elements) => elements.length);
-            // lgif(`currentQueueContent: ${currentQueueContent}`);
-            lgif(`countOfComplete : ${countOfComplete}`);
+            // lgtf(`currentQueueContent: ${currentQueueContent}`);
+            lgtf(`countOfComplete : ${countOfComplete}`);
             const endingRow = await getRowPosOnTerminal();
             const diffInRows = endingRow - startingRow;
             process.stdout.moveCursor(0, -diffInRows); // up one line
             process.stdout.clearLine(diffInRows); // from cursor to end
             process.stdout.cursorTo(0);
-            process.stdout.write(chalk.cyan(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `));
+            lgi(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `, LineSeparator.false);
             for (let cnt = 1; cnt <= (isAdditionalFile ? totalUploadFiles + countOfComplete : countOfComplete); cnt++) {
                 if (isAdditionalFile && cnt > totalUploadFiles) {
-                    process.stdout.write(chalk.cyan(`, `));
+                    lgi(`, `, LineSeparator.false);
                 }
-                process.stdout.write(chalk.cyan(`${zeroPad(cnt, 2)}.`) + chalk.green.bold(`${logSymbols.success} `));
+                lgi(`${zeroPad(cnt, 2)}.`, LineSeparator.false);
+                lgi(`${logSymbols.success} `, LineSeparator.false);
             }
 
             const regexString = `<span class="fileinfo"> - (\\d{1,3}%)</span>`;
             const regexExpression = new RegExp(regexString, 'g');
             if (regexExpression.test(currentQueueContent)) {
                 if (isAdditionalFile) {
-                    process.stdout.write(chalk.cyan(`, `));
+                    lgi(`, `, LineSeparator.false);
                 }
-                // lgcf(`01: currentQueueContent.match(regexExpression) : ${currentQueueContent.match(regexExpression)}`);
+                // lgtf(`01: currentQueueContent.match(regexExpression) : ${currentQueueContent.match(regexExpression)}`);
                 const percentage = currentQueueContent.match(regexExpression)[0].match(regexString)[1];
-                // lgcf(`percentage: ${percentage}`);
-                process.stdout.write(chalk.cyan(`  ${zeroPad(countOfComplete + 1, 2)}.`));
-                process.stdout.write(chalk.cyan.bold(` ${percentage}`));
+                // lgtf(`percentage: ${percentage}`);
+                lgi(`  ${zeroPad(countOfComplete + 1, 2)}.`, LineSeparator.false);
+                lgi(` ${percentage}`, Color.cyan, LineSeparator.false);
             }
             loopCountOfQueueContent = 0;
         } else {
             break;
         }
         if (loopCountOfQueueContent === 411) {
-            lgif('ERROR: Upload process stuck while uploading files.');
+            lgtf('ERROR: Upload process stuck while uploading files.');
             process.exit(1);
         }
         // await waitForSeconds(2);
         await waitForMilliSeconds(30);
         previousQueueContent = currentQueueContent;
     }
-    lgif('showUploadFilesAndPercentages: Out of the loop');
+    lgtf('showUploadFilesAndPercentages: Out of the loop');
 }
 
 // eslint-disable-next-line import/prefer-default-export

@@ -1,33 +1,32 @@
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock } from '../functions/locksupportive.js';
+import { attainLock, releaseLock } from '../functions/loggerandlocksupportive.js';
+import { waitForSeconds } from '../functions/sleep.js';
 /* eslint-enable import/extensions */
 
 let counter = 0;
-const endTime = Date.now() + 30 * 60 * 1000; // 30 minutes from now
 let previousTime = Date.now();
 
-const intervalId = setInterval(() => {
-    if (Date.now() > endTime) {
-        clearInterval(intervalId); // Stop the loop after 30 minutes
-        return;
-    }
-
+function lockChecker() {
     if (counter % 2 === 0) {
-        // Even interval
         process.stdout.write('Performing operation attainLock: ');
-        attainLock(config.processingBookmarkPathWithoutSync, 600000, true);
+        attainLock(`../${config.processingBookmarkPathWithoutSync}`, 10000, true);
     } else {
-        // Odd interval
         process.stdout.write('Performing operation releaseLock: ');
-        releaseLock(config.processingBookmarkPathWithoutSync, 600000, true);
-        // Put your code for operation X here
+        releaseLock(`../${config.processingBookmarkPathWithoutSync}`, 10000, true);
     }
     const currentTime = Date.now();
-    let difference = (currentTime - previousTime) / 1000; // Convert to seconds
+    let difference = (currentTime - previousTime) / 1000;
     difference = difference.toFixed(2);
     console.log(`${difference} seconds`);
-
     counter++;
     previousTime = currentTime;
-}, 5000); // Repeat every 5 seconds
+}
+
+function processAndDelay() {
+    lockChecker();
+    setTimeout(processAndDelay, 60000);
+}
+
+await waitForSeconds(10);
+processAndDelay();

@@ -2,9 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 /* eslint-disable import/extensions */
-import { lgc, lge } from './loggersupportive.js';
+import { attainLock, releaseLock, lgc, lge } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock } from './locksupportive.js';
 // import { createBackupOfFile } from './datastoresupportive.js';
 import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
 import { makeDir } from './filesystem.js';
@@ -40,16 +39,16 @@ function addAllotmentToReport(allotmentDetails) {
             }
             const dealerName = getDealerNameFromDC(folderName);
 
-            const allotedTo = allotmentDetail[2];
+            const allottedTo = allotmentDetail[2];
             const qty = allotmentDetail[3];
             const allotmentFolderName = allotmentDetail[4];
             reportJSONObj[allotmentId] = {
-                isAlloted: true,
+                isAllotted: true,
                 username: username,
                 folderName: folderName,
                 allotmentFolderName: allotmentFolderName,
                 dealerName: dealerName,
-                allotedTo: allotedTo,
+                allottedTo: allottedTo,
                 qty: qty,
                 isFinished: false,
             };

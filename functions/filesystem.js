@@ -7,14 +7,14 @@ import path from 'path';
 import randomstring from 'randomstring';
 
 /* eslint-disable import/extensions */
-import { lgc } from './loggersupportive.js';
+import { lgc, lgd, lge, lgs } from './loggerandlocksupportive.js';
 import { sleep } from './sleep.js';
 /* eslint-enable import/extensions */
 
 function makeDir(dirPath, debug = false) {
     try {
         fs.mkdirSync(dirPath, { recursive: true });
-        debug ? console.log(`Folder path created successfully : ${dirPath}`) : '';
+        debug ? lgd(`Folder path created successfully : ${dirPath}`) : null;
     } catch (error) {
         lgc(`Unable to create a directory : ${dirPath}`, error);
         process.exit(1);
@@ -27,10 +27,10 @@ function moveDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
         try {
             const results = fsExtra.moveSync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
             debug
-                ? console.log(
+                ? lgd(
                       `${'Successfully moved  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
                   )
-                : '';
+                : null;
             break;
         } catch (error) {
             if (
@@ -51,10 +51,8 @@ function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     try {
         const results = fsExtra.copySync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
         debug
-            ? console.log(
-                  `${'Successfully copied  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
-              )
-            : '';
+            ? lgd(`Successfully copied  ${results} files from the \n\tSource Directory: ${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`)
+            : null;
     } catch (error) {
         lgc(`${'Unable to copy file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`, error);
         process.exit(1);
@@ -63,26 +61,26 @@ function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
 
 function createDirAndMoveFile(fromPath, toPath, overwrite = false, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
-        debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
+        debug ? lgd(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : null;
         makeDir(`${path.dirname(toPath)}/`, debug);
-        debug ? console.log(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
+        debug ? lgd(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : null;
     }
     moveDirOrFile(fromPath, toPath, overwrite, debug);
 }
 
 function createDirAndCopyFile(fromPath, toPath, overwrite = false, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
-        debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Executing.`) : '';
+        debug ? lgd(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Executing.`) : null;
         makeDir(`${path.dirname(toPath)}/`, debug);
-        debug ? console.log(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Done.`) : '';
+        debug ? lgd(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Done.`) : null;
     }
     copyDirOrFile(fromPath, toPath, overwrite, debug);
 }
 
 function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, destinationPath, overwrite = false, debug = false) {
-    debug ? console.log('Moving file from TempDir to Destination : Executing.') : '';
+    debug ? lgd('Moving file from TempDir to Destination : Executing.') : null;
     createDirAndMoveFile(filePath, filePath.replace(tempPath, destinationPath), overwrite, debug);
-    debug ? console.log('Moving file from TempDir to Destination : Done.') : '';
+    debug ? lgd('Moving file from TempDir to Destination : Done.') : null;
 }
 
 function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, toPath, overwrite = false, recursiveDeleteParentLevel = 1, debug = false) {
@@ -130,7 +128,7 @@ function writeFileWithComparingSameLinesWithOldContents(pathOfFile, fileContents
 }
 
 function removeDir(dirPath, recursiveDelete = false, debug = false) {
-    debug ? console.log('Removing Directory : Executing') : '';
+    debug ? lgd('Removing Directory : Executing') : null;
     /* #region : Patch to delete a folder when recursiveDelete is false */
     /**
      * Note: Setting recursiveDelete to true because setting it to false is
@@ -140,7 +138,7 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
     if (!recursiveDelete) {
         const dirPathCount = fs.readdirSync(dirPath).length;
         if (dirPathCount > 0) {
-            console.log(chalk.white.bgRed.bold(`Unable to remove the directory, because it is not empty : ${dirPath}`));
+            lgs(`Unable to remove the directory, because it is not empty : ${dirPath}`);
             process.exit(1);
         }
         recursiveDelete = true;
@@ -151,15 +149,15 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
         maxRetries: 120,
         retryDelay: 500,
     });
-    debug ? console.log('Removing Directory : Done') : '';
+    debug ? lgd('Removing Directory : Done') : null;
 }
 
 function removeDirIfExists(dirPath, recursiveDelete = false, debug = false) {
-    debug ? console.log('Removing Directory If Exists : Executing') : '';
+    debug ? lgd('Removing Directory If Exists : Executing') : null;
     if (fs.existsSync(dirPath)) {
         removeDir(dirPath, recursiveDelete, debug);
     }
-    debug ? console.log('Removing Directory If Exists: Done') : '';
+    debug ? lgd('Removing Directory If Exists: Done') : null;
 }
 
 function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, debug = false) {
@@ -169,28 +167,28 @@ function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, debug =
         const parentDir = path.dirname(dirPath);
         const parentDirFilesCount = fs.readdirSync(parentDir).length;
         debug
-            ? console.log(
+            ? lgd(
                   `parentDir: ${parentDir},    parentDirFilesCount: ${parentDirFilesCount} ${
                       parentDirFilesCount === 0 ? ' (Removing)' : '(Breaking Here)'
                   }`
               )
-            : '';
+            : null;
         if (parentDirFilesCount === 0) {
             dirPath = parentDir;
-            debug ? console.log(`removeDir ${parentDir}`) : '';
+            debug ? lgd(`removeDir ${parentDir}`) : null;
             removeDir(parentDir, false);
         } else {
-            debug ? console.log(`Directory (${parentDirFilesCount}) not empty: ${dirPath}`) : '';
+            debug ? lgd(`Directory (${parentDirFilesCount}) not empty: ${dirPath}`) : null;
             break;
         }
     }
 }
 
 function removeDirAndRemoveParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, recursiveDelete = false, debug = false) {
-    debug ? console.log('Removing Directory And Removing Parent Directory If Empty : Executing') : '';
+    debug ? lgd('Removing Directory And Removing Parent Directory If Empty : Executing') : null;
     removeDir(dirPath, recursiveDelete, debug);
     removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel, debug);
-    debug ? console.log('Removing Directory And Removing Parent Directory If Empty : Done') : '';
+    debug ? lgd('Removing Directory And Removing Parent Directory If Empty : Done') : null;
 }
 
 function generateTempFolderWithRandomText(debug = false) {
@@ -199,17 +197,17 @@ function generateTempFolderWithRandomText(debug = false) {
         charset: 'alphabetic',
         capitalization: 'lowercase',
     });
-    debug ? console.log(`Generated random folder name : ${randomFolder}`) : '';
+    debug ? lgd(`Generated random folder name : ${randomFolder}`) : null;
     const tempPathWithRandomFolder = `${os.tmpdir()}/${randomFolder}`;
-    debug ? console.log(`Temporary path with suffixed random folder : ${tempPathWithRandomFolder}`) : '';
+    debug ? lgd(`Temporary path with suffixed random folder : ${tempPathWithRandomFolder}`) : null;
     return tempPathWithRandomFolder;
 }
 
-function getFileCountRecursively(dirPath) {
+function getFileCountRecursively(dirPath, debug = false) {
     let count = 0;
     if (fs.existsSync(dirPath)) {
         const files = fs.readdirSync(dirPath);
-        // console.log(`files.length${files.length}`);
+        debug ? lgd(`files.length: ${files.length}`) : null;
         // eslint-disable-next-line no-restricted-syntax
         for (const file of files) {
             const filePath = path.join(dirPath, file);
@@ -221,7 +219,7 @@ function getFileCountRecursively(dirPath) {
             }
         }
     }
-    // console.log(`count${count}`);
+    debug ? lgd(`count: ${count}`) : null;
     return count;
 }
 
@@ -255,7 +253,7 @@ function getListOfSubfoldersStartingWith(dirPath, startingTxt, isStrict = false)
         const noSuchFileRegex = new RegExp('ENOENT: no such file or directory.*', 'g');
         if (noSuchFileRegex.test(err.message)) {
             if (isStrict) {
-                console.log(chalk.white.bgRed.bold(`getListOfSubfoldersStartingWith${err.message.replace(/^ENOENT: n/, ': N')}`));
+                lgc(`getListOfSubfoldersStartingWith ${err.message.replace(/^ENOENT: n/, ': N')}`, err);
                 process.exit(1);
             }
         } else {

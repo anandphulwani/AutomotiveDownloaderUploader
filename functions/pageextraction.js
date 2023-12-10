@@ -13,6 +13,10 @@ import { incRetryCount } from './others.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
 import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './excelsupportive.js';
+import { lgc, lgcf, lgd, lge, lgi, lgu, lgw } from './loggerandlocksupportive.js';
+import Color from '../class/Colors.js';
+import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 async function getImagesFromContent(page, lotIndex, username, dealerFolder, debug = false) {
@@ -30,11 +34,8 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     );
 
     if (dealerNameFromDCAsIs !== dealerNameFromPage) {
-        console.log(
-            chalk.white.bgYellow.bold(
-                `\nWARNING: Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`
-            )
-        );
+        console.log('');
+        lgw(`Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`);
         return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0 };
     }
     /**
@@ -45,11 +46,8 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     );
 
     if (!/^[a-zA-Z0-9\-_ ]{1,}$/.test(VINNumber)) {
-        console.log(
-            chalk.white.bgYellow.bold(
-                `\nWARNING: Found an invalid VIN number: ${VINNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`
-            )
-        );
+        console.log('');
+        lgw(`Found an invalid VIN number: ${VINNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Invalid VIN Number, Format Unknown)', imagesDownloaded: 0 };
     }
 
@@ -60,22 +58,22 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     const tempPath = generateTempFolderWithRandomText();
     makeDir(tempPath, debug);
 
-    debug ? '' : process.stdout.write('  ');
+    debug ? '' : lgi('  ', LineSeparator.false);
     const imageNumbersToDownload = getImageNumbersToDownloadFromDC(dealerFolder);
     let imagesDownloaded = 0;
     for (let index = 0; index < imageNumbersToDownload.length; index++) {
         const imageNumberToDownload = parseInt(imageNumbersToDownload[index], 10);
         if (imageNumberToDownload > imageOriginalURLS.length) {
-            process.stdout.write(
-                chalk.white.bgYellow.bold(
-                    `\nWARNING: Under ${dealerFolder}/${VINNumber}, Unable to find image number: ${imageNumberToDownload}, Total images under page: ${imageOriginalURLS.length}.`
-                )
+            console.log('');
+            lgw(
+                `Under ${dealerFolder}/${VINNumber}, Unable to find image number: ${imageNumberToDownload}, Total images under page: ${imageOriginalURLS.length}.`,
+                LineSeparator.false
             );
             // eslint-disable-next-line no-continue
             continue;
         }
 
-        debug ? console.log(`Downloading image: ${imageOriginalURLS[imageNumberToDownload - 1]}`) : '';
+        debug ? lgd(`Downloading image: ${imageOriginalURLS[imageNumberToDownload - 1]}`) : null;
         const file = fs.createWriteStream(`${tempPath}/${zeroPad(imageNumberToDownload, 3)}.jpg`);
 
         let shortFilename = '';
@@ -84,7 +82,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         } else {
             shortFilename = `${dealerFolder}/${VINNumber}/${path.basename(file.path)}`;
         }
-        debug ? '' : process.stdout.write(chalk.white(`${shortFilename} »`));
+        debug ? '' : lgi(`${shortFilename} »`, Color.white, LoggingPrefix.false, LineSeparator.false);
         const shortFilenameTextLength = shortFilename.length + 2;
 
         let checksumOfFile;
@@ -96,30 +94,29 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                 if (
                     err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
                     err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
+                    err.message.match(/connect ETIMEDOUT .*/g) ||
                     err.message === 'socket hang up' ||
                     err.message === 'aborted' ||
                     err.message === 'read ECONNRESET' ||
                     err.message === 'Page.navigate timed out.'
                 ) {
-                    console.log(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
-                    process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
+                    lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
+                    lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
                     if (checksumOfFileCnt < 4) {
                         // Sleep for 30 seconds
                         for (let cnt = 0; cnt < 10; cnt++) {
-                            process.stdout.write(chalk.yellow.bold('.'));
+                            lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
                             await waitForSeconds(3);
                         }
                         incRetryCount();
                     } else {
-                        console.log(
-                            chalk.white.bgRed.bold(
-                                `\nUnable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
-                            )
+                        console.log('');
+                        lgc(
+                            `Unable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                         );
-                        process.stdout.write('  ');
                     }
                 } else {
-                    console.log(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
+                    lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
                     throw err;
                 }
             }
@@ -148,41 +145,38 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                 if (
                     err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
                     err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
+                    err.message.match(/connect ETIMEDOUT .*/g) ||
                     err.message === 'socket hang up' ||
                     err.message === 'aborted' ||
                     err.message === 'read ECONNRESET' ||
                     err.message === 'Page.navigate timed out.'
                 ) {
-                    console.log(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
-                    process.stdout.write(chalk.yellow.bold(` ${logSymbols.warning}`));
+                    lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
+                    lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
                     if (downloadCnt < 4) {
                         // Sleep for 30 seconds
                         for (let cnt = 0; cnt < 10; cnt++) {
-                            process.stdout.write(chalk.yellow.bold('.'));
+                            lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
                             await waitForSeconds(3);
                         }
                         incRetryCount();
                     } else {
-                        console.log(
-                            chalk.white.bgRed.bold(
-                                `\nUnable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
-                            )
+                        console.log('');
+                        lgc(
+                            `Unable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
                         );
-                        process.stdout.write('  ');
                     }
                 } else {
-                    console.log(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`);
+                    lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
                     throw err;
                 }
             }
         }
     }
-    process.stdout.write(
-        chalk.whiteBright.bgCyan(
-            `\nImages (Downloaded/Requested)  /Available: (${imagesDownloaded}/${imageNumbersToDownload.length})  /${imageOriginalURLS.length}         `
-        )
+    lgi(
+        `Images (Downloaded/Requested)  /Available: (${imagesDownloaded}/${imageNumbersToDownload.length})  /${imageOriginalURLS.length}         `,
+        Color.bgCyan
     );
-    debug ? '' : process.stdout.write('\n');
     // LOWPRIORITY:  Make sure this removeDir runs properly
     removeDir(tempPath, true, debug);
     return { result: true, bookmarkAppendMesg: VINNumber, imagesDownloaded: imagesDownloaded };

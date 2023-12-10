@@ -6,11 +6,13 @@ import { exec, spawn } from 'child_process';
 import { keyInYN } from 'readline-sync';
 import { URL as URLparser } from 'url';
 import path from 'path';
+import beautify from 'json-beautify';
+import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { getCredentialsForUsername, getAppDomain } from './functions/configsupportive.js';
+import { getCredentialsForUsername, getAppDomain, getLotConfigPropertiesValues } from './functions/configsupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
@@ -33,6 +35,10 @@ import { validateConfigFile } from './functions/configvalidation.js';
 import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
+import { lgc, lge, lgi, lgu } from './functions/loggerandlocksupportive.js';
+import Color from './class/Colors.js';
+import LineSeparator from './class/LineSeparator.js';
+import LoggingPrefix from './class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 // const {
@@ -40,6 +46,20 @@ import { getProjectLogsDirPath } from './functions/projectpaths.js';
 // } = config;
 // console.log(`${host}:${port}/${name}`);
 // console.log(config);
+
+/**
+ *
+ * Only make a single instance run of the script.
+ *
+ */
+try {
+    if (checkSync('downloader.js', { stale: 15000 })) {
+        throw new Error('Lock already held, another instace is already running.');
+    }
+    lockSync('downloader.js', { stale: 15000 });
+} catch (error) {
+    process.exit(1);
+}
 
 if (config.environment === 'production') {
     checkTimezone();
@@ -71,12 +91,13 @@ if (
         [validateDealerConfigurationExcelFile() !== 'error', validateBookmarksAndCheckCredentialsPresent() !== 'error'].every((i) => i)
     )
 ) {
-    console.log(chalk.white.bgRed.bold(`Please correct the above errors, in order to continue.`));
+    lge(`Please correct the above errors, in order to continue.`);
     if (config.environment === 'production') {
         process.exit(1);
     }
 }
 
+exec(`start "" FolderTransferer.exe`);
 // await killChrome({
 //     includingMainProcess: true,
 // });
@@ -97,7 +118,7 @@ for (const LotIndexEle of LotIndexArray) {
     const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
     if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\${LotIndexEle}`)) {
         exec(
-            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndexToAllot} ${instanceRunDateFormatted} && pause && pause && exit"`
+            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndexToAllot} ${instanceRunDateFormatted} && pause && pause && exit"`
         );
     }
     sleep(3);
@@ -138,7 +159,8 @@ for (const usernameBookmark of allUsernamesBookmarks) {
     let userLoggedIn = '';
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
-        console.log(chalk.cyan(`Reading bookmarks for the Username: ${chalk.cyan.bold(usernameBookmark.name)}`));
+        lgi(`Reading bookmarks for the Username: `, LineSeparator.false);
+        lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
         const credentials = getCredentialsForUsername(usernameBookmark.name);
 
         setCurrentDealerConfiguration(usernameBookmark.name);
@@ -147,26 +169,24 @@ for (const usernameBookmark of allUsernamesBookmarks) {
         // eslint-disable-next-line no-restricted-syntax
         for (const dealerLevelBookmark of dealerLevelBookmarks) {
             const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
-            const minDealerFolders = config.lot[lotIndex - 1].minimumDealerFoldersForEachContractors * Object.keys(config.contractors).length;
+            const { lotCfgMinDealerFolders, lotCfgImagesQty } = getLotConfigPropertiesValues(lotIndex);
             if (
-                (minDealerFolders === false || dealerFolderCntInLot >= minDealerFolders) &&
-                (config.lot[lotIndex - 1].imagesQty === 0 || imagesQtyInLot >= config.lot[lotIndex - 1].imagesQty)
+                (lotCfgMinDealerFolders === undefined || dealerFolderCntInLot >= lotCfgMinDealerFolders) &&
+                (lotCfgImagesQty === undefined || imagesQtyInLot >= lotCfgImagesQty)
             ) {
                 if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
                     exec(
-                        `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
+                        `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
                     );
                 }
                 dealerFolderCntInLot = 0;
                 imagesQtyInLot = 0;
                 lotIndex++;
             }
-            console.log(
-                chalk.cyan('Reading bookmarks for the Dealer: ') +
-                    chalk.cyan.bold(dealerLevelBookmarkName) +
-                    chalk.cyan(' from the Username: ') +
-                    chalk.cyan.bold(usernameBookmark.name)
-            );
+            lgi('Reading bookmarks for the Dealer: ', LineSeparator.false);
+            lgi(dealerLevelBookmarkName, Color.cyan, LoggingPrefix.false, LineSeparator.false);
+            lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
+            lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
             const vehicleBookmarks = dealerLevelBookmark.children;
 
             // eslint-disable-next-line no-restricted-syntax
@@ -204,14 +224,11 @@ for (const usernameBookmark of allUsernamesBookmarks) {
                     if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
                         replaceBookmarksElementByGUIDAndWriteToBookmarksFile('name', vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
                     } else {
-                        console.log('Bookmark not appended!');
+                        lgu('Bookmark not appended!');
                         if (config.updateBookmarksOnceDone) {
                             try {
                                 const bookmarksNotAppendFile = path.join(getProjectLogsDirPath(), 'bookmarksNotAppend.txt');
-                                fs.appendFileSync(
-                                    bookmarksNotAppendFile,
-                                    '--------------------------------------------------------------------------------------------------\n'
-                                );
+                                fs.appendFileSync(bookmarksNotAppendFile, `${'-'.repeat(120)}\n`);
                                 fs.appendFileSync(
                                     bookmarksNotAppendFile,
                                     `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, \nvehicleBookmark.name: ${vehicleBookmark.name}, \nvehicleBookmark.url: ${vehicleBookmark.url}\n`
@@ -219,13 +236,10 @@ for (const usernameBookmark of allUsernamesBookmarks) {
 
                                 fs.appendFileSync(bookmarksNotAppendFile, `vehicleBookmark.guid: ${vehicleBookmark.guid}\n`);
                                 fs.appendFileSync(bookmarksNotAppendFile, `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}\n`);
-                                fs.appendFileSync(bookmarksNotAppendFile, `returnObj: ${JSON.stringify(returnObj, null, 2)}\n`);
-                                fs.appendFileSync(
-                                    bookmarksNotAppendFile,
-                                    '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
-                                );
+                                fs.appendFileSync(bookmarksNotAppendFile, `returnObj: ${beautify(returnObj, null, 3, 120)}\n`);
+                                fs.appendFileSync(bookmarksNotAppendFile, `${'+'.repeat(120)}\n`);
                             } catch (err) {
-                                console.error(err);
+                                lgc(err);
                             }
                         }
                     }
@@ -246,7 +260,7 @@ for (const usernameBookmark of allUsernamesBookmarks) {
     if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
         if (!keyInYN('Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?')) {
             exec(
-                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_alltoment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
+                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
             );
         }
     }

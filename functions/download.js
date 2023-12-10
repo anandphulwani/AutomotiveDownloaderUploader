@@ -7,7 +7,10 @@ import logSymbols from 'log-symbols';
 
 /* eslint-disable import/extensions */
 import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
-import { lgvf } from './loggersupportive.js';
+import { lgd, lgi, lgu } from './loggerandlocksupportive.js';
+import Color from '../class/Colors.js';
+import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
@@ -22,7 +25,7 @@ async function getChecksumFromURL(url, hashAlgo, debug = false) {
                     const checksumOfFile = hashSum.digest('hex');
                     resolve(checksumOfFile);
                 } else {
-                    console.log(chalk.white.bgRed.bold(`Unable to calculate checksum of the file: ${url}`));
+                    lgu(`Unable to calculate checksum of the file: ${url}`);
                     process.exit(1);
                 }
             });
@@ -65,9 +68,13 @@ async function downloadFileAndCompareWithChecksum(
                     let filePath = file.path;
                     lgvf('============================================BLOCK START============================================');
                     if (isSingleImage) {
-                        lgvf('==============IS SINGLE IMAGE START==============');
-                        lgvf(`Original filePath: ${filePath}`);
-                        lgvf(`Original destinationPath: ${destinationPath}`);
+                        /**
+                         * If it's a single image, then get the VIN Number from the path name, and replace the filename
+                         * which is usually 01.jpg, 02.jpg...... likewise, to VINNumber.jpg, for that we need to
+                         * firstly: moveDirOrFile(rename) 01.jpg to VINNumber.jpg in the directory where the file is currently present
+                         * secondly: we have to alter the destinationpath from `somepath/VINNumber/01.jpg` to `somepath/VINNumber.jpg`
+                         * so that the file can be moved without the VINNumber as directory.
+                         */
                         const newFilePath = `${path.dirname(filePath)}/${path.basename(destinationPath)}${path.extname(path.basename(filePath))}`;
                         lgvf(`Mod newFilePath: ${newFilePath}`);
                         destinationPath = `${path.dirname(destinationPath)}/`;
@@ -87,11 +94,11 @@ async function downloadFileAndCompareWithChecksum(
                     lgvf('==============OUTSIDE IF BLOCK END==============');
                     lgvf('============================================BLOCK END============================================');
                     debug
-                        ? console.log(chalk.green.bold(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`))
-                        : process.stdout.write(
-                              chalk.green.bold(
-                                  ` ${logSymbols.success}${' '.repeat(38 - shortFilenameTextLength > 0 ? 38 - shortFilenameTextLength : 0)}`
-                              )
+                        ? lgd(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`, Color.green)
+                        : lgi(
+                              ` ${logSymbols.success}${' '.repeat(38 - shortFilenameTextLength > 0 ? 38 - shortFilenameTextLength : 0)}`,
+                              LoggingPrefix.false,
+                              LineSeparator.false
                           );
                 }
                 resolve();

@@ -3,14 +3,13 @@ import fs from 'fs';
 import path from 'path';
 
 /* eslint-disable import/extensions */
-import { lgc } from './loggersupportive.js';
+import { attainLock, releaseLock, lgc, lgs, lgu } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
 import { waitForMilliSeconds } from './sleep.js';
-import { attainLock, releaseLock } from './locksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { makeDir } from './filesystem.js';
 import { instanceRunDateFormatted } from './datetime.js';
-import { getProjectConfigFilePath } from './projectpaths.js';
+import { getProjectConfigContractorsFilePath, getProjectConfigFilePath, getProjectConfigLotLastFilePath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
 function getCredentialsForUsername(username) {
@@ -32,8 +31,8 @@ function getAppDomain() {
     return config.appDomain;
 }
 
-async function setContractorsCurrentAllotted(contractor, allottedQty) {
-    const fileToOperateOn = getProjectConfigFilePath();
+function setContractorsCurrentAllotted(contractor, allottedQty) {
+    const fileToOperateOn = getProjectConfigContractorsFilePath();
     attainLock(fileToOperateOn, undefined, true);
 
     try {
@@ -42,22 +41,20 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
             releaseLock(fileToOperateOn, undefined, true);
             return;
         }
-        const configUserContent = fs.readFileSync(fileToOperateOn, 'utf8');
+        const configContractorsContent = fs.readFileSync(fileToOperateOn, 'utf8');
 
-        const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+        const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
         const regexExpression = new RegExp(regexString, 'g');
-        const newConfigUserContent = configUserContent.replace(regexExpression, `$1$2$3${allottedQty}$5`);
-        if (configUserContent === newConfigUserContent) {
-            console.log(
-                chalk.white.bgRed.bold(
-                    `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
-                )
+        const newconfigContractorsContent = configContractorsContent.replace(regexExpression, `$1$2$3${allottedQty}$5`);
+        if (configContractorsContent === newconfigContractorsContent) {
+            lgu(
+                `Unable to set contractors: '${contractor}', current allotted quantity to: '${allottedQty}'. Serious issue, please contact developer.`
             );
             releaseLock(fileToOperateOn, undefined, true);
             process.exit(1);
         }
-        fs.writeFileSync(fileToOperateOn, newConfigUserContent, 'utf8');
-        createBackupOfFile(fileToOperateOn, newConfigUserContent);
+        fs.writeFileSync(fileToOperateOn, newconfigContractorsContent, 'utf8');
+        createBackupOfFile(fileToOperateOn, newconfigContractorsContent);
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
         lgc(err);
@@ -66,34 +63,34 @@ async function setContractorsCurrentAllotted(contractor, allottedQty) {
 }
 
 function getContractorsCurrentAllotted(contractor) {
-    const configUserContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
-    const regexString = `(const configUser = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+    const configContractorsContent = fs.readFileSync(getProjectConfigContractorsFilePath(), 'utf8');
+    const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
     const regexExpression = new RegExp(regexString, 'g');
 
-    if (!regexExpression.test(configUserContent)) {
-        lgc('Unable to match regex for fn getContractorsCurrentAllotted()');
+    if (!regexExpression.test(configContractorsContent)) {
+        lgu('Unable to match regex for fn getContractorsCurrentAllotted()');
         process.exit(1);
     }
 
-    const match = configUserContent.match(regexExpression);
+    const match = configContractorsContent.match(regexExpression);
     const currentAllotted = match[0].match(regexString)[4];
     return currentAllotted;
 }
 
-async function addToContractorsCurrentAllotted(contractor, quantity) {
+function addToContractorsCurrentAllotted(contractor, quantity) {
     let newQuantity = getContractorsCurrentAllotted(contractor);
     newQuantity = parseInt(newQuantity, 10);
     newQuantity += quantity;
-    await setContractorsCurrentAllotted(contractor, newQuantity);
+    setContractorsCurrentAllotted(contractor, newQuantity);
 }
 
 function getLastLotNumber() {
-    const configContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
+    const configContent = fs.readFileSync(getProjectConfigLotLastFilePath(), 'utf8');
     const lastLotNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\r\\n)`;
     const lastLotNumberRegexExpression = new RegExp(lastLotNumberRegexString, 'g');
 
     if (!lastLotNumberRegexExpression.test(configContent)) {
-        lgc('Unable to match regex for fn getLastLotNumber()');
+        lgu('Unable to match regex for fn getLastLotNumber()');
         process.exit(1);
     }
     const match = configContent.match(lastLotNumberRegexExpression);
@@ -101,20 +98,20 @@ function getLastLotNumber() {
 }
 
 function getLastLotDate() {
-    const configContent = fs.readFileSync(getProjectConfigFilePath(), 'utf8');
+    const configContent = fs.readFileSync(getProjectConfigLotLastFilePath(), 'utf8');
     const lastLotDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\r\\n)`;
     const lastLotDateRegexExpression = new RegExp(lastLotDateRegexString, 'g');
 
     if (!lastLotDateRegexExpression.test(configContent)) {
-        lgc('Unable to match regex for fn getLastLotDate()');
+        lgu('Unable to match regex for fn getLastLotDate()');
         process.exit(1);
     }
     const match = configContent.match(lastLotDateRegexExpression);
     return match[0].match(lastLotDateRegexString)[2];
 }
 
-async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
-    const fileToOperateOn = getProjectConfigFilePath();
+function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
+    const fileToOperateOn = getProjectConfigLotLastFilePath();
     attainLock(fileToOperateOn, undefined, true);
 
     try {
@@ -132,7 +129,7 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
             const lastRunNumberRegexExpression = new RegExp(lastRunNumberRegexString, 'g');
             newConfigContent = configContent.replace(lastRunNumberRegexExpression, `$1${lastLotNumber}$3`);
             if (configContent === newConfigContent) {
-                console.log(chalk.white.bgRed.bold(`Unable to set lastLotNumber: '${lastLotNumber}'. Serious issue, please contact developer.`));
+                lgu(`Unable to set lastLotNumber: '${lastLotNumber}'. Serious issue, please contact developer.`);
                 releaseLock(fileToOperateOn, undefined, true);
                 process.exit(1);
             }
@@ -144,7 +141,7 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
             const lastRunDateRegexExpression = new RegExp(lastRunDateRegexString, 'g');
             newConfigContent = configContent.replace(lastRunDateRegexExpression, `$1${lastLotDate}$3`);
             if (configContent === newConfigContent) {
-                console.log(chalk.white.bgRed.bold(`Unable to set lastLotDate: '${lastLotDate}'. Serious issue, please contact developer.`));
+                lgu(`Unable to set lastLotDate: '${lastLotDate}'. Serious issue, please contact developer.`);
                 releaseLock(fileToOperateOn, undefined, true);
                 process.exit(1);
             }
@@ -153,9 +150,23 @@ async function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
         createBackupOfFile(fileToOperateOn, newConfigContent);
         releaseLock(fileToOperateOn, undefined, true);
     } catch (err) {
-        console.log(`${err.message}`);
+        lgc(err);
         process.exit(1);
     }
+}
+
+const contractorsNames = Object.entries(config.contractors)
+    .filter(([, value]) => value.normalThreshold >= 0)
+    .map(([key]) => key);
+
+function getLotConfigPropertiesValues(lotIndex) {
+    const { minimumDealerFoldersForEachContractors, imagesQty } = config.lot[lotIndex - 1];
+    const lotCfgImagesQty = imagesQty === 0 ? undefined : imagesQty;
+    const lotCfgMinDealerFolders =
+        minimumDealerFoldersForEachContractors === false || minimumDealerFoldersForEachContractors === undefined
+            ? undefined
+            : minimumDealerFoldersForEachContractors * contractorsNames.length;
+    return { lotCfgMinDealerFolders, lotCfgImagesQty };
 }
 
 /**
@@ -230,5 +241,6 @@ export {
     getContractorsCurrentAllotted,
     addToContractorsCurrentAllotted,
     setLastLotNumberAndDate,
+    getLotConfigPropertiesValues,
     createProcessingAndRecordKeepingFolders,
 };

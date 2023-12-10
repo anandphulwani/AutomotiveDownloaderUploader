@@ -6,11 +6,12 @@ import { getCredentialsForUsername } from './configsupportive.js';
 import { getAllUsernamesBookmarks } from './bookmarksupportive.js';
 import { setCurrentDealerConfiguration, getAllDealerNumbers } from './excelsupportive.js';
 import { checkForSpaceInBeginOrEnd, checkForMultipleSpacesInMiddle, allTrimString, trimMultipleSpacesInMiddleIntoOne } from './stringformatting.js';
+import { lgd, lge, lgw } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 function validateBookmarksAndCheckCredentialsPresent(debug = false) {
     let validationStatus = 'success';
-    debug ? console.log(`Validating bookmarks and checking if credentials are present: Executing.`) : '';
+    debug ? lgd(`Validating bookmarks and checking if credentials are present: Executing.`) : null;
     const allUsernamesBookmarks = getAllUsernamesBookmarks();
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
@@ -23,25 +24,19 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
             const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
             if (!allDealerNumbers.includes(dealerLevelBookmarkName)) {
                 validationStatus = 'error';
-                console.log(
-                    chalk.white.bgRed.bold(
-                        `ERROR: Unable to find dealer folder: '${dealerLevelBookmarkName}' for the Username: '${usernameBookmark.name}', it is not present in the excel.`
-                    )
+                lge(
+                    `Unable to find dealer folder: '${dealerLevelBookmarkName}' for the Username: '${usernameBookmark.name}', it is not present in the excel.`
                 );
             }
             if (dealerLevelBookmarkNames.includes(dealerLevelBookmarkName)) {
                 validationStatus = 'error';
-                console.log(
-                    chalk.white.bgRed.bold(
-                        `ERROR: Duplicate Dealer level bookmark name found, a folder ${dealerLevelBookmarkName} is already present.`
-                    )
-                );
+                lge(`Duplicate Dealer level bookmark name found, a folder ${dealerLevelBookmarkName} is already present.`);
             } else {
                 dealerLevelBookmarkNames.push(dealerLevelBookmarkName);
             }
         }
     }
-    debug ? console.log(`Validating excel file: Done.`) : '';
+    debug ? lgd(`Validating excel file: Done.`) : null;
     return validationStatus;
 }
 
@@ -56,20 +51,16 @@ function validateBookmarkNameText(dealerLevelBookmarkName, username) {
 
 function checkForSpaceInBeginOrEndOfBookmarkName(dealerLevelBookmarkName, username) {
     if (checkForSpaceInBeginOrEnd(dealerLevelBookmarkName)) {
-        console.log(
-            chalk.white.bgYellow.bold(
-                `WARNING: Under bookmark for user '${username}' in dealer folder '${dealerLevelBookmarkName}', found space(s) in beginning and/or the end of bookmark name.`
-            )
+        lgw(
+            `Under bookmark for user '${username}' in dealer folder '${dealerLevelBookmarkName}', found space(s) in beginning and/or the end of bookmark name.`
         );
     }
 }
 
 function checkForMultipleSpacesInMiddleOfBookmarkName(dealerLevelBookmarkName, username) {
     if (checkForMultipleSpacesInMiddle(dealerLevelBookmarkName)) {
-        console.log(
-            chalk.white.bgYellow.bold(
-                `WARNING: Under bookmark for user '${username}' in dealer folder '${dealerLevelBookmarkName}', found multiple consecutive space in middle of bookmark name.`
-            )
+        lgw(
+            `Under bookmark for user '${username}' in dealer folder '${dealerLevelBookmarkName}', found multiple consecutive space in middle of bookmark name.`
         );
     }
 }

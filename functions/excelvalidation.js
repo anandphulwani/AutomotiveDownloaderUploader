@@ -9,11 +9,12 @@ import {
     trimSingleSpaceInMiddleArray,
     removeDuplicates,
 } from './stringformatting.js';
+import { lgd, lge, lgw } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 let resultStatus;
 function validateDealerConfigurationExcelFile(debug = false) {
-    debug ? console.log(`Validating excel file: Executing.`) : '';
+    debug ? lgd(`Validating excel file: Executing.`) : null;
     resultStatus = 'success';
     Object.keys(config.credentials).forEach((credential) => {
         const { username } = config.credentials[credential];
@@ -21,16 +22,21 @@ function validateDealerConfigurationExcelFile(debug = false) {
 
         const data = readDealerConfigurationExcel(usernameTrimmed);
 
-        // Array of values of the specified column name
-        // console.log(data.map((item) => item['Dealer Number']));
-
-        // Array of objects, with row number as key, column name and column value as object
-        // const test = Object.fromEntries(data.map((entry, index) => [index + 1, { 'Dealer Number': entry['Dealer Number'] }]));
-        // console.log(test);
-
-        // Array of objects, without any key, column name and column value as object
-        // const redux1 = (list) => list.map((o) => Object.fromEntries(['Dealer Number'].map((k) => [k, o[k]])));
-        // console.log(redux1(data));
+        debug ? lgd(`Array of values of the specified column name: ${data.map((item) => item['Dealer Number'])}`) : null;
+        debug
+            ? lgd(
+                  `Array of objects, with row number as key, column name and column value as object: ${Object.fromEntries(
+                      data.map((entry, index) => [index + 1, { 'Dealer Number': entry['Dealer Number'] }])
+                  )}`
+              )
+            : null;
+        debug
+            ? lgd(
+                  `Array of objects, without any key, column name and column value as object: ${data.map((o) =>
+                      Object.fromEntries(['Dealer Number'].map((k) => [k, o[k]]))
+                  )}`
+              )
+            : null;
 
         const dealerNumberArray = data.map((item) => item['Dealer Number']);
         validateDealerConfigurationExcelFileColumnDealerNumber(usernameTrimmed, dealerNumberArray, 'Dealer Number');
@@ -56,10 +62,10 @@ function validateDealerConfigurationExcelFile(debug = false) {
         const lockTheImageArray = data.map((item) => item['Lock the image (check mark)']);
         validateDealerConfigurationExcelFileColumnBooleanOrBlankOnly(usernameTrimmed, lockTheImageArray, 'Lock the image (check mark)');
 
-        debug ? console.log(`resultStatus: ${resultStatus}`) : '';
+        debug ? lgd(`resultStatus: ${resultStatus}`) : null;
     });
 
-    debug ? console.log(`Validating excel file: Done.`) : '';
+    debug ? lgd(`Validating excel file: Done.`) : null;
     return resultStatus;
 }
 
@@ -132,13 +138,7 @@ function checkForDuplicatesInArray(usernameTrimmed, data, columnName) {
     dupElements.forEach((dupElement) => {
         let elementsLocations = elementsAllIndex(data, dupElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: (${usernameTrimmed}) In column '${columnName}', found '${dupElement}' at multiple row numbers at ${elementsLocations.join(
-                    ', '
-                )}.`
-            )
-        );
+        lge(`(${usernameTrimmed}) In column '${columnName}', found '${dupElement}' at multiple row numbers at ${elementsLocations.join(', ')}.`);
     });
 }
 
@@ -148,11 +148,7 @@ function checkForEmptyCellsInArray(usernameTrimmed, data, columnName) {
     if (elementsLocations.length > 0) {
         setResultStatus('error');
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: (${usernameTrimmed}) In column '${columnName}', found empty/blank cell at row number at ${elementsLocations.join(', ')}.`
-            )
-        );
+        lge(`(${usernameTrimmed}) In column '${columnName}', found empty/blank cell at row number at ${elementsLocations.join(', ')}.`);
     }
 }
 
@@ -169,11 +165,9 @@ function checkForSpaceInBeginOrEndInArray(usernameTrimmed, data, columnName) {
     spaceElements.forEach((spaceElement) => {
         let elementsLocations = elementsAllIndex(data, spaceElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgYellow.bold(
-                `WARNING: (${usernameTrimmed}) In column '${columnName}', found space(s) in beginning and/or the end of element\n` +
-                    `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lgw(
+            `(${usernameTrimmed}) In column '${columnName}', found space(s) in beginning and/or the end of element\n` +
+                `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }
@@ -191,11 +185,9 @@ function checkForMultipleSpacesInMiddleInArray(usernameTrimmed, data, columnName
     spaceElements.forEach((spaceElement) => {
         let elementsLocations = elementsAllIndex(data, spaceElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgYellow.bold(
-                `WARNING: (${usernameTrimmed}) In column '${columnName}', found multiple consecutive space in middle of the element\n` +
-                    `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lgw(
+            `(${usernameTrimmed}) In column '${columnName}', found multiple consecutive space in middle of the element\n` +
+                `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }
@@ -213,11 +205,9 @@ function checkForSingleSpaceInMiddleInArray(usernameTrimmed, data, columnName) {
     spaceElements.forEach((spaceElement) => {
         let elementsLocations = elementsAllIndex(data, spaceElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgYellow.bold(
-                `WARNING: (${usernameTrimmed}) In column '${columnName}', found single space in middle of the element\n` +
-                    `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lgw(
+            `(${usernameTrimmed}) In column '${columnName}', found single space in middle of the element\n` +
+                `         '${spaceElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }
@@ -235,11 +225,9 @@ function checkForBooleanValueOnlyInArray(usernameTrimmed, data, columnName) {
     notBooleanElements.forEach((notBooleanElement) => {
         let elementsLocations = elementsAllIndex(data, notBooleanElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: (${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no), element value: \n` +
-                    `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lge(
+            `(${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no), element value: \n` +
+                `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }
@@ -258,11 +246,9 @@ function checkForBooleanOrBlankValueOnlyInArray(usernameTrimmed, data, columnNam
     notBooleanElements.forEach((notBooleanElement) => {
         let elementsLocations = elementsAllIndex(data, notBooleanElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: (${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no) or blank, element value: \n` +
-                    `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lge(
+            `(${usernameTrimmed}) In column '${columnName}', found invalid value for boolean(yes/no) or blank, element value: \n` +
+                `         '${notBooleanElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }
@@ -280,11 +266,9 @@ function checkForNumbersAndCommaOnlyInArray(usernameTrimmed, data, columnName) {
     notNumbersAndCommaElements.forEach((notNumbersAndCommaElement) => {
         let elementsLocations = elementsAllIndex(data, notNumbersAndCommaElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
-        console.log(
-            chalk.white.bgRed.bold(
-                `ERROR: (${usernameTrimmed}) In column '${columnName}', found invalid value for numbers separeted by comma, element value: \n` +
-                    `         '${notNumbersAndCommaElement}'    at row number ${elementsLocations.join(', ')}.`
-            )
+        lge(
+            `${usernameTrimmed}) In column '${columnName}', found invalid value for numbers separeted by comma, element value: \n` +
+                `         '${notNumbersAndCommaElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
 }

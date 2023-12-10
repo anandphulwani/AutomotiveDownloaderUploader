@@ -5,10 +5,14 @@ import path from 'path';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
-import { lge, lgi, lgif, lgw } from './loggersupportive.js';
+import { lge, lgi, lgif, lgw } from './loggerandlocksupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFolderSizeInBytes, removeDirIfExists } from './filesystem.js';
 import { addUploadingToReport } from './reportsupportive.js';
 import { printSectionSeperator } from './others.js';
+import Color from '../class/Colors.js';
+import LineSeparator from '../class/LineSeparator.js';
+import LoggingPrefix from '../class/LoggingPrefix.js';
+import { getRemainingBookmarksNotDownloadedLength } from './bookmarksupportive.js';
 /* eslint-enable import/extensions */
 
 const cuttingDoneFolderName = config.cutterProcessingFolders[0];
@@ -33,10 +37,11 @@ const sourceDestinationAccountingTypes = {
 
 function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccountingType, foldersToShift, isDryRun = true) {
     // eslint-disable-next-line prefer-const
-    let { destinationPath, accountingFolder, movingMesg } = sourceDestinationAccountingTypes.sourceDestinationAccountingType;
+    let { accountingFolder, movingMesg } = sourceDestinationAccountingTypes[sourceDestinationAccountingType];
     let hasMovingToUploadZonePrinted = false;
     const foldersToShiftLength = foldersToShift.length;
     for (let cnt = 0; cnt < foldersToShiftLength; cnt++) {
+        let { destinationPath } = sourceDestinationAccountingTypes[sourceDestinationAccountingType];
         const { dealerImagesFolder, isOverwrite } = foldersToShift[cnt];
         let contractor;
         let contractorAccountingPath;
@@ -53,27 +58,29 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
         contractorAccountingPath = path.join(contractorAccountingPath, path.basename(dealerImagesFolder));
 
         if (!isDryRun && !hasMovingToUploadZonePrinted) {
-            lgi(`[${chalk.black.bgWhiteBright(currentTimeWOMSFormatted())}] ${movingMesg}: \n`);
+            lgi(`[`, LineSeparator.false);
+            lgi(currentTimeWOMSFormatted(), Color.bgWhite, LoggingPrefix.false, LineSeparator.false);
+            lgi(`]`, LoggingPrefix.false, LineSeparator.false);
+            lgi(` ${movingMesg}: `, LoggingPrefix.false);
             hasMovingToUploadZonePrinted = true;
         }
         if (!isDryRun) {
             const folderNameToPrint = `  ${path.basename(dealerImagesFolder)} `;
-            process.stdout.write(chalk.cyan(folderNameToPrint));
-            lgif(folderNameToPrint);
+            lgi(folderNameToPrint, cnt % 2 === 0 ? LoggingPrefix.true : LoggingPrefix.false, LineSeparator.false);
             for (let innerCnt = 0; innerCnt < 58 - folderNameToPrint.length; innerCnt++) {
-                process.stdout.write(chalk.cyan(`.`));
+                lgi(`.`, LoggingPrefix.false, LineSeparator.false);
             }
         }
         if (isDryRun) {
             if (isOverwrite === false) {
                 let doesDestinationFolderAlreadyExists = false;
-                let folderExistMesg = `Folder cannot be moved to new location as it already exists, Renaming to 'AlreadyMoved_',\nFolder: ${dealerImagesFolder}\n`;
+                let folderExistMesg = `Folder cannot be moved to new location as it already exists, Renaming to 'AlreadyMoved_',\nFolder: ${dealerImagesFolder}`;
                 if (fs.existsSync(destinationPath)) {
-                    folderExistMesg += `Destination: ${destinationPath}\n`;
+                    folderExistMesg += `\nDestination: ${destinationPath}`;
                     doesDestinationFolderAlreadyExists = true;
                 }
                 if (fs.existsSync(contractorAccountingPath)) {
-                    folderExistMesg += `Destination (Accounting): ${contractorAccountingPath}\n`;
+                    folderExistMesg += `\nDestination (Accounting): ${contractorAccountingPath}`;
                     doesDestinationFolderAlreadyExists = true;
                 }
                 const otherContractors = Object.keys(config.contractors).filter((key) => key !== contractor);
@@ -87,7 +94,7 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
                         path.basename(dealerImagesFolder)
                     );
                     if (fs.existsSync(otherAccountingZonePath)) {
-                        folderExistMesg += `Destination (Other Accounting): ${otherAccountingZonePath}\n`;
+                        folderExistMesg += `\nDestination (Other Accounting): ${otherAccountingZonePath}`;
                         doesDestinationFolderAlreadyExists = true;
                     }
                 }
@@ -123,9 +130,9 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
         }
         if (!isDryRun) {
             if (cnt !== foldersToShiftLength - 1) {
-                process.stdout.write(chalk.cyan(`, `));
+                lgi(`, `, LoggingPrefix.false, LineSeparator.false);
             } else {
-                process.stdout.write(chalk.cyan(`\n`));
+                lgi('', LoggingPrefix.false);
                 printSectionSeperator();
             }
         }
@@ -142,6 +149,17 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
         return;
     }
 
+    /**
+     * Ignore if Bookmarks file contains some URLs which are not downloaded yet.
+     */
+    const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength();
+    if (remainingBookmarksNotDownloadedLength !== 0) {
+        return;
+    }
+
+    /**
+     * Ignore if downloadPath/TodaysDate contains some data.
+     */
     const downloadPathWithTodaysDate = `${config.downloadPath}\\${instanceRunDateFormatted}`;
     if (fs.existsSync(downloadPathWithTodaysDate) && fs.readdirSync(downloadPathWithTodaysDate).length !== 0) {
         return;
@@ -150,15 +168,25 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
     // eslint-disable-next-line no-restricted-syntax
     for (const contractor of Object.keys(config.contractors)) {
         const allWorkDoneFile = `${contractor}_${instanceRunDateFormatted}.txt`;
+        /**
+         * Ignore `contractor` if it the file is created, i.e. its filename is already present `cuttersCompletedAndDoneFileCreated`.
+         */
         if (cuttersCompletedAndDoneFileCreated.includes(allWorkDoneFile)) {
             // eslint-disable-next-line no-continue
             continue;
         }
+        /**
+         * Ignore `contractor` if its contractorsZonePath is not present.
+         */
         const contractorPath = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted);
         if (!fs.existsSync(contractorPath)) {
             // eslint-disable-next-line no-continue
             continue;
         }
+        /**
+         * Ignore if contractorZonePath contains files allotted are already present, i.e. folders except
+         * cuttingDoneFolderName, finishingBufferFolderName, readyToUploadFolderName
+         */
         let contractorPathFiles = fs.readdirSync(contractorPath);
         contractorPathFiles = contractorPathFiles.filter(
             (filename) => ![cuttingDoneFolderName, finishingBufferFolderName, readyToUploadFolderName].includes(filename)
@@ -167,12 +195,17 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
             // eslint-disable-next-line no-continue
             continue;
         }
-
+        /**
+         * Ignore `contractor` if its contractors cuttingDone folder is not present.
+         */
         const contractorPathCuttingDone = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted, cuttingDoneFolderName);
         if (!fs.existsSync(contractorPath)) {
             // eslint-disable-next-line no-continue
             continue;
         }
+        /**
+         * Ignore `contractor` if its contractors cuttingDone folder has files present in the cuttingDone folder.
+         */
         const contractorPathCuttingDoneFiles = fs.readdirSync(contractorPathCuttingDone);
         if (contractorPathCuttingDoneFiles.length !== 0) {
             // eslint-disable-next-line no-continue

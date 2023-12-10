@@ -10,6 +10,10 @@ import _ from 'lodash';
 import { configProduction } from './config-production.js';
 import { configDevelopment } from './config-development.js';
 import { configUser } from './config-user.js';
+import { configUniqueIds } from './config-unique-ids.js';
+import { configLotLast } from './config-lot-last.js';
+import { configContractors } from './config-contractors.js';
+import { configLots } from './config-lots.js';
 /* eslint-enable import/extensions */
 
 const configBasic = {
@@ -17,6 +21,8 @@ const configBasic = {
     appDomain: 'https://www.homenetiol.com',
     timezone: 'Asia/Calcutta',
     timeOffsetInMinutesToAvoid: 2,
+    allottedFolderRegex: '^(\\d[\\S]*)(?: ([\\S| ]*))? ([\\S]+) (\\d{1,3}) \\((#(\\d{5}))\\)$',
+    loggingLevel: 'billy',
     browserArgs: {
         headless: false,
         defaultViewport: null,
@@ -33,13 +39,15 @@ const configBasic = {
     // sourceBookmarkPath Or processingBookmarkPathWithoutSync: '/path/to/Chrome/Bookmark' OR '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks'
     /**
      *   Below option to go for direct manipulation in bookmarks
+     *   sourceBookmarkPath is now shifted to config-production.js/config-development.js
      */
     // sourceBookmarkPath: '.\\datastore\\Bookmarks',
     // processingBookmarkPathWithoutSync: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
     /**
      *   Below option is for syncing
+     *   sourceBookmarkPath is now shifted to config-production.js/config-development.js
      */
-    sourceBookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2\\Bookmarks',
+    // sourceBookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2\\Bookmarks',
     processingBookmarkPathWithoutSync: '.\\datastore\\Bookmarks',
     bookmarkOptions: {
         shouldIncludeFolders: true,
@@ -65,34 +73,6 @@ const configBasic = {
     cutterRecordKeepingFolders: ['002_CuttingAccounting'], // The index of this array are used to detect the folder types, so check before you change
     finisherProcessingFolders: ['003_FinishingBuffer', '004_ReadyToUpload'], // The index of this array are used to detect the folder types, so check before you change
     finisherRecordKeepingFolders: ['005_FinishingAccounting'], // The index of this array are used to detect the folder types, so check before you change
-    contractors: {
-        // ram: {
-        //     currentAllotted: 0,
-        //     normalThreshold: 500,
-        //     extraProcessingFolders: [],
-        //     finisher: 'karan',
-        // },
-        // karan: {
-        //     currentAllotted: 0,
-        //     normalThreshold: 500,
-        //     extraProcessingFolders: [],
-        //     finisher: 'karan',
-        // },
-    },
-    lot: [
-        // {
-        //
-        //
-        // },
-        // {
-        //
-        //
-        // },
-    ],
-    lotLastRunNumber: '',
-    lotLastRunDate: '',
-    nonCatchErrorLogLevels9DigitUniqueId: '',
-    catchErrorLogLevels6DigitUniqueId: '',
 };
 
 /**
@@ -101,16 +81,17 @@ const configBasic = {
  * config files accordingly.
  *
  */
-let configToExport = '';
+let configToExport = configBasic;
 if (configUser.environment === 'production' || (configUser.environment === undefined && configBasic.environment === 'production')) {
-    configToExport = _.merge(configBasic, configProduction);
-    configToExport = _.merge(configToExport, configUser);
+    configToExport = _.merge(configToExport, configProduction);
 } else if (configUser.environment === 'development' || (configUser.environment === undefined && configBasic.environment === 'development')) {
-    configToExport = _.merge(configBasic, configDevelopment);
-    configToExport = _.merge(configToExport, configUser);
-} else {
-    configToExport = _.merge(configBasic, configUser);
+    configToExport = _.merge(configToExport, configDevelopment);
 }
+configToExport = _.merge(configToExport, configUser);
+configToExport = _.merge(configToExport, configUniqueIds);
+configToExport = _.merge(configToExport, configLotLast);
+configToExport = _.merge(configToExport, configLots);
+configToExport = _.merge(configToExport, configContractors);
 
 const config = configToExport;
 

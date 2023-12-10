@@ -3,6 +3,7 @@ import path from 'path';
 import xlsx from 'xlsx-js-style';
 import readline from 'readline';
 import { addDays, startOfMonth, endOfMonth, format as formatDateDateFNS, parse as parseDateDateFNS } from 'date-fns';
+import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
@@ -38,8 +39,8 @@ import {
     styleOfVerticalListDealerNumber,
 } from './functions/reportsupportive.js';
 import { copyDirOrFile, makeDir } from './functions/filesystem.js';
-import { lge, lgi, lgw } from './functions/loggersupportive.js';
-import { attainLock, releaseLock } from './functions/locksupportive.js';
+import { attainLock, releaseLock, lge, lgi, lgw, lgd } from './functions/loggerandlocksupportive.js';
+import { printSectionSeperator } from './functions/others.js';
 // import {
 //     allTrimStringArrayOfObjects,
 //     trimMultipleSpacesInMiddleIntoOneArrayOfObjects,
@@ -47,6 +48,21 @@ import { attainLock, releaseLock } from './functions/locksupportive.js';
 //     trimSingleSpaceInMiddleArray,
 // } from './stringformatting.js';
 /* eslint-enable import/extensions */
+
+const debug = false;
+/**
+ *
+ * Only make a single instance run of the script.
+ *
+ */
+try {
+    if (checkSync('generateReport.js', { stale: 15000 })) {
+        throw new Error('Lock already held, another instace is already running.');
+    }
+    lockSync('generateReport.js', { stale: 15000 });
+} catch (error) {
+    process.exit(1);
+}
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -125,7 +141,8 @@ if (missingDates.length > 0) {
         missingDatesString += missingDate;
         missingDatesString += ` ${' '.repeat(11 - missingDate.length > 0 ? 11 - missingDate.length : 0)}`;
     }
-    lgw(`${missingDatesString}\r\n`);
+    lgw(missingDatesString);
+    printSectionSeperator();
 }
 
 const typesOfExcel = ['individual', 'merged'];
@@ -210,10 +227,10 @@ for (const typeOfExcel of typesOfExcel) {
                 }
             }
 
-            /* #region Display Allotment and Uploaded mismatch, where a folder was alloted but not uploaded, so has half the details. */
+            /* #region Display Allotment and Uploaded mismatch, where a folder was allotted but not uploaded, so has half the details. */
             /**
              *
-             * Display Allotment and Uploaded mismatch, where a folder was alloted but not uploaded, so has half the details.
+             * Display Allotment and Uploaded mismatch, where a folder was allotted but not uploaded, so has half the details.
              *
              */
             if (Object.keys(reportJSONObj).length !== 0) {
@@ -224,21 +241,24 @@ for (const typeOfExcel of typesOfExcel) {
 
                 if (Object.keys(allotmentAndUploadedMismatchJSONObj).length > 0) {
                     let allotmentAndUploadedMismatchString =
-                        `Allotment and Uploaded folders mismatch, folder allotted but never received back for uploading,\r\n` +
-                        `  unable to take it in into accounting: (${path.basename(reportJSONFilePath)})\r\n`;
+                        `Allotment and Uploaded folders mismatch, folder allotted but never received back for uploading,\n` +
+                        `unable to take it in into accounting: (${path.basename(reportJSONFilePath)})\n`;
                     allotmentAndUploadedMismatchString += `  `;
                     // eslint-disable-next-line no-restricted-syntax
                     for (const key in allotmentAndUploadedMismatchJSONObj) {
                         if (Object.prototype.hasOwnProperty.call(allotmentAndUploadedMismatchJSONObj, key)) {
-                            const allotedFolderName = allotmentAndUploadedMismatchJSONObj[key].allotmentFolderName;
-                            const usernameWithAllotedFolderName = `${username}/${allotedFolderName}`;
-                            allotmentAndUploadedMismatchString += usernameWithAllotedFolderName;
+                            const allottedFolderName = allotmentAndUploadedMismatchJSONObj[key].allotmentFolderName;
+                            const usernameWithAllottedFolderName = `${username}/${allottedFolderName}`;
+                            allotmentAndUploadedMismatchString += usernameWithAllottedFolderName;
                             allotmentAndUploadedMismatchString += ` ${' '.repeat(
-                                59 - usernameWithAllotedFolderName.length > 0 ? 59 - usernameWithAllotedFolderName.length : 0
+                                59 - usernameWithAllottedFolderName.length > 0 ? 59 - usernameWithAllottedFolderName.length : 0
                             )}`;
                         }
                     }
-                    typeOfExcel === 'individual' ? lgw(`${allotmentAndUploadedMismatchString}\r\n`) : null;
+                    if (typeOfExcel === 'individual') {
+                        lgw(allotmentAndUploadedMismatchString);
+                        printSectionSeperator();
+                    }
                 }
             }
             /* #endregion */
@@ -253,21 +273,24 @@ for (const typeOfExcel of typesOfExcel) {
              */
             if (Object.keys(reportJSONObj).length !== 0) {
                 let remainingUnconsumedFoldersString =
-                    `Folders remaining in JSON file but are not consumed by the report,\r\n` +
-                    `  probably because of missing dealer number is config's excel: (${path.basename(reportJSONFilePath)})\r\n`;
+                    `Folders remaining in JSON file but are not consumed by the report,\n` +
+                    `probably because of missing dealer number is config's excel: (${path.basename(reportJSONFilePath)})\n`;
                 remainingUnconsumedFoldersString += `  `;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const key in reportJSONObj) {
                     if (Object.prototype.hasOwnProperty.call(reportJSONObj, key)) {
-                        const allotedFolderName = reportJSONObj[key].allotmentFolderName;
-                        const usernameWithAllotedFolderName = `${username}/${allotedFolderName}`;
-                        remainingUnconsumedFoldersString += usernameWithAllotedFolderName;
+                        const allottedFolderName = reportJSONObj[key].allotmentFolderName;
+                        const usernameWithAllottedFolderName = `${username}/${allottedFolderName}`;
+                        remainingUnconsumedFoldersString += usernameWithAllottedFolderName;
                         remainingUnconsumedFoldersString += ` ${' '.repeat(
-                            59 - usernameWithAllotedFolderName.length > 0 ? 59 - usernameWithAllotedFolderName.length : 0
+                            59 - usernameWithAllottedFolderName.length > 0 ? 59 - usernameWithAllottedFolderName.length : 0
                         )}`;
                     }
                 }
-                typeOfExcel === 'individual' ? lgw(`${remainingUnconsumedFoldersString}\r\n`) : null;
+                if (typeOfExcel === 'individual') {
+                    lgw(remainingUnconsumedFoldersString);
+                    printSectionSeperator();
+                }
             }
             /* #endregion */
         }
@@ -775,7 +798,7 @@ for (const typeOfExcel of typesOfExcel) {
                         worksheet[cellAddress].s = styleOfDealerNameHeadingOdd;
                         worksheet[cellAddressAdditionalImages].s = styleOfDealerNameHeadingOdd;
                     } else {
-                        // console.log(worksheet[cellAddress].v);
+                        debug ? lgd(`worksheet[cellAddress].v :${worksheet[cellAddress].v}`) : null;
                         worksheet[cellAddress].s = normalFont;
                         worksheet[cellAddressAdditionalImages].s = normalFont;
                     }

@@ -2,11 +2,13 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { URL } from 'url';
+import { exec, spawn } from 'child_process';
+import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc, lgi } from './functions/loggersupportive.js';
+import { attainLock, releaseLock, lgw, lge, lgc, lgi, lgu, lgd } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
@@ -32,12 +34,30 @@ import {
     getUploadRemainingSummary,
     getNumberOfImagesFromAllottedDealerNumberFolder,
     getUniqueIDFromAllottedDealerNumberFolder,
+    getUniqueIDWithHashFromAllottedDealerNumberFolder,
 } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
-import { attainLock, releaseLock } from './functions/locksupportive.js';
 import { moveFilesFromSourceToDestinationAndAccounting } from './functions/contractors_folderTransferersupportive.js';
+import Color from './class/Colors.js';
+import LineSeparator from './class/LineSeparator.js';
+import LoggingPrefix from './class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
+
+const debug = false;
+/**
+ *
+ * Only make a single instance run of the script.
+ *
+ */
+try {
+    if (checkSync('uploader.js', { stale: 15000 })) {
+        throw new Error('Lock already held, another instace is already running.');
+    }
+    lockSync('uploader.js', { stale: 15000 });
+} catch (error) {
+    process.exit(1);
+}
 
 if (config.environment === 'production') {
     checkTimezone();
@@ -50,6 +70,7 @@ autoCleanUpDatastoreZones();
 printSectionSeperator();
 
 // TODO: validate config file here
+exec(`start "" FolderTransferer.exe`);
 
 // const cuttingDone = config.cutterProcessingFolders[0];
 // const finishingBuffer = config.finisherProcessingFolders[0];
@@ -101,6 +122,7 @@ for (const finisher of finishers) {
                 fs.renameSync(`${finisherReadyToUploadSubFolderPath} `, finisherReadyToUploadSubFolderPath.trim());
                 unlockedFolders.push(finisherReadyToUploadSubFolderAndFiles);
             } catch (err) {
+                // TODO: Make a if else block, so as to catch err type, otherwise do a lgc error
                 lgw(
                     `Folder in Finisher's ReadyToUpload locked, maybe a contractor working/moving it, Filename: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
                 );
@@ -123,7 +145,9 @@ for (const finisher of finishers) {
         }
 
         // Check ReadyToUpload folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
-        if (/^[O|o][K|k]_AlreadyMoved_(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/.test(finisherReadyToUploadSubFolderAndFiles)) {
+        const regexallottedFolderAlreadyMovedRegexString = config.allottedFolderRegex.replace('^', '^[O|o][K|k]_AlreadyMoved_');
+        const regexallottedFolderAlreadyMovedRegexExpression = new RegExp(regexallottedFolderAlreadyMovedRegexString, 'g');
+        if (regexallottedFolderAlreadyMovedRegexExpression.test(finisherReadyToUploadSubFolderAndFiles)) {
             const folderWithOkAlreadMovedRemoved = path.basename(finisherReadyToUploadSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
             const newFinisherFinishingDoneSubFolderPath = `${path.dirname(finisherReadyToUploadSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
             fs.renameSync(finisherReadyToUploadSubFolderPath, newFinisherFinishingDoneSubFolderPath);
@@ -139,8 +163,8 @@ for (const finisher of finishers) {
         }
 
         // Check ReadyToUpload folder matches the format
-        const regexToMatchFolderName = /^(\d[\S]*)(?: ([\S| ]*))? ([\S]+) (\d{1,3}) (\(#\d{5}\))$/;
-        if (!regexToMatchFolderName.test(finisherReadyToUploadSubFolderAndFiles)) {
+        const regexallottedFolderRegexExpression = new RegExp(config.allottedFolderRegex, 'g');
+        if (!regexallottedFolderRegexExpression.test(finisherReadyToUploadSubFolderAndFiles)) {
             lgw(
                 `Folder in ReadyToUpload but is not in a proper format, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
             );
@@ -157,8 +181,7 @@ for (const finisher of finishers) {
             // eslint-disable-next-line no-continue
             continue;
         }
-        const matches = finisherReadyToUploadSubFolderAndFiles.match(regexToMatchFolderName);
-        const uniqueCode = matches[matches.length - 1];
+        const uniqueCode = getUniqueIDWithHashFromAllottedDealerNumberFolder(finisherReadyToUploadSubFolderAndFiles);
         let cutter = null;
         // eslint-disable-next-line no-restricted-syntax
         for (const contractorInSubLoop of Object.keys(config.contractors)) {
@@ -209,7 +232,7 @@ for (const finisher of finishers) {
 foldersToShift.sort((a, b) => {
     const regex = /(\d+)/;
     if (!regex.test(path.basename(a.dealerImagesFolder)) || !regex.test(path.basename(b.dealerImagesFolder))) {
-        lgc('Unable to match regex of `foldersToShift` while sorting.');
+        lgu('Unable to match regex of `foldersToShift` while sorting.');
         return 0;
     }
     const numA = Number(path.basename(a.dealerImagesFolder).match(regex)[0]);
@@ -218,13 +241,13 @@ foldersToShift.sort((a, b) => {
 });
 // TODO: This sleep was induced to check folderSizeAfter10Seconds functionality, to be removed if the above locking system works properly.
 // sleep(15);
-// console.log(foldersToShift);
+debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
 
 foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
 moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
 
 if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
-    console.log(chalk.cyan(`No data present in the uploading zone, Exiting.`));
+    lgi(`No data present in the uploading zone, Exiting.`, Color.green);
     process.exit(0);
 }
 
@@ -235,7 +258,7 @@ for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZ
     const uploadingZoneStat = fs.statSync(uploadingZoneSubFolderPath);
 
     if (uploadingZoneStat.isDirectory()) {
-        // console.log(uploadingZoneSubFolderPath);
+        debug ? lgd(`uploadingZoneSubFolderPath: ${uploadingZoneSubFolderPath}`) : null;
         const uniqueId = getUniqueIDFromAllottedDealerNumberFolder(uploadingZoneSubFolderAndFiles);
         const numberOfImagesAcToFolderName = parseInt(getNumberOfImagesFromAllottedDealerNumberFolder(uploadingZoneSubFolderAndFiles), 10);
         foldersToUpload[uniqueId] = {
@@ -246,18 +269,11 @@ for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZ
     }
 }
 
-// foldersToShift = foldersToShift.map((folderToShift) => folderToShift.slice(0, -1));
-// const foldersToShiftObj = foldersToShift.reduce((foldersToShiftArr, [value, key]) => {
-//     foldersToShiftArr[key] = value;
-//     return foldersToShiftArr;
-// }, {});
-
 // TODO: Shift folders here to uploaddirectory
-// console.log(foldersToShift);
-// console.log(foldersToShiftObj);
+debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
 
 const uniqueIdOfFoldersShifted = Object.keys(foldersToUpload); // foldersToShift.map((item) => item[1]);
-// console.log(uniqueIdOfFoldersShifted);
+debug ? lgd(`uniqueIdOfFoldersShifted :${uniqueIdOfFoldersShifted}`) : null;
 
 if (
     !(
@@ -266,7 +282,7 @@ if (
         [validateDealerConfigurationExcelFile() !== 'error', validateBookmarksAndCheckCredentialsPresent() !== 'error'].every((i) => i)
     )
 ) {
-    console.log(chalk.white.bgRed.bold(`Please correct the above errors, in order to continue.`));
+    lge(`Please correct the above errors, in order to continue.`);
     if (config.environment === 'production') {
         process.exit(1);
     }
@@ -287,14 +303,15 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
     let userLoggedIn = '';
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
-        console.log(chalk.cyan(`Uploading bookmarks for the Username: ${chalk.cyan.bold(usernameBookmark.name)}`));
+        lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
+        lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
         const credentials = getCredentialsForUsername(usernameBookmark.name);
 
         setCurrentDealerConfiguration(usernameBookmark.name);
         const allottedDealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) => dealerLevelBookmark.name.includes(' |#| '));
         // eslint-disable-next-line no-restricted-syntax
         for (const dealerLevelBookmark of allottedDealerLevelBookmarks) {
-            // console.log(dealerLevelBookmark.name);
+            debug ? lgd(`dealerLevelBookmark.name :${dealerLevelBookmark.name}`) : null;
             // eslint-disable-next-line no-continue
             // continue;
 
@@ -306,12 +323,10 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
             // eslint-disable-next-line no-restricted-syntax
             for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
                 // if (isDealerFolderToBeUploaded) {
-                console.log(
-                    chalk.cyan('Uploading bookmarks for the Dealer: ') +
-                        chalk.cyan.bold(dealerLevelBookmarkName) +
-                        chalk.cyan(' from the Username: ') +
-                        chalk.cyan.bold(usernameBookmark.name)
-                );
+                lgi('Uploading bookmarks for the Dealer: ', LineSeparator.false);
+                lgi(dealerLevelBookmarkName, Color.cyan, LoggingPrefix.false, LineSeparator.false);
+                lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
+                lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
                 const vehicleBookmarks = dealerLevelBookmark.children;
 
                 // eslint-disable-next-line no-restricted-syntax
@@ -322,7 +337,7 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
                         vehicleBookmark.url += '#imagery';
                     }
                     if (vehicleBookmark.name.includes(' |#| ') && !vehicleBookmark.name.split(' |#| ')[1].startsWith('Ignoring')) {
-                        console.log(chalk.whiteBright.bgCyan(getUploadRemainingSummary(foldersToUpload)));
+                        lgi(getUploadRemainingSummary(foldersToUpload), Color.bgCyan);
                         if (typeof page === 'boolean' && !page) {
                             ({ page, browser } = await initBrowserAndGetPage('upload'));
                         }
@@ -342,7 +357,7 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
                             userLoggedIn = usernameBookmark.name;
                         }
 
-                        // console.log(vehicleBookmark.name);
+                        debug ? lgd(`vehicleBookmark.name :${vehicleBookmark.name}`) : null;
                         const returnObj = await uploadBookmarkURL(
                             page,
                             uniqueIdElement,
