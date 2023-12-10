@@ -11,16 +11,47 @@ import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
 
-async function gotoURL(page, URL, debug = false) {
-    debug ? lgd(`Navigating to the URL: ${URL}: Executing.`) : null;
+async function handleErrorWhileURLNavigation(err, URLToCrawlOrFilename, gotoCnt, timeout) {
+    if (
+        err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
+        err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
+        err.message.match(/connect ETIMEDOUT .*/g) ||
+        err.message === 'socket hang up' ||
+        err.message === 'aborted' ||
+        err.message === 'read ECONNRESET' ||
+        err.message === 'Page.navigate timed out.'
+    ) {
+        lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
+        lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
+        if (gotoCnt < 4) {
+            // Sleep for 30 seconds
+            for (let cnt = 0; cnt < 10; cnt++) {
+                lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
+                await waitForSeconds(3);
+            }
+            incRetryCount();
+        } else {
+            console.log('');
+            lgc(
+                `Unable to get/download the following URL/file after 5 retries in interval of 30 seconds each, get/download operation timeout set to ${timeout} seconds: ${URLToCrawlOrFilename} .`
+            );
+        }
+    } else {
+        lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
+        throw err;
+    }
+}
+
+async function gotoURL(page, URLToCrawl, debug = false) {
+    debug ? lgd(`Navigating to the URL: ${URLToCrawl}: Executing.`) : null;
     for (let gotoCnt = 0; gotoCnt < 5; gotoCnt++) {
         try {
             // ONPROJECTFINISH: Error 500 is applied here, make sure page.goto is not called anywhere in the project.
             // ONPROJECTFINISH: Add networkidle0, networkidle2 and other multiple modes
 
-            await page.goto(URL, { timeout: 60 * 1000 }); // waitUntil: 'load',
-            // await page.goto(URL, { timeout: 10 }); // waitUntil: 'load',
-            // await page.goto(URL, { waitUntil: "networkidle2" });
+            await page.goto(URLToCrawl, { timeout: 60 * 1000 }); // waitUntil: 'load',
+            // await page.goto(URLToCrawl, { timeout: 10 }); // waitUntil: 'load',
+            // await page.goto(URLToCrawl, { waitUntil: "networkidle2" });
             const pageContent = await page.content();
             if (pageContent.includes('/Framework/Resources/Images/Layout/Errors/500_error.png')) {
                 lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
@@ -39,48 +70,21 @@ async function gotoURL(page, URL, debug = false) {
                 break;
             }
         } catch (err) {
-            if (
-                err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
-                err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
-                err.message.match(/connect ETIMEDOUT .*/g) ||
-                err.message === 'socket hang up' ||
-                err.message === 'aborted' ||
-                err.message === 'read ECONNRESET' ||
-                err.message === 'Page.navigate timed out.'
-            ) {
-                lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`, Color.white);
-                lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
-                if (gotoCnt < 4) {
-                    // Sleep for 30 seconds
-                    for (let cnt = 0; cnt < 10; cnt++) {
-                        lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
-                        await waitForSeconds(3);
-                    }
-                    incRetryCount();
-                } else {
-                    console.log('');
-                    lgc(
-                        `Unable to get the following URL after 5 retries in interval of 30 seconds each, get operation timeout set to 60 seconds: ${URL} .`
-                    );
-                }
-            } else {
-                lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
-                throw err;
-            }
+            await handleErrorWhileURLNavigation(err, URLToCrawl, gotoCnt, 60);
         }
     }
-    debug ? lgd(`Navigating to the URL: ${URL}: Done.`) : null;
+    debug ? lgd(`Navigating to the URL: ${URLToCrawl}: Done.`) : null;
     return page.url();
 }
 
-async function gotoPageAndWaitTillCurrentURLStartsWith(page, URL, partialURL = URL, debug = false) {
-    await gotoURL(page, URL, debug);
+async function gotoPageAndWaitTillCurrentURLStartsWith(page, URLToCrawl, partialURL = URLToCrawl, debug = false) {
+    await gotoURL(page, URLToCrawl, debug);
     await waitTillCurrentURLStartsWith(page, partialURL, debug);
 }
 
-async function gotoPageAndWaitTillCurrentURLEndsWith(page, URL, partialURL = URL, debug = false) {
-    await gotoURL(page, URL, debug);
+async function gotoPageAndWaitTillCurrentURLEndsWith(page, URLToCrawl, partialURL = URLToCrawl, debug = false) {
+    await gotoURL(page, URLToCrawl, debug);
     await waitTillCurrentURLEndsWith(page, partialURL, debug);
 }
 
-export { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith, gotoPageAndWaitTillCurrentURLEndsWith };
+export { handleErrorWhileURLNavigation, gotoURL, gotoPageAndWaitTillCurrentURLStartsWith, gotoPageAndWaitTillCurrentURLEndsWith };

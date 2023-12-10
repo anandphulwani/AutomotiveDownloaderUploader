@@ -17,6 +17,7 @@ import { lgc, lgcf, lgd, lge, lgi, lgu, lgw } from './loggerandlocksupportive.js
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
+import { handleErrorWhileURLNavigation } from './goto.js';
 /* eslint-enable import/extensions */
 
 async function getImagesFromContent(page, lotIndex, username, dealerFolder, debug = false) {
@@ -91,34 +92,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                 checksumOfFile = await getChecksumFromURL(imageOriginalURLS[imageNumberToDownload - 1], hashAlgo, debug);
                 break;
             } catch (err) {
-                if (
-                    err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
-                    err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
-                    err.message.match(/connect ETIMEDOUT .*/g) ||
-                    err.message === 'socket hang up' ||
-                    err.message === 'aborted' ||
-                    err.message === 'read ECONNRESET' ||
-                    err.message === 'Page.navigate timed out.'
-                ) {
-                    lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
-                    lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
-                    if (checksumOfFileCnt < 4) {
-                        // Sleep for 30 seconds
-                        for (let cnt = 0; cnt < 10; cnt++) {
-                            lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
-                            await waitForSeconds(3);
-                        }
-                        incRetryCount();
-                    } else {
-                        console.log('');
-                        lgc(
-                            `Unable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
-                        );
-                    }
-                } else {
-                    lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
-                    throw err;
-                }
+                await handleErrorWhileURLNavigation(err, shortFilename, checksumOfFileCnt, 15);
             }
         }
         if (checksumOfFile === undefined) {
@@ -142,34 +116,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                 imagesDownloaded++;
                 break;
             } catch (err) {
-                if (
-                    err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
-                    err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
-                    err.message.match(/connect ETIMEDOUT .*/g) ||
-                    err.message === 'socket hang up' ||
-                    err.message === 'aborted' ||
-                    err.message === 'read ECONNRESET' ||
-                    err.message === 'Page.navigate timed out.'
-                ) {
-                    lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
-                    lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
-                    if (downloadCnt < 4) {
-                        // Sleep for 30 seconds
-                        for (let cnt = 0; cnt < 10; cnt++) {
-                            lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
-                            await waitForSeconds(3);
-                        }
-                        incRetryCount();
-                    } else {
-                        console.log('');
-                        lgc(
-                            `Unable to download the following file after 5 retries in interval of 30 seconds each, download operation timeout set to 15 seconds: ${shortFilename} .`
-                        );
-                    }
-                } else {
-                    lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
-                    throw err;
-                }
+                await handleErrorWhileURLNavigation(err, shortFilename, downloadCnt, 15);
             }
         }
     }
