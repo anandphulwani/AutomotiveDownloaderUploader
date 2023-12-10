@@ -125,7 +125,7 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
             stack.shift();
             message = message.trim();
         } else {
-            const errorString = stack[0].replace(/^[a-zA-Z]*Error:/, '').trim();
+            const errorString = stack[0].replace(/^[a-zA-Z]*Error:/, '');
             message = message.replace(errorString, '').trim();
         }
         stack = stack.join('\n');
