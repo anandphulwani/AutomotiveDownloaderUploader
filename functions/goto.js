@@ -9,17 +9,14 @@ import { lgbf, lgc, lgcf, lgd, lge, lgi, lgu } from './loggerandlocksupportive.j
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
+import { config } from '../configs/config.js';
 /* eslint-enable import/extensions */
 
 async function handleErrorWhileURLNavigation(err, URLToCrawlOrFilename, gotoCnt, timeout) {
     if (
-        err.message.match(/Navigation timeout of \d* ms exceeded/g) ||
-        err.message.match(/net::ERR_CONNECTION_TIMED_OUT at .*/g) ||
-        err.message.match(/connect ETIMEDOUT .*/g) ||
-        err.message === 'socket hang up' ||
-        err.message === 'aborted' ||
-        err.message === 'read ECONNRESET' ||
-        err.message === 'Page.navigate timed out.'
+        config.urlCrawlingErrorsEligibleForRetrying.some((patternOrValue) =>
+            typeof patternOrValue === 'string' ? err.message === patternOrValue : patternOrValue.test(err.message)
+        )
     ) {
         lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
         lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
