@@ -12,6 +12,7 @@ import { lge, lgc } from './loggersupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 import { attainLock, releaseLock } from './locksupportive.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
+import { getProjectConfigDirPath, getProjectLogsDirPath } from './projectpaths.js';
 
 /* eslint-enable import/extensions */
 
@@ -31,7 +32,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         config.uploadingZonePath,
         config.finishedUploadingZonePath,
         `${config.finishedUploadingZonePath}\\DeletedUrls`,
-        `.\\logs`, // Static delete after 120 days
+        getProjectLogsDirPath(), // Static delete after 120 days
     ];
 
     const cuttingAccounting = config.cutterRecordKeepingFolders[0];
@@ -62,7 +63,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
         ); // Filter out only subdirectories and subdirectories which match YYYY-MM-DD format using regex
         folderPathChildrenSubDirsOnly.sort(); // Sort subdirectories by name
         let overrideNoOfDaysToKeep = noOfDaysDataToKeep;
-        overrideNoOfDaysToKeep = folderToCleanUp === `.\\logs` ? 120 : overrideNoOfDaysToKeep;
+        overrideNoOfDaysToKeep = folderToCleanUp === getProjectLogsDirPath() ? 120 : overrideNoOfDaysToKeep;
         overrideNoOfDaysToKeep = folderToCleanUp === config.lockingBackupsZonePath ? 2 : overrideNoOfDaysToKeep;
         const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, -overrideNoOfDaysToKeep); // Delete all but the last 5 subdirectories
 
@@ -175,8 +176,8 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5) {
     process.stdout.write(chalk.cyan(`03:${logSymbols.success} `));
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const dateDir of fs.readdirSync('.\\logs\\')) {
-        const entryPath = path.join('.\\logs\\', dateDir);
+    for (const dateDir of fs.readdirSync(getProjectLogsDirPath())) {
+        const entryPath = path.join(getProjectLogsDirPath(), dateDir);
         if (fs.statSync(entryPath).isDirectory()) {
             const dateDirFilesAndFolders = fs.readdirSync(entryPath, { withFileTypes: true });
             let lockDirectories = dateDirFilesAndFolders

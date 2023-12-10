@@ -3,7 +3,14 @@ import path from 'path';
 import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { currentTime, instanceRunDateFormatted, instanceRunDateTimeSeparated, instanceRunTime } from './datetime.js';
+import {
+    currentTime,
+    instanceRunDateFormatted,
+    instanceRunDateTimeSeparated,
+    instanceRunDateTimeWOMSSeparated,
+    instanceRunTimeWOMS,
+} from './datetime.js';
+import { getProjectLogsDirPath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
 const debug = true;
@@ -13,7 +20,7 @@ const debug = true;
  * of logs files created by same prefix by the current instance itself.
  *
  */
-const instanceRunLogFilePrefix = `.\\logs\\${instanceRunDateFormatted}\\${instanceRunDateTimeSeparated}`;
+const instanceRunLogFilePrefix = path.join(getProjectLogsDirPath(), instanceRunDateFormatted, instanceRunDateTimeSeparated);
 const instanceRunLogFilePrefixDir = path.dirname(instanceRunLogFilePrefix);
 if (!fs.existsSync(instanceRunLogFilePrefixDir)) {
     fs.mkdirSync(instanceRunLogFilePrefixDir, { recursive: true });
@@ -39,7 +46,13 @@ if (!checkSync(instanceRunLogFilePrefix, { stale: 43200000 })) {
         }
     }
     if (debug) {
-        const logPath = `./logs/lockslog/${instanceRunDateFormatted}/${instanceRunTime}/${path.basename(instanceRunLogFilePrefix)}`;
+        const logPath = path.join(
+            getProjectLogsDirPath(),
+            'lockslog',
+            instanceRunDateFormatted,
+            instanceRunTimeWOMS,
+            `logs{Slash}${instanceRunDateFormatted}{Slash}${path.basename(instanceRunLogFilePrefix)}`
+        );
         if (!fs.existsSync(logPath)) {
             fs.mkdirSync(logPath, { recursive: true });
         }

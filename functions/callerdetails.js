@@ -1,90 +1,108 @@
-import chalk from 'chalk';
-
 /* eslint-disable import/extensions */
 import { lgccyclicdependency } from './loggercyclicdependency.js';
 /* eslint-enable import/extensions */
 
-const getCallerDetails = (...args) => {
-    let stackTrace;
-    let functionName;
-    let pathToFile;
-    let filename;
-    let lineNumber;
-    let columnNumber;
+function extractCallerDetailsFromStack(stack) {
+    const callerDetailsList = [];
+    const stackTrace = stack.split('\n');
+    if (stackTrace[0].match(/^[a-zA-Z]*Error:/) || stackTrace[0] === 'Error') {
+        stackTrace.shift();
+    } else {
+        const mesg = `Logger error: Unable to match the first line, it doesnt contain anything like 'Error: ' in the line: \n${stackTrace[0]}\nError Stack:\n${stack}`;
+        lgccyclicdependency(mesg);
+        process.exit(1);
+    }
+    while (stackTrace.length > 0) {
+        const regexOfAtFilenameLineNumber = /at (?:([^\\/]+) )?\(?(.+)[\\/](.+?):(\d+):(\d+)\)?/;
+        const regexOfNodeInternal = / \(node:internal/;
+        const regexOfgetCallerDetails =
+            /at (getCallerDetailsList |getCallerDetails |getCallerHierarchyFormatted |getCallerFormatted |getCallerHierarchyWithFunctionNameFormatted )(.*)/;
+        const regexOfLoggerFunctions = /at (lg[\S][\S]? )(.*)/;
+        if (
+            stackTrace[0].match(regexOfAtFilenameLineNumber) === null ||
+            stackTrace[0].match(regexOfgetCallerDetails) !== null ||
+            stackTrace[0].match(regexOfNodeInternal) !== null ||
+            stackTrace[0].match(regexOfLoggerFunctions) !== null
+        ) {
+            stackTrace.shift();
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        const stackDetailsCatchLine = stackTrace[0].match(regexOfAtFilenameLineNumber);
+        callerDetailsList.push({
+            functionName: stackDetailsCatchLine[1] !== undefined ? stackDetailsCatchLine[1] : '',
+            pathToFile: stackDetailsCatchLine[2] !== undefined ? stackDetailsCatchLine[2] : '',
+            filename: stackDetailsCatchLine[3] !== undefined ? stackDetailsCatchLine[3] : '',
+            lineNumber: stackDetailsCatchLine[4] !== undefined ? stackDetailsCatchLine[4] : '',
+            columnNumber: stackDetailsCatchLine[5] !== undefined ? stackDetailsCatchLine[5] : '',
+        });
+        stackTrace.shift();
+    }
+    return callerDetailsList;
+}
+const getCallerDetailsList = (...args) => {
+    let callerDetailsList = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const arg of args) {
         if (arg instanceof Error) {
-            stackTrace = arg.stack.split('\n');
-            if (stackTrace[0].match(/^[a-zA-Z]*Error:/) || stackTrace[0] === 'Error') {
-                stackTrace.shift();
-            } else {
-                const mesg = `Logger error: Unable to match the first line, it doesnt contain anything like 'Error: ' in the line: \n${stackTrace[0]}\nError Stack:\n${arg.stack}`;
-                lgccyclicdependency(mesg);
-                process.exit(1);
-            }
-            while (stackTrace.length > 0 && stackTrace[0].match(/at ([^\\/]+ )?\(?(.+)[\\/](.+?):(\d+):(\d+)\)?/) === null) {
-                stackTrace.shift();
-            }
-            if (stackTrace.length > 0) {
-                const stackDetailsCatchLine = stackTrace[0].match(/at ([^\\/]+ )?\(?(.+)[\\/](.+?):(\d+):(\d+)\)?/);
-                [, functionName, pathToFile, filename, lineNumber, columnNumber] = stackDetailsCatchLine;
-            } else {
-                const mesg = `Logger error: Unable to get the filename and linenumber from the following stack: \n${arg.stack}.`;
+            callerDetailsList = extractCallerDetailsFromStack(arg.stack);
+            if (callerDetailsList.length === 0) {
+                const mesg = `Logger error: Unable to extract filename and linenumber from the following stack which was sent: \n${arg.stack}.`;
                 lgccyclicdependency(mesg);
             }
+            break;
         }
     }
-    if (filename === undefined && lineNumber === undefined) {
-        stackTrace = new Error().stack.split('\n');
-        if (stackTrace[0].match(/^[a-zA-Z]*Error:/) || stackTrace[0] === 'Error') {
-            stackTrace.shift();
-        } else {
-            const mesg = `Logger error: Unable to match the first line, it doesnt contain 'Error: ' in the line: \n${
-                stackTrace[0]
-            }\nRemaining Error Stack:\n${stackTrace.join('\n')}`;
+    if (callerDetailsList.length === 0) {
+        const { stack } = new Error();
+        callerDetailsList = extractCallerDetailsFromStack(stack);
+        if (callerDetailsList.length === 0) {
+            const mesg = `Logger error: Unable to extract filename and linenumber from the following stack which was generated to detect caller details: \n${stack}.`;
             lgccyclicdependency(mesg);
-            process.exit(1);
-        }
-        while (stackTrace.length > 0 && stackTrace[0].match(/at getCallerDetails(.*)/) !== null) {
-            stackTrace.shift();
-        }
-        if (stackTrace.length > 0) {
-            const stackDetailsCatchLine = stackTrace[0].match(/at ([^\\/]+ )?\(?(.+)[\\/](.+?):(\d+):(\d+)\)?/);
-            if (stackDetailsCatchLine) {
-                [, functionName, pathToFile, filename, lineNumber, columnNumber] = stackDetailsCatchLine;
-                if (stackTrace[1] !== undefined) {
-                    const stackDetailsErrorLineInTry = stackTrace[1].match(/at ([^\\/]+ )?\(?(.+)[\\/](.+?):(\d+):(\d+)\)?/);
-                    if (stackDetailsErrorLineInTry) {
-                        const [, , pathToFile2ndLine, filename2ndLine, lineNumber2ndLine] = stackDetailsErrorLineInTry;
-                        if (pathToFile === pathToFile2ndLine && filename === filename2ndLine) {
-                            lineNumber += `,${lineNumber2ndLine}`;
-                        }
-                    }
-                }
-            } else {
-                const mesg = `Logger error: Unable to get the filename and linenumber from the following line: \n${stackTrace[0]}.`;
-                lgccyclicdependency(mesg);
-                filename = mesg;
-            }
-        } else {
-            const mesg = `Logger error: Every line in stacktrace is from getCallerDetails().`;
-            lgccyclicdependency(mesg);
-            filename = mesg;
         }
     }
-    functionName = functionName !== undefined ? functionName : '';
-    pathToFile = pathToFile !== undefined ? pathToFile : '';
-    filename = filename !== undefined ? filename : '';
-    lineNumber = lineNumber !== undefined ? lineNumber : '';
-    columnNumber = columnNumber !== undefined ? columnNumber : '';
-    return {
-        functionName: functionName,
-        pathToFile: pathToFile,
-        filename: filename,
-        lineNumber: lineNumber,
-        columnNumber: columnNumber,
-    };
+    return callerDetailsList;
+};
+
+const getCallerFormatted = (...args) => {
+    const callerDetailsList = getCallerDetailsList(...args);
+    const callerDetails = callerDetailsList.shift();
+    return `${callerDetails.filename}:${callerDetails.lineNumber}`;
+};
+
+const getCallerHierarchyFormatted = (...args) => {
+    const callerDetailsList = getCallerDetailsList(...args);
+    const groupedByFilename = callerDetailsList.reduce((acc, { filename, lineNumber }) => {
+        acc[filename] = acc[filename] || [];
+        acc[filename].push(lineNumber);
+        return acc;
+    }, {});
+
+    const output = Object.entries(groupedByFilename)
+        .map(([filename, lineNumbers]) => `${filename}:${lineNumbers.join(',')}`)
+        .join('; ');
+    return output;
+};
+
+const getCallerHierarchyWithFunctionNameFormatted = (...args) => {
+    let callerDetailsList;
+    if (Array.isArray(args[0])) {
+        [callerDetailsList] = args;
+    } else {
+        callerDetailsList = getCallerDetailsList(...args);
+    }
+    return callerDetailsList.map((detail) => `{${detail.functionName}}${detail.filename}:${detail.lineNumber}`).join('; ');
+};
+
+const getCallerDetails = (...args) => {
+    let callerDetailsList;
+    if (Array.isArray(args[0])) {
+        [callerDetailsList] = args;
+    } else {
+        callerDetailsList = getCallerDetailsList(...args);
+    }
+    return callerDetailsList.shift();
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { getCallerDetails };
+export { getCallerDetails, getCallerDetailsList, getCallerFormatted, getCallerHierarchyFormatted, getCallerHierarchyWithFunctionNameFormatted };

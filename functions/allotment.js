@@ -176,7 +176,7 @@ async function doAllotment(
                 replaceBookmarksElementByGUIDAndWriteToBookmarksFile('foldername', bookmarkFolderGUID, uniqueIdOfFolder);
 
                 createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
-                createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, 3);
+                createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, false, 3);
             } else {
                 if (fs.existsSync(`${destinationRecordKeepingPath}`)) {
                     lge(`Folder: ${destinationRecordKeepingPath} already exists, cannot copy ${dealerFolderPath} to its location.`);

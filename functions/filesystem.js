@@ -21,24 +21,6 @@ function makeDir(dirPath, debug = false) {
     }
 }
 
-async function moveFile(fromPath, toPath, debug = false) {
-    return new Promise((resolve, reject) => {
-        mv(fromPath, toPath, (error) => {
-            if (error) {
-                lgc(`${'Unable to move file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`, error);
-                process.exit(1);
-            } else {
-                debug
-                    ? console.log(
-                          `${'File moved successfully from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
-                      )
-                    : '';
-                resolve();
-            }
-        });
-    });
-}
-
 function moveDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     // If resource is busy or locked, or operation is not permitted, try for 120 seconds before throwing an error.
     for (let i = 0; i < 30; i++) {
@@ -97,14 +79,14 @@ function createDirAndCopyFile(fromPath, toPath, overwrite = false, debug = false
     copyDirOrFile(fromPath, toPath, overwrite, debug);
 }
 
-function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, destinationPath, debug = false) {
+function createDirAndMoveFileFromTempDirToDestination(filePath, tempPath, destinationPath, overwrite = false, debug = false) {
     debug ? console.log('Moving file from TempDir to Destination : Executing.') : '';
-    createDirAndMoveFile(filePath, filePath.replace(tempPath, destinationPath), debug);
+    createDirAndMoveFile(filePath, filePath.replace(tempPath, destinationPath), overwrite, debug);
     debug ? console.log('Moving file from TempDir to Destination : Done.') : '';
 }
 
-function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, toPath, recursiveDeleteParentLevel = 1, debug = false) {
-    createDirAndMoveFile(fromPath, toPath, debug);
+function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, toPath, overwrite = false, recursiveDeleteParentLevel = 1, debug = false) {
+    createDirAndMoveFile(fromPath, toPath, overwrite, debug);
     removeParentDirIfEmpty(fromPath, recursiveDeleteParentLevel, debug);
 }
 
@@ -170,6 +152,14 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
         retryDelay: 500,
     });
     debug ? console.log('Removing Directory : Done') : '';
+}
+
+function removeDirIfExists(dirPath, recursiveDelete = false, debug = false) {
+    debug ? console.log('Removing Directory If Exists : Executing') : '';
+    if (fs.existsSync(dirPath)) {
+        removeDir(dirPath, recursiveDelete, debug);
+    }
+    debug ? console.log('Removing Directory If Exists: Done') : '';
 }
 
 function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, debug = false) {
@@ -293,7 +283,7 @@ function getFolderSizeInBytes(folderPath) {
 
 export {
     makeDir,
-    moveFile,
+    moveDirOrFile,
     copyDirOrFile,
     createDirAndCopyFile,
     createDirAndMoveFile,
@@ -302,6 +292,7 @@ export {
     writeFileWithVerification,
     writeFileWithComparingSameLinesWithOldContents,
     removeDir,
+    removeDirIfExists,
     removeDirAndRemoveParentDirIfEmpty,
     generateTempFolderWithRandomText,
     getFileCountRecursively,

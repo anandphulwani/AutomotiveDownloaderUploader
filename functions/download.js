@@ -4,8 +4,11 @@ import fs from 'fs';
 import chalk from 'chalk';
 import path from 'path';
 import logSymbols from 'log-symbols';
-// eslint-disable-next-line import/extensions
-import { moveFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
+
+/* eslint-disable import/extensions */
+import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
+import { lgvf } from './loggersupportive.js';
+/* eslint-enable import/extensions */
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
     return new Promise((resolve, reject) => {
@@ -60,13 +63,29 @@ async function downloadFileAndCompareWithChecksum(
                 hashSum.update(fileBuffer);
                 if (checksumOfFile === hashSum.digest('hex')) {
                     let filePath = file.path;
+                    lgvf('============================================BLOCK START============================================');
                     if (isSingleImage) {
+                        lgvf('==============IS SINGLE IMAGE START==============');
+                        lgvf(`Original filePath: ${filePath}`);
+                        lgvf(`Original destinationPath: ${destinationPath}`);
                         const newFilePath = `${path.dirname(filePath)}/${path.basename(destinationPath)}${path.extname(path.basename(filePath))}`;
+                        lgvf(`Mod newFilePath: ${newFilePath}`);
                         destinationPath = `${path.dirname(destinationPath)}/`;
-                        await moveFile(filePath, newFilePath, debug);
+                        lgvf(`Mod destinationPath: ${destinationPath}`);
+                        lgvf(`does filePath Exists: ${fs.existsSync(filePath)}`);
+                        moveDirOrFile(filePath, newFilePath, true, debug);
                         filePath = newFilePath;
+                        lgvf(`Exit filePath: ${filePath}`);
+                        lgvf('==============IS SINGLE IMAGE END==============');
                     }
-                    createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, debug);
+                    lgvf('==============OUTSIDE IF BLOCK START==============');
+                    lgvf(`Original filePath: ${filePath}`);
+                    lgvf(`Original tempPath: ${tempPath}/`);
+                    lgvf(`Original destinationPath: ${destinationPath}`);
+                    lgvf(`does filePath Exists: ${fs.existsSync(filePath)}`);
+                    createDirAndMoveFileFromTempDirToDestination(filePath, `${tempPath}/`, destinationPath, true, debug);
+                    lgvf('==============OUTSIDE IF BLOCK END==============');
+                    lgvf('============================================BLOCK END============================================');
                     debug
                         ? console.log(chalk.green.bold(`Download Completed, File saved as : ${destinationPath}${path.basename(filePath)}`))
                         : process.stdout.write(
