@@ -81,9 +81,6 @@ printSectionSeperator();
 // Non-shortcircuiting and: [f1(), f2()].every(i => i)
 // Non-shortcircuiting or: [f1(), f2()].some(i => i)
 
-await downloadBookmarksFromSourceToProcessing();
-printSectionSeperator();
-
 if (
     !(
         true && // validateConfigFile()
@@ -123,6 +120,9 @@ for (const LotIndexEle of LotIndexArray) {
     }
     sleep(3);
 }
+
+await downloadBookmarksFromSourceToProcessing();
+printSectionSeperator();
 
 /**
  * Read chrome bookmarks from chrome browser
