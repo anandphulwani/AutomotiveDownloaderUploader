@@ -59,6 +59,9 @@ const configBasic = {
             ignoreMesgInBookmark: '',
         },
     ],
+    urlCrawlingErrorsEligibleForRetrying: [
+        //
+    ],
     dealerConfigurationFolder: '.\\configs\\DealerConfiguration',
     downloadPath: '.\\datastore\\Downloads',
     contractorsZonePath: '.\\datastore\\ContractorsZone',
