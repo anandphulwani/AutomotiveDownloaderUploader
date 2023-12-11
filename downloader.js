@@ -130,8 +130,6 @@ let overwriteLast4Lines = false;
 let lotIndex = LotLastIndex;
 // eslint-disable-next-line no-constant-condition
 while (true) {
-    await downloadBookmarksFromSourceToProcessing(overwriteLast4Lines);
-    printSectionSeperator();
     if (getRemainingBookmarksNotDownloadedLength() > 0) {
         overwriteLast4Lines = false;
 
@@ -278,6 +276,8 @@ while (true) {
         break;
     }
     await waitForSeconds(5);
+    await downloadBookmarksFromSourceToProcessing(overwriteLast4Lines);
+    printSectionSeperator();
 }
 
 if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(`lotIndex`, 2)}`)) {
