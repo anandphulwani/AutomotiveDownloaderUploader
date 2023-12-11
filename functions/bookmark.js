@@ -19,6 +19,7 @@ import { printSectionSeperator } from './others.js';
 import Color from '../class/Colors.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import LineSeparator from '../class/LineSeparator.js';
+import { levels, loggerConsoleLevel } from './logger.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -31,8 +32,12 @@ function reformatJSONString(contents) {
 
 async function downloadBookmarksFromSourceToProcessing(overwriteLast4Lines = false, debug = false) {
     if (overwriteLast4Lines) {
-        process.stdout.moveCursor(0, -4);
-        process.stdout.clearLine(4);
+        let noOfLines = 3;
+        if (levels[loggerConsoleLevel] >= levels.trace) {
+            noOfLines = 4;
+        }
+        process.stdout.moveCursor(0, -noOfLines);
+        process.stdout.clearLine(noOfLines);
         process.stdout.cursorTo(0);
     }
     lgt(`Fetching bookmarks from the source: `, Color.cyanNormal, LineSeparator.false);
