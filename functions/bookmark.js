@@ -32,7 +32,7 @@ function reformatJSONString(contents) {
 
 async function downloadBookmarksFromSourceToProcessing(overwriteLast4Lines = false, debug = false) {
     if (overwriteLast4Lines) {
-        let noOfLines = 3;
+        let noOfLines = 2;
         if (levels[loggerConsoleLevel] >= levels.trace) {
             noOfLines = 4;
         }
