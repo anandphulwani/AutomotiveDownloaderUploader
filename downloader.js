@@ -72,6 +72,9 @@ if (config.environment === 'production') {
 autoCleanUpDatastoreZones();
 printSectionSeperator();
 
+await downloadBookmarksFromSourceToProcessing(false);
+printSectionSeperator();
+
 // ONPROJECTFINISH: Remove the unused imports
 // NORMALPRIORITY: Error summary in the end.
 // TODO: disallow same dealerNumber folders in a username folder, and same username folder in bookmark bar
