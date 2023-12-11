@@ -2,12 +2,21 @@ import chalk from 'chalk';
 
 /* eslint-disable import/extensions */
 import Color from '../class/Colors.js';
-import { lgd, lgi } from './loggerandlocksupportive.js';
+import { lgu, lgc, lgs, lge, lgh, lgw, lgi, lgv, lgb, lgd, lgt } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
-// TODO: Add functionality that if we want to send parameter that whether its info or error or warn
-function printSectionSeperator() {
-    lgi('-'.repeat(120), Color.bgWhite);
+function printSectionSeperator(level = 'info') {
+    level === 'unreachable' ? lgu('-'.repeat(120), Color.bgWhite) : null;
+    level === 'catcherror' ? lgc('-'.repeat(120), Color.bgWhite) : null;
+    level === 'severe' ? lgs('-'.repeat(120), Color.bgWhite) : null;
+    level === 'error' ? lge('-'.repeat(120), Color.bgWhite) : null;
+    level === 'hiccup' ? lgh('-'.repeat(120), Color.bgWhite) : null;
+    level === 'warn' ? lgw('-'.repeat(120), Color.bgWhite) : null;
+    level === 'info' ? lgi('-'.repeat(120), Color.bgWhite) : null;
+    level === 'verbose' ? lgv('-'.repeat(120), Color.bgWhite) : null;
+    level === 'billy' ? lgb('-'.repeat(120), Color.bgWhite) : null;
+    level === 'debug' ? lgd('-'.repeat(120), Color.bgWhite) : null;
+    level === 'trace' ? lgt('-'.repeat(120), Color.bgWhite) : null;
 }
 
 // ONPROJECTFINISH: Remove retryCount variable and relative functions, when debugging is complete
