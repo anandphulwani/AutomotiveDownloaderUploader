@@ -157,8 +157,34 @@ while (true) {
             }
         }
 
+        /**
+         * Get dealerFolderCntInLot and imagesQtyInLot, before downloading any URL
+         * because at times before counting the count of these, some fresh folders
+         * in the middle starts getting downloaded which messes up the result of folders/qty
+         * which doesn't match the lot configuration
+         */
         let dealerFolderCntInLot = 0;
         let imagesQtyInLot = 0;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const usernameBookmark of allUsernamesBookmarks) {
+            const dealerLevelBookmarks = usernameBookmark.children;
+            // eslint-disable-next-line no-restricted-syntax
+            for (const dealerLevelBookmark of dealerLevelBookmarks) {
+                const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
+                const usernameTrimmed = usernameBookmark.name.includes('@') ? usernameBookmark.name.split('@')[0] : usernameBookmark.name;
+                const dealerLevelPath = path.join(
+                    config.downloadPath,
+                    instanceRunDateFormatted,
+                    `Lot_${zeroPad(lotIndex, 2)}`,
+                    usernameTrimmed,
+                    dealerLevelBookmarkName
+                );
+                if (fs.existsSync(dealerLevelPath)) {
+                    imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
+                    dealerFolderCntInLot++;
+                }
+            }
+        }
 
         let page = false;
         let browser = false;
@@ -251,15 +277,6 @@ while (true) {
                         }
                         await waitForSeconds(0);
                     }
-                }
-                const usernameTrimmed = usernameBookmark.name.includes('@') ? usernameBookmark.name.split('@')[0] : usernameBookmark.name;
-                const dealerLevelPath = `${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(
-                    lotIndex,
-                    2
-                )}\\${usernameTrimmed}\\${dealerLevelBookmarkName}`;
-                if (fs.existsSync(dealerLevelPath)) {
-                    imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
-                    dealerFolderCntInLot++;
                 }
             }
         }
