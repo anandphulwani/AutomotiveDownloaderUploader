@@ -1,5 +1,9 @@
 import readline from 'readline';
 
+/* eslint-disable import/extensions */
+import { printSectionSeperator } from './others.js';
+/* eslint-enable import/extensions */
+
 export default function keyInYNWithTimeout(question, timeout = 5000, defaultOption = false) {
     return new Promise((resolve) => {
         const rl = readline.createInterface({
@@ -23,7 +27,8 @@ export default function keyInYNWithTimeout(question, timeout = 5000, defaultOpti
 
         const timeoutId = setTimeout(() => {
             rl.close();
-            console.log('\n');
+            console.log('\r');
+            printSectionSeperator();
             // console.log(`\nTimeout - Default option '${defaultOption ? 'Yes' : 'No'}' selected`);
             resolve(defaultOption); // Resolve with the default option
         }, timeout);
