@@ -104,7 +104,7 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
             ) {
                 logMesg.push(`[${uniqueId}]`);
             }
-            if (level !== 'hiccup' && level !== 'info') {
+            if (level !== 'hiccup' && level !== 'info' && message.replace(/-/g, '') !== '') {
                 logMesg.push(`${level.toUpperCase()}:`);
             }
         } else if (typeOfLogFormat === 'file') {
