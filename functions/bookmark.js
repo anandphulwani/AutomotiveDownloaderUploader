@@ -29,7 +29,12 @@ function reformatJSONString(contents) {
     return JSONString;
 }
 
-async function downloadBookmarksFromSourceToProcessing(debug = false) {
+async function downloadBookmarksFromSourceToProcessing(overwriteLast4Lines = false, debug = false) {
+    if (overwriteLast4Lines) {
+        process.stdout.moveCursor(0, -4);
+        process.stdout.clearLine(4);
+        process.stdout.cursorTo(0);
+    }
     lgi(`Fetching bookmarks from the source: `, LineSeparator.false);
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
     let initialSourceJSONString;

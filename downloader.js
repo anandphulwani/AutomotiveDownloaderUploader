@@ -17,7 +17,7 @@ import { zeroPad } from './functions/stringformatting.js';
 import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
-import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
+import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength } from './functions/bookmarksupportive.js';
 import keyInYNWithTimeout from './functions/keyInYNWithTimeout.js';
 import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitForElementContainsOrEqualsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
@@ -123,10 +123,14 @@ for (const LotIndexEle of LotIndexArray) {
 }
 
 // try{
+let overwriteLast4Lines = false;
 let lotIndex = LotLastIndex;
+// eslint-disable-next-line no-constant-condition
 while (true) {
-    await downloadBookmarksFromSourceToProcessing();
+    await downloadBookmarksFromSourceToProcessing(overwriteLast4Lines);
     printSectionSeperator();
+    if (getRemainingBookmarksNotDownloadedLength() > 0) {
+        overwriteLast4Lines = false;
 
     /**
      * Read chrome bookmarks from chrome browser
@@ -262,6 +266,8 @@ while (true) {
         lgi('Waiting for the browser to close, in order to continue.');
         await browser.close();
     }
+    } else {
+        overwriteLast4Lines = true;
     }
     const questionOfKeyInYNToAddMoreBookmarks =  'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
     const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
