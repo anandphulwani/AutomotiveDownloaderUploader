@@ -8,7 +8,7 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh, lgd } from './loggerandlocksupportive.js';
+import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh, lgd, lgt } from './loggerandlocksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
@@ -35,7 +35,7 @@ async function downloadBookmarksFromSourceToProcessing(overwriteLast4Lines = fal
         process.stdout.clearLine(4);
         process.stdout.cursorTo(0);
     }
-    lgi(`Fetching bookmarks from the source: `, LineSeparator.false);
+    lgt(`Fetching bookmarks from the source: `, Color.cyanNormal, LineSeparator.false);
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
     let initialSourceJSONString;
     let initialLineCount;
@@ -43,14 +43,14 @@ async function downloadBookmarksFromSourceToProcessing(overwriteLast4Lines = fal
 
     attainLock(sourceBookmarkPath, undefined, true);
     attainLock(processingBookmarkPathWithoutSync, undefined, true);
-    lgi(`01:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
+    lgt(`01:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
 
     try {
         // Read the contents of both JSON files into memory
         const sourceContents = fs.readFileSync(sourceBookmarkPath, 'utf8');
         const processingContents = fs.readFileSync(processingBookmarkPathWithoutSync, 'utf8');
 
-        lgi(`02:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
+        lgt(`02:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
         // Parse the contents of both JSON files into JavaScript objects
         const sourceObj = JSON.parse(sourceContents);
         const processingObj = JSON.parse(processingContents);
@@ -73,7 +73,7 @@ async function downloadBookmarksFromSourceToProcessing(overwriteLast4Lines = fal
 
         initialSourceJSONString = sourceJSONString;
         initialLineCount = sourceJSONString.trim().split(/\r\n|\r|\n/).length;
-        lgi(`03:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
+        lgt(`03:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
 
         /**
          * Copying the names of bookmark urls which are downloaded
@@ -128,7 +128,7 @@ async function downloadBookmarksFromSourceToProcessing(overwriteLast4Lines = fal
                 `Before Copying the names of bookmarks folders which are allotted: initialLineCount and sourceJSONStringLineCount is not the same:\n`
             );
         }
-        lgi(`04:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
+        lgt(`04:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
 
         /**
          * Copying the names of bookmarks folders which are allotted
@@ -180,13 +180,13 @@ async function downloadBookmarksFromSourceToProcessing(overwriteLast4Lines = fal
         if (initialLineCount - sourceJSONString.trim().split(/\r\n|\r|\n/).length !== 0) {
             throw new Error(`Before writing bookmarks file: initialLineCount and writingLineCount is not the same:\n`);
         }
-        lgi(`05:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
+        lgt(`05:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
 
         debug ? lgd('Writing bookmarks file') : null;
         writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initialSourceJSONString);
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         releaseLock(sourceBookmarkPath, undefined, true);
-        lgi(`06:${logSymbols.success} `, LoggingPrefix.false);
+        lgt(`06:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false);
     } catch (err) {
         lgu(initialSourceJSONString);
         printSectionSeperator();
