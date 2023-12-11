@@ -25,8 +25,8 @@ const levels = {
 };
 
 // Set logger level based on environment variable (default to billy)
-const loggerFileLevel = config.loggingLevel || 'billy';
-const loggerConsoleLevel = config.loggingLevel || 'billy';
+const loggerFileLevel = config.loggingFileLevel || 'billy';
+const loggerConsoleLevel = config.loggingConsoleLevel || 'billy';
 
 /* #region fileTransportOptions and consoleTransportOptions : Begin */
 const fileTransportOptions = (logFilename) => ({

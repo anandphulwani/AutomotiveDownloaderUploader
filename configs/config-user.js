@@ -8,7 +8,8 @@ const configUser = {
     // sourceBookmarkPath: '.\\datastore\\Bookmarks',
     // processingBookmarkPathWithoutSync: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
     // updateBookmarksOnceDone: true,
-    loggingLevel: 'trace',
+    loggingFileLevel: 'trace',
+    loggingConsoleLevel: 'trace',
     ignoreBookmarkURLS: [
         {
             URLStartsWith: '{config.appDomain}/inventory/photo-manager?',
