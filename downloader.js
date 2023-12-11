@@ -18,6 +18,7 @@ import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
+import keyInYNWithTimeout from './functions/keyInYNWithTimeout.js';
 import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitForElementContainsOrEqualsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
@@ -261,15 +262,19 @@ while (true) {
         lgi('Waiting for the browser to close, in order to continue.');
         await browser.close();
     }
-    await waitForSeconds(30);
+    }
+    const questionOfKeyInYNToAddMoreBookmarks =  'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
+    const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
+    if (!resultOfKeyInYNToAddMoreBookmarks) {
+        break;
+    }
+    await waitForSeconds(5);
 }
 
 if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(`lotIndex`, 2)}`)) {
-    if (!keyInYN('Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?')) {
         exec(
             `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
         );
-    }
 }
 // TODO: Enable this error catching, and copy it in the uploading section as well
 // } catch (error)
