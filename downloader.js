@@ -121,6 +121,7 @@ for (const LotIndexEle of LotIndexArray) {
     sleep(3);
 }
 
+// try{
 let lotIndex = LotLastIndex;
 while (true) {
     await downloadBookmarksFromSourceToProcessing();
@@ -150,7 +151,6 @@ while (true) {
         }
     }
 
-    // try{
     let dealerFolderCntInLot = 0;
     let imagesQtyInLot = 0;
 
