@@ -297,7 +297,6 @@ if (
  */
 const allUsernamesBookmarks = getAllUsernamesBookmarks();
 
-(async () => {
     let page = false;
     let browser = false;
     let userLoggedIn = '';
@@ -383,6 +382,5 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
     if (typeof browser !== 'boolean') {
         await browser.close();
     }
-})();
 // await sleep(10000);
 // process.exit(0);
