@@ -269,7 +269,7 @@ while (true) {
     } else {
         overwriteLast4Lines = true;
     }
-    const questionOfKeyInYNToAddMoreBookmarks =  'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
+    const questionOfKeyInYNToAddMoreBookmarks = 'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
     const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
     if (!resultOfKeyInYNToAddMoreBookmarks) {
         break;
