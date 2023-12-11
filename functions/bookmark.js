@@ -192,6 +192,7 @@ async function downloadBookmarksFromSourceToProcessing(overwriteLast4Lines = fal
         releaseLock(processingBookmarkPathWithoutSync, undefined, true);
         releaseLock(sourceBookmarkPath, undefined, true);
         lgt(`06:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false);
+        printSectionSeperator('trace');
     } catch (err) {
         lgu(initialSourceJSONString);
         printSectionSeperator();

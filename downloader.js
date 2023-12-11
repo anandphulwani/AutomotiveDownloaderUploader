@@ -73,7 +73,6 @@ autoCleanUpDatastoreZones();
 printSectionSeperator();
 
 await downloadBookmarksFromSourceToProcessing(false);
-printSectionSeperator();
 
 // ONPROJECTFINISH: Remove the unused imports
 // NORMALPRIORITY: Error summary in the end.
@@ -279,7 +278,6 @@ while (true) {
     }
     await waitForSeconds(5);
     await downloadBookmarksFromSourceToProcessing(overwriteLast4Lines);
-    printSectionSeperator();
     isFirstRun = false;
 }
 
