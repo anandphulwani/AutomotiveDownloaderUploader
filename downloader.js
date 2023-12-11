@@ -121,6 +121,8 @@ for (const LotIndexEle of LotIndexArray) {
     sleep(3);
 }
 
+let lotIndex = LotLastIndex;
+while (true) {
 await downloadBookmarksFromSourceToProcessing();
 printSectionSeperator();
 
@@ -149,7 +151,6 @@ for (const usernameBookmark of allUsernamesBookmarks) {
 }
 
 // try{
-let lotIndex = LotLastIndex;
     let dealerFolderCntInLot = 0;
     let imagesQtyInLot = 0;
 
@@ -260,6 +261,8 @@ let lotIndex = LotLastIndex;
         lgi('Waiting for the browser to close, in order to continue.');
         await browser.close();
     }
+    await waitForSeconds(30);
+}
 
 if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(`lotIndex`, 2)}`)) {
     if (!keyInYN('Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?')) {
