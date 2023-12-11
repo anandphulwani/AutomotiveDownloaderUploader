@@ -15,7 +15,7 @@ import { config } from '../configs/config.js';
 async function handleErrorWhileURLNavigation(err, URLToCrawlOrFilename, gotoCnt, timeout) {
     if (
         config.urlCrawlingErrorsEligibleForRetrying.some((patternOrValue) =>
-            typeof patternOrValue === 'string' ? err.message === patternOrValue : patternOrValue.test(err.message)
+            typeof patternOrValue === 'string' ? err.message === patternOrValue : new RegExp(patternOrValue).test(err.message)
         )
     ) {
         lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
