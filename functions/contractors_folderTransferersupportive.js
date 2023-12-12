@@ -1,23 +1,21 @@
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
 /* eslint-disable import/extensions */
-import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
+import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
-import { lge, lgi, lgif, lgw } from './loggerandlocksupportive.js';
-import { createDirAndCopyFile, createDirAndMoveFile, getFolderSizeInBytes, removeDirIfExists } from './filesystem.js';
+import { lgi, lgw } from './loggerandlocksupportive.js';
+import { createDirAndCopyFile, createDirAndMoveFile, removeDirIfExists } from './filesystem.js';
 import { addUploadingToReport } from './reportsupportive.js';
 import { printSectionSeperator } from './others.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
-import { getRemainingBookmarksNotDownloadedLength } from './bookmarksupportive.js';
 /* eslint-enable import/extensions */
 
-const cuttingDoneFolderName = config.cutterProcessingFolders[0];
+// const cuttingDoneFolderName = config.cutterProcessingFolders[0];
 const finishingBufferFolderName = config.finisherProcessingFolders[0];
-const readyToUploadFolderName = config.finisherProcessingFolders[1];
+// const readyToUploadFolderName = config.finisherProcessingFolders[1];
 
 const cuttingAccountingFolderName = config.cutterRecordKeepingFolders[0];
 const finishingAccountingFolderName = config.finisherRecordKeepingFolders[0];
