@@ -38,7 +38,7 @@ import {
 } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
-import { moveFilesFromSourceToDestinationAndAccounting } from './functions/contractors_folderTransferersupportive.js';
+import moveFilesFromSourceToDestinationAndAccounting from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
