@@ -283,6 +283,7 @@ while (true) {
         if (typeof browser !== 'boolean') {
             lgi('Waiting for the browser to close, in order to continue.');
             await browser.close();
+            lgi('..........Done', LoggingPrefix.false);
         }
     } else {
         // eslint-disable-next-line no-unneeded-ternary
