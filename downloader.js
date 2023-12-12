@@ -124,7 +124,7 @@ for (const LotIndexEle of LotIndexArray) {
     sleep(3);
 }
 
-// try{
+try{
 let isFirstRun = true;
 let overwriteLast4Lines = false;
 let lotIndex = LotLastIndex;
@@ -304,9 +304,13 @@ if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${ze
         `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
     );
 }
-// TODO: Enable this error catching, and copy it in the uploading section as well
-// } catch (error)
-// {
-//      Check for the error message if you get it, so to close nicely.
-//     Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
-// }
+} catch (err) {
+    if (
+        err.message === 'Navigation failed because browser has disconnected!' ||
+        err.message === 'Protocol error (Page.navigate): Session closed. Most likely the page has been closed.'
+    ) {
+        lgi('Browser has been manually closed.', Color.bgYellow);
+    } else {
+        throw err;
+    }
+}
