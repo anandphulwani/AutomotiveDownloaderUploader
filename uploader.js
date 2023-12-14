@@ -38,7 +38,7 @@ import {
 } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { uploadBookmarkURL } from './functions/upload.js';
-import moveFilesFromSourceToDestinationAndAccounting from './functions/contractors_folderTransferersupportive.js';
+import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
@@ -74,9 +74,9 @@ exec(`start "" FolderTransferer.exe`);
 
 // const cuttingDone = config.cutterProcessingFolders[0];
 // const finishingBuffer = config.finisherProcessingFolders[0];
-const readyToUpload = config.finisherProcessingFolders[1];
+// const readyToUpload = config.finisherProcessingFolders[1];
 
-const cuttingAccounting = config.cutterRecordKeepingFolders[0];
+// const cuttingAccounting = config.cutterRecordKeepingFolders[0];
 // const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
 const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
@@ -97,151 +97,7 @@ try {
     process.exit(1);
 }
 
-let foldersToShift = [];
-const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
-
-// eslint-disable-next-line no-restricted-syntax
-for (const finisher of finishers) {
-    const finisherReadyToUploadDir = `${config.contractorsZonePath}\\${finisher}\\${instanceRunDateFormatted}\\${readyToUpload}`;
-    // Check ReadyToUpload folder exists.
-    if (!fs.existsSync(finisherReadyToUploadDir)) {
-        lgw(`Finisher's ReadyToUpload folder doesn't exist: ${finisherReadyToUploadDir}, Ignoring.`);
-        // eslint-disable-next-line no-continue
-        continue;
-    }
-
-    // Get all the folders which are not holding any locks
-    const unlockedFolders = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const finisherReadyToUploadSubFolderAndFiles of fs.readdirSync(finisherReadyToUploadDir)) {
-        const finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
-        const finisherReadyToUploadStat = fs.statSync(finisherReadyToUploadSubFolderPath);
-        if (finisherReadyToUploadStat.isDirectory()) {
-            try {
-                fs.renameSync(finisherReadyToUploadSubFolderPath, `${finisherReadyToUploadSubFolderPath} `);
-                fs.renameSync(`${finisherReadyToUploadSubFolderPath} `, finisherReadyToUploadSubFolderPath.trim());
-                unlockedFolders.push(finisherReadyToUploadSubFolderAndFiles);
-            } catch (err) {
-                // TODO: Make a if else block, so as to catch err type, otherwise do a lgc error
-                lgw(
-                    `Folder in Finisher's ReadyToUpload locked, maybe a contractor working/moving it, Filename: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
-                );
-            }
-        }
-    }
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (let finisherReadyToUploadSubFolderAndFiles of unlockedFolders) {
-        let isOverwrite = false;
-        let finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
-        const finisherReadyToUploadStat = fs.statSync(finisherReadyToUploadSubFolderPath);
-        // Check ReadyToUpload item is a folder
-        if (!finisherReadyToUploadStat.isDirectory()) {
-            lgw(
-                `Found a file in Finisher's ReadyToUpload directory, Filename: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
-            );
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-
-        // Check ReadyToUpload folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
-        const regexallottedFolderAlreadyMovedRegexString = config.allottedFolderRegex.replace('^', '^[O|o][K|k]_AlreadyMoved_');
-        const regexallottedFolderAlreadyMovedRegexExpression = new RegExp(regexallottedFolderAlreadyMovedRegexString, 'g');
-        if (regexallottedFolderAlreadyMovedRegexExpression.test(finisherReadyToUploadSubFolderAndFiles)) {
-            const folderWithOkAlreadMovedRemoved = path.basename(finisherReadyToUploadSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
-            const newFinisherFinishingDoneSubFolderPath = `${path.dirname(finisherReadyToUploadSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
-            fs.renameSync(finisherReadyToUploadSubFolderPath, newFinisherFinishingDoneSubFolderPath);
-            finisherReadyToUploadSubFolderAndFiles = folderWithOkAlreadMovedRemoved;
-            finisherReadyToUploadSubFolderPath = path.join(finisherReadyToUploadDir, finisherReadyToUploadSubFolderAndFiles);
-            isOverwrite = true;
-        }
-
-        // Check ReadyToUpload folder has AlreadyMoved_ prefixed to it, if has ignore the folder
-        if (/^AlreadyMoved_.*$/.test(finisherReadyToUploadSubFolderAndFiles)) {
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-
-        // Check ReadyToUpload folder matches the format
-        const regexallottedFolderRegexExpression = new RegExp(config.allottedFolderRegex, 'g');
-        if (!regexallottedFolderRegexExpression.test(finisherReadyToUploadSubFolderAndFiles)) {
-            lgw(
-                `Folder in ReadyToUpload but is not in a proper format, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
-            );
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-        const numberOfImagesAcToFolderName = parseInt(getNumberOfImagesFromAllottedDealerNumberFolder(finisherReadyToUploadSubFolderAndFiles), 10);
-        const numberOfImagesAcToFileCount = getFileCountRecursively(finisherReadyToUploadSubFolderPath);
-        // Check ReadyToUpload folder filecount matches as mentioned in the folder
-        if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
-            lgw(
-                `Folder in ReadyToUpload but images quantity does not match, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
-            );
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-        const uniqueCode = getUniqueIDWithHashFromAllottedDealerNumberFolder(finisherReadyToUploadSubFolderAndFiles);
-        let cutter = null;
-        // eslint-disable-next-line no-restricted-syntax
-        for (const contractorInSubLoop of Object.keys(config.contractors)) {
-            const contractorDoneSubFolderDir = `${config.contractorsRecordKeepingPath}\\${contractorInSubLoop}_Acnt\\${cuttingAccounting}\\${instanceRunDateFormatted}\\${finisherReadyToUploadSubFolderAndFiles}`;
-            // const contractorDoneSubFolderDir = `${config.contractorsZonePath}\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\000_Done\\${contractorReadyToUploadSubFolderAndFiles}`;
-            if (fs.existsSync(contractorDoneSubFolderDir)) {
-                cutter = contractorInSubLoop;
-                break;
-            }
-        }
-        if (cutter == null) {
-            lgw(
-                `Folder present in 'ReadyToUpload' but not present in 'CuttingAccounting' folder for reporting, Folder: ${finisher}\\${readyToUpload}\\${finisherReadyToUploadSubFolderAndFiles}, Ignoring.`
-            );
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-        if (!reportJSONObj[uniqueCode]) {
-            lgw(
-                `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${uniqueCode}', which should have been created while allotment, Exiting.`
-            );
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-        if (path.basename(finisherReadyToUploadSubFolderAndFiles) !== reportJSONObj[uniqueCode].allotmentFolderName) {
-            lgw(
-                `The allotment folder name '${
-                    reportJSONObj[uniqueCode].allotmentFolderName
-                }' does not match folder name coming back for uploading '${path.basename(
-                    finisherReadyToUploadSubFolderPath
-                )}', probably some contractor has modified the folder name, Exiting.`
-            );
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-        const folderSize = getFolderSizeInBytes(finisherReadyToUploadSubFolderPath);
-        foldersToShift.push({
-            dealerImagesFolder: finisherReadyToUploadSubFolderPath,
-            folderSize: folderSize,
-            uniqueCode: uniqueCode,
-            cutter: cutter,
-            finisher: finisher,
-            isOverwrite: isOverwrite,
-        });
-    }
-}
-
-foldersToShift.sort((a, b) => {
-    const regex = /(\d+)/;
-    if (!regex.test(path.basename(a.dealerImagesFolder)) || !regex.test(path.basename(b.dealerImagesFolder))) {
-        lgu('Unable to match regex of `foldersToShift` while sorting.');
-        return 0;
-    }
-    const numA = Number(path.basename(a.dealerImagesFolder).match(regex)[0]);
-    const numB = Number(path.basename(b.dealerImagesFolder).match(regex)[0]);
-    return numA - numB;
-});
-// TODO: This sleep was induced to check folderSizeAfter10Seconds functionality, to be removed if the above locking system works properly.
-// sleep(15);
-debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
+let foldersToShift = validationBeforeMoving('uploadingZone', reportJSONObj, debug);
 
 foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
 moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);

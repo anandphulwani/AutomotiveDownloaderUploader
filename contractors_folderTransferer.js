@@ -13,8 +13,7 @@ import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/dat
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer from './functions/contractors_workdonefile.js';
-import moveFilesFromSourceToDestinationAndAccounting from './functions/contractors_folderTransferersupportive.js';
-// import { moveFilesFromSourceToDestinationAndAccounting } from './functions/contractors_folderTransferersupportive.js';
+import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -80,149 +79,12 @@ const cuttingDone = config.cutterProcessingFolders[0];
 // const cuttingAccounting = config.cutterRecordKeepingFolders[0];
 // const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
-const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set()]; // Array of sets for the last three iterations
-
 let lastLockTime = Date.now();
 // eslint-disable-next-line no-constant-condition
 while (true) {
-    const currentSetOfWarnings = new Set();
     createProcessingAndRecordKeepingFolders(instanceRunDateFormatted);
 
-    let foldersToShift = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const cutter of Object.keys(config.contractors)) {
-        const cutterCuttingDoneDir = `${config.contractorsZonePath}\\${cutter}\\${instanceRunDateFormatted}\\${cuttingDone}`;
-        // Check CuttingDone folder exists.
-        if (!fs.existsSync(cutterCuttingDoneDir)) {
-            lgw(`Cutter's CuttingDone folder doesn't exist: ${cutterCuttingDoneDir}, Ignoring.`);
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-
-        // Get all the folders which are not holding any locks
-        const unlockedFolders = [];
-        // eslint-disable-next-line no-restricted-syntax
-        for (const cutterCuttingDoneSubFolderAndFiles of fs.readdirSync(cutterCuttingDoneDir)) {
-            const cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
-            const cutterCuttingDoneStat = fs.statSync(cutterCuttingDoneSubFolderPath);
-            if (cutterCuttingDoneStat.isDirectory()) {
-                try {
-                    fs.renameSync(cutterCuttingDoneSubFolderPath, `${cutterCuttingDoneSubFolderPath} `);
-                    fs.renameSync(`${cutterCuttingDoneSubFolderPath} `, cutterCuttingDoneSubFolderPath.trim());
-                    unlockedFolders.push(cutterCuttingDoneSubFolderAndFiles);
-                } catch (err) {
-                    currentSetOfWarnings.add(
-                        `Folder in Cutter's CuttingDone locked, maybe a contractor working/moving it, Filename: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
-                    );
-                }
-            }
-        }
-
-        // eslint-disable-next-line no-restricted-syntax
-        for (let cutterCuttingDoneSubFolderAndFiles of unlockedFolders) {
-            let isOverwrite = false;
-            let cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
-            const cutterCuttingDoneStat = fs.statSync(cutterCuttingDoneSubFolderPath);
-            // Check CuttingDone item is a folder
-            if (!cutterCuttingDoneStat.isDirectory()) {
-                currentSetOfWarnings.add(
-                    `Found a file in Cutter's CuttingDone directory, Filename: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
-                );
-                // eslint-disable-next-line no-continue
-                continue;
-            }
-
-            // Check CuttingDone folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
-            const regexallottedFolderAlreadyMovedRegexString = config.allottedFolderRegex.replace('^', '^[O|o][K|k]_AlreadyMoved_');
-            const regexallottedFolderAlreadyMovedRegexExpression = new RegExp(regexallottedFolderAlreadyMovedRegexString, 'g');
-            if (regexallottedFolderAlreadyMovedRegexExpression.test(cutterCuttingDoneSubFolderAndFiles)) {
-                const folderWithOkAlreadMovedRemoved = path.basename(cutterCuttingDoneSubFolderPath).replace(/^[O|o][K|k]_AlreadyMoved_/, '');
-                const newCutterCuttingDoneSubFolderPath = `${path.dirname(cutterCuttingDoneSubFolderPath)}/${folderWithOkAlreadMovedRemoved}`;
-                fs.renameSync(cutterCuttingDoneSubFolderPath, newCutterCuttingDoneSubFolderPath);
-                cutterCuttingDoneSubFolderAndFiles = folderWithOkAlreadMovedRemoved;
-                cutterCuttingDoneSubFolderPath = path.join(cutterCuttingDoneDir, cutterCuttingDoneSubFolderAndFiles);
-                isOverwrite = true;
-            }
-
-            // Check CuttingDone folder has AlreadyMoved_ prefixed to it, if has ignore the folder
-            if (/^AlreadyMoved_.*$/.test(cutterCuttingDoneSubFolderAndFiles)) {
-                // eslint-disable-next-line no-continue
-                continue;
-            }
-
-            // Check CuttingDone folder matches the format
-            const regexallottedFolderRegexExpression = new RegExp(config.allottedFolderRegex, 'g');
-            if (!regexallottedFolderRegexExpression.test(cutterCuttingDoneSubFolderAndFiles)) {
-                currentSetOfWarnings.add(
-                    `Folder in CuttingDone but is not in a proper format, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Ignoring.`
-                );
-                // eslint-disable-next-line no-continue
-                continue;
-            }
-            const numberOfImagesAcToFolderName = parseInt(getNumberOfImagesFromAllottedDealerNumberFolder(cutterCuttingDoneSubFolderAndFiles), 10);
-            const numberOfImagesAcToFileCount = getFileCountRecursively(cutterCuttingDoneSubFolderPath);
-            // Check CuttingDone folder filecount matches as mentioned in the folder
-            if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
-                currentSetOfWarnings.add(
-                    `Folder in CuttingDone but images quantity does not match, Folder: ${cutter}\\${cuttingDone}\\${cutterCuttingDoneSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`
-                );
-                // eslint-disable-next-line no-continue
-                continue;
-            }
-            const folderSize = getFolderSizeInBytes(cutterCuttingDoneSubFolderPath);
-            foldersToShift.push({
-                dealerImagesFolder: cutterCuttingDoneSubFolderPath,
-                folderSize: folderSize,
-                cutter: cutter,
-                isOverwrite: isOverwrite,
-            });
-        }
-    }
-
-    foldersToShift.sort((a, b) => {
-        const regex = /(\d+)/;
-        if (!regex.test(path.basename(a.dealerImagesFolder)) || !regex.test(path.basename(b.dealerImagesFolder))) {
-            lgu('Unable to match regex of `foldersToShift` while sorting.');
-            return 0;
-        }
-        const numA = Number(path.basename(a.dealerImagesFolder).match(regex)[0]);
-        const numB = Number(path.basename(b.dealerImagesFolder).match(regex)[0]);
-        return numA - numB;
-    });
-    // TODO: This sleep was induced to check folderSizeAfter10Seconds functionality, to be removed if the above locking system works properly.
-    // sleep(15);
-    debug ? lgd(`foldersToShift: ${foldersToShift}`) : null;
-
-    // TODO: Check which warning we can give immediately
-    historyOfWarnings.shift();
-    historyOfWarnings.push(currentSetOfWarnings);
-    // eslint-disable-next-line no-restricted-syntax
-    for (const warning of currentSetOfWarnings) {
-        if (
-            historyOfWarnings[0].has(warning) &&
-            historyOfWarnings[1].has(warning) &&
-            historyOfWarnings[2].has(warning) &&
-            historyOfWarnings[3].has(warning) &&
-            historyOfWarnings[4].has(warning) &&
-            historyOfWarnings[5].has(warning) &&
-            historyOfWarnings[6].has(warning) &&
-            historyOfWarnings[7].has(warning) &&
-            historyOfWarnings[8].has(warning) &&
-            historyOfWarnings[9].has(warning)
-        ) {
-            lgw(warning);
-            historyOfWarnings[0].delete(warning);
-            historyOfWarnings[1].delete(warning);
-            historyOfWarnings[2].delete(warning);
-            historyOfWarnings[3].delete(warning);
-            historyOfWarnings[4].delete(warning);
-            historyOfWarnings[5].delete(warning);
-            historyOfWarnings[6].delete(warning);
-            historyOfWarnings[7].delete(warning);
-            historyOfWarnings[8].delete(warning);
-            historyOfWarnings[9].delete(warning);
-        }
-    }
+    let foldersToShift = validationBeforeMoving('finishingBuffer', undefined, debug);
 
     foldersToShift = moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, true);
     moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, false);
