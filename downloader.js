@@ -97,7 +97,10 @@ if (
     }
 }
 
-exec(`start "" FolderTransferer.exe`);
+if (!checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
+    exec(`start "" FolderTransferer.exe`);
+}
+
 // await killChrome({
 //     includingMainProcess: true,
 // });
