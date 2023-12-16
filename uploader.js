@@ -42,6 +42,7 @@ import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving }
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
+import keyInYNWithTimeout from './functions/keyInYNWithTimeout.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
@@ -237,6 +238,12 @@ try {
                     }
                 }
             }
+        }
+    }
+        const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
+        const resultOfKeyInYNToUploadMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToUploadMoreBookmarks, 25000, true);
+        if (!resultOfKeyInYNToUploadMoreBookmarks) {
+            break;
         }
         await waitForSeconds(5);
     }
