@@ -239,7 +239,9 @@ try {
         }
     }
     if (typeof browser !== 'boolean') {
+        lgi('Waiting for the browser to close, in order to continue.');
         await browser.close();
+        lgi('..........Done', LoggingPrefix.false);
     }
 } catch (err) {
     if (
