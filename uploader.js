@@ -161,85 +161,87 @@ try {
     let browser = false;
     let userLoggedIn = '';
     while (true) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const usernameBookmark of allUsernamesBookmarks) {
-        lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
-        lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
-        const credentials = getCredentialsForUsername(usernameBookmark.name);
-
-        setCurrentDealerConfiguration(usernameBookmark.name);
-        const allottedDealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) => dealerLevelBookmark.name.includes(' |#| '));
         // eslint-disable-next-line no-restricted-syntax
-        for (const dealerLevelBookmark of allottedDealerLevelBookmarks) {
-            debug ? lgd(`dealerLevelBookmark.name :${dealerLevelBookmark.name}`) : null;
-            // eslint-disable-next-line no-continue
-            // continue;
+        for (const usernameBookmark of allUsernamesBookmarks) {
+            lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
+            lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
+            const credentials = getCredentialsForUsername(usernameBookmark.name);
 
-            const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
-            const uniqueIdArr = getUniqueIdPairsFromDealerBookmarkName(dealerLevelBookmark.name);
-
-            const uniqueIdArrCommonInUploadDiretoryAndBookmarksName = uniqueIdArr.filter((value) => uniqueIdOfFoldersShifted.includes(value));
-            // const isDealerFolderToBeUploaded = uniqueIdArr.some((item) => uniqueIdOfFoldersShifted.includes(item));
+            setCurrentDealerConfiguration(usernameBookmark.name);
+            const allottedDealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) =>
+                dealerLevelBookmark.name.includes(' |#| ')
+            );
             // eslint-disable-next-line no-restricted-syntax
-            for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
-                // if (isDealerFolderToBeUploaded) {
-                lgi('Uploading bookmarks for the Dealer: ', LineSeparator.false);
-                lgi(dealerLevelBookmarkName, Color.cyan, LoggingPrefix.false, LineSeparator.false);
-                lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
-                lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
-                const vehicleBookmarks = dealerLevelBookmark.children;
+            for (const dealerLevelBookmark of allottedDealerLevelBookmarks) {
+                debug ? lgd(`dealerLevelBookmark.name :${dealerLevelBookmark.name}`) : null;
+                // eslint-disable-next-line no-continue
+                // continue;
 
+                const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
+                const uniqueIdArr = getUniqueIdPairsFromDealerBookmarkName(dealerLevelBookmark.name);
+
+                const uniqueIdArrCommonInUploadDiretoryAndBookmarksName = uniqueIdArr.filter((value) => uniqueIdOfFoldersShifted.includes(value));
+                // const isDealerFolderToBeUploaded = uniqueIdArr.some((item) => uniqueIdOfFoldersShifted.includes(item));
                 // eslint-disable-next-line no-restricted-syntax
-                for (const vehicleBookmark of vehicleBookmarks) {
-                    if (vehicleBookmark.url.endsWith('#general')) {
-                        vehicleBookmark.url = vehicleBookmark.url.replace('#general', '#imagery');
-                    } else if (!vehicleBookmark.url.includes('#')) {
-                        vehicleBookmark.url += '#imagery';
-                    }
-                    if (vehicleBookmark.name.includes(' |#| ') && !vehicleBookmark.name.split(' |#| ')[1].startsWith('Ignoring')) {
-                        lgi(getUploadRemainingSummary(foldersToUpload), Color.bgCyan);
-                        if (typeof page === 'boolean' && !page) {
-                            ({ page, browser } = await initBrowserAndGetPage('upload'));
+                for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
+                    // if (isDealerFolderToBeUploaded) {
+                    lgi('Uploading bookmarks for the Dealer: ', LineSeparator.false);
+                    lgi(dealerLevelBookmarkName, Color.cyan, LoggingPrefix.false, LineSeparator.false);
+                    lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
+                    lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
+                    const vehicleBookmarks = dealerLevelBookmark.children;
+
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const vehicleBookmark of vehicleBookmarks) {
+                        if (vehicleBookmark.url.endsWith('#general')) {
+                            vehicleBookmark.url = vehicleBookmark.url.replace('#general', '#imagery');
+                        } else if (!vehicleBookmark.url.includes('#')) {
+                            vehicleBookmark.url += '#imagery';
                         }
-                        if (userLoggedIn !== usernameBookmark.name) {
-                            const currentURL = await gotoURL(page, vehicleBookmark.url);
-                            const currentUser = await getCurrentUser(page);
-
-                            let parsedCurrentUrl = new URL(currentURL);
-                            parsedCurrentUrl = parsedCurrentUrl.host + parsedCurrentUrl.pathname;
-
-                            let parsedVehicleBookmarkURL = new URL(vehicleBookmark.url);
-                            parsedVehicleBookmarkURL = parsedVehicleBookmarkURL.host + parsedVehicleBookmarkURL.pathname;
-
-                            if (currentUser !== usernameBookmark.name.toLowerCase() || parsedCurrentUrl !== parsedVehicleBookmarkURL) {
-                                await loginCredentials(page, credentials);
+                        if (vehicleBookmark.name.includes(' |#| ') && !vehicleBookmark.name.split(' |#| ')[1].startsWith('Ignoring')) {
+                            lgi(getUploadRemainingSummary(foldersToUpload), Color.bgCyan);
+                            if (typeof page === 'boolean' && !page) {
+                                ({ page, browser } = await initBrowserAndGetPage('upload'));
                             }
-                            userLoggedIn = usernameBookmark.name;
-                        }
+                            if (userLoggedIn !== usernameBookmark.name) {
+                                const currentURL = await gotoURL(page, vehicleBookmark.url);
+                                const currentUser = await getCurrentUser(page);
 
-                        debug ? lgd(`vehicleBookmark.name :${vehicleBookmark.name}`) : null;
-                        const returnObj = await uploadBookmarkURL(
-                            page,
-                            uniqueIdElement,
-                            foldersToUpload[uniqueIdElement].path,
-                            dealerLevelBookmarkName,
-                            vehicleBookmark.name,
-                            vehicleBookmark.url,
-                            userLoggedIn
-                        );
-                        if (
-                            returnObj.result === true ||
-                            (returnObj.result === false && returnObj.bookmarkAppendMesg === 'Ignoring (Does not Exist)')
-                        ) {
-                            createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(returnObj.moveSource, returnObj.moveDestination, false, 2);
+                                let parsedCurrentUrl = new URL(currentURL);
+                                parsedCurrentUrl = parsedCurrentUrl.host + parsedCurrentUrl.pathname;
+
+                                let parsedVehicleBookmarkURL = new URL(vehicleBookmark.url);
+                                parsedVehicleBookmarkURL = parsedVehicleBookmarkURL.host + parsedVehicleBookmarkURL.pathname;
+
+                                if (currentUser !== usernameBookmark.name.toLowerCase() || parsedCurrentUrl !== parsedVehicleBookmarkURL) {
+                                    await loginCredentials(page, credentials);
+                                }
+                                userLoggedIn = usernameBookmark.name;
+                            }
+
+                            debug ? lgd(`vehicleBookmark.name :${vehicleBookmark.name}`) : null;
+                            const returnObj = await uploadBookmarkURL(
+                                page,
+                                uniqueIdElement,
+                                foldersToUpload[uniqueIdElement].path,
+                                dealerLevelBookmarkName,
+                                vehicleBookmark.name,
+                                vehicleBookmark.url,
+                                userLoggedIn
+                            );
+                            if (
+                                returnObj.result === true ||
+                                (returnObj.result === false && returnObj.bookmarkAppendMesg === 'Ignoring (Does not Exist)')
+                            ) {
+                                createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(returnObj.moveSource, returnObj.moveDestination, false, 2);
+                            }
+                            foldersToUpload[uniqueIdElement].imagesQty = getFileCountRecursively(foldersToUpload[uniqueIdElement].path);
+                            foldersToUpload[uniqueIdElement].dealerFolderFilesQty = getFileCountNonRecursively(foldersToUpload[uniqueIdElement].path);
                         }
-                        foldersToUpload[uniqueIdElement].imagesQty = getFileCountRecursively(foldersToUpload[uniqueIdElement].path);
-                        foldersToUpload[uniqueIdElement].dealerFolderFilesQty = getFileCountNonRecursively(foldersToUpload[uniqueIdElement].path);
                     }
                 }
             }
         }
-    }
         const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
         const resultOfKeyInYNToUploadMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToUploadMoreBookmarks, 25000, true);
         if (!resultOfKeyInYNToUploadMoreBookmarks) {
