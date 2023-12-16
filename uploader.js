@@ -159,6 +159,7 @@ try {
     let page = false;
     let browser = false;
     let userLoggedIn = '';
+    while (true) {
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
         lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
@@ -237,6 +238,7 @@ try {
                 }
             }
         }
+        await waitForSeconds(5);
     }
     if (typeof browser !== 'boolean') {
         lgi('Waiting for the browser to close, in order to continue.');
