@@ -153,6 +153,7 @@ if (
  */
 const allUsernamesBookmarks = getAllUsernamesBookmarks();
 
+try {
     let page = false;
     let browser = false;
     let userLoggedIn = '';
@@ -238,5 +239,13 @@ const allUsernamesBookmarks = getAllUsernamesBookmarks();
     if (typeof browser !== 'boolean') {
         await browser.close();
     }
-// await sleep(10000);
-// process.exit(0);
+} catch (err) {
+    if (
+        err.message === 'Navigation failed because browser has disconnected!' ||
+        err.message === 'Protocol error (Page.navigate): Session closed. Most likely the page has been closed.'
+    ) {
+        lgi('Browser has been manually closed.', Color.bgYellow);
+    } else {
+        throw err;
+    }
+}
