@@ -127,24 +127,22 @@ if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) 
     process.exit(0);
 }
 
-const foldersToUpload = getFoldersInUploadingZone(debug);
-
-// TODO: Shift folders here to uploaddirectory
-debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
-
-const uniqueIdOfFoldersShifted = Object.keys(foldersToUpload); // foldersToShift.map((item) => item[1]);
-debug ? lgd(`uniqueIdOfFoldersShifted :${uniqueIdOfFoldersShifted}`) : null;
-
-/**
- * Read chrome bookmarks from chrome browser
- */
-const allUsernamesBookmarks = getAllUsernamesBookmarks();
-
 try {
     let page = false;
     let browser = false;
     let userLoggedIn = '';
     while (true) {
+        const foldersToUpload = getFoldersInUploadingZone(debug);
+        debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
+
+        const uniqueIdOfFoldersShifted = Object.keys(foldersToUpload);
+        debug ? lgd(`uniqueIdOfFoldersShifted :${uniqueIdOfFoldersShifted}`) : null;
+
+        /**
+         * Read chrome bookmarks from chrome browser
+         */
+        const allUsernamesBookmarks = getAllUsernamesBookmarks();
+
         // eslint-disable-next-line no-restricted-syntax
         for (const usernameBookmark of allUsernamesBookmarks) {
             lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
