@@ -82,6 +82,23 @@ if (!checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
 // const cuttingAccounting = config.cutterRecordKeepingFolders[0];
 // const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
+if (
+    !(
+        true && // validateConfigFile()
+        // // TODO: validateBookmarksAndCheckCredentialsPresent() => Dealer Name space in the middle gives validation error which it shoudl not
+        [validateDealerConfigurationExcelFile() !== 'error', validateBookmarksAndCheckCredentialsPresent() !== 'error'].every((i) => i)
+    )
+) {
+    lge(`Please correct the above errors, in order to continue.`);
+    if (config.environment === 'production') {
+        process.exit(1);
+    }
+}
+
+// await killChrome({
+//     includingMainProcess: true,
+// });
+
 const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
 let reportJSONObj;
 try {
@@ -117,23 +134,6 @@ debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
 
 const uniqueIdOfFoldersShifted = Object.keys(foldersToUpload); // foldersToShift.map((item) => item[1]);
 debug ? lgd(`uniqueIdOfFoldersShifted :${uniqueIdOfFoldersShifted}`) : null;
-
-if (
-    !(
-        true && // validateConfigFile()
-        // // TODO: validateBookmarksAndCheckCredentialsPresent() => Dealer Name space in the middle gives validation error which it shoudl not
-        [validateDealerConfigurationExcelFile() !== 'error', validateBookmarksAndCheckCredentialsPresent() !== 'error'].every((i) => i)
-    )
-) {
-    lge(`Please correct the above errors, in order to continue.`);
-    if (config.environment === 'production') {
-        process.exit(1);
-    }
-}
-
-// await killChrome({
-//     includingMainProcess: true,
-// });
 
 /**
  * Read chrome bookmarks from chrome browser
