@@ -176,12 +176,13 @@ try {
 
                     // eslint-disable-next-line no-restricted-syntax
                     for (const vehicleBookmark of vehicleBookmarks) {
+                        const afterHashStringInVehicleBookmark = vehicleBookmark.name.split(' |#| ')[1].trim();
                         if (vehicleBookmark.url.endsWith('#general')) {
                             vehicleBookmark.url = vehicleBookmark.url.replace('#general', '#imagery');
                         } else if (!vehicleBookmark.url.includes('#')) {
                             vehicleBookmark.url += '#imagery';
                         }
-                        if (vehicleBookmark.name.includes(' |#| ') && !vehicleBookmark.name.split(' |#| ')[1].startsWith('Ignoring')) {
+                        if (vehicleBookmark.name.includes(' |#| ') && !afterHashStringInVehicleBookmark.startsWith('Ignoring')) {
                             lgi(getUploadRemainingSummary(foldersToUpload), Color.bgCyan);
                             if (typeof page === 'boolean' && !page) {
                                 ({ page, browser } = await initBrowserAndGetPage('upload'));
