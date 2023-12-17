@@ -164,6 +164,10 @@ try {
                 const uniqueIdArrCommonInUploadDiretoryAndBookmarksName = uniqueIdArr.filter((value) => uniqueIdOfFoldersShifted.includes(value));
                 // eslint-disable-next-line no-restricted-syntax
                 for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
+                    if (!fs.existsSync(foldersToUpload[uniqueIdElement].path)) {
+                        // eslint-disable-next-line no-continue
+                        continue;
+                    }
                     lgi('Uploading bookmarks for the Dealer: ', LineSeparator.false);
                     lgi(dealerLevelBookmarkName, Color.cyan, LoggingPrefix.false, LineSeparator.false);
                     lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
