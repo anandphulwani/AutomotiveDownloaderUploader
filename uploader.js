@@ -37,7 +37,7 @@ import {
     getUniqueIDWithHashFromAllottedDealerNumberFolder,
 } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
-import { uploadBookmarkURL } from './functions/upload.js';
+import { getFoldersInUploadingZone, uploadBookmarkURL } from './functions/upload.js';
 import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
@@ -110,23 +110,7 @@ if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) 
     process.exit(0);
 }
 
-const foldersToUpload = {};
-// eslint-disable-next-line no-restricted-syntax
-for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
-    const uploadingZoneSubFolderPath = path.join(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`, uploadingZoneSubFolderAndFiles);
-    const uploadingZoneStat = fs.statSync(uploadingZoneSubFolderPath);
-
-    if (uploadingZoneStat.isDirectory()) {
-        debug ? lgd(`uploadingZoneSubFolderPath: ${uploadingZoneSubFolderPath}`) : null;
-        const uniqueId = getUniqueIDFromAllottedDealerNumberFolder(uploadingZoneSubFolderAndFiles);
-        const numberOfImagesAcToFolderName = parseInt(getNumberOfImagesFromAllottedDealerNumberFolder(uploadingZoneSubFolderAndFiles), 10);
-        foldersToUpload[uniqueId] = {
-            path: uploadingZoneSubFolderPath,
-            imagesQty: numberOfImagesAcToFolderName,
-            dealerFolderFilesQty: getFileCountNonRecursively(uploadingZoneSubFolderPath),
-        };
-    }
-}
+const foldersToUpload = getFoldersInUploadingZone(debug);
 
 // TODO: Shift folders here to uploaddirectory
 debug ? lgd(`foldersToShift :${foldersToShift}`) : null;

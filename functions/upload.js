@@ -7,7 +7,7 @@ import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './datetime.js';
-import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif, lgh, lgtf, lgs } from './loggerandlocksupportive.js';
+import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif, lgh, lgtf, lgs, lgd } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
 import { sleep, msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
@@ -24,12 +24,38 @@ import { gotoURL } from './goto.js';
 import { getAppDomain } from './configsupportive.js';
 import { waitForElementContainsOrEqualsHTML, waitTillCurrentURLEndsWith } from './waiting.js';
 import { zeroPad } from './stringformatting.js';
-import { perImageTimeToUpload, perVINTimeToUpload } from './datastoresupportive.js';
-import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
+import {
+    getNumberOfImagesFromAllottedDealerNumberFolder,
+    getUniqueIDFromAllottedDealerNumberFolder,
+    perImageTimeToUpload,
+    perVINTimeToUpload,
+} from './datastoresupportive.js';
+import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty, getFileCountNonRecursively } from './filesystem.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 /* eslint-enable import/extensions */
+
+function getFoldersInUploadingZone(debug = false) {
+    const foldersToUpload = {};
+    // eslint-disable-next-line no-restricted-syntax
+    for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
+        const uploadingZoneSubFolderPath = path.join(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`, uploadingZoneSubFolderAndFiles);
+        const uploadingZoneStat = fs.statSync(uploadingZoneSubFolderPath);
+
+        if (uploadingZoneStat.isDirectory()) {
+            debug ? lgd(`uploadingZoneSubFolderPath: ${uploadingZoneSubFolderPath}`) : null;
+            const uniqueId = getUniqueIDFromAllottedDealerNumberFolder(uploadingZoneSubFolderAndFiles);
+            const numberOfImagesAcToFolderName = parseInt(getNumberOfImagesFromAllottedDealerNumberFolder(uploadingZoneSubFolderAndFiles), 10);
+            foldersToUpload[uniqueId] = {
+                path: uploadingZoneSubFolderPath,
+                imagesQty: numberOfImagesAcToFolderName,
+                dealerFolderFilesQty: getFileCountNonRecursively(uploadingZoneSubFolderPath),
+            };
+        }
+    }
+    return foldersToUpload;
+}
 
 const printToLogBuffer = [];
 
@@ -820,4 +846,4 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { uploadBookmarkURL };
+export { getFoldersInUploadingZone, uploadBookmarkURL };
