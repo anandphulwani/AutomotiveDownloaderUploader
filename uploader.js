@@ -159,16 +159,13 @@ try {
             for (const dealerLevelBookmark of allottedDealerLevelBookmarks) {
                 debug ? lgd(`dealerLevelBookmark.name :${dealerLevelBookmark.name}`) : null;
                 // eslint-disable-next-line no-continue
-                // continue;
 
                 const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
                 const uniqueIdArr = getUniqueIdPairsFromDealerBookmarkName(dealerLevelBookmark.name);
 
                 const uniqueIdArrCommonInUploadDiretoryAndBookmarksName = uniqueIdArr.filter((value) => uniqueIdOfFoldersShifted.includes(value));
-                // const isDealerFolderToBeUploaded = uniqueIdArr.some((item) => uniqueIdOfFoldersShifted.includes(item));
                 // eslint-disable-next-line no-restricted-syntax
                 for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
-                    // if (isDealerFolderToBeUploaded) {
                     lgi('Uploading bookmarks for the Dealer: ', LineSeparator.false);
                     lgi(dealerLevelBookmarkName, Color.cyan, LoggingPrefix.false, LineSeparator.false);
                     lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
