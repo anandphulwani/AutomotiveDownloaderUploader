@@ -233,15 +233,13 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     let VINFolderPathList;
     // eslint-disable-next-line no-useless-catch
     try {
-        VINFolderPathList = typeOfVINPath === 'VINFolder' ? fs.readdirSync(VINFolderPath) : [VINFilePath];
+        VINFolderPathList = typeOfVINPath === 'VINFolder' ? fs.readdirSync(VINFolderOrFilePath) : [VINFolderOrFilePath];
         lgi(`(${zeroPad(VINFolderPathList.length, 2)}): `, LineSeparator.false);
 
         // eslint-disable-next-line no-restricted-syntax
         for (const VINFolderSubFolderAndFiles of VINFolderPathList) {
             const VINFolderSubFolderAndFilesPath =
-                typeOfVINPath === 'VINFolder'
-                    ? path.join(VINFolderPath, VINFolderSubFolderAndFiles)
-                    : path.join(uniqueIdFolderPath, VINFolderSubFolderAndFiles);
+                typeOfVINPath === 'VINFolder' ? path.join(VINFolderOrFilePath, VINFolderSubFolderAndFiles) : VINFolderSubFolderAndFiles;
             if (firstImage === undefined) {
                 firstImage = VINFolderSubFolderAndFiles;
             }
@@ -285,7 +283,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             (imageNumbersToDownloadFromDC.length === 1 || (imageNumbersToDownloadFromDC.length > 1 && firstImage.startsWith('001.')))
         ) {
             lgtf(`Uploading a copy now`);
-            const firstImagePath = typeOfVINPath === 'VINFolder' ? path.join(VINFolderPath, firstImage) : path.join(uniqueIdFolderPath, firstImage);
+            const firstImagePath = typeOfVINPath === 'VINFolder' ? path.join(VINFolderOrFilePath, firstImage) : firstImage;
             await page.bringToFront();
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
             await fileChooser.accept([path.resolve(firstImagePath)]);
