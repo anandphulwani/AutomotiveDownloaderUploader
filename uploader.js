@@ -241,7 +241,7 @@ try {
         await waitForSeconds(5);
     }
     if (typeof browser !== 'boolean') {
-        lgi('Waiting for the browser to close, in order to continue.');
+        lgi('Waiting for the browser to close, in order to continue.', LineSeparator.false);
         await browser.close();
         lgi('..........Done', LoggingPrefix.false);
     }
