@@ -72,7 +72,7 @@ try {
 // TODO: validate config file here
 // TODO: Delete accounting folders for last 5 dates only.
 
-const cuttingDone = config.cutterProcessingFolders[0];
+// const cuttingDone = config.cutterProcessingFolders[0];
 // const finishingBuffer = config.finisherProcessingFolders[0];
 // const readyToUpload = config.finisherProcessingFolders[1];
 
@@ -98,7 +98,7 @@ while (true) {
     const uploaderLocked = checkSync('uploader.js', { stale: 15000 });
     if (downloaderLocked && uploaderLocked) {
         lastLockTime = Date.now();
-    } else if (Date.now() - lastLockTime > 2 * 60 * 60 * 1000 /** 2 hours in milliseconds */) {
+    } else if (Date.now() - lastLockTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {
         break;
     }
     await waitForSeconds(30);
