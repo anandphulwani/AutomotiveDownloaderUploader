@@ -764,7 +764,7 @@ function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
     lgtf(
         `fn typeOfVINPathAndOtherVars() : END, Returning: typeOfVINPath: ${typeOfVINPath}, VINFolderPath: ${VINFolderPath}, VINFilePath: ${VINFilePath}`
     );
-    return { typeOfVINPath: typeOfVINPath, VINFolderPath: VINFolderPath, VINFilePath: VINFilePath };
+    return { typeOfVINPath, VINFolderPath, VINFilePath };
 }
 
 function getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, isURLDoesNotExist) {
