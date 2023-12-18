@@ -770,7 +770,7 @@ function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
         lgu(`Path: '${pathOfVINFolderOrFile}' is a file, without any extension like .jpg/.png, unable to process further.`);
         process.exit(0);
     } else if (fs.existsSync(uniqueIdFolderPath)) {
-        const filesStartingWithVINNumber = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${'VINNumberFromBookmark'}.`));
+        const filesStartingWithVINNumber = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${VINNumberFromBookmark}.`));
         if (filesStartingWithVINNumber.length > 1) {
             lgu(
                 `Multiple files found starting with the same '${'VINNumberFromBookmark'}.', unable to continue, found these: ${beautify(
