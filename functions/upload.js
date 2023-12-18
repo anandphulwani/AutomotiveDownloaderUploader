@@ -790,25 +790,28 @@ function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
     return { typeOfVINPath, VINFolderOrFilePath };
 }
 
-function getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, isURLDoesNotExist) {
+function getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, isURLDoesNotExist) {
     lgtf(
-        `fn getSourceAndDestinationFrom() : BEGIN, Params: typeOfVINPath: ${typeOfVINPath}, VINFolderPath: ${VINFolderPath}, uniqueIdFolderPath: ${uniqueIdFolderPath}, VINFilePath: ${VINFilePath}, isURLDoesNotExist: ${isURLDoesNotExist}`
+        `fn getSourceAndDestinationFrom() : BEGIN, Params: typeOfVINPath: ${typeOfVINPath}, VINFolderOrFilePath: ${VINFolderOrFilePath}, isURLDoesNotExist: ${isURLDoesNotExist}`
     );
-    let moveSource;
-    let moveDestination;
+    if (typeOfVINPath === undefined) {
+        lgu(`Unable to execute 'getSourceAndDestinationFrom' when 'typeOfVINPath === undefined', i.e. the source doesn't exist`);
+        process.exit(0);
+    }
     if (typeOfVINPath === 'VINFolder') {
         lgtf('typeOfVINPath is VINFolder');
-        moveSource = `${VINFolderPath}\\`;
-        moveDestination = `${config.finishedUploadingZonePath}\\${
-            isURLDoesNotExist ? 'DeletedURLs\\' : ''
-        }${instanceRunDateFormatted}\\${path.basename(path.dirname(VINFolderPath))}\\${path.basename(VINFolderPath)}`;
-    } else {
+    } else if (typeOfVINPath === 'VINFile') {
         lgtf('typeOfVINPath IS NOT VINFolder');
-        moveSource = `${uniqueIdFolderPath}\\${VINFilePath}`;
-        moveDestination = `${config.finishedUploadingZonePath}\\${
-            isURLDoesNotExist ? 'DeletedURLs\\' : ''
-        }${instanceRunDateFormatted}\\${path.basename(uniqueIdFolderPath)}\\${VINFilePath}`;
+    } else {
+        lgu(`Unexepected value of typeOfVINPath: '${typeOfVINPath}'`);
+        process.exit(0);
     }
+
+    const moveSource = VINFolderOrFilePath;
+    let moveDestination = config.finishedUploadingZonePath;
+    moveDestination = isURLDoesNotExist ? path.join(moveDestination, 'DeletedURLs') : null;
+    moveDestination = path.join(moveDestination, instanceRunDateFormatted);
+    moveDestination = path.join(moveDestination, path.basename(path.dirname(VINFolderOrFilePath)), path.basename(VINFolderOrFilePath));
     lgtf(`fn getSourceAndDestinationFrom() : END, Returning: moveSource: ${moveSource}, moveDestination: ${moveDestination}`);
     return { moveSource: moveSource, moveDestination: moveDestination };
 }
