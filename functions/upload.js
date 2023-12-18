@@ -88,7 +88,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         printToLogBuffer.pop();
         lgh(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
         const VINNumberFromBookmark = name.split(' |#| ')[1].trim();
-        const { typeOfVINPath, VINFolderPath, VINFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
+        const { typeOfVINPath, VINFolderOrFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
         const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, true);
         await waitForSeconds(5);
         const returnObj = {
@@ -191,7 +191,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         return { result: false, bookmarkAppendMesg: '', imagesUploaded: 0 };
     }
 
-    const { typeOfVINPath, VINFolderPath, VINFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
+    const { typeOfVINPath, VINFolderOrFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
 
     if (typeOfVINPath === 'VINFolder' && !fs.existsSync(VINFolderPath)) {
         lge(`Unable to find file/folder for the VIN number: ${VINNumberFromBookmark} on the disk, data does not exist.`);
