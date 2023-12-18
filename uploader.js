@@ -139,113 +139,120 @@ try {
         debug ? lgd(`uniqueIdOfFoldersShifted :${uniqueIdOfFoldersShifted}`) : null;
 
         if (uniqueIdOfFoldersShifted.length > 0) {
-        /**
-         * Read chrome bookmarks from chrome browser
-         */
-        const allUsernamesBookmarks = getAllUsernamesBookmarks();
+            /**
+             * Read chrome bookmarks from chrome browser
+             */
+            const allUsernamesBookmarks = getAllUsernamesBookmarks();
 
-        // eslint-disable-next-line no-restricted-syntax
-        for (const usernameBookmark of allUsernamesBookmarks) {
-            lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
-            lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
-            const credentials = getCredentialsForUsername(usernameBookmark.name);
-
-            setCurrentDealerConfiguration(usernameBookmark.name);
-            const allottedDealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) =>
-                dealerLevelBookmark.name.includes(' |#| ')
-            );
             // eslint-disable-next-line no-restricted-syntax
-            for (const dealerLevelBookmark of allottedDealerLevelBookmarks) {
-                debug ? lgd(`dealerLevelBookmark.name :${dealerLevelBookmark.name}`) : null;
-                // eslint-disable-next-line no-continue
+            for (const usernameBookmark of allUsernamesBookmarks) {
+                lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
+                lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
+                const credentials = getCredentialsForUsername(usernameBookmark.name);
 
-                const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
-                const uniqueIdArr = getUniqueIdPairsFromDealerBookmarkName(dealerLevelBookmark.name);
-
-                const uniqueIdArrCommonInUploadDiretoryAndBookmarksName = uniqueIdArr.filter((value) => uniqueIdOfFoldersShifted.includes(value));
+                setCurrentDealerConfiguration(usernameBookmark.name);
+                const allottedDealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) =>
+                    dealerLevelBookmark.name.includes(' |#| ')
+                );
                 // eslint-disable-next-line no-restricted-syntax
-                for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
-                    if (!fs.existsSync(foldersToUpload[uniqueIdElement].path)) {
-                        lge(
-                            `Unable to find dealer folder: '${path.basename(
-                                foldersToUpload[uniqueIdElement].path
-                            )}' on the disk, data does not exist, probably folder has been picked out manually.`
-                        );
-                        // eslint-disable-next-line no-continue
-                        continue;
-                    }
-                    lgi('Uploading bookmarks for the Dealer: ', LineSeparator.false);
-                    lgi(dealerLevelBookmarkName, Color.cyan, LoggingPrefix.false, LineSeparator.false);
-                    lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
-                    lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
-                    const vehicleBookmarks = dealerLevelBookmark.children;
+                for (const dealerLevelBookmark of allottedDealerLevelBookmarks) {
+                    debug ? lgd(`dealerLevelBookmark.name :${dealerLevelBookmark.name}`) : null;
+                    // eslint-disable-next-line no-continue
 
+                    const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
+                    const uniqueIdArr = getUniqueIdPairsFromDealerBookmarkName(dealerLevelBookmark.name);
+
+                    const uniqueIdArrCommonInUploadDiretoryAndBookmarksName = uniqueIdArr.filter((value) => uniqueIdOfFoldersShifted.includes(value));
                     // eslint-disable-next-line no-restricted-syntax
-                    for (const vehicleBookmark of vehicleBookmarks) {
-                        const afterHashStringInVehicleBookmark = vehicleBookmark.name.split(' |#| ')[1].trim();
-                        if (vehicleBookmark.url.endsWith('#general')) {
-                            vehicleBookmark.url = vehicleBookmark.url.replace('#general', '#imagery');
-                        } else if (!vehicleBookmark.url.includes('#')) {
-                            vehicleBookmark.url += '#imagery';
+                    for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
+                        if (!fs.existsSync(foldersToUpload[uniqueIdElement].path)) {
+                            lge(
+                                `Unable to find dealer folder: '${path.basename(
+                                    foldersToUpload[uniqueIdElement].path
+                                )}' on the disk, data does not exist, probably folder has been picked out manually.`
+                            );
+                            // eslint-disable-next-line no-continue
+                            continue;
                         }
-                        if (vehicleBookmark.name.includes(' |#| ') && !afterHashStringInVehicleBookmark.startsWith('Ignoring')) {
-                            const { typeOfVINPath } = typeOfVINPathAndOtherVars(
-                                foldersToUpload[uniqueIdElement].path,
-                                afterHashStringInVehicleBookmark
-                            );
-                            if (typeOfVINPath === undefined) {
-                                lge(
-                                    `Unable to find file/folder for the VIN number: '${afterHashStringInVehicleBookmark}' on the disk, data does not exist.`
+                        lgi('Uploading bookmarks for the Dealer: ', LineSeparator.false);
+                        lgi(dealerLevelBookmarkName, Color.cyan, LoggingPrefix.false, LineSeparator.false);
+                        lgi(' from the Username: ', LoggingPrefix.false, LineSeparator.false);
+                        lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
+                        const vehicleBookmarks = dealerLevelBookmark.children;
+
+                        // eslint-disable-next-line no-restricted-syntax
+                        for (const vehicleBookmark of vehicleBookmarks) {
+                            const afterHashStringInVehicleBookmark = vehicleBookmark.name.split(' |#| ')[1].trim();
+                            if (vehicleBookmark.url.endsWith('#general')) {
+                                vehicleBookmark.url = vehicleBookmark.url.replace('#general', '#imagery');
+                            } else if (!vehicleBookmark.url.includes('#')) {
+                                vehicleBookmark.url += '#imagery';
+                            }
+                            if (vehicleBookmark.name.includes(' |#| ') && !afterHashStringInVehicleBookmark.startsWith('Ignoring')) {
+                                const { typeOfVINPath } = typeOfVINPathAndOtherVars(
+                                    foldersToUpload[uniqueIdElement].path,
+                                    afterHashStringInVehicleBookmark
                                 );
-                                // eslint-disable-next-line no-continue
-                                continue;
-                            }
-
-                            lgi(getUploadRemainingSummary(foldersToUpload), Color.bgCyan);
-                            if (typeof page === 'boolean' && !page) {
-                                ({ page, browser } = await initBrowserAndGetPage('upload'));
-                            }
-                            if (userLoggedIn !== usernameBookmark.name) {
-                                const currentURL = await gotoURL(page, vehicleBookmark.url);
-                                const currentUser = await getCurrentUser(page);
-
-                                let parsedCurrentUrl = new URL(currentURL);
-                                parsedCurrentUrl = parsedCurrentUrl.host + parsedCurrentUrl.pathname;
-
-                                let parsedVehicleBookmarkURL = new URL(vehicleBookmark.url);
-                                parsedVehicleBookmarkURL = parsedVehicleBookmarkURL.host + parsedVehicleBookmarkURL.pathname;
-
-                                if (currentUser !== usernameBookmark.name.toLowerCase() || parsedCurrentUrl !== parsedVehicleBookmarkURL) {
-                                    await loginCredentials(page, credentials);
+                                if (typeOfVINPath === undefined) {
+                                    lge(
+                                        `Unable to find file/folder for the VIN number: '${afterHashStringInVehicleBookmark}' on the disk, data does not exist.`
+                                    );
+                                    // eslint-disable-next-line no-continue
+                                    continue;
                                 }
-                                userLoggedIn = usernameBookmark.name;
-                            }
 
-                            debug ? lgd(`vehicleBookmark.name :${vehicleBookmark.name}`) : null;
-                            const returnObj = await uploadBookmarkURL(
-                                page,
-                                uniqueIdElement,
-                                foldersToUpload[uniqueIdElement].path,
-                                dealerLevelBookmarkName,
-                                vehicleBookmark.name,
-                                vehicleBookmark.url,
-                                userLoggedIn
-                            );
-                            if (
-                                returnObj.result === true ||
-                                (returnObj.result === false && returnObj.bookmarkAppendMesg === 'Ignoring (Does not Exist)')
-                            ) {
-                                if (fs.existsSync(returnObj.moveSource)) {
-                                    createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(returnObj.moveSource, returnObj.moveDestination, true, 2);
+                                lgi(getUploadRemainingSummary(foldersToUpload), Color.bgCyan);
+                                if (typeof page === 'boolean' && !page) {
+                                    ({ page, browser } = await initBrowserAndGetPage('upload'));
                                 }
+                                if (userLoggedIn !== usernameBookmark.name) {
+                                    const currentURL = await gotoURL(page, vehicleBookmark.url);
+                                    const currentUser = await getCurrentUser(page);
+
+                                    let parsedCurrentUrl = new URL(currentURL);
+                                    parsedCurrentUrl = parsedCurrentUrl.host + parsedCurrentUrl.pathname;
+
+                                    let parsedVehicleBookmarkURL = new URL(vehicleBookmark.url);
+                                    parsedVehicleBookmarkURL = parsedVehicleBookmarkURL.host + parsedVehicleBookmarkURL.pathname;
+
+                                    if (currentUser !== usernameBookmark.name.toLowerCase() || parsedCurrentUrl !== parsedVehicleBookmarkURL) {
+                                        await loginCredentials(page, credentials);
+                                    }
+                                    userLoggedIn = usernameBookmark.name;
+                                }
+
+                                debug ? lgd(`vehicleBookmark.name :${vehicleBookmark.name}`) : null;
+                                const returnObj = await uploadBookmarkURL(
+                                    page,
+                                    uniqueIdElement,
+                                    foldersToUpload[uniqueIdElement].path,
+                                    dealerLevelBookmarkName,
+                                    vehicleBookmark.name,
+                                    vehicleBookmark.url,
+                                    userLoggedIn
+                                );
+                                if (
+                                    returnObj.result === true ||
+                                    (returnObj.result === false && returnObj.bookmarkAppendMesg === 'Ignoring (Does not Exist)')
+                                ) {
+                                    if (fs.existsSync(returnObj.moveSource)) {
+                                        createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(
+                                            returnObj.moveSource,
+                                            returnObj.moveDestination,
+                                            true,
+                                            2
+                                        );
+                                    }
+                                }
+                                foldersToUpload[uniqueIdElement].imagesQty = getFileCountRecursively(foldersToUpload[uniqueIdElement].path);
+                                foldersToUpload[uniqueIdElement].dealerFolderFilesQty = getFileCountNonRecursively(
+                                    foldersToUpload[uniqueIdElement].path
+                                );
                             }
-                            foldersToUpload[uniqueIdElement].imagesQty = getFileCountRecursively(foldersToUpload[uniqueIdElement].path);
-                            foldersToUpload[uniqueIdElement].dealerFolderFilesQty = getFileCountNonRecursively(foldersToUpload[uniqueIdElement].path);
                         }
                     }
                 }
             }
-        }
         }
         const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
         const resultOfKeyInYNToUploadMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToUploadMoreBookmarks, 25000, true);
