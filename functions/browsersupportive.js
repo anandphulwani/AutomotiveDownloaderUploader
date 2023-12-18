@@ -7,7 +7,8 @@ import { getCredentialsForUsername, getAppDomain } from './configsupportive.js';
 import { fillInTextbox, clickOnButton } from './actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitTillCurrentURLStartsWith } from './waiting.js';
 import { gotoPageAndWaitTillCurrentURLStartsWith } from './goto.js';
-import { lge } from './loggerandlocksupportive.js';
+import { lge, lgi } from './loggerandlocksupportive.js';
+import Color from '../class/Colors.js';
 
 /* eslint-enable import/extensions */
 
@@ -134,5 +135,17 @@ function setChromeProfile(profile) {
         throw new Error(`Chrome profile setting option: ${profile} not in the available options 'download' and 'upload'.`);
     }
 }
+
+function checkBrowserClosed(err) {
+    if (
+        err.message === 'Navigation failed because browser has disconnected!' ||
+        err.message === 'Protocol error (Page.navigate): Session closed. Most likely the page has been closed.'
+    ) {
+        lgi('Browser has been manually closed.', Color.bgYellow);
+    } else {
+        throw err;
+    }
+}
+
 // eslint-disable-next-line import/prefer-default-export
-export { initBrowserAndGetPage, loginCredentials, getCurrentUser };
+export { initBrowserAndGetPage, loginCredentials, getCurrentUser, checkBrowserClosed };

@@ -36,8 +36,8 @@ import {
     getUniqueIDFromAllottedDealerNumberFolder,
     getUniqueIDWithHashFromAllottedDealerNumberFolder,
 } from './functions/datastoresupportive.js';
-import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { getFoldersInUploadingZone, uploadBookmarkURL } from './functions/upload.js';
+import { initBrowserAndGetPage, loginCredentials, getCurrentUser, checkBrowserClosed } from './functions/browsersupportive.js';
 import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
@@ -241,12 +241,5 @@ try {
         lgi('..........Done', LoggingPrefix.false);
     }
 } catch (err) {
-    if (
-        err.message === 'Navigation failed because browser has disconnected!' ||
-        err.message === 'Protocol error (Page.navigate): Session closed. Most likely the page has been closed.'
-    ) {
-        lgi('Browser has been manually closed.', Color.bgYellow);
-    } else {
-        throw err;
-    }
+    checkBrowserClosed(err);
 }

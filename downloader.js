@@ -21,7 +21,7 @@ import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength } fr
 import keyInYNWithTimeout from './functions/keyInYNWithTimeout.js';
 import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitForElementContainsOrEqualsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
-import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
+import { initBrowserAndGetPage, loginCredentials, getCurrentUser, checkBrowserClosed } from './functions/browsersupportive.js';
 import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto.js';
 import {
     downloadBookmarksFromSourceToProcessing,
@@ -308,12 +308,5 @@ try {
         );
     }
 } catch (err) {
-    if (
-        err.message === 'Navigation failed because browser has disconnected!' ||
-        err.message === 'Protocol error (Page.navigate): Session closed. Most likely the page has been closed.'
-    ) {
-        lgi('Browser has been manually closed.', Color.bgYellow);
-    } else {
-        throw err;
-    }
+    checkBrowserClosed(err);
 }
