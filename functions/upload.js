@@ -783,7 +783,7 @@ function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
             process.exit(0);
         } else if (filesStartingWithVINNumber.length === 1) {
             typeOfVINPath = 'VINFile';
-            [VINFolderOrFilePath] = filesStartingWithVINNumber;
+            VINFolderOrFilePath = path.join(uniqueIdFolderPath, filesStartingWithVINNumber[0]);
         } else {
             typeOfVINPath = undefined;
         }
