@@ -769,7 +769,7 @@ function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
     } else if (fs.existsSync(pathOfVINFolderOrFile) && fs.statSync(pathOfVINFolderOrFile).isFile()) {
         lgu(`Path: '${pathOfVINFolderOrFile}' is a file, without any extension like .jpg/.png, unable to process further.`);
         process.exit(0);
-    } else {
+    } else if (fs.existsSync(uniqueIdFolderPath)) {
         const filesStartingWithVINNumber = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${'VINNumberFromBookmark'}.`));
         if (filesStartingWithVINNumber.length > 1) {
             lgu(
@@ -787,6 +787,8 @@ function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
         } else {
             typeOfVINPath = undefined;
         }
+    } else {
+        typeOfVINPath = undefined;
     }
     lgtf(`fn typeOfVINPathAndOtherVars() : END, Returning: typeOfVINPath: ${typeOfVINPath}, VINFolderOrFilePath: ${VINFolderOrFilePath}`);
     return { typeOfVINPath, VINFolderOrFilePath };
