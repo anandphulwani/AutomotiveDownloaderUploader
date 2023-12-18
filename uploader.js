@@ -138,6 +138,7 @@ try {
         const uniqueIdOfFoldersShifted = Object.keys(foldersToUpload);
         debug ? lgd(`uniqueIdOfFoldersShifted :${uniqueIdOfFoldersShifted}`) : null;
 
+        if (uniqueIdOfFoldersShifted.length > 0) {
         /**
          * Read chrome bookmarks from chrome browser
          */
@@ -244,6 +245,7 @@ try {
                     }
                 }
             }
+        }
         }
         const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
         const resultOfKeyInYNToUploadMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToUploadMoreBookmarks, 25000, true);
