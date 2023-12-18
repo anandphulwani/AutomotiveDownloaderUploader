@@ -287,7 +287,7 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
 /* #region getLastNonCatchErrorLogLevels9DigitUniqueId(), generateAndGetNonCatchErrorLogLevels9DigitUniqueId() : Begin */
 function getLastNonCatchErrorLogLevels9DigitUniqueId() {
     const configContent = fs.readFileSync(getProjectConfigUniqueIdsFilePath(), 'utf8');
-    const lastNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',\\r\\n)`;
+    const lastNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',[\\r\\n|\\n])`;
     const lastNonCatchErrorRegexExpression = new RegExp(lastNonCatchErrorRegexString, 'g');
 
     if (!lastNonCatchErrorRegexExpression.test(configContent)) {
@@ -313,7 +313,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
         const currentNonCatchErrorLogLevels9DigitUniqueId = getLastNonCatchErrorLogLevels9DigitUniqueId();
         const configContent = fs.readFileSync(fileToOperateOn, 'utf8');
 
-        const currentNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',\\r\\n)`;
+        const currentNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',[\\r\\n|\\n])`;
         const currentNonCatchErrorRegexExpression = new RegExp(currentNonCatchErrorRegexString, 'g');
 
         if (!currentNonCatchErrorRegexExpression.test(configContent)) {
@@ -350,7 +350,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
 /* #region getLastCatchErrorLogLevels6DigitUniqueId(), generateAndGetCatchErrorLogLevels6DigitUniqueId() : Begin */
 function getLastCatchErrorLogLevels6DigitUniqueId() {
     const configContent = fs.readFileSync(getProjectConfigUniqueIdsFilePath(), 'utf8');
-    const lastCatchErrorRegexString = `(    catchErrorLogLevels6DigitUniqueId: ')(.*?)(',\\r\\n)`;
+    const lastCatchErrorRegexString = `(    catchErrorLogLevels6DigitUniqueId: ')(.*?)(',[\\r\\n|\\n])`;
     const lastCatchErrorRegexExpression = new RegExp(lastCatchErrorRegexString, 'g');
 
     if (!lastCatchErrorRegexExpression.test(configContent)) {
@@ -376,7 +376,7 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
         const currentCatchErrorLogLevels6DigitUniqueId = getLastCatchErrorLogLevels6DigitUniqueId();
         const configContent = fs.readFileSync(fileToOperateOn, 'utf8');
 
-        const currentCatchErrorRegexString = `(    catchErrorLogLevels6DigitUniqueId: ')(.*?)(',\\r\\n)`;
+        const currentCatchErrorRegexString = `(    catchErrorLogLevels6DigitUniqueId: ')(.*?)(',[\\r\\n|\\n])`;
         const currentCatchErrorRegexExpression = new RegExp(currentCatchErrorRegexString, 'g');
 
         if (!currentCatchErrorRegexExpression.test(configContent)) {

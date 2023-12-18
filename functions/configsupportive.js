@@ -43,7 +43,7 @@ function setContractorsCurrentAllotted(contractor, allottedQty) {
         }
         const configContractorsContent = fs.readFileSync(fileToOperateOn, 'utf8');
 
-        const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+        const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*[\\r\\n|\\n])([ ]*)(currentAllotted: )(\\d+)(,)`;
         const regexExpression = new RegExp(regexString, 'g');
         const newconfigContractorsContent = configContractorsContent.replace(regexExpression, `$1$2$3${allottedQty}$5`);
         if (configContractorsContent === newconfigContractorsContent) {
@@ -64,7 +64,7 @@ function setContractorsCurrentAllotted(contractor, allottedQty) {
 
 function getContractorsCurrentAllotted(contractor) {
     const configContractorsContent = fs.readFileSync(getProjectConfigContractorsFilePath(), 'utf8');
-    const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*\\r\\n)([ ]*)(currentAllotted: )(\\d+)(,)`;
+    const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*[\\r\\n|\\n])([ ]*)(currentAllotted: )(\\d+)(,)`;
     const regexExpression = new RegExp(regexString, 'g');
 
     if (!regexExpression.test(configContractorsContent)) {
@@ -86,7 +86,7 @@ function addToContractorsCurrentAllotted(contractor, quantity) {
 
 function getLastLotNumber() {
     const configContent = fs.readFileSync(getProjectConfigLotLastFilePath(), 'utf8');
-    const lastLotNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\r\\n)`;
+    const lastLotNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',[\\r\\n|\\n])`;
     const lastLotNumberRegexExpression = new RegExp(lastLotNumberRegexString, 'g');
 
     if (!lastLotNumberRegexExpression.test(configContent)) {
@@ -99,7 +99,7 @@ function getLastLotNumber() {
 
 function getLastLotDate() {
     const configContent = fs.readFileSync(getProjectConfigLotLastFilePath(), 'utf8');
-    const lastLotDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\r\\n)`;
+    const lastLotDateRegexString = `(    lotLastRunDate: ')(.*?)(',[\\r\\n|\\n])`;
     const lastLotDateRegexExpression = new RegExp(lastLotDateRegexString, 'g');
 
     if (!lastLotDateRegexExpression.test(configContent)) {
@@ -125,7 +125,7 @@ function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
         let newConfigContent;
 
         if (currentLotLastRunNumber !== lastLotNumber) {
-            const lastRunNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',\\r\\n)`;
+            const lastRunNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',[\\r\\n|\\n])`;
             const lastRunNumberRegexExpression = new RegExp(lastRunNumberRegexString, 'g');
             newConfigContent = configContent.replace(lastRunNumberRegexExpression, `$1${lastLotNumber}$3`);
             if (configContent === newConfigContent) {
@@ -137,7 +137,7 @@ function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
         }
 
         if (currentLotLastRunDate !== lastLotDate) {
-            const lastRunDateRegexString = `(    lotLastRunDate: ')(.*?)(',\\r\\n)`;
+            const lastRunDateRegexString = `(    lotLastRunDate: ')(.*?)(',[\\r\\n|\\n])`;
             const lastRunDateRegexExpression = new RegExp(lastRunDateRegexString, 'g');
             newConfigContent = configContent.replace(lastRunDateRegexExpression, `$1${lastLotDate}$3`);
             if (configContent === newConfigContent) {
