@@ -166,9 +166,9 @@ try {
                 for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
                     if (!fs.existsSync(foldersToUpload[uniqueIdElement].path)) {
                         lge(
-                            `Unable to find dealer folder: ${path.basename(
+                            `Unable to find dealer folder: '${path.basename(
                                 foldersToUpload[uniqueIdElement].path
-                            )} on the disk, data does not exist, probably folder has been picked out manually.`
+                            )}' on the disk, data does not exist, probably folder has been picked out manually.`
                         );
                         // eslint-disable-next-line no-continue
                         continue;
