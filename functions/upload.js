@@ -38,8 +38,12 @@ import LoggingPrefix from '../class/LoggingPrefix.js';
 
 function getFoldersInUploadingZone(debug = false) {
     const foldersToUpload = {};
+    const uploadingZoneWithTodaysDate = path.join(config.uploadingZonePath, instanceRunDateFormatted);
+    if (!fs.existsSync(uploadingZoneWithTodaysDate)) {
+        return foldersToUpload;
+    }
     // eslint-disable-next-line no-restricted-syntax
-    for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
+    for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(uploadingZoneWithTodaysDate)) {
         const uploadingZoneSubFolderPath = path.join(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`, uploadingZoneSubFolderAndFiles);
         const uploadingZoneStat = fs.statSync(uploadingZoneSubFolderPath);
 
