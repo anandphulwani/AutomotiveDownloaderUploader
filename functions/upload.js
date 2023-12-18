@@ -874,4 +874,4 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { getFoldersInUploadingZone, uploadBookmarkURL };
+export { typeOfVINPathAndOtherVars, getFoldersInUploadingZone, uploadBookmarkURL };

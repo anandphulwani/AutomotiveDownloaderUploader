@@ -36,8 +36,8 @@ import {
     getUniqueIDFromAllottedDealerNumberFolder,
     getUniqueIDWithHashFromAllottedDealerNumberFolder,
 } from './functions/datastoresupportive.js';
-import { getFoldersInUploadingZone, uploadBookmarkURL } from './functions/upload.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser, checkBrowserClosed } from './functions/browsersupportive.js';
+import { getFoldersInUploadingZone, typeOfVINPathAndOtherVars, uploadBookmarkURL } from './functions/upload.js';
 import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
@@ -188,6 +188,18 @@ try {
                             vehicleBookmark.url += '#imagery';
                         }
                         if (vehicleBookmark.name.includes(' |#| ') && !afterHashStringInVehicleBookmark.startsWith('Ignoring')) {
+                            const { typeOfVINPath } = typeOfVINPathAndOtherVars(
+                                foldersToUpload[uniqueIdElement].path,
+                                afterHashStringInVehicleBookmark
+                            );
+                            if (typeOfVINPath === undefined) {
+                                lge(
+                                    `Unable to find file/folder for the VIN number: '${afterHashStringInVehicleBookmark}' on the disk, data does not exist.`
+                                );
+                                // eslint-disable-next-line no-continue
+                                continue;
+                            }
+
                             lgi(getUploadRemainingSummary(foldersToUpload), Color.bgCyan);
                             if (typeof page === 'boolean' && !page) {
                                 ({ page, browser } = await initBrowserAndGetPage('upload'));
