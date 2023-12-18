@@ -757,14 +757,37 @@ function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
     lgtf(
         `fn typeOfVINPathAndOtherVars() : BEGIN, Params: uniqueIdFolderPath: ${uniqueIdFolderPath}, VINNumberFromBookmark: ${VINNumberFromBookmark}`
     );
-    const VINFolderPath = `${uniqueIdFolderPath}\\${VINNumberFromBookmark}`;
-    let VINFilePath = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${VINNumberFromBookmark}.`));
-    VINFilePath = VINFilePath.length === 1 ? VINFilePath[0] : undefined;
-    const typeOfVINPath = VINFilePath === undefined ? 'VINFolder' : 'VINFile';
-    lgtf(
-        `fn typeOfVINPathAndOtherVars() : END, Returning: typeOfVINPath: ${typeOfVINPath}, VINFolderPath: ${VINFolderPath}, VINFilePath: ${VINFilePath}`
-    );
-    return { typeOfVINPath, VINFolderPath, VINFilePath };
+    let typeOfVINPath;
+    let VINFolderOrFilePath;
+    const pathOfVINFolderOrFile = path.join(uniqueIdFolderPath, VINNumberFromBookmark);
+
+    if (fs.existsSync(pathOfVINFolderOrFile) && fs.statSync(pathOfVINFolderOrFile).isDirectory()) {
+        typeOfVINPath = 'VINFolder';
+        VINFolderOrFilePath = pathOfVINFolderOrFile;
+    } else if (fs.existsSync(pathOfVINFolderOrFile) && fs.statSync(pathOfVINFolderOrFile).isFile()) {
+        lgu(`Path: '${pathOfVINFolderOrFile}' is a file, without any extension like .jpg/.png, unable to process further.`);
+        process.exit(0);
+    } else {
+        const filesStartingWithVINNumber = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${'VINNumberFromBookmark'}.`));
+        if (filesStartingWithVINNumber.length > 1) {
+            lgu(
+                `Multiple files found starting with the same '${'VINNumberFromBookmark'}.', unable to continue, found these: ${beautify(
+                    filesStartingWithVINNumber,
+                    null,
+                    3,
+                    120
+                )} `
+            );
+            process.exit(0);
+        } else if (filesStartingWithVINNumber.length === 1) {
+            typeOfVINPath = 'VINFile';
+            [VINFolderOrFilePath] = filesStartingWithVINNumber;
+        } else {
+            typeOfVINPath = undefined;
+        }
+    }
+    lgtf(`fn typeOfVINPathAndOtherVars() : END, Returning: typeOfVINPath: ${typeOfVINPath}, VINFolderOrFilePath: ${VINFolderOrFilePath}`);
+    return { typeOfVINPath, VINFolderOrFilePath };
 }
 
 function getSourceAndDestinationFrom(typeOfVINPath, VINFolderPath, uniqueIdFolderPath, VINFilePath, isURLDoesNotExist) {
