@@ -40,6 +40,8 @@ import { lgc, lge, lgi, lgu } from './functions/loggerandlocksupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
+import { levels, loggerConsoleLevel } from './functions/logger.js';
+import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 /* eslint-enable import/extensions */
 
 // const {

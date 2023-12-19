@@ -43,6 +43,8 @@ import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
 import keyInYNWithTimeout from './functions/keyInYNWithTimeout.js';
+import { levels, loggerConsoleLevel } from './functions/logger.js';
+import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
