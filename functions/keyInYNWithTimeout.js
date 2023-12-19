@@ -28,8 +28,6 @@ export default function keyInYNWithTimeout(question, timeout = 5000, defaultOpti
         const timeoutId = setTimeout(() => {
             rl.close();
             console.log('\r');
-            printSectionSeperator();
-            // console.log(`\nTimeout - Default option '${defaultOption ? 'Yes' : 'No'}' selected`);
             resolve(defaultOption); // Resolve with the default option
         }, timeout);
 
