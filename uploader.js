@@ -129,11 +129,6 @@ try {
 
             foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
             moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
-
-            if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
-                lgi(`No data present in the uploading zone, Exiting.`, Color.green);
-                process.exit(0);
-            }
         }
         const foldersToUpload = getFoldersInUploadingZone(debug);
         debug ? lgd(`foldersToUpload :${foldersToUpload}`) : null;
@@ -267,6 +262,10 @@ try {
             lastRunTime = Date.now();
         } else if (Date.now() - lastRunTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {
             break;
+        }
+        if (uniqueIdOfFoldersShifted.length === 0) {
+            lgi(`No data present in the uploading zone.`, Color.green);
+            printSectionSeperator();
         }
         const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
         const resultOfKeyInYNToUploadMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToUploadMoreBookmarks, 25000, true);
