@@ -29,6 +29,9 @@ export default class LoggerCustomFileSyncTransport extends Transport {
         // Create the log message string
         let message = formattedInfo.message + (this.eol === undefined ? '\n' : this.eol);
         message = message.replace(/.\[\d{1,5}m/g, '§');
+        message = message.replace(/§√§/g, '√');
+        message = message.replace(/§‼§/g, '‼');
+        message = message.replace(/§×§/g, '×');
         // Synchronously write log message to file
         try {
             writeFileSync(this.filename, message, { flag: 'a' });
