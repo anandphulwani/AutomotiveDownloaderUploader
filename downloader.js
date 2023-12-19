@@ -290,6 +290,7 @@ try {
         if (!resultOfKeyInYNToAddMoreBookmarks) {
             break;
         }
+        printSectionSeperator();
         await waitForSeconds(5);
         await downloadBookmarksFromSourceToProcessing();
     }

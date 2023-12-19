@@ -259,6 +259,7 @@ try {
         if (!resultOfKeyInYNToUploadMoreBookmarks) {
             break;
         }
+        printSectionSeperator();
         await waitForSeconds(5);
     }
     if (typeof browser !== 'boolean') {
