@@ -164,7 +164,6 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
         if (loggingPrefix.name === true && !lastWriteLineSepObj[logFilename]) {
             logMesg = `\n${logMesg}`;
         }
-        logMesg = logMesg.replace(/.\[\d{1,5}m/g, '§');
     }
     lastWriteLineSepObj[logFilename] = lineSeparator.name;
     lineSeparator.name ? (logMesg = `${logMesg}\n`) : null;
