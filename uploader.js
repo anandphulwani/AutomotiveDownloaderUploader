@@ -103,21 +103,24 @@ if (
 
 const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
 let reportJSONObj;
+let isDumbUploader = false;
 try {
     if (!fs.existsSync(reportJSONFilePath)) {
-        lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Exiting.`);
-        process.exit(1);
-    }
+        lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Shifting to DUMB uploader mode.`);
+        isDumbUploader = true;
+    } else {
     attainLock(reportJSONFilePath, undefined, true);
     const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
     reportJSONObj = JSON.parse(reportJSONContents);
     releaseLock(reportJSONFilePath, undefined, true);
+    }
 } catch (err) {
     lgc(err);
     releaseLock(reportJSONFilePath, undefined, true);
     process.exit(1);
 }
 
+if (!isDumbUploader) {
 let foldersToShift = validationBeforeMoving('uploadingZone', reportJSONObj, debug);
 
 foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
@@ -126,6 +129,7 @@ moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, f
 if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
     lgi(`No data present in the uploading zone, Exiting.`, Color.green);
     process.exit(0);
+}
 }
 
 try {
