@@ -128,6 +128,7 @@ if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) 
 }
 
 try {
+    // eslint-disable-next-line no-constant-condition
     while (true) {
         const foldersToUpload = getFoldersInUploadingZone(debug);
         debug ? lgd(`foldersToUpload :${foldersToUpload}`) : null;
