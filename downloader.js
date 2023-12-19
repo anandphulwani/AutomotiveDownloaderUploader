@@ -36,7 +36,7 @@ import { validateConfigFile } from './functions/configvalidation.js';
 import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
-import { lgc, lge, lgi, lgu } from './functions/loggerandlocksupportive.js';
+import { lgc, lge, lgi, lgif, lgu } from './functions/loggerandlocksupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
@@ -305,6 +305,8 @@ try {
                 clearLastLinesOnConsole(noOfLines);
                 await waitForSeconds(5);
             }
+        } else {
+            lgif(`${questionOfKeyInYNToAddMoreBookmarks}: ${resultOfKeyInYNToAddMoreBookmarks.answer}`);
         }
         await downloadBookmarksFromSourceToProcessing();
     }

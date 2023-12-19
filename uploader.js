@@ -8,7 +8,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { attainLock, releaseLock, lgw, lge, lgc, lgi, lgu, lgd } from './functions/loggerandlocksupportive.js';
+import { attainLock, releaseLock, lgw, lge, lgc, lgi, lgu, lgd, lgif } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
@@ -286,6 +286,8 @@ try {
                 clearLastLinesOnConsole(noOfLines);
                 await waitForSeconds(5);
             }
+        } else {
+            lgif(`${questionOfKeyInYNToUploadMoreBookmarks}: ${resultOfKeyInYNToUploadMoreBookmarks.answer}`);
         }
     }
 } catch (err) {
