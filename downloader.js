@@ -298,7 +298,7 @@ try {
             break;
         }
         if (resultOfKeyInYNToAddMoreBookmarks.isDefaultOption) {
-            printSectionSeperator();
+            printSectionSeperator(undefined, true);
             await waitForSeconds(5);
             if (remainingBookmarksNotDownloadedLength === 0) {
                 const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
