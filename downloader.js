@@ -72,7 +72,7 @@ if (config.environment === 'production') {
 autoCleanUpDatastoreZones();
 printSectionSeperator();
 
-await downloadBookmarksFromSourceToProcessing(false);
+await downloadBookmarksFromSourceToProcessing();
 
 // ONPROJECTFINISH: Remove the unused imports
 // NORMALPRIORITY: Error summary in the end.
@@ -298,7 +298,7 @@ try {
             break;
         }
         await waitForSeconds(5);
-        await downloadBookmarksFromSourceToProcessing(overwriteLast4Lines);
+        await downloadBookmarksFromSourceToProcessing();
         isFirstRun = false;
     }
 

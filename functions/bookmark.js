@@ -30,16 +30,7 @@ function reformatJSONString(contents) {
     return JSONString;
 }
 
-async function downloadBookmarksFromSourceToProcessing(overwriteLast4Lines = false, debug = false) {
-    if (overwriteLast4Lines) {
-        let noOfLines = 2;
-        if (levels[loggerConsoleLevel] >= levels.trace) {
-            noOfLines = 4;
-        }
-        process.stdout.moveCursor(0, -noOfLines);
-        process.stdout.clearLine(noOfLines);
-        process.stdout.cursorTo(0);
-    }
+async function downloadBookmarksFromSourceToProcessing(debug = false) {
     lgt(`Fetching bookmarks from the source: `, Color.cyanNormal, LineSeparator.false);
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
     let initialSourceJSONString;
