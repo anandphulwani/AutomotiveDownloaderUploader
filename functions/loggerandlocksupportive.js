@@ -451,30 +451,6 @@ function convertArgsToProperOrder(...args) {
 
 /* #region lg_ functions */
 /**
- * lgc: is for those errors which are catched by try, catch which are not anticipated, but are catched by try
- * catch blocks and should be handled.
- */
-const lgc = (...args) => {
-    if (levels[loggerConsoleLevel] < levels.catcherror && levels[loggerFileLevel] < levels.catcherror) {
-        return;
-    }
-    args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
-    args.splice(-4);
-    addIndividualTransportCatcherrorFileWinston();
-    const callerHierarchy =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
-    const uniqueId =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    if (levels[loggerConsoleLevel] >= levels.catcherror) {
-        loggerConsole.catcherror(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
-    }
-    if (levels[loggerFileLevel] >= levels.catcherror) {
-        loggerFile.catcherror(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
-    }
-};
-
-/**
  * lgu: is for those part of lines which should never be called, basically those sections of code
  * which are unreachable, if they are reached, there is some problem in the code.
  */
@@ -495,6 +471,30 @@ const lgu = (...args) => {
     }
     if (levels[loggerFileLevel] >= levels.unreachable) {
         loggerFile.unreachable(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
+    }
+};
+
+/**
+ * lgc: is for those errors which are catched by try, catch which are not anticipated, but are catched by try
+ * catch blocks and should be handled.
+ */
+const lgc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.catcherror && levels[loggerFileLevel] < levels.catcherror) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    addIndividualTransportCatcherrorFileWinston();
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetCatchErrorLogLevels6DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.catcherror) {
+        loggerConsole.catcherror(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+    if (levels[loggerFileLevel] >= levels.catcherror) {
+        loggerFile.catcherror(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
     }
 };
 
@@ -633,6 +633,26 @@ const lgv = (...args) => {
     }
 };
 
+const lgb = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.billy && levels[loggerFileLevel] < levels.billy) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    addIndividualTransportBillyFileWinston();
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.billy) {
+        loggerConsole.billy(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+    if (levels[loggerFileLevel] >= levels.billy) {
+        loggerFile.billy(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
+    }
+};
+
 const lgd = (...args) => {
     if (levels[loggerConsoleLevel] < levels.debug && levels[loggerFileLevel] < levels.debug) {
         return;
@@ -670,26 +690,6 @@ const lgt = (...args) => {
     }
     if (levels[loggerFileLevel] >= levels.trace) {
         loggerFile.trace(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
-    }
-};
-
-const lgb = (...args) => {
-    if (levels[loggerConsoleLevel] < levels.billy && levels[loggerFileLevel] < levels.billy) {
-        return;
-    }
-    args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
-    args.splice(-4);
-    addIndividualTransportBillyFileWinston();
-    const callerHierarchy =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
-    const uniqueId =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    if (levels[loggerConsoleLevel] >= levels.billy) {
-        loggerConsole.billy(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
-    }
-    if (levels[loggerFileLevel] >= levels.billy) {
-        loggerFile.billy(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
     }
 };
 /* #endregion */
