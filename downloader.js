@@ -294,15 +294,17 @@ try {
         }
         const questionOfKeyInYNToAddMoreBookmarks = 'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
         const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
-        if (!resultOfKeyInYNToAddMoreBookmarks) {
+        if (!resultOfKeyInYNToAddMoreBookmarks.answer) {
             break;
         }
+        if (resultOfKeyInYNToAddMoreBookmarks.isDefaultOption) {
         printSectionSeperator();
         await waitForSeconds(5);
         if (remainingBookmarksNotDownloadedLength === 0) {
             const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
             clearLastLinesOnConsole(noOfLines);
             await waitForSeconds(5);
+        }
         }
         await downloadBookmarksFromSourceToProcessing();
     }

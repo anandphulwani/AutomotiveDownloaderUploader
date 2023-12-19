@@ -269,15 +269,17 @@ try {
         }
         const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
         const resultOfKeyInYNToUploadMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToUploadMoreBookmarks, 25000, true);
-        if (!resultOfKeyInYNToUploadMoreBookmarks) {
+        if (!resultOfKeyInYNToUploadMoreBookmarks.answer) {
             break;
         }
+        if (resultOfKeyInYNToUploadMoreBookmarks.isDefaultOption) {
         printSectionSeperator();
         await waitForSeconds(5);
         if (uniqueIdOfFoldersShifted.length === 0) {
             const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
             clearLastLinesOnConsole(noOfLines);
             await waitForSeconds(5);
+        }
         }
     }
 } catch (err) {
