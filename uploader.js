@@ -128,9 +128,6 @@ if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) 
 }
 
 try {
-    let page = false;
-    let browser = false;
-    let userLoggedIn = '';
     while (true) {
         const foldersToUpload = getFoldersInUploadingZone(debug);
         debug ? lgd(`foldersToUpload :${foldersToUpload}`) : null;
@@ -144,6 +141,9 @@ try {
              */
             const allUsernamesBookmarks = getAllUsernamesBookmarks();
 
+            let page = false;
+            let browser = false;
+            let userLoggedIn = '';
             // eslint-disable-next-line no-restricted-syntax
             for (const usernameBookmark of allUsernamesBookmarks) {
                 lgi(`Uploading bookmarks for the Username: `, LineSeparator.false);
@@ -253,6 +253,11 @@ try {
                     }
                 }
             }
+            if (typeof browser !== 'boolean') {
+                lgi('Waiting for the browser to close, in order to continue.', LineSeparator.false);
+                await browser.close();
+                lgi('..........Done', LoggingPrefix.false);
+            }
         }
         const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
         const resultOfKeyInYNToUploadMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToUploadMoreBookmarks, 25000, true);
@@ -261,11 +266,6 @@ try {
         }
         printSectionSeperator();
         await waitForSeconds(5);
-    }
-    if (typeof browser !== 'boolean') {
-        lgi('Waiting for the browser to close, in order to continue.', LineSeparator.false);
-        await browser.close();
-        lgi('..........Done', LoggingPrefix.false);
         if (uniqueIdOfFoldersShifted.length === 0) {
             const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
             clearLastLinesOnConsole(noOfLines);
