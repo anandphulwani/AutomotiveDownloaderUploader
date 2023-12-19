@@ -126,7 +126,6 @@ try {
     while (true) {
         if (!isDumbUploader) {
             let foldersToShift = validationBeforeMoving('uploadingZone', reportJSONObj, debug);
-
             foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
             moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
         } else {
