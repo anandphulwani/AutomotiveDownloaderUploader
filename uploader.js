@@ -133,7 +133,7 @@ try {
     let userLoggedIn = '';
     while (true) {
         const foldersToUpload = getFoldersInUploadingZone(debug);
-        debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
+        debug ? lgd(`foldersToUpload :${foldersToUpload}`) : null;
 
         const uniqueIdOfFoldersShifted = Object.keys(foldersToUpload);
         debug ? lgd(`uniqueIdOfFoldersShifted :${uniqueIdOfFoldersShifted}`) : null;
