@@ -695,23 +695,6 @@ const lgb = (...args) => {
 /* #endregion */
 
 /* #region lg_f functions */
-const lgcf = (...args) => {
-    if (levels[loggerFileLevel] < levels.catcherror) {
-        return;
-    }
-    args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
-    args.splice(-4);
-    addIndividualTransportCatcherrorFileWinston();
-    const callerHierarchy =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
-    const uniqueId =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    if (levels[loggerFileLevel] >= levels.catcherror) {
-        loggerFile.catcherror(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
-    }
-};
-
 const lguf = (...args) => {
     if (levels[loggerFileLevel] < levels.unreachable) {
         return;
@@ -726,6 +709,23 @@ const lguf = (...args) => {
         callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetCatchErrorLogLevels6DigitUniqueId();
     if (levels[loggerFileLevel] >= levels.unreachable) {
         loggerFile.unreachable(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
+    }
+};
+
+const lgcf = (...args) => {
+    if (levels[loggerFileLevel] < levels.catcherror) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , , loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    addIndividualTransportCatcherrorFileWinston();
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetCatchErrorLogLevels6DigitUniqueId();
+    if (levels[loggerFileLevel] >= levels.catcherror) {
+        loggerFile.catcherror(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
     }
 };
 
@@ -831,6 +831,23 @@ const lgvf = (...args) => {
     }
 };
 
+const lgbf = (...args) => {
+    if (levels[loggerFileLevel] < levels.billy) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , , loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    addIndividualTransportBillyFileWinston();
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerFileLevel] >= levels.billy) {
+        loggerFile.billy(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
+    }
+};
+
 const lgdf = (...args) => {
     if (levels[loggerFileLevel] < levels.debug) {
         return;
@@ -864,42 +881,9 @@ const lgtf = (...args) => {
         loggerFile.trace(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
     }
 };
-
-const lgbf = (...args) => {
-    if (levels[loggerFileLevel] < levels.billy) {
-        return;
-    }
-    args = convertArgsToProperOrder(...args);
-    const [, , , loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
-    args.splice(-4);
-    addIndividualTransportBillyFileWinston();
-    const callerHierarchy =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
-    const uniqueId =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    if (levels[loggerFileLevel] >= levels.billy) {
-        loggerFile.billy(...args, { callerHierarchy, uniqueId, loggingPrefix, lineSeparator });
-    }
-};
 /* #endregion */
 
 /* #region lg_c functions */
-const lgcc = (...args) => {
-    if (levels[loggerConsoleLevel] < levels.catcherror) {
-        return;
-    }
-    args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
-    args.splice(-4);
-    const callerHierarchy =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
-    const uniqueId =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetCatchErrorLogLevels6DigitUniqueId();
-    if (levels[loggerConsoleLevel] >= levels.catcherror) {
-        loggerConsole.catcherror(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
-    }
-};
-
 const lguc = (...args) => {
     if (levels[loggerConsoleLevel] < levels.unreachable) {
         return;
@@ -913,6 +897,22 @@ const lguc = (...args) => {
         callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetCatchErrorLogLevels6DigitUniqueId();
     if (levels[loggerConsoleLevel] >= levels.unreachable) {
         loggerConsole.unreachable(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lgcc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.catcherror) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetCatchErrorLogLevels6DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.catcherror) {
+        loggerConsole.catcherror(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
     }
 };
 
@@ -1012,6 +1012,22 @@ const lgvc = (...args) => {
     }
 };
 
+const lgbc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.billy) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.billy) {
+        loggerConsole.billy(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
 const lgdc = (...args) => {
     if (levels[loggerConsoleLevel] < levels.debug) {
         return;
@@ -1041,22 +1057,6 @@ const lgtc = (...args) => {
         callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
     if (levels[loggerConsoleLevel] >= levels.trace) {
         loggerConsole.trace(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
-    }
-};
-
-const lgbc = (...args) => {
-    if (levels[loggerConsoleLevel] < levels.billy) {
-        return;
-    }
-    args = convertArgsToProperOrder(...args);
-    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
-    args.splice(-4);
-    const callerHierarchy =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
-    const uniqueId =
-        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
-    if (levels[loggerConsoleLevel] >= levels.billy) {
-        loggerConsole.billy(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
     }
 };
 /* #endregion */
