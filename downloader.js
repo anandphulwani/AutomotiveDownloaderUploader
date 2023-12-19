@@ -128,14 +128,10 @@ for (const LotIndexEle of LotIndexArray) {
 }
 
 try {
-    let isFirstRun = true;
-    let overwriteLast4Lines = false;
     let lotIndex = LotLastIndex;
     // eslint-disable-next-line no-constant-condition
     while (true) {
         if (getRemainingBookmarksNotDownloadedLength() > 0) {
-            overwriteLast4Lines = false;
-
             /**
              * Read chrome bookmarks from chrome browser
              */
@@ -288,9 +284,6 @@ try {
                 await browser.close();
                 lgi('..........Done', LoggingPrefix.false);
             }
-        } else {
-            // eslint-disable-next-line no-unneeded-ternary
-            overwriteLast4Lines = !isFirstRun ? true : false;
         }
         const questionOfKeyInYNToAddMoreBookmarks = 'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
         const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
@@ -299,7 +292,6 @@ try {
         }
         await waitForSeconds(5);
         await downloadBookmarksFromSourceToProcessing();
-        isFirstRun = false;
     }
 
     if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(`lotIndex`, 2)}`)) {
