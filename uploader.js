@@ -38,7 +38,11 @@ import {
 } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser, checkBrowserClosed } from './functions/browsersupportive.js';
 import { getFoldersInUploadingZone, typeOfVINPathAndOtherVars, uploadBookmarkURL } from './functions/upload.js';
-import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
+import {
+    checkIfFoldersPresentInFinishersUploadingZoneDir,
+    moveFilesFromSourceToDestinationAndAccounting,
+    validationBeforeMoving,
+} from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
@@ -121,9 +125,11 @@ try {
 }
 
 try {
+    let foundNewFoldersInMiddle;
     let lastRunTime = Date.now();
     // eslint-disable-next-line no-constant-condition
     while (true) {
+        foundNewFoldersInMiddle = false;
         if (!isDumbUploader) {
             let foldersToShift = validationBeforeMoving('uploadingZone', reportJSONObj, debug);
             foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
@@ -162,6 +168,8 @@ try {
                 );
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of allottedDealerLevelBookmarks) {
+                    foundNewFoldersInMiddle = !isDumbUploader && checkIfFoldersPresentInFinishersUploadingZoneDir() ? true : foundNewFoldersInMiddle;
+                    if (foundNewFoldersInMiddle) break;
                     debug ? lgd(`dealerLevelBookmark.name :${dealerLevelBookmark.name}`) : null;
                     const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
                     const uniqueIdArr = getUniqueIdPairsFromDealerBookmarkName(dealerLevelBookmark.name);
@@ -256,7 +264,10 @@ try {
                         }
                     }
                 }
+                if (foundNewFoldersInMiddle) break;
             }
+            // eslint-disable-next-line no-continue
+            if (foundNewFoldersInMiddle) continue;
             if (typeof browser !== 'boolean') {
                 lgi('Waiting for the browser to close, in order to continue.', LineSeparator.false);
                 await browser.close();
