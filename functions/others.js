@@ -5,7 +5,7 @@ import Color from '../class/Colors.js';
 import { lgu, lgc, lgs, lge, lgh, lgw, lgi, lgv, lgb, lgd, lgt } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
-function printSectionSeperator(level = 'info') {
+function printSectionSeperator(level = 'info', isConsoleOnly = false) {
     level === 'unreachable' ? lgu('-'.repeat(120), Color.bgWhite) : null;
     level === 'catcherror' ? lgc('-'.repeat(120), Color.bgWhite) : null;
     level === 'severe' ? lgs('-'.repeat(120), Color.bgWhite) : null;
