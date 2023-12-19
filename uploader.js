@@ -272,7 +272,6 @@ try {
         if (uniqueIdOfFoldersShifted.length === 0) {
             lgi(`No data present in the uploading zone.`, Color.green);
             printSectionSeperator();
-        }
         const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
         const resultOfKeyInYNToUploadMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToUploadMoreBookmarks, 25000, true);
         if (!resultOfKeyInYNToUploadMoreBookmarks.answer) {
@@ -281,13 +280,12 @@ try {
         if (resultOfKeyInYNToUploadMoreBookmarks.isDefaultOption) {
             printSectionSeperator(undefined, true);
             await waitForSeconds(5);
-            if (uniqueIdOfFoldersShifted.length === 0) {
                 const noOfLines = (levels[loggerConsoleLevel] >= levels.trace ? 4 : 2) + (isDumbUploader ? 5 : 0);
                 clearLastLinesOnConsole(noOfLines);
                 await waitForSeconds(5);
-            }
         } else {
             lgif(`${questionOfKeyInYNToUploadMoreBookmarks}: ${resultOfKeyInYNToUploadMoreBookmarks.answer}`);
+        }
         }
     }
 } catch (err) {

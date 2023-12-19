@@ -292,6 +292,7 @@ try {
         } else if (Date.now() - lastRunTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {
             break;
         }
+        if (remainingBookmarksNotDownloadedLength === 0) {
         const questionOfKeyInYNToAddMoreBookmarks = 'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
         const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
         if (!resultOfKeyInYNToAddMoreBookmarks.answer) {
@@ -300,13 +301,13 @@ try {
         if (resultOfKeyInYNToAddMoreBookmarks.isDefaultOption) {
             printSectionSeperator(undefined, true);
             await waitForSeconds(5);
-            if (remainingBookmarksNotDownloadedLength === 0) {
+            
                 const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
                 clearLastLinesOnConsole(noOfLines);
                 await waitForSeconds(5);
-            }
         } else {
             lgif(`${questionOfKeyInYNToAddMoreBookmarks}: ${resultOfKeyInYNToAddMoreBookmarks.answer}`);
+        }
         }
         await downloadBookmarksFromSourceToProcessing();
     }
