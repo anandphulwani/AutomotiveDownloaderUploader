@@ -129,6 +129,12 @@ try {
 
             foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
             moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
+        } else {
+            lgi('*'.repeat(120));
+            lgi('*'.repeat(120));
+            lgi(`${'*'.repeat(50)} DUMB UPLOADER MODE ${'*'.repeat(50)}`);
+            lgi('*'.repeat(120));
+            lgi('*'.repeat(120));
         }
         const foldersToUpload = getFoldersInUploadingZone(debug);
         debug ? lgd(`foldersToUpload :${foldersToUpload}`) : null;
