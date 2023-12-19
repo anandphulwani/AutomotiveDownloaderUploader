@@ -120,22 +120,21 @@ try {
     process.exit(1);
 }
 
-if (!isDumbUploader) {
-    let foldersToShift = validationBeforeMoving('uploadingZone', reportJSONObj, debug);
-
-    foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
-    moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
-
-    if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
-        lgi(`No data present in the uploading zone, Exiting.`, Color.green);
-        process.exit(0);
-    }
-}
-
 try {
     let lastRunTime = Date.now();
     // eslint-disable-next-line no-constant-condition
     while (true) {
+        if (!isDumbUploader) {
+            let foldersToShift = validationBeforeMoving('uploadingZone', reportJSONObj, debug);
+
+            foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
+            moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);
+
+            if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) {
+                lgi(`No data present in the uploading zone, Exiting.`, Color.green);
+                process.exit(0);
+            }
+        }
         const foldersToUpload = getFoldersInUploadingZone(debug);
         debug ? lgd(`foldersToUpload :${foldersToUpload}`) : null;
 
