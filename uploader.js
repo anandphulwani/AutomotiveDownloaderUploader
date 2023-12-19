@@ -130,6 +130,7 @@ if (!fs.existsSync(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`)) 
 }
 
 try {
+    let lastRunTime = Date.now();
     // eslint-disable-next-line no-constant-condition
     while (true) {
         const foldersToUpload = getFoldersInUploadingZone(debug);
@@ -261,6 +262,9 @@ try {
                 await browser.close();
                 lgi('..........Done', LoggingPrefix.false);
             }
+            lastRunTime = Date.now();
+        } else if (Date.now() - lastRunTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {
+            break;
         }
         const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
         const resultOfKeyInYNToUploadMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToUploadMoreBookmarks, 25000, true);

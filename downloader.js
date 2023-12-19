@@ -130,6 +130,7 @@ for (const LotIndexEle of LotIndexArray) {
 }
 
 try {
+    let lastRunTime = Date.now();
     let lotIndex = LotLastIndex;
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -287,6 +288,9 @@ try {
                 await browser.close();
                 lgi('..........Done', LoggingPrefix.false);
             }
+            lastRunTime = Date.now();
+        } else if (Date.now() - lastRunTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {
+            break;
         }
         const questionOfKeyInYNToAddMoreBookmarks = 'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
         const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
