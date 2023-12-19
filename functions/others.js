@@ -2,34 +2,57 @@ import chalk from 'chalk';
 
 /* eslint-disable import/extensions */
 import Color from '../class/Colors.js';
-import { lgu, lgc, lgs, lge, lgh, lgw, lgi, lgv, lgb, lgd, lgt, lguc, lgcc, lgsc, lgec, lghc, lgwc, lgic, lgvc, lgbc, lgdc, lgtc } from './loggerandlocksupportive.js';
+import {
+    lgu,
+    lgc,
+    lgs,
+    lge,
+    lgh,
+    lgw,
+    lgi,
+    lgv,
+    lgb,
+    lgd,
+    lgt,
+    lguc,
+    lgcc,
+    lgsc,
+    lgec,
+    lghc,
+    lgwc,
+    lgic,
+    lgvc,
+    lgbc,
+    lgdc,
+    lgtc,
+} from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 function printSectionSeperator(level = 'info', isConsoleOnly = false) {
     if (isConsoleOnly) {
-    level === 'unreachable' ? lguc('-'.repeat(120), Color.bgWhite) : null;
-    level === 'catcherror' ? lgcc('-'.repeat(120), Color.bgWhite) : null;
-    level === 'severe' ? lgsc('-'.repeat(120), Color.bgWhite) : null;
-    level === 'error' ? lgec('-'.repeat(120), Color.bgWhite) : null;
-    level === 'hiccup' ? lghc('-'.repeat(120), Color.bgWhite) : null;
-    level === 'warn' ? lgwc('-'.repeat(120), Color.bgWhite) : null;
-    level === 'info' ? lgic('-'.repeat(120), Color.bgWhite) : null;
-    level === 'verbose' ? lgvc('-'.repeat(120), Color.bgWhite) : null;
-    level === 'billy' ? lgbc('-'.repeat(120), Color.bgWhite) : null;
-    level === 'debug' ? lgdc('-'.repeat(120), Color.bgWhite) : null;
-    level === 'trace' ? lgtc('-'.repeat(120), Color.bgWhite) : null;
+        level === 'unreachable' ? lguc('-'.repeat(120), Color.bgWhite) : null;
+        level === 'catcherror' ? lgcc('-'.repeat(120), Color.bgWhite) : null;
+        level === 'severe' ? lgsc('-'.repeat(120), Color.bgWhite) : null;
+        level === 'error' ? lgec('-'.repeat(120), Color.bgWhite) : null;
+        level === 'hiccup' ? lghc('-'.repeat(120), Color.bgWhite) : null;
+        level === 'warn' ? lgwc('-'.repeat(120), Color.bgWhite) : null;
+        level === 'info' ? lgic('-'.repeat(120), Color.bgWhite) : null;
+        level === 'verbose' ? lgvc('-'.repeat(120), Color.bgWhite) : null;
+        level === 'billy' ? lgbc('-'.repeat(120), Color.bgWhite) : null;
+        level === 'debug' ? lgdc('-'.repeat(120), Color.bgWhite) : null;
+        level === 'trace' ? lgtc('-'.repeat(120), Color.bgWhite) : null;
     } else {
-    level === 'unreachable' ? lgu('-'.repeat(120), Color.bgWhite) : null;
-    level === 'catcherror' ? lgc('-'.repeat(120), Color.bgWhite) : null;
-    level === 'severe' ? lgs('-'.repeat(120), Color.bgWhite) : null;
-    level === 'error' ? lge('-'.repeat(120), Color.bgWhite) : null;
-    level === 'hiccup' ? lgh('-'.repeat(120), Color.bgWhite) : null;
-    level === 'warn' ? lgw('-'.repeat(120), Color.bgWhite) : null;
-    level === 'info' ? lgi('-'.repeat(120), Color.bgWhite) : null;
-    level === 'verbose' ? lgv('-'.repeat(120), Color.bgWhite) : null;
-    level === 'billy' ? lgb('-'.repeat(120), Color.bgWhite) : null;
-    level === 'debug' ? lgd('-'.repeat(120), Color.bgWhite) : null;
-    level === 'trace' ? lgt('-'.repeat(120), Color.bgWhite) : null;
+        level === 'unreachable' ? lgu('-'.repeat(120), Color.bgWhite) : null;
+        level === 'catcherror' ? lgc('-'.repeat(120), Color.bgWhite) : null;
+        level === 'severe' ? lgs('-'.repeat(120), Color.bgWhite) : null;
+        level === 'error' ? lge('-'.repeat(120), Color.bgWhite) : null;
+        level === 'hiccup' ? lgh('-'.repeat(120), Color.bgWhite) : null;
+        level === 'warn' ? lgw('-'.repeat(120), Color.bgWhite) : null;
+        level === 'info' ? lgi('-'.repeat(120), Color.bgWhite) : null;
+        level === 'verbose' ? lgv('-'.repeat(120), Color.bgWhite) : null;
+        level === 'billy' ? lgb('-'.repeat(120), Color.bgWhite) : null;
+        level === 'debug' ? lgd('-'.repeat(120), Color.bgWhite) : null;
+        level === 'trace' ? lgt('-'.repeat(120), Color.bgWhite) : null;
     }
 }
 
