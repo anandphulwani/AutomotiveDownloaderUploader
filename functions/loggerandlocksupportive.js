@@ -882,6 +882,185 @@ const lgbf = (...args) => {
     }
 };
 /* #endregion */
+
+/* #region lg_c functions */
+const lgcc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.catcherror) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetCatchErrorLogLevels6DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.catcherror) {
+        loggerConsole.catcherror(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lguc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.unreachable) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetCatchErrorLogLevels6DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.unreachable) {
+        loggerConsole.unreachable(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lgsc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.severe) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.severe) {
+        loggerConsole.severe(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lgec = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.error) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.error) {
+        loggerConsole.error(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lghc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.hiccup) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.hiccup) {
+        loggerConsole.hiccup(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lgwc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.warn) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.warn) {
+        loggerConsole.warn(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lgic = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.info) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.info) {
+        loggerConsole.info(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lgvc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.verbose) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.verbose) {
+        loggerConsole.verbose(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lgdc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.debug) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.debug) {
+        loggerConsole.debug(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lgtc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.trace) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.trace) {
+        loggerConsole.trace(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+
+const lgbc = (...args) => {
+    if (levels[loggerConsoleLevel] < levels.billy) {
+        return;
+    }
+    args = convertArgsToProperOrder(...args);
+    const [, , textColor, loggingPrefix, lineSeparator, callerHierarchyAndUniqueId] = args;
+    args.splice(-4);
+    const callerHierarchy =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.callerHierarchy : getCallerHierarchyFormatted(...args);
+    const uniqueId =
+        callerHierarchyAndUniqueId !== undefined ? callerHierarchyAndUniqueId.uniqueId : generateAndGetNonCatchErrorLogLevels9DigitUniqueId();
+    if (levels[loggerConsoleLevel] >= levels.billy) {
+        loggerConsole.billy(...args, { callerHierarchy, uniqueId, textColor, loggingPrefix, lineSeparator });
+    }
+};
+/* #endregion */
+
 /* #endregion */
 
 export {
@@ -914,4 +1093,15 @@ export {
     lgdf,
     lgtf,
     lgbf,
+    lgcc,
+    lguc,
+    lgsc,
+    lgec,
+    lghc,
+    lgwc,
+    lgic,
+    lgvc,
+    lgdc,
+    lgtc,
+    lgbc,
 };
