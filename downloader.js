@@ -315,3 +315,4 @@ try {
 } catch (err) {
     checkBrowserClosed(err);
 }
+process.exit(0);
