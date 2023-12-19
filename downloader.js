@@ -99,7 +99,7 @@ if (
     }
 }
 
-if (!checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
+if (config.environment === 'production' && !checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
     exec(`start "" FolderTransferer.exe`);
 }
 
