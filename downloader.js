@@ -298,13 +298,13 @@ try {
             break;
         }
         if (resultOfKeyInYNToAddMoreBookmarks.isDefaultOption) {
-        printSectionSeperator();
-        await waitForSeconds(5);
-        if (remainingBookmarksNotDownloadedLength === 0) {
-            const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
-            clearLastLinesOnConsole(noOfLines);
+            printSectionSeperator();
             await waitForSeconds(5);
-        }
+            if (remainingBookmarksNotDownloadedLength === 0) {
+                const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
+                clearLastLinesOnConsole(noOfLines);
+                await waitForSeconds(5);
+            }
         }
         await downloadBookmarksFromSourceToProcessing();
     }
