@@ -131,7 +131,8 @@ try {
     let lotIndex = LotLastIndex;
     // eslint-disable-next-line no-constant-condition
     while (true) {
-        if (getRemainingBookmarksNotDownloadedLength() > 0) {
+        const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength();
+        if (remainingBookmarksNotDownloadedLength > 0) {
             /**
              * Read chrome bookmarks from chrome browser
              */
@@ -292,6 +293,11 @@ try {
         }
         printSectionSeperator();
         await waitForSeconds(5);
+        if (remainingBookmarksNotDownloadedLength === 0) {
+            const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
+            clearLastLinesOnConsole(noOfLines);
+            await waitForSeconds(5);
+        }
         await downloadBookmarksFromSourceToProcessing();
     }
 

@@ -266,6 +266,11 @@ try {
         lgi('Waiting for the browser to close, in order to continue.', LineSeparator.false);
         await browser.close();
         lgi('..........Done', LoggingPrefix.false);
+        if (uniqueIdOfFoldersShifted.length === 0) {
+            const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
+            clearLastLinesOnConsole(noOfLines);
+            await waitForSeconds(5);
+        }
     }
 } catch (err) {
     checkBrowserClosed(err);
