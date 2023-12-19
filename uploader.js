@@ -108,7 +108,6 @@ try {
         lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Exiting.`);
         process.exit(1);
     }
-    // createBackupOfFile(fileToOperateOn, newConfigUserContent);
     attainLock(reportJSONFilePath, undefined, true);
     const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
     reportJSONObj = JSON.parse(reportJSONContents);
