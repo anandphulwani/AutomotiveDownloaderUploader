@@ -164,8 +164,6 @@ try {
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of allottedDealerLevelBookmarks) {
                     debug ? lgd(`dealerLevelBookmark.name :${dealerLevelBookmark.name}`) : null;
-                    // eslint-disable-next-line no-continue
-
                     const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
                     const uniqueIdArr = getUniqueIdPairsFromDealerBookmarkName(dealerLevelBookmark.name);
 
