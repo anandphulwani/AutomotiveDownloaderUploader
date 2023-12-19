@@ -55,6 +55,40 @@ const sourceDestinationAccountingTypes = {
     },
 };
 
+function checkIfFoldersPresentInFinishersUploadingZoneDir() {
+    const { filteredContractorsByType, sourceFolderName } = sourceDestinationAccountingTypes.uploadingZone;
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const filteredContractor of filteredContractorsByType) {
+        const filteredContractorDestinationDir = path.join(
+            config.contractorsZonePath,
+            filteredContractor,
+            instanceRunDateFormatted,
+            sourceFolderName
+        );
+        /**
+         * Check ReadyToUpload folder exists.
+         */
+        if (!fs.existsSync(filteredContractorDestinationDir)) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const filteredContractorDestinationSubFolderAndFiles of fs.readdirSync(filteredContractorDestinationDir)) {
+            const filteredContractorDestinationSubFolderPath = path.join(
+                filteredContractorDestinationDir,
+                filteredContractorDestinationSubFolderAndFiles
+            );
+            const filteredContractorDestinationStat = fs.statSync(filteredContractorDestinationSubFolderPath);
+            if (filteredContractorDestinationStat.isDirectory()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, debug = false) {
     // TODO: Check sourceDestinationAccountingType is in the array
     sourceDestinationAccountingType === 'finishingBuffer' ? (currentSetOfWarnings = new Set()) : null;
@@ -375,4 +409,4 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
     return foldersToShift;
 }
 
-export { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving };
+export { checkIfFoldersPresentInFinishersUploadingZoneDir, moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving };
