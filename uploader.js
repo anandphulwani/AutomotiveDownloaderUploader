@@ -282,7 +282,7 @@ try {
         printSectionSeperator();
         await waitForSeconds(5);
         if (uniqueIdOfFoldersShifted.length === 0) {
-            const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
+            const noOfLines = (levels[loggerConsoleLevel] >= levels.trace ? 4 : 2) + (isDumbUploader ? 5 : 0);
             clearLastLinesOnConsole(noOfLines);
             await waitForSeconds(5);
         }
