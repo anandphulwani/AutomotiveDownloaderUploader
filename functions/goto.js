@@ -34,8 +34,15 @@ async function handleErrorWhileURLNavigation(err, URLToCrawlOrFilename, gotoCnt,
             );
         }
     } else {
-        lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
-        throw err;
+        // eslint-disable-next-line no-lonely-if
+        if (
+            !config.browserClosingErrors.some((patternOrValue) =>
+                typeof patternOrValue === 'string' ? err.message === patternOrValue : new RegExp(patternOrValue).test(err.message)
+            )
+        ) {
+            lgc(`CATCH THIS ERROR (WITHOUT HASH):#${err.message}#`, err);
+            throw err;
+        }
     }
 }
 
