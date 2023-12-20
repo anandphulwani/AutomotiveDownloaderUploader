@@ -236,6 +236,7 @@ for (let index = 0; index < 2; index++) {
         process.exit(1);
     }
     if (index === 1) {
+        setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
         printSectionSeperator();
         debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
         process.exit(0);
@@ -253,8 +254,10 @@ if (keyInYN('To use manual allotment system press Y, to exit from this process p
     dealerDirectoriesObjects = dealerDirectories.map((dealerFolderPath) => new FolderToBeAllotted(dealerFolderPath));
     for (let index = 0; index < 2; index++) {
         console.log('');
-        await doAllotment(dealerDirectoriesObjects, contractors, lotIndex, true, false, debug);
+        await doAllotment(dealerDirectoriesObjects, contractors, lotIndex, true, debug);
+        if (index === 1) {
+            setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
+        }
         printSectionSeperator();
     }
-    setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
 }
