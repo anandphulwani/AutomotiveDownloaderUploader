@@ -35,6 +35,9 @@ const configUser = {
     urlCrawlingErrorsEligibleForRetrying: [
         /Navigation timeout of \d* ms exceeded/g,
         /net::ERR_CONNECTION_TIMED_OUT at .*/g,
+        /net::ERR_NAME_NOT_RESOLVED at .*/g,
+        /net::ERR_CONNECTION_CLOSED at .*/g,
+        /getaddrinfo ENOTFOUND .*/g,
         /connect ETIMEDOUT .*/g,
         'socket hang up',
         'aborted',
