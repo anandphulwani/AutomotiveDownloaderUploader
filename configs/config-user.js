@@ -44,6 +44,13 @@ const configUser = {
         'read ECONNRESET',
         'Page.navigate timed out.',
     ],
+    browserClosingErrors: [
+        'Navigation failed because browser has disconnected!',
+        'Protocol error (Page.navigate): Session closed. Most likely the page has been closed.',
+        'Protocol error (Runtime.callFunctionOn): Session closed. Most likely the page has been closed.',
+        'Protocol error (Runtime.callFunctionOn): Target closed',
+        'Execution context was destroyed, most likely because of a navigation.',
+    ],
     // dealerConfigurationFolder: '.\\configs\\DealerConfiguration',
     // downloadPath: '.\\datastore\\Downloads',
     // contractorsZonePath: '.\\datastore\\ContractorsZone',

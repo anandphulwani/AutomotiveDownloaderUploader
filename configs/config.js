@@ -63,6 +63,9 @@ const configBasic = {
     urlCrawlingErrorsEligibleForRetrying: [
         //
     ],
+    browserClosingErrors: [
+        //
+    ],
     dealerConfigurationFolder: '.\\configs\\DealerConfiguration',
     downloadPath: '.\\datastore\\Downloads',
     contractorsZonePath: '.\\datastore\\ContractorsZone',
