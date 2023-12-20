@@ -8,7 +8,7 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh, lgd, lgt } from './loggerandlocksupportive.js';
+import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh, lgd, lgt, lgs } from './loggerandlocksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
@@ -48,7 +48,14 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
 
         lgt(`02:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
         // Parse the contents of both JSON files into JavaScript objects
-        const sourceObj = JSON.parse(sourceContents);
+        let sourceObj;
+        try {
+            sourceObj = JSON.parse(sourceContents);
+        } catch (err) {
+            console.log('');
+            lgs(`Source 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source.`);
+            return;
+        }
         const processingObj = JSON.parse(processingContents);
 
         // eslint-disable-next-line no-restricted-syntax
