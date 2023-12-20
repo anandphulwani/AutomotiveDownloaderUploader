@@ -138,8 +138,9 @@ function setChromeProfile(profile) {
 
 function checkBrowserClosed(err) {
     if (
-        err.message === 'Navigation failed because browser has disconnected!' ||
-        err.message === 'Protocol error (Page.navigate): Session closed. Most likely the page has been closed.'
+        config.browserClosingErrors.some((patternOrValue) =>
+            typeof patternOrValue === 'string' ? err.message === patternOrValue : new RegExp(patternOrValue).test(err.message)
+        )
     ) {
         lgi('Browser has been manually closed.', Color.bgYellow);
     } else {
