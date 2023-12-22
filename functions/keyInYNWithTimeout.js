@@ -13,9 +13,9 @@ export default function keyInYNWithTimeout(question, timeout = 5000, defaultOpti
         });
 
         const askQuestion = (isWrongResponse) => {
-            resetTimeout();
+            resetTimeout(isWrongResponse);
             rl.question(`${isWrongResponse ? 'Invalid input, ' : ''}${question} (Y/N):`, (answer) => {
-                resetTimeout();
+                resetTimeout(isWrongResponse);
                 const upperCaseAnswer = answer.toUpperCase();
                 if (upperCaseAnswer === 'Y' || upperCaseAnswer === 'N') {
                     clearTimeout(timeoutId);
@@ -28,12 +28,13 @@ export default function keyInYNWithTimeout(question, timeout = 5000, defaultOpti
             });
         };
 
-        const resetTimeout = () => {
+        const resetTimeout = (isWrongResponse) => {
             clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
+                const totalLengthOfString = question.length + 7 + (isWrongResponse ? 15 : 0);
+                const noOfRows = Math.ceil(totalLengthOfString / 120);
                 console.log('\r');
-                process.stdout.moveCursor(0, -1);
-                process.stdout.clearLine();
+                clearLastLinesOnConsole(noOfRows);
                 console.log('Timed out.');
                 rl.close();
                 resolve({ answer: defaultOption, isDefaultOption: true }); // Resolve with the default option
