@@ -8,7 +8,7 @@ import { URL as URLparser } from 'url';
 import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
-import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh, lgd, lgt, lgs } from './loggerandlocksupportive.js';
+import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh, lgd, lgt, lgs, lgif } from './loggerandlocksupportive.js';
 import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
@@ -20,6 +20,9 @@ import Color from '../class/Colors.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import LineSeparator from '../class/LineSeparator.js';
 import { levels, loggerConsoleLevel } from './logger.js';
+import { instanceRunDateFormatted } from './datetime.js';
+import keyInYNWithTimeout from './keyInYNWithTimeout.js';
+import { clearLastLinesOnConsole } from './consolesupportive.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -102,6 +105,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                 }
                 debug ? lgd(`Total doneBookmarksInSource: ${Object.keys(doneBookmarksInSource).length}`) : null;
 
+                let isGUIDInProcessingBookmarksPresentInSourceBookmarks = false;
                 const doneBookmarksInSourceKeys = Object.keys(doneBookmarksInSource);
                 for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
                     const guid = doneBookmarksInSourceKeys[i];
@@ -120,6 +124,33 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                             );
                             debug ? lgd(`Doing replacement for GUID: ${guid}`) : null;
                             sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarksInSource[guid]);
+                            isGUIDInProcessingBookmarksPresentInSourceBookmarks = true;
+                        }
+                    }
+                }
+
+                if (!isGUIDInProcessingBookmarksPresentInSourceBookmarks) {
+                    if (config.lotLastRunDate === instanceRunDateFormatted) {
+                        console.log('');
+                        printSectionSeperator(undefined, true);
+                        const questionToRefreshBookmarksInSameDay =
+                            'Fresh bookmarks added for today, all previous bookmarks state(bookmarks URL downloaded/bookmarks folder allotted) will be lost, continue?';
+                        const resultOfKeyInYNToRefreshBookmarksInSameDay = await keyInYNWithTimeout(
+                            questionToRefreshBookmarksInSameDay,
+                            25000,
+                            false
+                        );
+                        if (resultOfKeyInYNToRefreshBookmarksInSameDay.isDefaultOption) {
+                            printSectionSeperator(undefined, true);
+                            await waitForSeconds(5);
+                            clearLastLinesOnConsole(2);
+                        } else {
+                            lgif(`${questionToRefreshBookmarksInSameDay}: ${resultOfKeyInYNToRefreshBookmarksInSameDay.answer}`);
+                        }
+                        if (!resultOfKeyInYNToRefreshBookmarksInSameDay.answer) {
+                            releaseLock(processingBookmarkPathWithoutSync, undefined, true);
+                            releaseLock(sourceBookmarkPath, undefined, true);
+                            return;
                         }
                     }
                 }
