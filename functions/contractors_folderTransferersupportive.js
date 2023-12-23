@@ -4,7 +4,7 @@ import path from 'path';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
-import { lgd, lgi, lgu, lgw } from './loggerandlocksupportive.js';
+import { lgc, lgd, lgi, lgu, lgw } from './loggerandlocksupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes, removeDirIfExists } from './filesystem.js';
 import { addUploadingToReport } from './reportsupportive.js';
 import { printSectionSeperator } from './others.js';
@@ -123,11 +123,16 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                     fs.renameSync(`${filteredContractorDestinationSubFolderPath} `, filteredContractorDestinationSubFolderPath.trim());
                     unlockedFolders.push(filteredContractorDestinationSubFolderAndFiles);
                 } catch (err) {
-                    // TODO: Make a if else block, so as to catch err type, otherwise do a lgc error
-                    warnNowOrLater(
-                        `Folder in ${typeOfContractor}'s ${typeOfSourceFolder} locked, maybe a contractor working/moving it, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
-                        sourceDestinationAccountingType
-                    );
+                    const resourceBusyOrLockedRegexString = '^EBUSY: resource busy or locked';
+                    const resourceBusyOrLockedRegexExpression = new RegExp(resourceBusyOrLockedRegexString, 'g');
+                    if (resourceBusyOrLockedRegexExpression.test(err.message)) {
+                        warnNowOrLater(
+                            `Folder in ${typeOfContractor}'s ${typeOfSourceFolder} locked, maybe a contractor working/moving it, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
+                            sourceDestinationAccountingType
+                        );
+                    } else {
+                        lgc('Unknown error while checking for contractor locked:', err);
+                    }
                 }
             }
         }
