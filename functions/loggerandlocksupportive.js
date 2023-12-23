@@ -250,9 +250,9 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
     try {
         fs.mkdirSync(logPath, { recursive: true });
         if (checkSync(fileToOperateOn, { stale: stale })) {
-            const filename = `${logPath}/${currentTime()}_ReleasedLock_${callerFunctionName}.txt`;
             unlockSync(fileToOperateOn);
             if (debug) {
+                const filename = `${logPath}/${currentTime()}_ReleasedLock_${callerFunctionName}.txt`;
                 fs.appendFileSync(filename, `Released A Lock On '${fileToOperateOn}', caller: ${callerWithFunctionNameHierarchy}.\n`);
             }
         }
