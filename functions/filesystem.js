@@ -26,11 +26,8 @@ function moveDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     for (let i = 0; i < 30; i++) {
         try {
             const results = fsExtra.moveSync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
-            debug
-                ? lgd(
-                      `${'Successfully moved  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`
-                  )
-                : null;
+            const movingMesg = `${'Successfully moved  '}${results}${' files from the \n\tSource Directory: '}${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`;
+            debug ? lgd(movingMesg) : null;
             break;
         } catch (error) {
             if (
@@ -50,9 +47,8 @@ function moveDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
 function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     try {
         const results = fsExtra.copySync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
-        debug
-            ? lgd(`Successfully copied  ${results} files from the \n\tSource Directory: ${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`)
-            : null;
+        const copyingMesg = `Successfully copied  ${results} files from the \n\tSource Directory: ${fromPath}\n\t\t\tTo \n\tDestination Directory: ${toPath}`;
+        debug ? lgd(copyingMesg) : null;
     } catch (error) {
         lgc(`${'Unable to copy file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`, error);
         process.exit(1);
