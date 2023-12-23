@@ -187,9 +187,9 @@ for (const typeOfExcel of typesOfExcel) {
                 // eslint-disable-next-line no-continue
                 continue;
             }
-            attainLock(reportJSONFilePath, undefined, true);
+            attainLock(reportJSONFilePath, undefined, false);
             const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
-            releaseLock(reportJSONFilePath, undefined, true);
+            releaseLock(reportJSONFilePath, undefined, false);
 
             let reportJSONObj = JSON.parse(reportJSONContents);
             reportJSONObj = Object.fromEntries(Object.entries(reportJSONObj).filter(([, value]) => value.username === username));
@@ -1068,9 +1068,9 @@ for (const contractor of Object.keys(config.contractors)) {
             // eslint-disable-next-line no-continue
             continue;
         }
-        attainLock(reportJSONFilePath, undefined, true);
+        attainLock(reportJSONFilePath, undefined, false);
         const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
-        releaseLock(reportJSONFilePath, undefined, true);
+        releaseLock(reportJSONFilePath, undefined, false);
 
         const reportJSONObj = JSON.parse(reportJSONContents);
 

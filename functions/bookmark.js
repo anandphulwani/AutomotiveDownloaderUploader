@@ -40,8 +40,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
     let initialLineCount;
     let sourceJSONString;
 
-    attainLock(sourceBookmarkPath, undefined, true);
-    attainLock(processingBookmarkPathWithoutSync, undefined, true);
+    attainLock(sourceBookmarkPath, undefined, false);
+    attainLock(processingBookmarkPathWithoutSync, undefined, false);
     lgt(`01:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
 
     try {
@@ -149,8 +149,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                             lgif(`${questionToRefreshBookmarksInSameDay}: ${resultOfKeyInYNToRefreshBookmarksInSameDay.answer}`);
                         }
                         if (!resultOfKeyInYNToRefreshBookmarksInSameDay.answer) {
-                            releaseLock(processingBookmarkPathWithoutSync, undefined, true);
-                            releaseLock(sourceBookmarkPath, undefined, true);
+                            releaseLock(processingBookmarkPathWithoutSync, undefined, false);
+                            releaseLock(sourceBookmarkPath, undefined, false);
                             return;
                         }
                     }
@@ -226,8 +226,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
 
         debug ? lgd('Writing bookmarks file') : null;
         writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initialSourceJSONString);
-        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
-        releaseLock(sourceBookmarkPath, undefined, true);
+        releaseLock(processingBookmarkPathWithoutSync, undefined, false);
+        releaseLock(sourceBookmarkPath, undefined, false);
         lgt(`06:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false);
         printSectionSeperator('trace');
     } catch (err) {
@@ -237,8 +237,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         printSectionSeperator();
         lgu(`initialLineCount: ${initialLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
         lgc(err);
-        releaseLock(processingBookmarkPathWithoutSync, undefined, true);
-        releaseLock(sourceBookmarkPath, undefined, true);
+        releaseLock(processingBookmarkPathWithoutSync, undefined, false);
+        releaseLock(sourceBookmarkPath, undefined, false);
         process.exit(1);
     }
 }
@@ -324,7 +324,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         },
     };
     const fileToOperateOn = config.processingBookmarkPathWithoutSync;
-    attainLock(fileToOperateOn, undefined, true);
+    attainLock(fileToOperateOn, undefined, false);
     try {
         const fileContents = fs.readFileSync(fileToOperateOn, 'utf8');
 
@@ -373,9 +373,9 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
             process.exit(1);
         }
         createBackupOfFile(fileToOperateOn, bookmarksFileText);
-        releaseLock(fileToOperateOn, undefined, true);
+        releaseLock(fileToOperateOn, undefined, false);
     } catch (err) {
-        releaseLock(fileToOperateOn, undefined, true);
+        releaseLock(fileToOperateOn, undefined, false);
         lgc(`replaceBookmarksElementByGUIDAndWriteToBookmarksFile fn() Catch block`, err);
         process.exit(1);
     }

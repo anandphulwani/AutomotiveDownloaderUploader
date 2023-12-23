@@ -20,7 +20,7 @@ function addAllotmentToReport(allotmentDetails) {
             fs.writeFileSync(reportJSONFilePath, jsonString);
         }
         // createBackupOfFile(fileToOperateOn, newConfigUserContent);
-        attainLock(reportJSONFilePath, undefined, true);
+        attainLock(reportJSONFilePath, undefined, false);
 
         const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
         const reportJSONObj = JSON.parse(reportJSONContents);
@@ -55,10 +55,10 @@ function addAllotmentToReport(allotmentDetails) {
         }
         const updatedReportJSONObj = JSON.stringify(reportJSONObj, null, 3);
         fs.writeFileSync(reportJSONFilePath, updatedReportJSONObj, 'utf8');
-        releaseLock(reportJSONFilePath, undefined, true);
+        releaseLock(reportJSONFilePath, undefined, false);
     } catch (err) {
         lgc(err);
-        releaseLock(reportJSONFilePath, undefined, true);
+        releaseLock(reportJSONFilePath, undefined, false);
         process.exit(1);
     }
 }
@@ -71,7 +71,7 @@ function addUploadingToReport(uploadingDetail) {
             process.exit(1);
         }
         // createBackupOfFile(fileToOperateOn, newConfigUserContent);
-        attainLock(reportJSONFilePath, undefined, true);
+        attainLock(reportJSONFilePath, undefined, false);
 
         const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
         const reportJSONObj = JSON.parse(reportJSONContents);
@@ -105,10 +105,10 @@ function addUploadingToReport(uploadingDetail) {
         }
         const updatedReportJSONObj = JSON.stringify(reportJSONObj, null, 3);
         fs.writeFileSync(reportJSONFilePath, updatedReportJSONObj, 'utf8');
-        releaseLock(reportJSONFilePath, undefined, true);
+        releaseLock(reportJSONFilePath, undefined, false);
     } catch (err) {
         lgc(err);
-        releaseLock(reportJSONFilePath, undefined, true);
+        releaseLock(reportJSONFilePath, undefined, false);
         process.exit(1);
     }
 }

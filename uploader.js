@@ -114,14 +114,14 @@ try {
         lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Shifting to DUMB uploader mode.`);
         isDumbUploader = true;
     } else {
-        attainLock(reportJSONFilePath, undefined, true);
+        attainLock(reportJSONFilePath, undefined, false);
         const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
         reportJSONObj = JSON.parse(reportJSONContents);
-        releaseLock(reportJSONFilePath, undefined, true);
+        releaseLock(reportJSONFilePath, undefined, false);
     }
 } catch (err) {
     lgc(err);
-    releaseLock(reportJSONFilePath, undefined, true);
+    releaseLock(reportJSONFilePath, undefined, false);
     process.exit(1);
 }
 

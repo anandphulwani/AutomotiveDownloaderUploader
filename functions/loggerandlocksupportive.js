@@ -306,7 +306,7 @@ function getLastNonCatchErrorLogLevels9DigitUniqueId() {
 
 function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
     const fileToOperateOn = getProjectConfigUniqueIdsFilePath();
-    attainLock(fileToOperateOn, undefined, true);
+    attainLock(fileToOperateOn, undefined, false);
 
     let nonCatchErrorCode;
     try {
@@ -334,11 +334,11 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
                 `Unable to set nonCatchErrorLogLevels9DigitUniqueId: '${nonCatchErrorCode}'. Serious issue, please contact developer.`,
                 new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block03', '')
             );
-            releaseLock(fileToOperateOn, undefined, true);
+            releaseLock(fileToOperateOn, undefined, false);
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
-        releaseLock(fileToOperateOn, undefined, true);
+        releaseLock(fileToOperateOn, undefined, false);
     } catch (err) {
         lgu(err, new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block04', ''));
         process.exit(1);
@@ -369,7 +369,7 @@ function getLastCatchErrorLogLevels6DigitUniqueId() {
 
 function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
     const fileToOperateOn = getProjectConfigUniqueIdsFilePath();
-    attainLock(fileToOperateOn, undefined, true);
+    attainLock(fileToOperateOn, undefined, false);
 
     let catchErrorCode;
     try {
@@ -397,11 +397,11 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
                 `Unable to set catchErrorLogLevels6DigitUniqueId: '${catchErrorCode}'. Serious issue, please contact developer.`,
                 new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block07', '')
             );
-            releaseLock(fileToOperateOn, undefined, true);
+            releaseLock(fileToOperateOn, undefined, false);
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
-        releaseLock(fileToOperateOn, undefined, true);
+        releaseLock(fileToOperateOn, undefined, false);
     } catch (err) {
         lgu(err, new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block08', ''));
         process.exit(1);
