@@ -57,7 +57,6 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
             continue;
         }
         const folderPathChildren = fs.readdirSync(folderToCleanUp);
-        // eslint-disable-next-line no-loop-func
         const folderPathChildrenSubDirsOnly = folderPathChildren.filter(
             (file) => fs.lstatSync(path.join(folderToCleanUp, file)).isDirectory() && /^\d{4}-\d{2}-\d{2}$/.test(file)
         ); // Filter out only subdirectories and subdirectories which match YYYY-MM-DD format using regex
