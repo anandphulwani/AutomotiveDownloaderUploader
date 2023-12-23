@@ -9,7 +9,7 @@ import { config } from '../configs/config.js';
 import { waitForSeconds } from './sleep.js';
 import { getRowPosOnTerminal } from './terminal.js';
 import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh, lgd, lgt, lgs, lgif } from './loggerandlocksupportive.js';
-import { createBackupOfFile } from './datastoresupportive.js';
+// import { createBackupOfFile } from './datastoresupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
 import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
@@ -372,7 +372,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
             );
             process.exit(1);
         }
-        createBackupOfFile(fileToOperateOn, bookmarksFileText);
+        // createBackupOfFile(fileToOperateOn, bookmarksFileText);
         releaseLock(fileToOperateOn, undefined, false);
     } catch (err) {
         releaseLock(fileToOperateOn, undefined, false);

@@ -6,7 +6,7 @@ import path from 'path';
 import { attainLock, releaseLock, lgc, lgs, lgu } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
 import { waitForMilliSeconds } from './sleep.js';
-import { createBackupOfFile } from './datastoresupportive.js';
+// import { createBackupOfFile } from './datastoresupportive.js';
 import { makeDir } from './filesystem.js';
 import { instanceRunDateFormatted } from './datetime.js';
 import { getProjectConfigContractorsFilePath, getProjectConfigFilePath, getProjectConfigLotLastFilePath } from './projectpaths.js';
@@ -54,7 +54,7 @@ function setContractorsCurrentAllotted(contractor, allottedQty) {
             process.exit(1);
         }
         fs.writeFileSync(fileToOperateOn, newconfigContractorsContent, 'utf8');
-        createBackupOfFile(fileToOperateOn, newconfigContractorsContent);
+        // createBackupOfFile(fileToOperateOn, newconfigContractorsContent);
         releaseLock(fileToOperateOn, undefined, false);
     } catch (err) {
         lgc(err);
@@ -147,7 +147,7 @@ function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
             }
         }
         fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
-        createBackupOfFile(fileToOperateOn, newConfigContent);
+        // createBackupOfFile(fileToOperateOn, newConfigContent);
         releaseLock(fileToOperateOn, undefined, false);
     } catch (err) {
         lgc(err);
