@@ -46,7 +46,9 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         await page.$$eval('input#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_VehicleHeader_VIN', (el) => el.map((x) => x.getAttribute('value')))
     );
 
-    if (!/^[a-zA-Z0-9\-_ ]{1,}$/.test(VINNumber)) {
+    const VINNumberRegexString = `^[a-zA-Z0-9\\-_ ]{1,}$`;
+    const VINNumberRegexExpression = new RegExp(VINNumberRegexString, 'g');
+    if (!VINNumberRegexExpression.test(VINNumber)) {
         console.log('');
         lgw(`Found an invalid VIN number: ${VINNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`);
         return { result: false, bookmarkAppendMesg: 'Ignoring (Invalid VIN Number, Format Unknown)', imagesDownloaded: 0 };

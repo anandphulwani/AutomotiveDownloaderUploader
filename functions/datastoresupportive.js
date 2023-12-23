@@ -56,9 +56,11 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
             // eslint-disable-next-line no-continue
             continue;
         }
+        const dateRegexString = `^\\d{4}-\\d{2}-\\d{2}$`;
+        const dateRegexExpression = new RegExp(dateRegexString, 'g');
         const folderPathChildren = fs.readdirSync(folderToCleanUp);
         const folderPathChildrenSubDirsOnly = folderPathChildren.filter(
-            (file) => fs.lstatSync(path.join(folderToCleanUp, file)).isDirectory() && /^\d{4}-\d{2}-\d{2}$/.test(file)
+            (file) => fs.lstatSync(path.join(folderToCleanUp, file)).isDirectory() && dateRegexExpression.test(file)
         ); // Filter out only subdirectories and subdirectories which match YYYY-MM-DD format using regex
         folderPathChildrenSubDirsOnly.sort(); // Sort subdirectories by name
         let overrideNoOfDaysToKeep = noOfDaysDataToKeep;

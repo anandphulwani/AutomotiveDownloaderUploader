@@ -168,7 +168,9 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             }
 
             // Check CuttingDone/ReadyToUpload folder has AlreadyMoved_ prefixed to it, if has ignore the folder
-            if (/^AlreadyMoved_.*$/.test(filteredContractorDestinationSubFolderAndFiles)) {
+            const alreadyMovedRegexString = `^AlreadyMoved_.*$`;
+            const alreadyMovedRegexExpression = new RegExp(alreadyMovedRegexString, 'g');
+            if (alreadyMovedRegexExpression.test(filteredContractorDestinationSubFolderAndFiles)) {
                 // eslint-disable-next-line no-continue
                 continue;
             }
@@ -261,13 +263,14 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
     }
 
     foldersToShift.sort((a, b) => {
-        const regex = /(\d+)/;
-        if (!regex.test(path.basename(a.dealerImagesFolder)) || !regex.test(path.basename(b.dealerImagesFolder))) {
+        const digitsRegexString = `(\\d+)`;
+        const digitsRegexExpression = new RegExp(digitsRegexString, 'g');
+        if (!digitsRegexExpression.test(path.basename(a.dealerImagesFolder)) || !digitsRegexExpression.test(path.basename(b.dealerImagesFolder))) {
             lgu('Unable to match regex of `foldersToShift` while sorting.');
             return 0;
         }
-        const numA = Number(path.basename(a.dealerImagesFolder).match(regex)[0]);
-        const numB = Number(path.basename(b.dealerImagesFolder).match(regex)[0]);
+        const numA = Number(path.basename(a.dealerImagesFolder).match(digitsRegexExpression)[0]);
+        const numB = Number(path.basename(b.dealerImagesFolder).match(digitsRegexExpression)[0]);
         return numA - numB;
     });
     debug ? lgd(`foldersToShift :${foldersToShift}`) : null;

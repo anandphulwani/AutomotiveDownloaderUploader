@@ -83,10 +83,14 @@ async function getPeriod() {
             } else if (answer.toUpperCase() === 'O') {
                 const defaultDate = getLastMonthDate();
                 rl.question(`Enter the year [${defaultDate.year}]: `, (yearInput) => {
-                    if (yearInput === '' || /^\d{4}$/.test(yearInput)) {
+                    const yearRegexString = `^\\d{4}$`;
+                    const yearRegexExpression = new RegExp(yearRegexString, 'g');
+                    if (yearInput === '' || yearRegexExpression.test(yearInput)) {
                         year = yearInput || defaultDate.year;
                         rl.question(`Enter the month [${defaultDate.month}]: `, (monthInput) => {
-                            if (monthInput === '' || /^(0?[1-9]|1[0-2])$/.test(monthInput)) {
+                            const monthRegexString = `^(0?[1-9]|1[0-2])$`;
+                            const monthRegexExpression = new RegExp(monthRegexString, 'g');
+                            if (monthInput === '' || monthRegexExpression.test(monthInput)) {
                                 month = monthInput || defaultDate.month;
                                 rl.close();
                                 resolve();
