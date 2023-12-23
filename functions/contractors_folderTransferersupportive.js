@@ -284,29 +284,9 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
     historyOfWarnings.push(currentSetOfWarnings);
     // eslint-disable-next-line no-restricted-syntax
     for (const warning of currentSetOfWarnings) {
-        if (
-            historyOfWarnings[0].has(warning) &&
-            historyOfWarnings[1].has(warning) &&
-            historyOfWarnings[2].has(warning) &&
-            historyOfWarnings[3].has(warning) &&
-            historyOfWarnings[4].has(warning) &&
-            historyOfWarnings[5].has(warning) &&
-            historyOfWarnings[6].has(warning) &&
-            historyOfWarnings[7].has(warning) &&
-            historyOfWarnings[8].has(warning) &&
-            historyOfWarnings[9].has(warning)
-        ) {
+        if (historyOfWarnings.every((set) => set.has(warning))) {
             lgw(warning);
-            historyOfWarnings[0].delete(warning);
-            historyOfWarnings[1].delete(warning);
-            historyOfWarnings[2].delete(warning);
-            historyOfWarnings[3].delete(warning);
-            historyOfWarnings[4].delete(warning);
-            historyOfWarnings[5].delete(warning);
-            historyOfWarnings[6].delete(warning);
-            historyOfWarnings[7].delete(warning);
-            historyOfWarnings[8].delete(warning);
-            historyOfWarnings[9].delete(warning);
+            historyOfWarnings.forEach((set) => set.delete(warning));
         }
     }
 }
