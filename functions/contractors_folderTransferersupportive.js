@@ -21,7 +21,7 @@ const finishingBufferFolderName = config.finisherProcessingFolders[0];
 const cuttingAccountingFolderName = config.cutterRecordKeepingFolders[0];
 const finishingAccountingFolderName = config.finisherRecordKeepingFolders[0];
 
-const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set(), new Set()]; // Array of sets for the last ten iterations
+const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set()]; // Array of sets for the last five iterations
 
 let currentSetOfWarnings;
 function warnNowOrLater(mesg, sourceDestinationAccountingType) {
