@@ -131,7 +131,8 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                     if (resourceBusyOrLockedRegexExpression.test(err.message)) {
                         warnNowOrLater(
                             `Folder in ${typeOfContractor}'s ${typeOfSourceFolder} locked, maybe a contractor working/moving it, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
-                            sourceDestinationAccountingType
+                            sourceDestinationAccountingType,
+                            false
                         );
                     } else {
                         lgc('Unknown error while checking for contractor locked:', err);
@@ -152,7 +153,8 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             if (!filteredContractorDestinationStat.isDirectory()) {
                 warnNowOrLater(
                     `Found a file in ${typeOfContractor}'s ${typeOfSourceFolder} directory, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
-                    sourceDestinationAccountingType
+                    sourceDestinationAccountingType,
+                    true
                 );
                 // eslint-disable-next-line no-continue
                 continue;
@@ -190,7 +192,8 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             if (!regexallottedFolderRegexExpression.test(filteredContractorDestinationSubFolderAndFiles)) {
                 warnNowOrLater(
                     `Folder in ${typeOfSourceFolder} but is not in a proper format, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
-                    sourceDestinationAccountingType
+                    sourceDestinationAccountingType,
+                    true
                 );
                 // eslint-disable-next-line no-continue
                 continue;
@@ -204,7 +207,8 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
                 warnNowOrLater(
                     `Folder in ${typeOfSourceFolder} but images quantity does not match, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`,
-                    sourceDestinationAccountingType
+                    sourceDestinationAccountingType,
+                    false
                 );
                 // eslint-disable-next-line no-continue
                 continue;
@@ -282,7 +286,6 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
     });
     debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
 
-    // TODO: Check which warning we can give immediately
     historyOfWarnings.shift();
     historyOfWarnings.push(currentSetOfWarnings);
     // eslint-disable-next-line no-restricted-syntax
