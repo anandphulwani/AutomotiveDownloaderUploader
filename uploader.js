@@ -8,7 +8,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { attainLock, releaseLock, lgw, lge, lgc, lgi, lgu, lgd, lgif } from './functions/loggerandlocksupportive.js';
+import { attainLock, releaseLock, lge, lgc, lgi, lgu, lgd, lgif, lgwc } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
@@ -59,7 +59,8 @@ const debug = false;
  */
 try {
     if (checkSync('uploader.js', { stale: 15000 })) {
-        throw new Error('Lock already held, another instace is already running.');
+        lgwc('Lock already held, another instace is already running.');
+        process.exit(1);
     }
     lockSync('uploader.js', { stale: 15000 });
 } catch (error) {

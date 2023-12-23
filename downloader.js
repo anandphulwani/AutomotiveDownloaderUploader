@@ -36,7 +36,7 @@ import { validateConfigFile } from './functions/configvalidation.js';
 import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
-import { lgc, lge, lgi, lgif, lgu } from './functions/loggerandlocksupportive.js';
+import { lgc, lge, lgi, lgif, lgu, lgwc } from './functions/loggerandlocksupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
@@ -57,7 +57,8 @@ import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
  */
 try {
     if (checkSync('downloader.js', { stale: 15000 })) {
-        throw new Error('Lock already held, another instace is already running.');
+        lgwc('Lock already held, another instace is already running.');
+        process.exit(1);
     }
     lockSync('downloader.js', { stale: 15000 });
 } catch (error) {

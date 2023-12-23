@@ -6,7 +6,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lgw, lge, lgc, lgi, lgif, lgu, lgd } from './functions/loggerandlocksupportive.js';
+import { lge, lgc, lgi, lgif, lgu, lgd, lgwc } from './functions/loggerandlocksupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
 import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes, removeDir } from './functions/filesystem.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
@@ -63,7 +63,8 @@ const debug = false;
  */
 try {
     if (checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
-        throw new Error('Lock already held, another instace is already running.');
+        lgwc('Lock already held, another instace is already running.');
+        process.exit(1);
     }
     lockSync('contractors_folderTransferer.js', { stale: 15000 });
 } catch (error) {

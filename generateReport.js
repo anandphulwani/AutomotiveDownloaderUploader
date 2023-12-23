@@ -39,7 +39,7 @@ import {
     styleOfVerticalListDealerNumber,
 } from './functions/reportsupportive.js';
 import { copyDirOrFile, makeDir } from './functions/filesystem.js';
-import { attainLock, releaseLock, lge, lgi, lgw, lgd } from './functions/loggerandlocksupportive.js';
+import { attainLock, releaseLock, lge, lgi, lgw, lgd, lgwc } from './functions/loggerandlocksupportive.js';
 import { printSectionSeperator } from './functions/others.js';
 // import {
 //     allTrimStringArrayOfObjects,
@@ -57,7 +57,8 @@ const debug = false;
  */
 try {
     if (checkSync('generateReport.js', { stale: 15000 })) {
-        throw new Error('Lock already held, another instace is already running.');
+        lgwc('Lock already held, another instace is already running.');
+        process.exit(1);
     }
     lockSync('generateReport.js', { stale: 15000 });
 } catch (error) {

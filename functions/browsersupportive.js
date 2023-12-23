@@ -7,7 +7,7 @@ import { getCredentialsForUsername, getAppDomain } from './configsupportive.js';
 import { fillInTextbox, clickOnButton } from './actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitTillCurrentURLStartsWith } from './waiting.js';
 import { gotoPageAndWaitTillCurrentURLStartsWith } from './goto.js';
-import { lge, lgi } from './loggerandlocksupportive.js';
+import { lge, lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 
 /* eslint-enable import/extensions */
@@ -132,7 +132,8 @@ function setChromeProfile(profile) {
             config.browserArgs.args.push(`--window-position=0,${windowsHeight - 50}`);
         }
     } else {
-        throw new Error(`Chrome profile setting option: ${profile} not in the available options 'download' and 'upload'.`);
+        lgu(`Chrome profile setting option: ${profile} not in the available options 'download' and 'upload'.`);
+        process.exit(1);
     }
 }
 

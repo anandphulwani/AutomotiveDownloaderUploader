@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/extensions
 import { readDealerConfigurationExcel, readDealerConfigurationFormatted } from './excel.js';
+import { lgu } from './loggerandlocksupportive.js';
 
 let dealerConfiguration = [];
 let dealerConfigurationAsIs = [];
@@ -91,6 +92,7 @@ function getAllDealerNumbers() {
     return allDealerNumbers;
 }
 
+// eslint-disable-next-line consistent-return
 function getDeleteOriginalFromDC(dealerNumber) {
     const deleteOriginal = getSettingValueFromDC('Dealer Number', dealerNumber, 'Delete original');
     if (deleteOriginal.toLowerCase().trim() === 'yes') {
@@ -99,9 +101,11 @@ function getDeleteOriginalFromDC(dealerNumber) {
     if (deleteOriginal.toLowerCase().trim() === 'no') {
         return false;
     }
-    throw new Error(`getDeleteOriginalFromDC(dealerNumber): Invalid value: ${deleteOriginal} for dealerNumber: ${dealerNumber}.`);
+    lgu(`getDeleteOriginalFromDC(dealerNumber): Invalid value: ${deleteOriginal} for dealerNumber: ${dealerNumber}.`);
+    process.exit(1);
 }
 
+// eslint-disable-next-line consistent-return
 function getShiftOriginalFirstPositionToLastPositionFromDC(dealerNumber) {
     const shiftOriginal = getSettingValueFromDC('Dealer Number', dealerNumber, 'Shift original 1st position to last position');
     if (shiftOriginal.toLowerCase().trim() === 'yes') {
@@ -110,11 +114,11 @@ function getShiftOriginalFirstPositionToLastPositionFromDC(dealerNumber) {
     if (shiftOriginal.toLowerCase().trim() === 'no') {
         return false;
     }
-    throw new Error(
-        `getShiftOriginalFirstPositionToLastPositionFromDC(dealerNumber): Invalid value: ${shiftOriginal} for dealerNumber: ${dealerNumber}.`
-    );
+    lgu(`getShiftOriginalFirstPositionToLastPositionFromDC(dealerNumber): Invalid value: ${shiftOriginal} for dealerNumber: ${dealerNumber}.`);
+    process.exit(1);
 }
 
+// eslint-disable-next-line consistent-return
 function getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerNumber) {
     const shiftOriginal = getSettingValueFromDC('Dealer Number', dealerNumber, 'Put 1st edited images in the last position also');
     if (shiftOriginal.toLowerCase().trim() === 'yes') {
@@ -123,11 +127,13 @@ function getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerNumber)
     if (shiftOriginal.toLowerCase().trim() === 'no') {
         return false;
     }
-    throw new Error(
+    lgu(
         `getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC(dealerNumber): Invalid value: ${shiftOriginal} for dealerNumber: ${dealerNumber}.`
     );
+    process.exit(1);
 }
 
+// eslint-disable-next-line consistent-return
 function getLockTheImagesCheckMarkFromDC(dealerNumber) {
     const locktheImagesCheckMark = getSettingValueFromDC('Dealer Number', dealerNumber, 'Lock the image (check mark)');
     if (locktheImagesCheckMark !== undefined) {
@@ -140,7 +146,8 @@ function getLockTheImagesCheckMarkFromDC(dealerNumber) {
     } else {
         return null;
     }
-    throw new Error(`getLockTheImagesCheckMarkFromDC(dealerNumber): Invalid value: ${locktheImagesCheckMark} for dealerNumber: ${dealerNumber}.`);
+    lgu(`getLockTheImagesCheckMarkFromDC(dealerNumber): Invalid value: ${locktheImagesCheckMark} for dealerNumber: ${dealerNumber}.`);
+    process.exit(1);
 }
 
 // eslint-disable-next-line import/prefer-default-export

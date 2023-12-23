@@ -1,5 +1,5 @@
 /* eslint-disable import/extensions */
-import { lgd } from './loggerandlocksupportive.js';
+import { lgd, lgs } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 async function fillInTextbox(page, selector, textToFill, debug = false) {
@@ -137,7 +137,8 @@ async function clickOnButton(page, selector, buttonText = false, isMouseClick = 
             await page.mouse.click(elementRect.x + elementRect.width / 2, elementRect.y + elementRect.height / 2);
         }
     } else {
-        throw new Error(`Element to click '${selector}' does not exist`);
+        lgs(`Element to click '${selector}' does not exist`);
+        process.exit(1);
     }
     debug ? lgd(`Clicking the ${selector} button: Done.`) : null;
 }

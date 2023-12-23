@@ -96,7 +96,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                     const match = downloadedBookmarkBlockMatches[i];
 
                     if (match.split(/\r\n|\r|\n/).length > 15) {
-                        throw new Error(`Bookmarks URL Done Section: match's length is more than 15:\n ${match}`);
+                        lgu(`Bookmarks URL Done Section: match's length is more than 15:\n${match}`);
+                        process.exit(1);
                     }
 
                     const guid = match.match(/"guid": "(.*?)"/)[1];
@@ -157,10 +158,12 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             }
         }
 
-        if (initialLineCount - sourceJSONString.trim().split(/\r\n|\r|\n/).length !== 0) {
-            throw new Error(
-                `Before Copying the names of bookmarks folders which are allotted: initialLineCount and sourceJSONStringLineCount is not the same:\n`
+        let sourceJSONStringLength = sourceJSONString.trim().split(/\r\n|\r|\n/).length;
+        if (initialLineCount - sourceJSONStringLength !== 0) {
+            lgu(
+                `Before Copying the names of bookmarks folders which are allotted: initialLineCount(${initialLineCount}) and sourceJSONStringLineCount(${sourceJSONStringLength}) is not the same.\nsourceJSONString: ${sourceJSONString}`
             );
+            process.exit(1);
         }
         lgt(`04:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
 
@@ -178,7 +181,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                     const match = allottedFolderBookmarkBlockMatches[i];
 
                     if (match.split(/\r\n|\r|\n/).length > 9) {
-                        throw new Error(`Bookmarks Folders Allotted Section: match's length is more than 9:\n ${match}`);
+                        lgu(`Bookmarks Folders Allotted Section: match's length is more than 9:\n${match}`);
+                        process.exit(1);
                     }
                     const guid = match.match(/"guid": "(.*?)"/)[1];
                     debug ? lgd(`Found bookmark with GUID: ${guid}`) : null;
@@ -211,8 +215,12 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             }
         }
 
-        if (initialLineCount - sourceJSONString.trim().split(/\r\n|\r|\n/).length !== 0) {
-            throw new Error(`Before writing bookmarks file: initialLineCount and writingLineCount is not the same:\n`);
+        sourceJSONStringLength = sourceJSONString.trim().split(/\r\n|\r|\n/).length;
+        if (initialLineCount - sourceJSONStringLength !== 0) {
+            lgu(
+                `Before writing bookmarks file: initialLineCount(${initialLineCount}) and writing file line count sourceJSONStringLineCount(${sourceJSONStringLength}) is not the same.\nsourceJSONString: ${sourceJSONString}`
+            );
+            process.exit(1);
         }
         lgt(`05:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
 

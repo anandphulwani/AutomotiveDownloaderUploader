@@ -1,5 +1,5 @@
 /* eslint-disable import/extensions */
-import { lgd } from './loggerandlocksupportive.js';
+import { lgd, lgu } from './loggerandlocksupportive.js';
 import { waitForMilliSeconds } from './sleep.js';
 /* eslint-enable import/extensions */
 
@@ -137,7 +137,8 @@ async function waitTillCurrentURLStartsWith(page, partialURL, debug = false) {
         await waitForMilliSeconds(50);
     }
     if (Date.now() - startTime > timeout) {
-        throw new Error(`Timeout waiting for URL to start with "${partialURL}"`);
+        lgu(`Timeout waiting for URL to start with "${partialURL}"`);
+        process.exit(1);
     }
     debug ? lgd(`Waiting for the current URL to start with: ${partialURL}: Matched.`) : null;
 }
@@ -154,7 +155,8 @@ async function waitTillCurrentURLEndsWith(page, partialURL, debug = false) {
         await waitForMilliSeconds(50);
     }
     if (Date.now() - startTime > timeout) {
-        throw new Error(`Timeout waiting for URL to ends with "${partialURL}"`);
+        lgu(`Timeout waiting for URL to ends with "${partialURL}"`);
+        process.exit(1);
     }
     debug ? lgd(`Waiting for the current URL to ends with: ${partialURL}: Matched.`) : null;
 }
