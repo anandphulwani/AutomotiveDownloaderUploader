@@ -286,6 +286,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
     });
     debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
 
+    if (sourceDestinationAccountingType === 'finishingBuffer') {
     historyOfWarnings.shift();
     historyOfWarnings.push(currentSetOfWarnings);
     // eslint-disable-next-line no-restricted-syntax
@@ -294,6 +295,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             lgw(warning);
             historyOfWarnings.forEach((set) => set.delete(warning));
         }
+    }
     }
 }
 
