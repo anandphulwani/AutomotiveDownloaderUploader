@@ -26,10 +26,8 @@ const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set()
 let currentSetOfWarnings;
 function warnNowOrLater(mesg, sourceDestinationAccountingType) {
     if (sourceDestinationAccountingType === 'uploadingZone') {
-        // TODO: Check if we come in this block
         lgw(mesg);
     } else if (sourceDestinationAccountingType === 'finishingBuffer') {
-        // TODO: Check if we come in this block
         currentSetOfWarnings.add(mesg);
     }
 }
@@ -90,7 +88,11 @@ function checkIfFoldersPresentInFinishersUploadingZoneDir() {
 }
 
 function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, debug = false) {
-    // TODO: Check sourceDestinationAccountingType is in the array
+    if (!Object.prototype.hasOwnProperty.call(sourceDestinationAccountingTypes, sourceDestinationAccountingType)) {
+        lgu(`Unknown parameter sourceDestinationAccountingType(${sourceDestinationAccountingType}) sent to 'validationBeforeMoving' fn.`);
+        process.exit(1);
+    }
+
     sourceDestinationAccountingType === 'finishingBuffer' ? (currentSetOfWarnings = new Set()) : null;
     const { typeOfContractor, typeOfSourceFolder, filteredContractorsByType, sourceFolderName } =
         sourceDestinationAccountingTypes[sourceDestinationAccountingType];
@@ -202,7 +204,6 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             let uniqueCode;
             let cutter = null;
             if (sourceDestinationAccountingType === 'uploadingZone') {
-                // TODO: Check if we come in this block
                 uniqueCode = getUniqueIDWithHashFromAllottedDealerNumberFolder(filteredContractorDestinationSubFolderAndFiles);
                 // eslint-disable-next-line no-restricted-syntax
                 for (const contractorInSubLoop of Object.keys(config.contractors)) {
@@ -241,7 +242,6 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             }
             const folderSize = getFolderSizeInBytes(filteredContractorDestinationSubFolderPath);
             if (sourceDestinationAccountingType === 'uploadingZone') {
-                // TODO: Check if we come in this block
                 foldersToShift.push({
                     dealerImagesFolder: filteredContractorDestinationSubFolderPath,
                     folderSize: folderSize,
@@ -251,7 +251,6 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                     isOverwrite: isOverwrite,
                 });
             } else if (sourceDestinationAccountingType === 'finishingBuffer') {
-                // TODO: Check if we come in this block
                 foldersToShift.push({
                     dealerImagesFolder: filteredContractorDestinationSubFolderPath,
                     folderSize: folderSize,
