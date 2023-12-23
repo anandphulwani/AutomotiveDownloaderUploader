@@ -24,11 +24,14 @@ const finishingAccountingFolderName = config.finisherRecordKeepingFolders[0];
 const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set()]; // Array of sets for the last five iterations
 
 let currentSetOfWarnings;
-function warnNowOrLater(mesg, sourceDestinationAccountingType) {
+function warnNowOrLater(mesg, sourceDestinationAccountingType, addToAllHistoryOfWarnings) {
     if (sourceDestinationAccountingType === 'uploadingZone') {
         lgw(mesg);
     } else if (sourceDestinationAccountingType === 'finishingBuffer') {
         currentSetOfWarnings.add(mesg);
+        if (addToAllHistoryOfWarnings && !historyOfWarnings.some((set) => set.has(mesg))) {
+            historyOfWarnings.forEach((set) => set.add(mesg));
+        }
     }
 }
 
