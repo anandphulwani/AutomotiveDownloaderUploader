@@ -113,6 +113,33 @@ function addUploadingToReport(uploadingDetail) {
     }
 }
 
+// eslint-disable-next-line consistent-return
+function getUnderProcessingAcToReport() {
+    const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
+    try {
+        if (!fs.existsSync(reportJSONFilePath)) {
+            lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Exiting.`);
+            process.exit(1);
+        }
+        // createBackupOfFile(fileToOperateOn, newConfigUserContent);
+        attainLock(reportJSONFilePath, undefined, false);
+
+        const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+        const reportJSONObj = JSON.parse(reportJSONContents);
+
+        const unfinishedObjects = Object.values(reportJSONObj).filter(
+            (subObject) => subObject.isFinished === false || subObject.isFinished === undefined
+        );
+        const underProcessingDealerFolders = unfinishedObjects.length;
+        const underProcessingImgQty = unfinishedObjects.reduce((sum, obj) => sum + (obj.qty || 0), 0);
+        releaseLock(reportJSONFilePath, undefined, false);
+        return { underProcessingDealerFolders, underProcessingImgQty };
+    } catch (err) {
+        lgc(err);
+        releaseLock(reportJSONFilePath, undefined, false);
+        process.exit(1);
+    }
+}
 /**
  *
  * Function to add a blank column with the "Additional Images" heading, alternatively ( to write in excel)
@@ -368,6 +395,7 @@ const contractorExcelStyleOfBottomTotalRow = {
 export {
     addAllotmentToReport,
     addUploadingToReport,
+    getUnderProcessingAcToReport,
     addAdditionalImagesColumnAlternatively,
     styleOfDateHeading,
     centerAlign,
