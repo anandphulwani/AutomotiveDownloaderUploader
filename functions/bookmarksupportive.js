@@ -50,6 +50,7 @@ function getRemainingBookmarksNotDownloaded() {
         .filter((usernameBookmark) => usernameBookmark.children.length > 0);
     return filteredBookmarks;
 }
+
 function getRemainingBookmarksNotDownloadedLength() {
     return getRemainingBookmarksNotDownloaded().reduce(
         (total, usernameBookmark) =>
