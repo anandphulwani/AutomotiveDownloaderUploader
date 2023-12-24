@@ -31,7 +31,7 @@ const loggerConsoleLevel = config.loggingConsoleLevel || 'billy';
 /* #region fileTransportOptions and consoleTransportOptions : Begin */
 const fileTransportOptions = (logFilename) => ({
     format: combine(
-        timestamp({ format: currentDateTimeReadableFormatted() }),
+        timestamp({ format: () => currentDateTimeReadableFormatted() }),
         errors({ stack: true }),
         format((info) => {
             if (info.message.startsWith('uncaughtException: ')) {
@@ -51,7 +51,7 @@ const fileTransportOptions = (logFilename) => ({
 // Define transport options for logging to console
 const consoleTransportOptions = {
     format: combine(
-        timestamp({ format: currentDateTimeReadableFormatted() }),
+        timestamp({ format: () => currentDateTimeReadableFormatted() }),
         errors({ stack: true }),
         format((info) => {
             delete info.timestamp;
