@@ -56,16 +56,6 @@ function printSectionSeperator(level = 'info', isConsoleOnly = false) {
     }
 }
 
-// ONPROJECTFINISH: Remove retryCount variable and relative functions, when debugging is complete
-let retryCount = 0;
-function incRetryCount() {
-    retryCount++;
-}
-
-function getRetryCount() {
-    return retryCount;
-}
-
 function getSumOf2DArrayColumn(arr, columnIndex) {
     let sumOfColumn = 0;
     arr.forEach((sub) => {
@@ -93,4 +83,4 @@ function getIndexOfHighestIn2DArrayColumn(arr, columnIndex, debug = false) {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { printSectionSeperator, getSumOf2DArrayColumn, getIndexOfHighestIn2DArrayColumn, incRetryCount, getRetryCount };
+export { printSectionSeperator, getSumOf2DArrayColumn, getIndexOfHighestIn2DArrayColumn };

@@ -3,7 +3,6 @@ import logSymbols from 'log-symbols';
 
 /* eslint-disable import/extensions */
 import { waitForSeconds } from './sleep.js';
-import { incRetryCount } from './others.js';
 import { waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith } from './waiting.js';
 import { lgbf, lgc, lgcf, lgd, lge, lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
@@ -26,7 +25,6 @@ async function handleErrorWhileURLNavigation(err, URLToCrawlOrFilename, gotoCnt,
                 lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
                 await waitForSeconds(3);
             }
-            incRetryCount();
         } else {
             console.log('');
             lgc(

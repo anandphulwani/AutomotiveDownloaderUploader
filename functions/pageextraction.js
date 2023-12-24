@@ -9,7 +9,6 @@ import { instanceRunDateFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
 import { zeroPad } from './stringformatting.js';
 import { waitForSeconds } from './sleep.js';
-import { incRetryCount } from './others.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
 import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './excelsupportive.js';
