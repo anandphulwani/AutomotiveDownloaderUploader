@@ -14,6 +14,7 @@ import { instanceRunLogFilePrefix } from './loggervariables.js';
 import { getProjectConfigDirPath, getProjectLogsDirPath } from './projectpaths.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
+import { getUnderProcessingAcToReport } from './reportsupportive.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -254,6 +255,8 @@ function getUniqueIDFromAllottedDealerNumberFolder(folderName) {
 }
 
 function getUploadRemainingSummary(foldersToUpload) {
+    const underProcessingAcToReport = getUnderProcessingAcToReport();
+
     const dealerFoldersQty = Object.keys(foldersToUpload).filter(
         (key) => foldersToUpload[key].imagesQty !== 0 && foldersToUpload[key].dealerFolderFilesQty !== 0
     ).length;
@@ -276,7 +279,7 @@ function getUploadRemainingSummary(foldersToUpload) {
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }; // Format the time in hh:mm:ss tt format
     const finishedTime = dateTimeObj.toLocaleString('en-US', options);
 
-    return `Remaining DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, VINFolder/VINFiles: ${totalVINFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
+    return `Remaining Processing DealerFolders: ${underProcessingAcToReport.underProcessingDealerFolders}, Images: ${underProcessingAcToReport.underProcessingImgQty}, \nUploading DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, VINFolder/VINFiles: ${totalVINFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
 }
 
 function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {
