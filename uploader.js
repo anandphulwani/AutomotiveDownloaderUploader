@@ -11,7 +11,7 @@ import { config } from './configs/config.js';
 import { attainLock, releaseLock, lge, lgc, lgi, lgu, lgd, lgif, lgwc } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
-import { getAllUsernamesBookmarks } from './functions/bookmarksupportive.js';
+import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength } from './functions/bookmarksupportive.js';
 import { gotoURL } from './functions/goto.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { getUniqueIdPairsFromDealerBookmarkName } from './functions/bookmark.js';
@@ -19,7 +19,7 @@ import { getCredentialsForUsername } from './functions/configsupportive.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
-import { addUploadingToReport } from './functions/reportsupportive.js';
+import { addUploadingToReport, getUnderProcessingAcToReport } from './functions/reportsupportive.js';
 import { validateConfigFile } from './functions/configvalidation.js';
 import {
     createDirAndMoveFile,
@@ -275,7 +275,17 @@ try {
                 lgi('..........Done', LoggingPrefix.false);
             }
             lastRunTime = Date.now();
-        } else if (Date.now() - lastRunTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {
+        } else if (Date.now() - lastRunTime <= 15 * 60 * 1000 /* 15 mins in milliseconds */) {
+            const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength();
+            if (remainingBookmarksNotDownloadedLength > 0) {
+                lastRunTime = Date.now();
+            } else {
+                const underProcessingAcToReport = getUnderProcessingAcToReport();
+                if (underProcessingAcToReport.underProcessingDealerFolders > 0) {
+                    lastRunTime = Date.now();
+                }
+            }
+        } else {
             break;
         }
         if (uniqueIdOfFoldersShifted.length === 0) {
