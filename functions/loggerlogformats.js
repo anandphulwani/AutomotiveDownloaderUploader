@@ -130,6 +130,9 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
         }
         stack = stack.join('\n');
     }
+    if (typeOfLogFormat === 'file') {
+        message = message.replace(/^\t+/g, '');
+    }
     logMesg.push(message);
     if (lineSeparator.name === true && callerHierarchy !== '') {
         if (
