@@ -68,9 +68,9 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         `fn uploadBookmarkURL() : BEGIN, Params: page: OBJECT, uniqueIdElement: ${uniqueIdElement}, uniqueIdFolderPath: ${uniqueIdFolderPath}, dealerFolder: ${dealerFolder}, name: ${name}, URL: ${URL}, debug: ${debug}`
     );
     const startingRow = await getRowPosOnTerminal();
-    lgi(`\t${userLoggedIn}/`, LoggingPrefix.false, LineSeparator.false);
-    lgi(`${dealerFolder}/`, Color.cyan, LineSeparator.false);
-    lgi(`${name} : ${URL}`);
+    lgi(`\t${userLoggedIn}/`, LineSeparator.false);
+    lgi(`${dealerFolder}/`, Color.cyan, LoggingPrefix.false, LineSeparator.false);
+    lgi(`${name} : ${URL}`, LoggingPrefix.false);
     printToLogBuffer.push(`\${userLoggedIn}/\${dealerFolder}/\${name} : \${URL}  :   ${userLoggedIn}/${dealerFolder}/${name} : ${URL}`);
     const endingRow = await getRowPosOnTerminal();
     const diffInRows = endingRow - startingRow;
@@ -146,12 +146,12 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
             currentColor = Color.cyanNormal;
         }
         if (newEndingRow - 3 !== endingRow) {
-            lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor);
+            lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor, LoggingPrefix.false);
         } else {
             debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
             debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
             debug ? '' : process.stdout.cursorTo(0);
-            lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor);
+            lgi(` (${minutes}:${seconds})${diffInEstimate > 1.5 ? `/${diffInEstimate}x ` : ''}`, currentColor, LoggingPrefix.false);
         }
     }
     lgtf(`fn uploadBookmarkURL() : END, Returning: returnObj: ${beautify(returnObj, null, 3, 120)}`);
@@ -238,7 +238,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // eslint-disable-next-line no-useless-catch
     try {
         VINFolderPathList = typeOfVINPath === 'VINFolder' ? fs.readdirSync(VINFolderOrFilePath) : [VINFolderOrFilePath];
-        lgi(`(${zeroPad(VINFolderPathList.length, 2)}): `, LineSeparator.false);
+        lgi(`(${zeroPad(VINFolderPathList.length, 2)}): `, LoggingPrefix.false, LineSeparator.false);
 
         // eslint-disable-next-line no-restricted-syntax
         for (const VINFolderSubFolderAndFiles of VINFolderPathList) {
@@ -308,8 +308,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     process.stdout.clearLine(diffInRows); // from cursor to end
     process.stdout.cursorTo(0);
     lgi(` Uploading Files(${zeroPad(VINFolderPathList.length, 2)}): `, LineSeparator.false);
-    lgi(`${logSymbols.success}${' '.repeat(3)}`, LineSeparator.false);
-    lgi(` Mark Deletion: `, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(3)}`, LoggingPrefix.false, LineSeparator.false);
+    lgi(` Mark Deletion: `, LoggingPrefix.false, LineSeparator.false);
 
     /* #region: Mark file to delete the older files so as to replace with the newer files later on: Begin */
     lgtf(`region: Mark file to delete the older files so as to replace with the newer files later on: Begin`);
@@ -364,8 +364,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgtf(`region: Mark file to delete the older files so as to replace with the newer files later on: End`);
     /* #endregion: Delete the older files to replace with the newer files: End */
 
-    lgi(`${logSymbols.success}${' '.repeat(13)}`, LineSeparator.false);
-    lgi(` Move Files To Location: `, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(13)}`, LoggingPrefix.false, LineSeparator.false);
+    lgi(` Move Files To Location: `, LoggingPrefix.false, LineSeparator.false);
 
     const imageDIVContainer2 = await page.$('.tn-list-container');
     const imageULContainer2 = await imageDIVContainer2.$('.container.tn-list.sortable.deletable.ui-sortable');
@@ -410,8 +410,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgtf(`region: Move uploaded files on the correct location: End`);
     /* #endregion: Move uploaded files on the correct location: End */
 
-    lgi(`${logSymbols.success}${' '.repeat(4)}`, LineSeparator.false);
-    lgi(`\n Move Files To Last: `, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(4)}`, LoggingPrefix.false);
+    lgi(` Move Files To Last: `, LineSeparator.false);
 
     /* #region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: Begin */
     lgtf(
@@ -426,8 +426,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     /* #endregion: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End */
 
-    lgi(`${logSymbols.success}${' '.repeat(4)}`, LineSeparator.false);
-    lgi(` Lock The Images Checkbox: `, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(4)}`, LoggingPrefix.false, LineSeparator.false);
+    lgi(` Lock The Images Checkbox: `, LoggingPrefix.false, LineSeparator.false);
 
     /* #region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin */
     lgtf(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : Begin`);
@@ -454,8 +454,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgtf(`region: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End`);
     /* #endregion: Check/Uncheck the 'Lock The Images' checkbox, according to setting : End */
 
-    lgi(`${logSymbols.success}${' '.repeat(2)}`, LineSeparator.false);
-    lgi(` Saving Now: `, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(2)}`, LoggingPrefix.false, LineSeparator.false);
+    lgi(` Saving Now: `, LoggingPrefix.false, LineSeparator.false);
 
     /* #region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin */
     lgtf(
@@ -493,12 +493,12 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     /* #endregion: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End */
 
-    lgi(`${logSymbols.success}${' '.repeat(16)}`, LineSeparator.false);
-    lgi(` Saved: `, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(16)}`, LoggingPrefix.false, LineSeparator.false);
+    lgi(` Saved: `, LoggingPrefix.false, LineSeparator.false);
 
     await page.waitForNavigation({ timeout: 300000 });
 
-    lgi(`${logSymbols.success}${' '.repeat(5)}`, LineSeparator.false);
+    lgi(`${logSymbols.success}${' '.repeat(5)}`, LoggingPrefix.false, LineSeparator.false);
 
     const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, false);
     const returnObj = {
@@ -843,26 +843,26 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
             process.stdout.moveCursor(0, -diffInRows); // up one line
             process.stdout.clearLine(diffInRows); // from cursor to end
             process.stdout.cursorTo(0);
-            lgi(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `, LineSeparator.false);
+            lgi(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `, LoggingPrefix.false, LineSeparator.false);
             for (let cnt = 1; cnt <= (isAdditionalFile ? totalUploadFiles + countOfComplete : countOfComplete); cnt++) {
                 if (isAdditionalFile && cnt > totalUploadFiles) {
-                    lgi(`, `, LineSeparator.false);
+                    lgi(`, `, LoggingPrefix.false, LineSeparator.false);
                 }
-                lgi(`${zeroPad(cnt, 2)}.`, LineSeparator.false);
-                lgi(`${logSymbols.success} `, LineSeparator.false);
+                lgi(`${zeroPad(cnt, 2)}.`, LoggingPrefix.false, LineSeparator.false);
+                lgi(`${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
             }
 
             const regexString = `<span class="fileinfo"> - (\\d{1,3}%)</span>`;
             const regexExpression = new RegExp(regexString, 'g');
             if (regexExpression.test(currentQueueContent)) {
                 if (isAdditionalFile) {
-                    lgi(`, `, LineSeparator.false);
+                    lgi(`, `, LoggingPrefix.false, LineSeparator.false);
                 }
                 // lgtf(`01: currentQueueContent.match(regexExpression) : ${currentQueueContent.match(regexExpression)}`);
                 const percentage = currentQueueContent.match(regexExpression)[0].match(regexString)[1];
                 // lgtf(`percentage: ${percentage}`);
-                lgi(`  ${zeroPad(countOfComplete + 1, 2)}.`, LineSeparator.false);
-                lgi(` ${percentage}`, Color.cyan, LineSeparator.false);
+                lgi(`  ${zeroPad(countOfComplete + 1, 2)}.`, LoggingPrefix.false, LineSeparator.false);
+                lgi(` ${percentage}`, Color.cyan, LoggingPrefix.false, LineSeparator.false);
             }
             loopCountOfQueueContent = 0;
         } else {
