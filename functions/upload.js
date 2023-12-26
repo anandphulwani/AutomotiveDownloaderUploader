@@ -828,7 +828,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
     let currentQueueContent;
     let previousQueueContent;
     let loopCountOfQueueContent = 0;
-    let earlierCountOfComplete = 0;
+    let earlierCountOfComplete = null;
     while (loopCountOfQueueContent <= 410) {
         const uploadifiveFileInputQueueEle = await page.$('#uploadifive-fileInput-queue');
         currentQueueContent = await page.$eval('#uploadifive-fileInput-queue', (element) => element.innerHTML);
@@ -845,30 +845,30 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
             process.stdout.clearLine(diffInRows); // from cursor to end
             process.stdout.cursorTo(0);
             const lgiOrLgic = earlierCountOfComplete !== countOfComplete ? lgi : lgic;
-            lgi(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `, LoggingPrefix.false, LineSeparator.false);
+            lgiOrLgic(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `, LoggingPrefix.true, LineSeparator.false);
             for (let cnt = 1; cnt <= (isAdditionalFile ? totalUploadFiles + countOfComplete : countOfComplete); cnt++) {
                 if (isAdditionalFile && cnt > totalUploadFiles) {
-                    lgi(`, `, LoggingPrefix.false, LineSeparator.false);
+                    lgiOrLgic(`, `, LoggingPrefix.false, LineSeparator.false);
                 }
-                lgi(`${zeroPad(cnt, 2)}.`, LoggingPrefix.false, LineSeparator.false);
-                lgi(`${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
+                lgiOrLgic(`${zeroPad(cnt, 2)}.`, LoggingPrefix.false, LineSeparator.false);
+                lgiOrLgic(`${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
             }
 
             const regexString = `<span class="fileinfo"> - (\\d{1,3}%)</span>`;
             const regexExpression = new RegExp(regexString, 'g');
             if (regexExpression.test(currentQueueContent)) {
                 if (isAdditionalFile) {
-                    lgi(`, `, LoggingPrefix.false, LineSeparator.false);
+                    lgiOrLgic(`, `, LoggingPrefix.false, LineSeparator.false);
                 }
                 // lgtf(`01: currentQueueContent.match(regexExpression) : ${currentQueueContent.match(regexExpression)}`);
                 const percentage = currentQueueContent.match(regexExpression)[0].match(regexString)[1];
                 // lgtf(`percentage: ${percentage}`);
-                lgi(`  ${zeroPad(countOfComplete + 1, 2)}.`, LoggingPrefix.false, LineSeparator.false);
+                lgiOrLgic(`  ${zeroPad(countOfComplete + 1, 2)}.`, LoggingPrefix.false, LineSeparator.false);
                 lgi(` ${percentage}`, Color.cyan, LoggingPrefix.false, LineSeparator.false);
                 lgif(`...`, LoggingPrefix.false, LineSeparator.false);
+                earlierCountOfComplete = countOfComplete;
             }
             loopCountOfQueueContent = 0;
-            earlierCountOfComplete = countOfComplete;
         } else {
             break;
         }
