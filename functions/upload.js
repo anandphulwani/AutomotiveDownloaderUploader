@@ -828,6 +828,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
     let currentQueueContent;
     let previousQueueContent;
     let loopCountOfQueueContent = 0;
+    let earlierCountOfComplete = 0;
     while (loopCountOfQueueContent <= 410) {
         const uploadifiveFileInputQueueEle = await page.$('#uploadifive-fileInput-queue');
         currentQueueContent = await page.$eval('#uploadifive-fileInput-queue', (element) => element.innerHTML);
@@ -865,6 +866,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
                 lgi(` ${percentage}`, Color.cyan, LoggingPrefix.false, LineSeparator.false);
             }
             loopCountOfQueueContent = 0;
+            earlierCountOfComplete = countOfComplete;
         } else {
             break;
         }
