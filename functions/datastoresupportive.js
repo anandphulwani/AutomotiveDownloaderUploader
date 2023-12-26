@@ -279,7 +279,12 @@ function getUploadRemainingSummary(foldersToUpload) {
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }; // Format the time in hh:mm:ss tt format
     const finishedTime = dateTimeObj.toLocaleString('en-US', options);
 
-    return `Remaining Processing DealerFolders: ${underProcessingAcToReport.underProcessingDealerFolders}, Images: ${underProcessingAcToReport.underProcessingImgQty}, \nUploading DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, VINFolder/VINFiles: ${totalVINFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
+    let returnMesg = '';
+    if (underProcessingAcToReport.underProcessingDealerFolders === undefined && underProcessingAcToReport.underProcessingImgQty === undefined) {
+        returnMesg = `Remaining Processing DealerFolders: ${underProcessingAcToReport.underProcessingDealerFolders}, Images: ${underProcessingAcToReport.underProcessingImgQty}, \n`;
+    }
+    returnMesg = `Uploading DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, VINFolder/VINFiles: ${totalVINFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
+    return returnMesg;
 }
 
 function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {

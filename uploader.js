@@ -281,7 +281,10 @@ try {
                 lastRunTime = Date.now();
             } else {
                 const underProcessingAcToReport = getUnderProcessingAcToReport();
-                if (underProcessingAcToReport.underProcessingDealerFolders > 0) {
+                if (
+                    underProcessingAcToReport.underProcessingDealerFolders !== undefined &&
+                    underProcessingAcToReport.underProcessingDealerFolders > 0
+                ) {
                     lastRunTime = Date.now();
                 }
             }

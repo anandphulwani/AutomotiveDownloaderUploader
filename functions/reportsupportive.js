@@ -118,8 +118,7 @@ function getUnderProcessingAcToReport() {
     const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
     try {
         if (!fs.existsSync(reportJSONFilePath)) {
-            lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Exiting.`);
-            process.exit(1);
+            return { underProcessingDealerFolders: undefined, underProcessingImgQty: undefined };
         }
         // createBackupOfFile(fileToOperateOn, newConfigUserContent);
         attainLock(reportJSONFilePath, undefined, false);
