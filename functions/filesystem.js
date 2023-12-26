@@ -7,7 +7,7 @@ import path from 'path';
 import randomstring from 'randomstring';
 
 /* eslint-disable import/extensions */
-import { lgc, lgd, lge, lgs } from './loggerandlocksupportive.js';
+import { lgc, lgd, lgdf, lge, lgs } from './loggerandlocksupportive.js';
 import { sleep } from './sleep.js';
 /* eslint-enable import/extensions */
 
@@ -27,7 +27,7 @@ function moveDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
         try {
             const results = fsExtra.moveSync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
             const movingMesg = `SUCCESSFUL MOVE: ${fromPath} ---------> ${toPath}         Results: ${results}`;
-            lgd(movingMesg);
+            lgdf(movingMesg);
             break;
         } catch (error) {
             if (
@@ -48,7 +48,7 @@ function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
     try {
         const results = fsExtra.copySync(fromPath, toPath, { overwrite: overwrite, errorOnExist: true });
         const copyingMesg = `SUCCESSFUL COPY: ${fromPath} ---------> ${toPath}         Results: ${results}`;
-        lgd(copyingMesg);
+        lgdf(copyingMesg);
     } catch (error) {
         lgc(`${'Unable to copy file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`, error);
         process.exit(1);
