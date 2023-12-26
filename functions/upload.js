@@ -841,7 +841,6 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
             const doesSpanTagHasPercentage = regexExpression.test(currentQueueContent);
 
             const countOfComplete = await uploadifiveFileInputQueueEle.$$eval('.complete', (elements) => elements.length);
-            // lgtf(`currentQueueContent: ${currentQueueContent}`);
             lgtf(`countOfComplete : ${countOfComplete}`);
             const endingRow = await getRowPosOnTerminal();
             const diffInRows = endingRow - startingRow;
@@ -862,9 +861,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
                 if (isAdditionalFile) {
                     lgiOrLgic(`, `, LoggingPrefix.false, LineSeparator.false);
                 }
-                // lgtf(`01: currentQueueContent.match(regexExpression) : ${currentQueueContent.match(regexExpression)}`);
                 const percentage = currentQueueContent.match(regexExpression)[0].match(regexString)[1];
-                // lgtf(`percentage: ${percentage}`);
                 lgiOrLgic(`  ${zeroPad(countOfComplete + 1, 2)}.`, LoggingPrefix.false, LineSeparator.false);
                 lgi(` ${percentage}`, Color.cyan, LoggingPrefix.false, LineSeparator.false);
                 lgif(`...`, LoggingPrefix.false, LineSeparator.false);
