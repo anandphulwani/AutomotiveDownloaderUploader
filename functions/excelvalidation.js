@@ -269,7 +269,7 @@ function checkForNumbersAndCommaOnlyInArray(usernameTrimmed, data, columnName) {
         let elementsLocations = elementsAllIndex(data, notNumbersAndCommaElement);
         elementsLocations = elementsLocations.map((entry) => entry + 2);
         lge(
-            `${usernameTrimmed}) In column '${columnName}', found invalid value for numbers separeted by comma, element value: \n` +
+            `(${usernameTrimmed}) In column '${columnName}', found invalid value for numbers separeted by comma, element value: \n` +
                 `         '${notNumbersAndCommaElement}'    at row number ${elementsLocations.join(', ')}.`
         );
     });
