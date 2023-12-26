@@ -864,6 +864,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
                 // lgtf(`percentage: ${percentage}`);
                 lgi(`  ${zeroPad(countOfComplete + 1, 2)}.`, LoggingPrefix.false, LineSeparator.false);
                 lgi(` ${percentage}`, Color.cyan, LoggingPrefix.false, LineSeparator.false);
+                lgif(`...`, LoggingPrefix.false, LineSeparator.false);
             }
             loopCountOfQueueContent = 0;
             earlierCountOfComplete = countOfComplete;
