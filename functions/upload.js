@@ -847,7 +847,14 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
             process.stdout.moveCursor(0, -diffInRows); // up one line
             process.stdout.clearLine(diffInRows); // from cursor to end
             process.stdout.cursorTo(0);
-            const lgiOrLgic = earlierCountOfComplete !== countOfComplete ? lgi : lgic;
+
+            let lgiOrLgic = lgic;
+            if (earlierCountOfComplete !== countOfComplete) {
+                if (doesSpanTagHasPercentage || countOfComplete === (isAdditionalFile ? 1 : totalUploadFiles)) {
+                    lgiOrLgic = lgi;
+                    earlierCountOfComplete = countOfComplete;
+                }
+            }
             lgiOrLgic(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `, LoggingPrefix.true, LineSeparator.false);
             for (let cnt = 1; cnt <= (isAdditionalFile ? totalUploadFiles + countOfComplete : countOfComplete); cnt++) {
                 if (isAdditionalFile && cnt > totalUploadFiles) {
@@ -865,7 +872,6 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
                 lgiOrLgic(`  ${zeroPad(countOfComplete + 1, 2)}.`, LoggingPrefix.false, LineSeparator.false);
                 lgi(` ${percentage}`, Color.cyan, LoggingPrefix.false, LineSeparator.false);
                 lgif(`...`, LoggingPrefix.false, LineSeparator.false);
-                earlierCountOfComplete = countOfComplete;
             }
             loopCountOfQueueContent = 0;
         } else {
