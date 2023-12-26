@@ -7,7 +7,7 @@ import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './datetime.js';
-import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif, lgh, lgtf, lgs, lgd } from './loggerandlocksupportive.js';
+import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif, lgh, lgtf, lgs, lgd, lgic } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
 import { sleep, msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
@@ -844,6 +844,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
             process.stdout.moveCursor(0, -diffInRows); // up one line
             process.stdout.clearLine(diffInRows); // from cursor to end
             process.stdout.cursorTo(0);
+            const lgiOrLgic = earlierCountOfComplete !== countOfComplete ? lgi : lgic;
             lgi(` Uploading Files(${zeroPad(totalUploadFiles, 2)}): `, LoggingPrefix.false, LineSeparator.false);
             for (let cnt = 1; cnt <= (isAdditionalFile ? totalUploadFiles + countOfComplete : countOfComplete); cnt++) {
                 if (isAdditionalFile && cnt > totalUploadFiles) {
