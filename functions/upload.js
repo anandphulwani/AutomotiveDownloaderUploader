@@ -228,7 +228,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     // Later: error handling if stuck delete all previous images and start again.
 
     const startingRow = await getRowPosOnTerminal();
-    lgi(` Uploading Files`, LineSeparator.false);
+    lgi(` Total Files`, LineSeparator.false);
 
     /* #region: Uploading the files: Begin */
     lgtf(`region: Uploading the files: Begin`);
