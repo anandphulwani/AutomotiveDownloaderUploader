@@ -870,6 +870,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
         }
         if (loopCountOfQueueContent === 411) {
             lgtf('ERROR: Upload process stuck while uploading files.');
+            lgs('Upload process stuck while uploading files.');
             process.exit(1);
         }
         // await waitForSeconds(2);
