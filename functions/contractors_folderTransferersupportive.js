@@ -181,7 +181,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
 
             // Check CuttingDone/ReadyToUpload folder has AlreadyMoved_ prefixed to it, if has ignore the folder
             const alreadyMovedRegexString = `^AlreadyMoved_.*$`;
-            const alreadyMovedRegexExpression = new RegExp(alreadyMovedRegexString, 'g');
+            const alreadyMovedRegexExpression = new RegExp(alreadyMovedRegexString);
             if (alreadyMovedRegexExpression.test(filteredContractorDestinationSubFolderAndFiles)) {
                 // eslint-disable-next-line no-continue
                 continue;
@@ -275,7 +275,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
 
     foldersToShift.sort((a, b) => {
         const digitsRegexString = `(\\d+)`;
-        const digitsRegexExpression = new RegExp(digitsRegexString, 'g');
+        const digitsRegexExpression = new RegExp(digitsRegexString);
         if (!digitsRegexExpression.test(path.basename(a.dealerImagesFolder)) || !digitsRegexExpression.test(path.basename(b.dealerImagesFolder))) {
             lgu('Unable to match regex of `foldersToShift` while sorting.');
             return 0;

@@ -46,7 +46,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     );
 
     const VINNumberRegexString = `^[a-zA-Z0-9\\-_ ]{1,}$`;
-    const VINNumberRegexExpression = new RegExp(VINNumberRegexString, 'g');
+    const VINNumberRegexExpression = new RegExp(VINNumberRegexString);
     if (!VINNumberRegexExpression.test(VINNumber)) {
         console.log('');
         lgw(`Found an invalid VIN number: ${VINNumber}, format unknown, minimum 2 length, alphanumeric letters only required.`);

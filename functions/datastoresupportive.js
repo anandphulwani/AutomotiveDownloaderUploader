@@ -58,7 +58,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
             continue;
         }
         const dateRegexString = `^\\d{4}-\\d{2}-\\d{2}$`;
-        const dateRegexExpression = new RegExp(dateRegexString, 'g');
+        const dateRegexExpression = new RegExp(dateRegexString);
         const folderPathChildren = fs.readdirSync(folderToCleanUp);
         const folderPathChildrenSubDirsOnly = folderPathChildren.filter(
             (file) => fs.lstatSync(path.join(folderToCleanUp, file)).isDirectory() && dateRegexExpression.test(file)

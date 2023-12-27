@@ -255,7 +255,7 @@ function checkForBooleanOrBlankValueOnlyInArray(usernameTrimmed, data, columnNam
 
 function checkForNumbersAndCommaOnlyInArray(usernameTrimmed, data, columnName) {
     const numbersAndCommaRegexString = `^[0-9]+(,[0-9]+)*$`;
-    const numbersAndCommaRegexExpression = new RegExp(numbersAndCommaRegexString, 'g');
+    const numbersAndCommaRegexExpression = new RegExp(numbersAndCommaRegexString);
     const findElementsNotNumbersAndComma = (arr) => arr.filter((item) => item !== undefined && !numbersAndCommaRegexExpression.test(item));
     let notNumbersAndCommaElements = findElementsNotNumbersAndComma(data);
     notNumbersAndCommaElements = removeDuplicates(notNumbersAndCommaElements);
