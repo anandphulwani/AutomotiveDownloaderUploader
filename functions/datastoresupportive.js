@@ -224,8 +224,7 @@ function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
         process.exit(1);
     }
 
-    const match = folderName.match(regexExpression);
-    return match[0].match(regexString)[4];
+    return folderName.match(regexExpression)[4];
 }
 
 function getUniqueIDWithHashFromAllottedDealerNumberFolder(folderName) {
@@ -237,8 +236,7 @@ function getUniqueIDWithHashFromAllottedDealerNumberFolder(folderName) {
         process.exit(1);
     }
 
-    const match = folderName.match(regexExpression);
-    return match[0].match(regexString)[5];
+    return folderName.match(regexExpression)[5];
 }
 
 function getUniqueIDFromAllottedDealerNumberFolder(folderName) {
@@ -250,8 +248,7 @@ function getUniqueIDFromAllottedDealerNumberFolder(folderName) {
         process.exit(1);
     }
 
-    const match = folderName.match(regexExpression);
-    return match[0].match(regexString)[6];
+    return folderName.match(regexExpression)[6];
 }
 
 function getUploadRemainingSummary(foldersToUpload) {
