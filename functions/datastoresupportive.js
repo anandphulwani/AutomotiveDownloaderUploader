@@ -276,11 +276,15 @@ function getUploadRemainingSummary(foldersToUpload) {
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }; // Format the time in hh:mm:ss tt format
     const finishedTime = dateTimeObj.toLocaleString('en-US', options);
 
-    let returnMesg = '';
+    const returnMesg = [];
     if (underProcessingAcToReport.underProcessingDealerFolders === undefined && underProcessingAcToReport.underProcessingImgQty === undefined) {
-        returnMesg = `Remaining Processing DealerFolders: ${underProcessingAcToReport.underProcessingDealerFolders}, Images: ${underProcessingAcToReport.underProcessingImgQty}, \n`;
+        returnMesg.push(
+            `Remaining Processing DealerFolders: ${underProcessingAcToReport.underProcessingDealerFolders}, Images: ${underProcessingAcToReport.underProcessingImgQty},`
+        );
     }
-    returnMesg = `Uploading DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, VINFolder/VINFiles: ${totalVINFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`;
+    returnMesg.push(
+        `Uploading DealerFolders: ${dealerFoldersQty}, Images: ${totalImagesQty}, VINFolder/VINFiles: ${totalVINFolderFilesQty}, Time: ${durationHours}:${durationMinutes}:${durationSeconds}, Will finish it at ${finishedTime}.`
+    );
     return returnMesg;
 }
 
