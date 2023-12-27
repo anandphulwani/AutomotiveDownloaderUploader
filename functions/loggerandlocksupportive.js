@@ -182,7 +182,7 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;
     const logPath = path.join(getProjectLogsDirPath(), 'lockslog', instanceRunDateFormatted, instanceRunTimeWOMS, path.basename(fileToOperateOn));
     try {
-        fs.mkdirSync(logPath, { recursive: true });
+        debug ? fs.mkdirSync(logPath, { recursive: true }) : null;
         for (let lockTryIndex = 0; lockTryIndex <= 12000; lockTryIndex++) {
             if (lockTryIndex === 12000) {
                 lgs(`attainLock(${fileToOperateOn}): Unable to get the lock.`);
