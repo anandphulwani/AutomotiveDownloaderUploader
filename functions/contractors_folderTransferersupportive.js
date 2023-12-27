@@ -274,7 +274,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
     }
 
     foldersToShift.sort((a, b) => {
-        const digitsRegexString = `(\\d+)`;
+        const digitsRegexString = `^(\\d+)`;
         const digitsRegexExpression = new RegExp(digitsRegexString);
         if (!digitsRegexExpression.test(path.basename(a.dealerImagesFolder)) || !digitsRegexExpression.test(path.basename(b.dealerImagesFolder))) {
             lgu('Unable to match regex of `foldersToShift` while sorting.');
