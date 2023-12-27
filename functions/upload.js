@@ -837,7 +837,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
             lgtf(`loopCountOfQueueContent : ${loopCountOfQueueContent}`);
         } else if (currentQueueContent !== '') {
             const regexString = `<span class="fileinfo"> - (\\d{1,3}%)</span>`;
-            const regexExpression = new RegExp(regexString, 'g');
+            const regexExpression = new RegExp(regexString);
             const doesSpanTagHasPercentage = regexExpression.test(currentQueueContent);
 
             const countOfComplete = await uploadifiveFileInputQueueEle.$$eval('.complete', (elements) => elements.length);
@@ -868,7 +868,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
                 if (isAdditionalFile) {
                     lgiOrLgic(`, `, LoggingPrefix.false, LineSeparator.false);
                 }
-                const percentage = currentQueueContent.match(regexExpression)[0].match(regexString)[1];
+                const percentage = currentQueueContent.match(regexExpression)[1];
                 lgiOrLgic(`  ${zeroPad(countOfComplete + 1, 2)}.`, LoggingPrefix.false, LineSeparator.false);
                 lgi(` ${percentage}`, Color.cyan, LoggingPrefix.false, LineSeparator.false);
                 lgif(`...`, LoggingPrefix.false, LineSeparator.false);

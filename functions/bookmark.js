@@ -112,7 +112,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                     const guid = doneBookmarksInSourceKeys[i];
 
                     const GUIDRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
-                    const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
+                    const GUIDRegexExpression = new RegExp(GUIDRegexString);
 
                     if (GUIDRegexExpression.test(sourceJSONString)) {
                         const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
@@ -194,7 +194,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                 for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
                     const guid = doneBookmarksInSourceKeys[i];
                     const GUIDRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"(?:(?!"guid": )[\\s|\\S])*?"type": "folder"`;
-                    const GUIDRegexExpression = new RegExp(GUIDRegexString, 'g');
+                    const GUIDRegexExpression = new RegExp(GUIDRegexString);
 
                     if (GUIDRegexExpression.test(sourceJSONString)) {
                         const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
@@ -332,7 +332,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         bookmarksFileJSONObj = removeChecksumFromBookmarksObj(bookmarksFileJSONObj);
         let bookmarksFileText = JSON.stringify(bookmarksFileJSONObj, null, 3);
 
-        const blockRegexExpression = new RegExp(elementsDetails[element].blockRegex, 'g');
+        const blockRegexExpression = new RegExp(elementsDetails[element].blockRegex);
         if (!blockRegexExpression.test(bookmarksFileText)) {
             lgu(
                 [
@@ -346,9 +346,9 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
         const bookmarkBlockText = bookmarksFileText.match(blockRegexExpression)[0];
 
         let bookmarkBlockNewText;
-        const regexExpression = new RegExp(elementsDetails[element].elementRegex, 'g');
+        const regexExpression = new RegExp(elementsDetails[element].elementRegex);
         if (elementsDetails[element].elementAlreadySubstituedCheckRegex) {
-            const elementAlreadySubstituedCheckRegexExpression = new RegExp(elementsDetails[element].elementAlreadySubstituedCheckRegex, 'g');
+            const elementAlreadySubstituedCheckRegexExpression = new RegExp(elementsDetails[element].elementAlreadySubstituedCheckRegex);
             if (elementAlreadySubstituedCheckRegexExpression.test(bookmarkBlockText)) {
                 bookmarkBlockNewText = bookmarkBlockText.replace(regexExpression, elementsDetails[element].elementAlreadySubstituedSubstitutionValue);
             }

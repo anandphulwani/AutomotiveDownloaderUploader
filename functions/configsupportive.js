@@ -44,7 +44,7 @@ function setContractorsCurrentAllotted(contractor, allottedQty) {
         const configContractorsContent = fs.readFileSync(fileToOperateOn, 'utf8');
 
         const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*[\\r\\n|\\n])([ ]*)(currentAllotted: )(\\d+)(,)`;
-        const regexExpression = new RegExp(regexString, 'g');
+        const regexExpression = new RegExp(regexString);
         const newconfigContractorsContent = configContractorsContent.replace(regexExpression, `$1$2$3${allottedQty}$5`);
         if (configContractorsContent === newconfigContractorsContent) {
             lgu(
@@ -65,16 +65,14 @@ function setContractorsCurrentAllotted(contractor, allottedQty) {
 function getContractorsCurrentAllotted(contractor) {
     const configContractorsContent = fs.readFileSync(getProjectConfigContractorsFilePath(), 'utf8');
     const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*[\\r\\n|\\n])([ ]*)(currentAllotted: )(\\d+)(,)`;
-    const regexExpression = new RegExp(regexString, 'g');
+    const regexExpression = new RegExp(regexString);
 
     if (!regexExpression.test(configContractorsContent)) {
         lgu('Unable to match regex for fn getContractorsCurrentAllotted()');
         process.exit(1);
     }
 
-    const match = configContractorsContent.match(regexExpression);
-    const currentAllotted = match[0].match(regexString)[4];
-    return currentAllotted;
+    return configContractorsContent.match(regexExpression)[4];
 }
 
 function addToContractorsCurrentAllotted(contractor, quantity) {
@@ -87,27 +85,25 @@ function addToContractorsCurrentAllotted(contractor, quantity) {
 function getLastLotNumber() {
     const configContent = fs.readFileSync(getProjectConfigLotLastFilePath(), 'utf8');
     const lastLotNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',[\\r\\n|\\n])`;
-    const lastLotNumberRegexExpression = new RegExp(lastLotNumberRegexString, 'g');
+    const lastLotNumberRegexExpression = new RegExp(lastLotNumberRegexString);
 
     if (!lastLotNumberRegexExpression.test(configContent)) {
         lgu('Unable to match regex for fn getLastLotNumber()');
         process.exit(1);
     }
-    const match = configContent.match(lastLotNumberRegexExpression);
-    return match[0].match(lastLotNumberRegexString)[2];
+    return configContent.match(lastLotNumberRegexExpression)[2];
 }
 
 function getLastLotDate() {
     const configContent = fs.readFileSync(getProjectConfigLotLastFilePath(), 'utf8');
     const lastLotDateRegexString = `(    lotLastRunDate: ')(.*?)(',[\\r\\n|\\n])`;
-    const lastLotDateRegexExpression = new RegExp(lastLotDateRegexString, 'g');
+    const lastLotDateRegexExpression = new RegExp(lastLotDateRegexString);
 
     if (!lastLotDateRegexExpression.test(configContent)) {
         lgu('Unable to match regex for fn getLastLotDate()');
         process.exit(1);
     }
-    const match = configContent.match(lastLotDateRegexExpression);
-    return match[0].match(lastLotDateRegexString)[2];
+    return configContent.match(lastLotDateRegexExpression)[2];
 }
 
 function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
@@ -126,7 +122,7 @@ function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
 
         if (currentLotLastRunNumber !== lastLotNumber) {
             const lastRunNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',[\\r\\n|\\n])`;
-            const lastRunNumberRegexExpression = new RegExp(lastRunNumberRegexString, 'g');
+            const lastRunNumberRegexExpression = new RegExp(lastRunNumberRegexString);
             newConfigContent = configContent.replace(lastRunNumberRegexExpression, `$1${lastLotNumber}$3`);
             if (configContent === newConfigContent) {
                 lgu(`Unable to set lastLotNumber: '${lastLotNumber}'. Serious issue, please contact developer.`);
@@ -138,7 +134,7 @@ function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
 
         if (currentLotLastRunDate !== lastLotDate) {
             const lastRunDateRegexString = `(    lotLastRunDate: ')(.*?)(',[\\r\\n|\\n])`;
-            const lastRunDateRegexExpression = new RegExp(lastRunDateRegexString, 'g');
+            const lastRunDateRegexExpression = new RegExp(lastRunDateRegexString);
             newConfigContent = configContent.replace(lastRunDateRegexExpression, `$1${lastLotDate}$3`);
             if (configContent === newConfigContent) {
                 lgu(`Unable to set lastLotDate: '${lastLotDate}'. Serious issue, please contact developer.`);

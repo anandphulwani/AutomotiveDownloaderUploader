@@ -246,7 +246,7 @@ function getListOfSubfoldersStartingWith(dirPath, startingTxt, isStrict = false)
         return filteredSubFoldersAndFiles;
     } catch (err) {
         // eslint-disable-next-line prefer-regex-literals
-        const noSuchFileRegex = new RegExp('ENOENT: no such file or directory.*', 'g');
+        const noSuchFileRegex = new RegExp('ENOENT: no such file or directory.*');
         if (noSuchFileRegex.test(err.message)) {
             if (isStrict) {
                 lgc(`getListOfSubfoldersStartingWith ${err.message.replace(/^ENOENT: n/, ': N')}`, err);
