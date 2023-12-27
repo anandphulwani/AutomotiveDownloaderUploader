@@ -14,8 +14,7 @@ import {
 import { getProjectLogsDirPath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
-// TODO: Check why debug here is set to true.
-const debug = true;
+const debug = false;
 
 function getPrefixAcToProcess() {
     const scriptName = path.basename(process.argv[1]);
