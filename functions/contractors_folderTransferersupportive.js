@@ -127,7 +127,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                     unlockedFolders.push(filteredContractorDestinationSubFolderAndFiles);
                 } catch (err) {
                     const resourceBusyOrLockedRegexString = '^EBUSY: resource busy or locked';
-                    const resourceBusyOrLockedRegexExpression = new RegExp(resourceBusyOrLockedRegexString, 'g');
+                    const resourceBusyOrLockedRegexExpression = new RegExp(resourceBusyOrLockedRegexString);
                     if (resourceBusyOrLockedRegexExpression.test(err.message)) {
                         warnNowOrLater(
                             `Folder in ${typeOfContractor}'s ${typeOfSourceFolder} locked, maybe a contractor working/moving it, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
@@ -162,7 +162,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
 
             // Check CuttingDone/ReadyToUpload folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
             const regexallottedFolderAlreadyMovedRegexString = config.allottedFolderRegex.replace('^', '^[O|o][K|k]_AlreadyMoved_');
-            const regexallottedFolderAlreadyMovedRegexExpression = new RegExp(regexallottedFolderAlreadyMovedRegexString, 'g');
+            const regexallottedFolderAlreadyMovedRegexExpression = new RegExp(regexallottedFolderAlreadyMovedRegexString);
             if (regexallottedFolderAlreadyMovedRegexExpression.test(filteredContractorDestinationSubFolderAndFiles)) {
                 const folderWithOkAlreadMovedRemoved = path
                     .basename(filteredContractorDestinationSubFolderPath)
@@ -188,7 +188,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             }
 
             // Check CuttingDone/ReadyToUpload folder matches the format
-            const regexallottedFolderRegexExpression = new RegExp(config.allottedFolderRegex, 'g');
+            const regexallottedFolderRegexExpression = new RegExp(config.allottedFolderRegex);
             if (!regexallottedFolderRegexExpression.test(filteredContractorDestinationSubFolderAndFiles)) {
                 warnNowOrLater(
                     `Folder in ${typeOfSourceFolder} but is not in a proper format, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,

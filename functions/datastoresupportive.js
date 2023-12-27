@@ -217,7 +217,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
 
 function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
     const regexString = config.allottedFolderRegex;
-    const regexExpression = new RegExp(regexString, 'g');
+    const regexExpression = new RegExp(regexString);
 
     if (!regexExpression.test(folderName)) {
         lgu('Unable to match regex for fn getNumberOfImagesFromAllottedDealerNumberFolder()');
@@ -230,7 +230,7 @@ function getNumberOfImagesFromAllottedDealerNumberFolder(folderName) {
 
 function getUniqueIDWithHashFromAllottedDealerNumberFolder(folderName) {
     const regexString = config.allottedFolderRegex;
-    const regexExpression = new RegExp(regexString, 'g');
+    const regexExpression = new RegExp(regexString);
 
     if (!regexExpression.test(folderName)) {
         lgu('Unable to match regex for fn getUniqueIDWithHashFromAllottedDealerNumberFolder()');
@@ -243,7 +243,7 @@ function getUniqueIDWithHashFromAllottedDealerNumberFolder(folderName) {
 
 function getUniqueIDFromAllottedDealerNumberFolder(folderName) {
     const regexString = config.allottedFolderRegex;
-    const regexExpression = new RegExp(regexString, 'g');
+    const regexExpression = new RegExp(regexString);
 
     if (!regexExpression.test(folderName)) {
         lgu('Unable to match regex for fn getUniqueIDFromAllottedDealerNumberFolder()');
