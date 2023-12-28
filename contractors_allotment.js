@@ -225,7 +225,7 @@ for (let index = 0; index < 2; index++) {
     debug ? lgd(`dealerDirectories: ${beautify(dealerDirectories, null, 3, 120)}`) : null;
     debug ? lgd(`contractors: ${beautify(contractors, null, 3, 120)}`) : null;
 
-    const doesDestinationFolderAlreadyExists = await doAllotment(
+    const doesDestinationFolderAlreadyExists = doAllotment(
         dealerDirectoriesObjects,
         contractors.map((subArr) => [...subArr]),
         lotIndex,
@@ -254,7 +254,7 @@ if (keyInYN('To use manual allotment system press Y, to exit from this process p
     dealerDirectoriesObjects = dealerDirectories.map((dealerFolderPath) => new FolderToBeAllotted(dealerFolderPath));
     for (let index = 0; index < 2; index++) {
         console.log('');
-        await doAllotment(dealerDirectoriesObjects, contractors, lotIndex, true, debug);
+        doAllotment(dealerDirectoriesObjects, contractors, lotIndex, true, debug);
         if (index === 1) {
             setLastLotNumberAndDate(lotFolderName, lotTodaysDate);
         }

@@ -48,7 +48,7 @@ function getDealerDirectoryObjWithMaxImageCount(dealerDirectories) {
     }, null);
 }
 
-async function executeSingleFolderAllotment(dealerDirectoryObj) {
+function executeSingleFolderAllotment(dealerDirectoryObj) {
     const { imageCount, username, dealerFolderName, dealerFolderPath, usernameAndDealerFolderName, contractorAllotted } = dealerDirectoryObj;
     const { uniqueId, destinationPath, destinationRecordKeepingPath, destinationFolderName } = dealerDirectoryObj;
     const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerFolderName);
@@ -56,7 +56,7 @@ async function executeSingleFolderAllotment(dealerDirectoryObj) {
 
     createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, false, 3);
-    await addToContractorsCurrentAllotted(contractorAllotted, imageCount);
+    addToContractorsCurrentAllotted(contractorAllotted, imageCount);
     addAllotmentToReport([[`#${uniqueId}`, usernameAndDealerFolderName, contractorAllotted, imageCount, destinationFolderName]]);
 }
 
@@ -147,7 +147,7 @@ function getManualAllotmentContractorIndex(usernameAndDealerFolderName, imageCou
  * ]
  */
 /* #endregion */
-async function doAllotment(
+function doAllotment(
     dealerDirectories,
     contractors,
     lotIndex,
@@ -216,7 +216,7 @@ async function doAllotment(
     } else {
         /** Running actualy allotment, confirmed in the previous dryRun */
         for (let index = 0; index < dealerDirectories.length; index++) {
-            await executeSingleFolderAllotment(dealerDirectories[index]);
+            executeSingleFolderAllotment(dealerDirectories[index]);
             const allotmentMesg = getAllotmentMesgForFolder(dealerDirectories[index], false);
             lgi(allotmentMesg, Color.bgGreen);
         }
