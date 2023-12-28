@@ -97,18 +97,19 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
 
     let logMesg = [];
     if (loggingPrefix.name === true && typeOfLogFormat === 'console') {
-            if (uniqueId !== undefined && (level === 'unhandledexception' || level === 'unreachable' || level === 'catcherror' || level === 'severe')) {
-                logMesg.push(`[${uniqueId}]`);
-            }
-            if (level !== 'hiccup' && level !== 'info' && message.replace(/-/g, '') !== '') {
-                logMesg.push(`${level.toUpperCase()}:`);
-            }
+        if (uniqueId !== undefined && (level === 'unhandledexception' || level === 'unreachable' || level === 'catcherror' || level === 'severe')) {
+            logMesg.push(`[${uniqueId}]`);
+        }
+        if (level !== 'hiccup' && level !== 'info' && message.replace(/-/g, '') !== '') {
+            logMesg.push(`${level.toUpperCase()}:`);
+        }
     }
     if (loggingPrefix.name === true && typeOfLogFormat === 'file') {
-            ts !== undefined ? logMesg.push(ts) : null;
-            uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
-            logMesg.push(`[${padStartAndEnd(`${level === 'warn' ? 'WARNING' : level.toUpperCase()}`, 21, ' ')}]`);
+        ts !== undefined ? logMesg.push(ts) : null;
+        uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
+        logMesg.push(`[${padStartAndEnd(`${level === 'warn' ? 'WARNING' : level.toUpperCase()}`, 21, ' ')}]`);
     }
+
     // If custom message is sent then, the custom message is merged with the first line of error message.
     if (stack !== undefined && stack.length > 0) {
         if (message.includes(stack)) {
