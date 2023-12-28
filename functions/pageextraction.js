@@ -17,6 +17,7 @@ import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import { handleErrorWhileURLNavigation } from './goto.js';
+import checkBrowserClosed from './browserclosed.js';
 /* eslint-enable import/extensions */
 
 async function getImagesFromContent(page, lotIndex, username, dealerFolder, debug = false) {
@@ -97,6 +98,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                 checksumOfFile = await getChecksumFromURL(imageOriginalURLS[imageNumberToDownload - 1], hashAlgo, debug);
                 break;
             } catch (err) {
+                checkBrowserClosed(err, true);
                 await handleErrorWhileURLNavigation(err, shortFilename, checksumOfFileCnt, 15);
             }
         }
@@ -121,6 +123,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
                 imagesDownloaded++;
                 break;
             } catch (err) {
+                checkBrowserClosed(err, true);
                 await handleErrorWhileURLNavigation(err, shortFilename, downloadCnt, 15);
             }
         }

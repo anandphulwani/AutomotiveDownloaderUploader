@@ -9,7 +9,7 @@ import { waitForElementContainsOrEqualsText, waitTillCurrentURLStartsWith } from
 import { gotoPageAndWaitTillCurrentURLStartsWith } from './goto.js';
 import { lge, lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
-
+import checkBrowserClosed from './browserclosed.js';
 /* eslint-enable import/extensions */
 
 async function initBrowserAndGetPage(profile) {
@@ -89,6 +89,7 @@ async function getCurrentUser(page) {
             const usernameHTML = await page.$eval(usernameSelector, (element) => element.innerHTML);
             return usernameHTML.toLowerCase();
         } catch (err) {
+            checkBrowserClosed(err, true);
             if (err.name === 'TimeoutError') {
                 return null;
             }

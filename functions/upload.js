@@ -34,6 +34,7 @@ import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty, getFileCountNon
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
+import checkBrowserClosed from './browserclosed.js';
 /* eslint-enable import/extensions */
 
 function getFoldersInUploadingZone(debug = false) {
@@ -296,6 +297,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', 30, true);
         }
     } catch (error) {
+        checkBrowserClosed(error, true);
         lgc(`region: Uploading the files, Try Error: `, error);
     }
     lgtf(`region: Uploading the files: End`);
@@ -352,6 +354,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                     );
                     lgtf(`deletion set`);
                 } catch (error) {
+                    checkBrowserClosed(error, true);
                     lgc(`region: Mark file to delete the older files so as to replace with the newer files later on, Try Error: `, error);
                     // eslint-disable-next-line no-continue
                     continue;
@@ -718,6 +721,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         }
         isSlow ? await waitForSeconds(6, true) : '';
     } catch (error) {
+        checkBrowserClosed(error, true);
         lgc('fn moveImageToPositionNumber() Try Error: ', error);
         await waitForSeconds(240, true);
     }
