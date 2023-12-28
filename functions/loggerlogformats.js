@@ -165,6 +165,10 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
     }
     logMesg = logMesg.join('\n');
     if (typeOfLogFormat === 'file') {
+        /**
+         * If a files last write line seperator is false, to allow continue write after it,
+         * but if loggingPrefix is true, it is disallowed and it is to be pushed into a new line
+         */
         if (loggingPrefix.name === true && !lastWriteLineSepObj[logFilename]) {
             logMesg = `\n${logMesg}`;
         }
