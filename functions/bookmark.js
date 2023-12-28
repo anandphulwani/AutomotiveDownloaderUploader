@@ -245,7 +245,12 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
 
 async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, URL, urlsDownloaded, debug = false) {
     if (name.includes(' |#| ')) {
-        return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
+        return {
+            result: false,
+            bookmarkAppendMesg: 'Name already has Pipe(|)Hash(#)Pipe(|) sign',
+            imagesDownloaded: 0,
+            urlsDownloaded: urlsDownloaded,
+        };
     }
     const ignoreBookmarkURLObjectFindResults = ignoreBookmarkURLObjects.find((ignoreBookmarkURLObject) => {
         if (URL.startsWith(ignoreBookmarkURLObject.URLStartsWith)) {

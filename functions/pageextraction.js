@@ -36,7 +36,11 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     if (dealerNameFromDCAsIs !== dealerNameFromPage) {
         console.log('');
         lgw(`Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`);
-        return { result: false, bookmarkAppendMesg: '', imagesDownloaded: 0 };
+        return {
+            result: false,
+            bookmarkAppendMesg: `${dealerFolder} name mismatch, web:${dealerNameFromPage}/excel:${dealerNameFromDCAsIs}`,
+            imagesDownloaded: 0,
+        };
     }
     /**
      * Get dealer name from excel and compare it with dealer name in the page: End
