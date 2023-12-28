@@ -314,6 +314,6 @@ try {
         }
     }
 } catch (err) {
-    checkBrowserClosed(err);
+    checkBrowserClosed(err, false);
 }
 process.exit(0);
