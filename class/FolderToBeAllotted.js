@@ -17,7 +17,7 @@ export default class FolderToBeAllotted {
         this._username = this.computeUsername(dealerFolderPath);
         this._dealerFolderName = this.computeDealerFolderName(dealerFolderPath);
         this._usernameAndDealerFolderName = this.computeUsernameAndDealerFolderName();
-        this._addTextToFolderName = this.computerAddTextToFolderName();
+        this._addTextToFolderName = this.computeAddTextToFolderName();
 
         this._contractorAllotted = null;
 
@@ -34,7 +34,7 @@ export default class FolderToBeAllotted {
         this._username = this.computeUsername(value);
         this._dealerFolderName = this.computeDealerFolderName(value);
         this._usernameAndDealerFolderName = this.computeUsernameAndDealerFolderName();
-        this._addTextToFolderName = this.computerAddTextToFolderName();
+        this._addTextToFolderName = this.computeAddTextToFolderName();
     }
 
     // No setter for _imageCount as it's derived from _dealerFolderPath
@@ -78,7 +78,7 @@ export default class FolderToBeAllotted {
         return path.join(this._username, this._dealerFolderName);
     }
 
-    computerAddTextToFolderName() {
+    computeAddTextToFolderName() {
         return getAddTextToFolderNameByUsernameFromDC(this._dealerFolderName, this._username);
     }
 
