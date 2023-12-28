@@ -38,7 +38,7 @@ import {
     styleOfVerticalListDealerQty,
     styleOfVerticalListDealerNumber,
 } from './functions/reportsupportive.js';
-import { copyDirOrFile, makeDir } from './functions/filesystem.js';
+import { copyDirOrFile, createDirAndCopyFile, makeDir } from './functions/filesystem.js';
 import { attainLock, releaseLock, lge, lgi, lgw, lgd, lgwc } from './functions/loggerandlocksupportive.js';
 import { printSectionSeperator } from './functions/others.js';
 // import {
@@ -1005,7 +1005,7 @@ for (const typeOfExcel of typesOfExcel) {
             if (!fs.existsSync(config.mergedReportCopyPath)) {
                 makeDir(config.mergedReportCopyPath);
             }
-            copyDirOrFile(excelFullPath, config.mergedReportCopyPath, true);
+            createDirAndCopyFile(excelFullPath, path.join(config.mergedReportCopyPath, path.basename(excelFullPath)), true);
         }
     }
     // eslint-disable-next-line no-nested-ternary
