@@ -104,6 +104,21 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
             logMesg.push(`${level.toUpperCase()}:`);
         }
     }
+    /**
+     * If we are logging to a file and loggingPrefix is set to false,
+     * assuming that the last write happened to main.log file and info.log file, in which
+     *         01. main.log file last log line end with a new line.
+     *         02. info.log file last log line did not end with a new line.
+     * this will end up with
+     *         01. main.log file will have the data on a new line without the loggingPrefix.
+     *         02. info.log file will have the data on the last line continous (as desired).
+     * For that, we are modifying the code to achieve
+     *         01. main.log file to contain the loggingPrefix
+     */
+    if (typeOfLogFormat === 'file' && loggingPrefix.name === false && lastWriteLineSepObj[logFilename]) {
+        loggingPrefix = LoggingPrefix.true;
+    }
+
     if (loggingPrefix.name === true && typeOfLogFormat === 'file') {
         ts !== undefined ? logMesg.push(ts) : null;
         uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
