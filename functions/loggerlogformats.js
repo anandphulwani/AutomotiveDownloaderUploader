@@ -96,22 +96,18 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
     lineSeparator = lineSeparator === undefined ? LineSeparator.true : lineSeparator;
 
     let logMesg = [];
-    if (loggingPrefix.name === true) {
-        if (typeOfLogFormat === 'console') {
-            if (
-                uniqueId !== undefined &&
-                (level === 'unhandledexception' || level === 'unreachable' || level === 'catcherror' || level === 'severe')
-            ) {
+    if (loggingPrefix.name === true && typeOfLogFormat === 'console') {
+            if (uniqueId !== undefined && (level === 'unhandledexception' || level === 'unreachable' || level === 'catcherror' || level === 'severe')) {
                 logMesg.push(`[${uniqueId}]`);
             }
             if (level !== 'hiccup' && level !== 'info' && message.replace(/-/g, '') !== '') {
                 logMesg.push(`${level.toUpperCase()}:`);
             }
-        } else if (typeOfLogFormat === 'file') {
+    }
+    if (loggingPrefix.name === true && typeOfLogFormat === 'file') {
             ts !== undefined ? logMesg.push(ts) : null;
             uniqueId !== undefined ? logMesg.push(`[${uniqueId.padStart(9, ' ')}]`) : null;
             logMesg.push(`[${padStartAndEnd(`${level === 'warn' ? 'WARNING' : level.toUpperCase()}`, 21, ' ')}]`);
-        }
     }
     // If custom message is sent then, the custom message is merged with the first line of error message.
     if (stack !== undefined && stack.length > 0) {
