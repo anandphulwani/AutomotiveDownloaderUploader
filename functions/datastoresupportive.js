@@ -277,7 +277,7 @@ function getUploadRemainingSummary(foldersToUpload) {
     const finishedTime = dateTimeObj.toLocaleString('en-US', options);
 
     const returnMesg = [];
-    if (underProcessingAcToReport.underProcessingDealerFolders === undefined && underProcessingAcToReport.underProcessingImgQty === undefined) {
+    if (underProcessingAcToReport.underProcessingDealerFolders !== undefined && underProcessingAcToReport.underProcessingImgQty !== undefined) {
         returnMesg.push(
             `Remaining Processing DealerFolders: ${underProcessingAcToReport.underProcessingDealerFolders}, Images: ${underProcessingAcToReport.underProcessingImgQty},`
         );
