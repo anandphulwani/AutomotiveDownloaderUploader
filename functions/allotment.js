@@ -165,7 +165,9 @@ async function doAllotment(
                 const mesg = [];
                 mesg.push(`Unable to allot the dealerDirectory(${currentDealerDirectoryObj.dealerFolderPath}) at this index(${index}), because:`);
                 mesg.push(`    a. It is an automatic allotment.`);
-                mesg.push(`    b. It is not in 'allotment by minimumDealerFolders for each contractors', because the below condition is false`);
+                mesg.push(
+                    `    b. It is not in 'allotment by minimumDealerFolders for each contractors', because the below condition is false. (below index starts with 0)`
+                );
                 mesg.push(
                     `lotCfgMinDealerFolders(${lotCfgMinDealerFolders}) !== undefined && index(${index}) < lotCfgMinDealerFolders(${lotCfgMinDealerFolders})`
                 );
