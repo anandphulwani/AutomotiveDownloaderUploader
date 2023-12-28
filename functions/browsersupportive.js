@@ -137,17 +137,5 @@ function setChromeProfile(profile) {
     }
 }
 
-function checkBrowserClosed(err) {
-    if (
-        config.browserClosingErrors.some((patternOrValue) =>
-            typeof patternOrValue === 'string' ? err.message === patternOrValue : new RegExp(patternOrValue).test(err.message)
-        )
-    ) {
-        lgi('Browser has been manually closed.', Color.bgYellow);
-    } else {
-        throw err;
-    }
-}
-
 // eslint-disable-next-line import/prefer-default-export
-export { initBrowserAndGetPage, loginCredentials, getCurrentUser, checkBrowserClosed };
+export { initBrowserAndGetPage, loginCredentials, getCurrentUser };
