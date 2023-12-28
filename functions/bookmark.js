@@ -390,6 +390,9 @@ function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
     const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
     const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
     let filteredData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
+    if (filteredData.length === 0) {
+        return null;
+    }
     if (filteredData.length > 1) {
         filteredData = filteredData.reduce((earliest, current) => {
             const earliestDateAdded = parseInt(earliest.date_added, 10);
@@ -404,6 +407,9 @@ function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
         (usernameLevelBookmark) =>
             (usernameLevelBookmark.name.includes('@') ? usernameLevelBookmark.name.split('@')[0] : usernameLevelBookmark.name) === username
     );
+    if (filteredData.length === 0) {
+        return null;
+    }
     filteredData = filteredData[0].children;
 
     filteredData = filteredData.filter(
@@ -414,6 +420,9 @@ function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
                 `${allTrimString(trimMultipleSpacesInMiddleIntoOne(dealerNumber))} |#| `
             )
     );
+    if (filteredData.length === 0) {
+        return null;
+    }
     return filteredData[0].guid;
 }
 
