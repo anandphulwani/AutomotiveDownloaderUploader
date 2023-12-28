@@ -24,6 +24,21 @@ import {
 import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
+function checkDealerDirectoriesExistsInBookmarkFile(dealerDirectories, isDryRun) {
+    for (let index = 0; index < dealerDirectories.length; index++) {
+        const { username, dealerFolderName } = dealerDirectories[index];
+        const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerFolderName);
+        if (bookmarkFolderGUID === null) {
+            lge(
+                `While ${
+                    isDryRun ? 'validating' : 'executing'
+                }, bookmark for the '${username}/${dealerFolderName}' is removed in bookmark file by syncing, cannot continue the allotment process.`
+            );
+            process.exit(1);
+        }
+    }
+}
+
 function getDealerDirectoryObjWithMaxImageCount(dealerDirectories) {
     return dealerDirectories.reduce((max, obj) => {
         if (obj.contractorAllotted !== null) {
@@ -143,6 +158,7 @@ async function doAllotment(
     let doesDestinationFolderAlreadyExists = false;
     const { lotCfgMinDealerFolders, lotCfgImagesQty } = getLotConfigPropertiesValues(lotIndex);
     const isDryRun = dealerDirectories[0].uniqueId === null;
+    checkDealerDirectoriesExistsInBookmarkFile(dealerDirectories, isDryRun);
     if (isDryRun) {
         /** Running a dry run */
         for (let index = 0; index < dealerDirectories.length; index++) {
