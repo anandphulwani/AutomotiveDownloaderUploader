@@ -36,7 +36,7 @@ import {
     getUniqueIDFromAllottedDealerNumberFolder,
     getUniqueIDWithHashFromAllottedDealerNumberFolder,
 } from './functions/datastoresupportive.js';
-import { initBrowserAndGetPage, loginCredentials, getCurrentUser, checkBrowserClosed } from './functions/browsersupportive.js';
+import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { getFoldersInUploadingZone, typeOfVINPathAndOtherVars, uploadBookmarkURL } from './functions/upload.js';
 import {
     checkIfFoldersPresentInFinishersUploadingZoneDir,
@@ -49,6 +49,7 @@ import LoggingPrefix from './class/LoggingPrefix.js';
 import keyInYNWithTimeout from './functions/keyInYNWithTimeout.js';
 import { levels, loggerConsoleLevel } from './functions/logger.js';
 import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
+import checkBrowserClosed from './functions/browserclosed.js';
 /* eslint-enable import/extensions */
 
 const debug = false;

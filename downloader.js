@@ -21,7 +21,7 @@ import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength } fr
 import keyInYNWithTimeout from './functions/keyInYNWithTimeout.js';
 import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitForElementContainsOrEqualsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
-import { initBrowserAndGetPage, loginCredentials, getCurrentUser, checkBrowserClosed } from './functions/browsersupportive.js';
+import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto.js';
 import {
     downloadBookmarksFromSourceToProcessing,
@@ -42,6 +42,7 @@ import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
 import { levels, loggerConsoleLevel } from './functions/logger.js';
 import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
+import checkBrowserClosed from './functions/browserclosed.js';
 /* eslint-enable import/extensions */
 
 // const {
