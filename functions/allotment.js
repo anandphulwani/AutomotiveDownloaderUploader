@@ -145,24 +145,6 @@ async function doAllotment(
     const isDryRun = dealerDirectories[0].uniqueId === null;
     if (isDryRun) {
         /** Running a dry run */
-        /* #region validation checks */
-        if (lotCfgImagesQty !== undefined) {
-            let imagesQtyAllottedInCurrentLot = 0;
-            for (let index = 0; index < dealerDirectories.length; index++) {
-                if (lotCfgMinDealerFolders !== undefined && index < lotCfgMinDealerFolders) {
-                    // eslint-disable-next-line no-continue
-                    continue;
-                }
-                if (imagesQtyAllottedInCurrentLot > lotCfgImagesQty) {
-                    lgu(
-                        `Unable to continue the allotment because the condition is true: imagesQtyAllottedInCurrentLot(${imagesQtyAllottedInCurrentLot}) > lotCfgImagesQty(${lotCfgImagesQty})`
-                    );
-                    process.exit(1);
-                }
-                imagesQtyAllottedInCurrentLot += dealerDirectories[index].imageCount;
-            }
-        }
-        /* #endregion */
         for (let index = 0; index < dealerDirectories.length; index++) {
             const currentDealerDirectoryObj = getDealerDirectoryObjWithMaxImageCount(dealerDirectories);
             let contractorsIndex;
