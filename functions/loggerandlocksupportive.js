@@ -46,7 +46,9 @@ import CallerHierarchyAndUniqueId from '../class/CallerHierarchyAndUniqueId.js';
 function extractCallerDetailsFromStack(stack) {
     const callerDetailsList = [];
     const stackTrace = stack.split('\n');
-    if (stackTrace[0].match(/^[a-zA-Z]*Error:/) || stackTrace[0] === 'Error') {
+    const errorStartingRegexString = `^[a-zA-Z]*Error:`;
+    const errorStartingRegexExpression = new RegExp(errorStartingRegexString);
+    if (errorStartingRegexExpression.test(stackTrace[0]) || stackTrace[0] === 'Error') {
         stackTrace.shift();
     } else {
         const mesg = `Logger error: Unable to match the first line, it doesnt contain anything like 'Error: ' in the line: \n${stackTrace[0]}\nError Stack:\n${stack}`;
