@@ -176,7 +176,6 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             const allottedFolderBookmarkBlockMatches = processingJSONString.match(allottedFolderRegexExpression);
             if (allottedFolderBookmarkBlockMatches !== null) {
                 const doneBookmarkFoldersInSource = {};
-                // allottedFolderBookmarkBlockMatches.forEach((match) => {
                 for (let i = 0; i < allottedFolderBookmarkBlockMatches.length; i++) {
                     const allottedFolderBookmarkBlockMatch = allottedFolderBookmarkBlockMatches[i];
 
@@ -190,7 +189,6 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                     debug ? lgd(`Found bookmark with GUID: ${GUID}`) : null;
                     doneBookmarkFoldersInSource[GUID] = allottedFolderBookmarkBlockMatch;
                 }
-                // });
 
                 const doneBookmarksInSourceKeys = Object.keys(doneBookmarkFoldersInSource);
                 for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
