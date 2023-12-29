@@ -105,13 +105,14 @@ if (!dealerDirectories.length > 0) {
 }
 
 dealerDirectories.sort((a, b) => {
+    /** Compare `username` folder first, from `username/dealerFolder` combination */
     const folderNameA = path.dirname(a).split(path.sep).pop();
     const folderNameB = path.dirname(b).split(path.sep).pop();
     // Compare folder names
     if (folderNameA < folderNameB) return -1;
     if (folderNameA > folderNameB) return 1;
 
-    // If folder names are equal, compare based on numerical part in basename
+    /** If `username` foldername are equal, compare based on numerical part in `dealerFolder` */
     const regex = /\d+/;
     const baseNameA = path.basename(a);
     const baseNameB = path.basename(b);
