@@ -55,23 +55,27 @@ function extractCallerDetailsFromStack(stack) {
         lgu(mesg);
         process.exit(1);
     }
+    const atFilenameLineNumberRegexString = `at (?:([^\\/]+) )?\\(?(.+)[\\/](.+?):(\\d+):(\\d+)\\)?`;
+    const atFilenameLineNumberRegexRegexExpression = new RegExp(atFilenameLineNumberRegexString);
+    const nodeInternalRegexString = ` \\(node:internal`;
+    const nodeInternalRegexRegexExpression = new RegExp(nodeInternalRegexString);
+    const getCallerDetailsRegexString = `at (getCallerDetailsList |getCallerDetails |getCallerHierarchyFormatted |getCallerFormatted |getCallerHierarchyWithFunctionNameFormatted )(.*)`;
+    const getCallerDetailsRegexRegexExpression = new RegExp(getCallerDetailsRegexString);
+    const loggerFunctionsRegexString = `at (lg[\\S][\\S]? )(.*)`;
+    const loggerFunctionsRegexRegexExpression = new RegExp(loggerFunctionsRegexString);
+
     while (stackTrace.length > 0) {
-        const regexOfAtFilenameLineNumber = /at (?:([^\\/]+) )?\(?(.+)[\\/](.+?):(\d+):(\d+)\)?/;
-        const regexOfNodeInternal = / \(node:internal/;
-        const regexOfgetCallerDetails =
-            /at (getCallerDetailsList |getCallerDetails |getCallerHierarchyFormatted |getCallerFormatted |getCallerHierarchyWithFunctionNameFormatted )(.*)/;
-        const regexOfLoggerFunctions = /at (lg[\S][\S]? )(.*)/;
         if (
-            stackTrace[0].match(regexOfAtFilenameLineNumber) === null ||
-            stackTrace[0].match(regexOfgetCallerDetails) !== null ||
-            stackTrace[0].match(regexOfNodeInternal) !== null ||
-            stackTrace[0].match(regexOfLoggerFunctions) !== null
+            !atFilenameLineNumberRegexRegexExpression.test(stackTrace[0]) ||
+            nodeInternalRegexRegexExpression.test(stackTrace[0]) ||
+            getCallerDetailsRegexRegexExpression.test(stackTrace[0]) ||
+            loggerFunctionsRegexRegexExpression.test(stackTrace[0])
         ) {
             stackTrace.shift();
             // eslint-disable-next-line no-continue
             continue;
         }
-        const stackDetailsCatchLine = stackTrace[0].match(regexOfAtFilenameLineNumber);
+        const stackDetailsCatchLine = stackTrace[0].match(atFilenameLineNumberRegexRegexExpression);
         callerDetailsList.push({
             functionName: stackDetailsCatchLine[1] !== undefined ? stackDetailsCatchLine[1] : '',
             pathToFile: stackDetailsCatchLine[2] !== undefined ? stackDetailsCatchLine[2] : '',
