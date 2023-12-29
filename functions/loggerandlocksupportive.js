@@ -298,8 +298,7 @@ function getLastNonCatchErrorLogLevels9DigitUniqueId() {
         process.exit(1);
     }
 
-    const match = configContent.match(lastNonCatchErrorRegexExpression);
-    let lastNonCatchErrorLogLevels9DigitUniqueId = match[2];
+    let lastNonCatchErrorLogLevels9DigitUniqueId = configContent.match(lastNonCatchErrorRegexExpression)[2];
     lastNonCatchErrorLogLevels9DigitUniqueId = lastNonCatchErrorLogLevels9DigitUniqueId !== '' ? lastNonCatchErrorLogLevels9DigitUniqueId : '0';
     return lastNonCatchErrorLogLevels9DigitUniqueId;
 }
@@ -361,8 +360,7 @@ function getLastCatchErrorLogLevels6DigitUniqueId() {
         process.exit(1);
     }
 
-    const match = configContent.match(lastCatchErrorRegexExpression);
-    let lastLastCatchErrorLogLevels6DigitUniqueId = match[0].match(lastCatchErrorRegexString)[2];
+    let lastLastCatchErrorLogLevels6DigitUniqueId = configContent.match(lastCatchErrorRegexExpression)[2];
     lastLastCatchErrorLogLevels6DigitUniqueId = lastLastCatchErrorLogLevels6DigitUniqueId !== '' ? lastLastCatchErrorLogLevels6DigitUniqueId : '0';
     return lastLastCatchErrorLogLevels6DigitUniqueId;
 }
