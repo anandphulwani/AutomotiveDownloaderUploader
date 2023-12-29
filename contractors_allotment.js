@@ -116,8 +116,8 @@ dealerDirectories.sort((a, b) => {
     const regex = /\d+/;
     const baseNameA = path.basename(a);
     const baseNameB = path.basename(b);
-    const numberA = parseInt(baseNameA.match(regex)[0], 10);
-    const numberB = parseInt(baseNameB.match(regex)[0], 10);
+    const numberA = Number(baseNameA.match(regex)[0]);
+    const numberB = Number(baseNameB.match(regex)[0]);
 
     if (numberA === numberB) {
         return 0;
