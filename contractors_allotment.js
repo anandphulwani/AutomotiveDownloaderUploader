@@ -113,11 +113,13 @@ dealerDirectories.sort((a, b) => {
     if (folderNameA > folderNameB) return 1;
 
     /** If `username` foldername are equal, compare based on numerical part in `dealerFolder` */
-    const regex = /\d+/;
+    const digitsRegexString = `^(\\d+)`;
+    const digitsRegexExpression = new RegExp(digitsRegexString);
+
     const baseNameA = path.basename(a);
     const baseNameB = path.basename(b);
-    const numberA = Number(baseNameA.match(regex)[0]);
-    const numberB = Number(baseNameB.match(regex)[0]);
+    const numberA = Number(baseNameA.match(digitsRegexExpression)[0]);
+    const numberB = Number(baseNameB.match(digitsRegexExpression)[0]);
 
     if (numberA === numberB) {
         return 0;
