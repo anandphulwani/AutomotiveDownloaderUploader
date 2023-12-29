@@ -93,16 +93,16 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             if (downloadedBookmarkBlockMatches !== null) {
                 const doneBookmarksInSource = {};
                 for (let i = 0; i < downloadedBookmarkBlockMatches.length; i++) {
-                    const match = downloadedBookmarkBlockMatches[i];
+                    const downloadedBookmarkBlockMatch = downloadedBookmarkBlockMatches[i];
 
-                    if (match.split(/\r\n|\r|\n/).length > 15) {
-                        lgu(`Bookmarks URL Done Section: match's length is more than 15:\n${match}`);
+                    if (downloadedBookmarkBlockMatch.split(/\r\n|\r|\n/).length > 15) {
+                        lgu(`Bookmarks URL Done Section: downloadedBookmarkBlockMatch's length is more than 15:\n${downloadedBookmarkBlockMatch}`);
                         process.exit(1);
                     }
 
-                    const guid = match.match(/"guid": "(.*?)"/)[1];
-                    debug ? lgd(`Found bookmark with GUID: ${guid}`) : null;
-                    doneBookmarksInSource[guid] = match;
+                    const GUID = downloadedBookmarkBlockMatch.match(/"guid": "(.*?)"/)[1];
+                    debug ? lgd(`Found bookmark with GUID: ${GUID}`) : null;
+                    doneBookmarksInSource[GUID] = downloadedBookmarkBlockMatch;
                 }
                 debug ? lgd(`Total doneBookmarksInSource: ${Object.keys(doneBookmarksInSource).length}`) : null;
 
@@ -178,22 +178,24 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                 const doneBookmarkFoldersInSource = {};
                 // allottedFolderBookmarkBlockMatches.forEach((match) => {
                 for (let i = 0; i < allottedFolderBookmarkBlockMatches.length; i++) {
-                    const match = allottedFolderBookmarkBlockMatches[i];
+                    const allottedFolderBookmarkBlockMatch = allottedFolderBookmarkBlockMatches[i];
 
-                    if (match.split(/\r\n|\r|\n/).length > 9) {
-                        lgu(`Bookmarks Folders Allotted Section: match's length is more than 9:\n${match}`);
+                    if (allottedFolderBookmarkBlockMatch.split(/\r\n|\r|\n/).length > 9) {
+                        lgu(
+                            `Bookmarks Folders Allotted Section: allottedFolderBookmarkBlockMatch's length is more than 9:\n${allottedFolderBookmarkBlockMatch}`
+                        );
                         process.exit(1);
                     }
-                    const guid = match.match(/"guid": "(.*?)"/)[1];
-                    debug ? lgd(`Found bookmark with GUID: ${guid}`) : null;
-                    doneBookmarkFoldersInSource[guid] = match;
+                    const GUID = allottedFolderBookmarkBlockMatch.match(/"guid": "(.*?)"/)[1];
+                    debug ? lgd(`Found bookmark with GUID: ${GUID}`) : null;
+                    doneBookmarkFoldersInSource[GUID] = allottedFolderBookmarkBlockMatch;
                 }
                 // });
 
                 const doneBookmarksInSourceKeys = Object.keys(doneBookmarkFoldersInSource);
                 for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
-                    const guid = doneBookmarksInSourceKeys[i];
-                    const GUIDRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"(?:(?!"guid": )[\\s|\\S])*?"type": "folder"`;
+                    const GUID = doneBookmarksInSourceKeys[i];
+                    const GUIDRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${GUID}"(?:(?!"guid": )[\\s|\\S])*?"type": "folder"`;
                     const GUIDRegexExpression = new RegExp(GUIDRegexString);
 
                     if (GUIDRegexExpression.test(sourceJSONString)) {
@@ -201,16 +203,16 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                         if (GUIDBookmarkBlockMatches !== null) {
                             const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
                             const nameInGUIDMatch = GUIDBookmarkBlockMatch.match(/"name": "(.*?)"/)[1];
-                            debug ? lgd(doneBookmarkFoldersInSource[guid]) : null;
-                            doneBookmarkFoldersInSource[guid] = doneBookmarkFoldersInSource[guid].replace(
+                            debug ? lgd(doneBookmarkFoldersInSource[GUID]) : null;
+                            doneBookmarkFoldersInSource[GUID] = doneBookmarkFoldersInSource[GUID].replace(
                                 /("name": ")(.*?)( \|#\|.*")/,
                                 `$1${nameInGUIDMatch}$3`
                             );
-                            debug ? lgd(doneBookmarkFoldersInSource[guid]) : null;
-                            sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarkFoldersInSource[guid]);
+                            debug ? lgd(doneBookmarkFoldersInSource[GUID]) : null;
+                            sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarkFoldersInSource[GUID]);
                         }
                     }
-                    debug ? lgd(`${guid}, ${doneBookmarkFoldersInSource[guid]}`) : null;
+                    debug ? lgd(`${GUID}, ${doneBookmarkFoldersInSource[GUID]}`) : null;
                 }
             }
         }
