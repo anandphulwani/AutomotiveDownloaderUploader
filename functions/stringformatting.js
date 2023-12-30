@@ -72,6 +72,10 @@ function escapeSpecialCharacters(str) {
         .replace(/\t/g, '\\t'); // Escape tabs
 }
 
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export {
     zeroPad,
     checkForSpaceInBeginOrEnd,
@@ -87,4 +91,5 @@ export {
     removeDuplicates,
     padStartAndEnd,
     escapeSpecialCharacters,
+    escapeRegExp,
 };
