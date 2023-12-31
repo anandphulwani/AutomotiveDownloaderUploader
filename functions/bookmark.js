@@ -59,7 +59,17 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             lgs(`Source 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source, \nPath :${sourceBookmarkPath}.`);
             return;
         }
-        const processingObj = JSON.parse(processingContents);
+
+        let processingObj;
+        try {
+            processingObj = JSON.parse(processingContents);
+        } catch (err) {
+            console.log('');
+            lgs(
+                `Processing 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source, \nPath: '${processingBookmarkPathWithoutSync}'`
+            );
+            process.exit(1);
+        }
 
         // eslint-disable-next-line no-restricted-syntax
         for (const key in sourceObj) {
