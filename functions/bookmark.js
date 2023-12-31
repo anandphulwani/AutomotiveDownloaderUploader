@@ -13,7 +13,7 @@ import { attainLock, releaseLock, lgc, lgb, lgi, lge, lgu, lgh, lgd, lgt, lgs, l
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
 import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
-import { trimMultipleSpacesInMiddleIntoOne, allTrimString } from './stringformatting.js';
+import { trimMultipleSpacesInMiddleIntoOne, allTrimString, escapeRegExp } from './stringformatting.js';
 import { writeFileWithComparingSameLinesWithOldContents } from './filesystem.js';
 import { printSectionSeperator } from './others.js';
 import Color from '../class/Colors.js';
@@ -84,76 +84,47 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         /**
          * Copying the names of bookmark urls which are downloaded
          */
-        const downloadedRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
+        const downloadedRegexString = `({[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ")(.* \\|#\\| .*)("[\\s|\\S]*?"url": ".*"\\n[\\s]*})`;
         const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
-        if (downloadedRegexExpression.test(processingJSONString)) {
-            const downloadedBookmarkBlockMatches = processingJSONString.match(downloadedRegexExpression);
-            debug ? lgd(`Found downloadedBookmarkBlockMatches: ${downloadedBookmarkBlockMatches.length}`) : null;
 
-            if (downloadedBookmarkBlockMatches !== null) {
-                const doneBookmarksInSource = {};
-                for (let i = 0; i < downloadedBookmarkBlockMatches.length; i++) {
-                    const downloadedBookmarkBlockMatch = downloadedBookmarkBlockMatches[i];
+        let isGUIDInProcessingBookmarksPresentInSourceBookmarks = false;
+        let downloadedBookmarkBlockMatch = downloadedRegexExpression.exec(processingJSONString);
+        while (downloadedBookmarkBlockMatch !== null) {
+            debug ? lgd(`Found bookmark URL with GUID: ${downloadedBookmarkBlockMatch[2]}`) : null;
+            if (downloadedBookmarkBlockMatch[0].split(/\r\n|\r|\n/).length > 15) {
+                lgu(`Bookmarks URL Done Section: downloadedBookmarkBlockMatch's length is more than 15:\n${downloadedBookmarkBlockMatch}`);
+                process.exit(1);
+            }
 
-                    if (downloadedBookmarkBlockMatch.split(/\r\n|\r|\n/).length > 15) {
-                        lgu(`Bookmarks URL Done Section: downloadedBookmarkBlockMatch's length is more than 15:\n${downloadedBookmarkBlockMatch}`);
-                        process.exit(1);
-                    }
+            const replaceString = `${escapeRegExp(downloadedBookmarkBlockMatch[1])}.*${escapeRegExp(downloadedBookmarkBlockMatch[4])}`;
+            const replaceExpression = new RegExp(replaceString);
+            const oldSourceJSONString = sourceJSONString;
+            sourceJSONString = sourceJSONString.replace(replaceExpression, downloadedBookmarkBlockMatch[0]);
+            oldSourceJSONString !== sourceJSONString ? (isGUIDInProcessingBookmarksPresentInSourceBookmarks = true) : null;
+            if (oldSourceJSONString !== sourceJSONString) {
+                debug ? lgd(`Unable to find URL's GUID:${downloadedBookmarkBlockMatch[2]} in source bookmarks, possible removal/deletion.`) : null;
+            }
+            downloadedBookmarkBlockMatch = downloadedRegexExpression.exec(processingJSONString);
+        }
 
-                    const GUID = downloadedBookmarkBlockMatch.match(/"guid": "(.*?)"/)[1];
-                    debug ? lgd(`Found bookmark with GUID: ${GUID}`) : null;
-                    doneBookmarksInSource[GUID] = downloadedBookmarkBlockMatch;
+        if (!isGUIDInProcessingBookmarksPresentInSourceBookmarks) {
+            if (config.lotLastRunDate === instanceRunDateFormatted) {
+                console.log('');
+                printSectionSeperator(undefined, true);
+                const questionToRefreshBookmarksInSameDay =
+                    'Fresh bookmarks added for today, all previous bookmarks state(bookmarks URL downloaded/bookmarks folder allotted) will be lost, continue?';
+                const resultOfKeyInYNToRefreshBookmarksInSameDay = await keyInYNWithTimeout(questionToRefreshBookmarksInSameDay, 25000, false);
+                if (resultOfKeyInYNToRefreshBookmarksInSameDay.isDefaultOption) {
+                    printSectionSeperator(undefined, true);
+                    await waitForSeconds(5);
+                    clearLastLinesOnConsole(2);
+                } else {
+                    lgif(`${questionToRefreshBookmarksInSameDay}: ${resultOfKeyInYNToRefreshBookmarksInSameDay.answer}`);
                 }
-                debug ? lgd(`Total doneBookmarksInSource: ${Object.keys(doneBookmarksInSource).length}`) : null;
-
-                let isGUIDInProcessingBookmarksPresentInSourceBookmarks = false;
-                const doneBookmarksInSourceKeys = Object.keys(doneBookmarksInSource);
-                for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
-                    const guid = doneBookmarksInSourceKeys[i];
-
-                    const GUIDRegexString = `{[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${guid}"[\\s|\\S]*?"url": ".*"\\n[\\s]*}`;
-                    const GUIDRegexExpression = new RegExp(GUIDRegexString);
-
-                    if (GUIDRegexExpression.test(sourceJSONString)) {
-                        const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
-                        if (GUIDBookmarkBlockMatches !== null) {
-                            const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
-                            const nameInGUIDMatch = GUIDBookmarkBlockMatch.match(/"name": "(.*?)"/)[1];
-                            doneBookmarksInSource[guid] = doneBookmarksInSource[guid].replace(
-                                /("name": ")(.*?)( \|#\|.*")/,
-                                `$1${nameInGUIDMatch}$3`
-                            );
-                            debug ? lgd(`Doing replacement for GUID: ${guid}`) : null;
-                            sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarksInSource[guid]);
-                            isGUIDInProcessingBookmarksPresentInSourceBookmarks = true;
-                        }
-                    }
-                }
-
-                if (!isGUIDInProcessingBookmarksPresentInSourceBookmarks) {
-                    if (config.lotLastRunDate === instanceRunDateFormatted) {
-                        console.log('');
-                        printSectionSeperator(undefined, true);
-                        const questionToRefreshBookmarksInSameDay =
-                            'Fresh bookmarks added for today, all previous bookmarks state(bookmarks URL downloaded/bookmarks folder allotted) will be lost, continue?';
-                        const resultOfKeyInYNToRefreshBookmarksInSameDay = await keyInYNWithTimeout(
-                            questionToRefreshBookmarksInSameDay,
-                            25000,
-                            false
-                        );
-                        if (resultOfKeyInYNToRefreshBookmarksInSameDay.isDefaultOption) {
-                            printSectionSeperator(undefined, true);
-                            await waitForSeconds(5);
-                            clearLastLinesOnConsole(2);
-                        } else {
-                            lgif(`${questionToRefreshBookmarksInSameDay}: ${resultOfKeyInYNToRefreshBookmarksInSameDay.answer}`);
-                        }
-                        if (!resultOfKeyInYNToRefreshBookmarksInSameDay.answer) {
-                            releaseLock(processingBookmarkPathWithoutSync, undefined, false);
-                            releaseLock(sourceBookmarkPath, undefined, false);
-                            return;
-                        }
-                    }
+                if (!resultOfKeyInYNToRefreshBookmarksInSameDay.answer) {
+                    releaseLock(processingBookmarkPathWithoutSync, undefined, false);
+                    releaseLock(sourceBookmarkPath, undefined, false);
+                    return;
                 }
             }
         }
@@ -170,49 +141,27 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         /**
          * Copying the names of bookmarks folders which are allotted
          */
-        const allottedFolderRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ".* \\|#\\| .*"(?:(?!"name": )[\\s|\\S])*?"type": "folder"`;
+        const allottedFolderRegexString = `([ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ")(.* \\|#\\| .*)("(?:(?!"name": )[\\s|\\S])*?"type": "folder")`;
         const allottedFolderRegexExpression = new RegExp(allottedFolderRegexString, 'g');
-        if (allottedFolderRegexExpression.test(processingJSONString)) {
-            const allottedFolderBookmarkBlockMatches = processingJSONString.match(allottedFolderRegexExpression);
-            if (allottedFolderBookmarkBlockMatches !== null) {
-                const doneBookmarkFoldersInSource = {};
-                for (let i = 0; i < allottedFolderBookmarkBlockMatches.length; i++) {
-                    const allottedFolderBookmarkBlockMatch = allottedFolderBookmarkBlockMatches[i];
 
-                    if (allottedFolderBookmarkBlockMatch.split(/\r\n|\r|\n/).length > 9) {
-                        lgu(
-                            `Bookmarks Folders Allotted Section: allottedFolderBookmarkBlockMatch's length is more than 9:\n${allottedFolderBookmarkBlockMatch}`
-                        );
-                        process.exit(1);
-                    }
-                    const GUID = allottedFolderBookmarkBlockMatch.match(/"guid": "(.*?)"/)[1];
-                    debug ? lgd(`Found bookmark with GUID: ${GUID}`) : null;
-                    doneBookmarkFoldersInSource[GUID] = allottedFolderBookmarkBlockMatch;
-                }
-
-                const doneBookmarksInSourceKeys = Object.keys(doneBookmarkFoldersInSource);
-                for (let i = 0; i < doneBookmarksInSourceKeys.length; i++) {
-                    const GUID = doneBookmarksInSourceKeys[i];
-                    const GUIDRegexString = `[ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "${GUID}"(?:(?!"guid": )[\\s|\\S])*?"type": "folder"`;
-                    const GUIDRegexExpression = new RegExp(GUIDRegexString);
-
-                    if (GUIDRegexExpression.test(sourceJSONString)) {
-                        const GUIDBookmarkBlockMatches = sourceJSONString.match(GUIDRegexExpression);
-                        if (GUIDBookmarkBlockMatches !== null) {
-                            const GUIDBookmarkBlockMatch = GUIDBookmarkBlockMatches[0];
-                            const nameInGUIDMatch = GUIDBookmarkBlockMatch.match(/"name": "(.*?)"/)[1];
-                            debug ? lgd(doneBookmarkFoldersInSource[GUID]) : null;
-                            doneBookmarkFoldersInSource[GUID] = doneBookmarkFoldersInSource[GUID].replace(
-                                /("name": ")(.*?)( \|#\|.*")/,
-                                `$1${nameInGUIDMatch}$3`
-                            );
-                            debug ? lgd(doneBookmarkFoldersInSource[GUID]) : null;
-                            sourceJSONString = sourceJSONString.replace(GUIDBookmarkBlockMatch, doneBookmarkFoldersInSource[GUID]);
-                        }
-                    }
-                    debug ? lgd(`${GUID}, ${doneBookmarkFoldersInSource[GUID]}`) : null;
-                }
+        let allottedFolderBookmarkBlockMatch = allottedFolderRegexExpression.exec(processingJSONString);
+        while (allottedFolderBookmarkBlockMatch !== null) {
+            debug ? lgd(`Found bookmark folder with GUID: ${downloadedBookmarkBlockMatch[2]}`) : null;
+            if (allottedFolderBookmarkBlockMatch[0].split(/\r\n|\r|\n/).length > 9) {
+                lgu(
+                    `Bookmarks Folders Allotted Section: allottedFolderBookmarkBlockMatch's length is more than 9:\n${allottedFolderBookmarkBlockMatch}`
+                );
+                process.exit(1);
             }
+
+            const replaceString = `${escapeRegExp(allottedFolderBookmarkBlockMatch[1])}.*${escapeRegExp(allottedFolderBookmarkBlockMatch[4])}`;
+            const replaceExpression = new RegExp(replaceString);
+            const oldSourceJSONString = sourceJSONString;
+            sourceJSONString = sourceJSONString.replace(replaceExpression, allottedFolderBookmarkBlockMatch[0]);
+            if (oldSourceJSONString !== sourceJSONString) {
+                debug ? lgd(`Unable to find folder's GUID:${downloadedBookmarkBlockMatch[2]} in source bookmarks, possible removal/deletion.`) : null;
+            }
+            allottedFolderBookmarkBlockMatch = allottedFolderRegexExpression.exec(processingJSONString);
         }
 
         sourceJSONStringLength = sourceJSONString.trim().split(/\r\n|\r|\n/).length;
