@@ -190,12 +190,18 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         lgt(`06:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false);
         printSectionSeperator('trace');
     } catch (err) {
-        lgu(initialSourceJSONString);
-        printSectionSeperator();
-        lgu(sourceJSONString);
-        printSectionSeperator();
-        lgu(`initialLineCount: ${initialLineCount}, finalLineCount: ${sourceJSONString.trim().split(/\r\n|\r|\n/).length}`);
-        lgc(err);
+        lgc(`Unable to download Bookmarks from source to processing`, err);
+        printSectionSeperator('catcherror');
+        lgc(`initialSourceJSONString: ${initialSourceJSONString}`);
+        printSectionSeperator('catcherror');
+        lgc(`sourceJSONString: ${sourceJSONString}`);
+        printSectionSeperator('catcherror');
+        lgc(
+            `initialLineCount: ${initialLineCount}, finalLineCount: ${
+                sourceJSONString !== undefined ? sourceJSONString.trim().split(/\r\n|\r|\n/).length : undefined
+            }`
+        );
+        printSectionSeperator('catcherror');
         releaseLock(processingBookmarkPathWithoutSync, undefined, false);
         releaseLock(sourceBookmarkPath, undefined, false);
         process.exit(1);
