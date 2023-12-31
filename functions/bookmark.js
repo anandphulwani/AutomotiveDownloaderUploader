@@ -56,7 +56,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             sourceObj = JSON.parse(sourceContents);
         } catch (err) {
             console.log('');
-            lgs(`Source 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source.`);
+            lgs(`Source 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source, \nPath :${sourceBookmarkPath}.`);
             return;
         }
         const processingObj = JSON.parse(processingContents);
