@@ -57,6 +57,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         } catch (err) {
             console.log('');
             lgs(`Source 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source, \nPath :${sourceBookmarkPath}.`);
+            releaseLock(processingBookmarkPathWithoutSync, undefined, false);
+            releaseLock(sourceBookmarkPath, undefined, false);
             return;
         }
 
@@ -68,6 +70,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             lgs(
                 `Processing 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source, \nPath: '${processingBookmarkPathWithoutSync}'`
             );
+            releaseLock(processingBookmarkPathWithoutSync, undefined, false);
+            releaseLock(sourceBookmarkPath, undefined, false);
             process.exit(1);
         }
 
