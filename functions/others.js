@@ -26,33 +26,41 @@ import {
     lgdc,
     lgtc,
 } from './loggerandlocksupportive.js';
+import { levelToChalkColor } from './loggerlogformats.js';
 /* eslint-enable import/extensions */
 
+/* #region Just using imports here so that it is not delete in the unused imports as, we are using it below in the eval function, inside printSectionSeperator function. */
+levelToChalkColor;
+lgu;
+lgc;
+lgs;
+lge;
+lgh;
+lgw;
+lgi;
+lgv;
+lgb;
+lgd;
+lgt;
+lguc;
+lgcc;
+lgsc;
+lgec;
+lghc;
+lgwc;
+lgic;
+lgvc;
+lgbc;
+lgdc;
+lgtc;
+/* #endregion */
+
 function printSectionSeperator(level = 'info', isConsoleOnly = false) {
-    if (isConsoleOnly) {
-        level === 'unreachable' ? lguc('-'.repeat(120), Color.bgWhite) : null;
-        level === 'catcherror' ? lgcc('-'.repeat(120), Color.bgWhite) : null;
-        level === 'severe' ? lgsc('-'.repeat(120), Color.bgWhite) : null;
-        level === 'error' ? lgec('-'.repeat(120), Color.bgWhite) : null;
-        level === 'hiccup' ? lghc('-'.repeat(120), Color.bgWhite) : null;
-        level === 'warn' ? lgwc('-'.repeat(120), Color.bgWhite) : null;
-        level === 'info' ? lgic('-'.repeat(120), Color.bgWhite) : null;
-        level === 'verbose' ? lgvc('-'.repeat(120), Color.bgWhite) : null;
-        level === 'billy' ? lgbc('-'.repeat(120), Color.bgWhite) : null;
-        level === 'debug' ? lgdc('-'.repeat(120), Color.bgWhite) : null;
-        level === 'trace' ? lgtc('-'.repeat(120), Color.bgWhite) : null;
-    } else {
-        level === 'unreachable' ? lgu('-'.repeat(120), Color.bgWhite) : null;
-        level === 'catcherror' ? lgc('-'.repeat(120), Color.bgWhite) : null;
-        level === 'severe' ? lgs('-'.repeat(120), Color.bgWhite) : null;
-        level === 'error' ? lge('-'.repeat(120), Color.bgWhite) : null;
-        level === 'hiccup' ? lgh('-'.repeat(120), Color.bgWhite) : null;
-        level === 'warn' ? lgw('-'.repeat(120), Color.bgWhite) : null;
-        level === 'info' ? lgi('-'.repeat(120), Color.bgWhite) : null;
-        level === 'verbose' ? lgv('-'.repeat(120), Color.bgWhite) : null;
-        level === 'billy' ? lgb('-'.repeat(120), Color.bgWhite) : null;
-        level === 'debug' ? lgd('-'.repeat(120), Color.bgWhite) : null;
-        level === 'trace' ? lgt('-'.repeat(120), Color.bgWhite) : null;
+    const functionName = `lg${level[0]}${isConsoleOnly ? 'c' : ''}`;
+    // eslint-disable-next-line no-eval
+    if (typeof eval(functionName) === 'function') {
+        // eslint-disable-next-line no-eval
+        eval(`${functionName}('-'.repeat(120), levelToChalkColor[level][0])`);
     }
 }
 
