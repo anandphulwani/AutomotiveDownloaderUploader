@@ -1,7 +1,4 @@
-import chalk from 'chalk';
-
 /* eslint-disable import/extensions */
-import Color from '../class/Colors.js';
 import {
     lgu,
     lgc,
