@@ -14,7 +14,7 @@ const configProduction = {
     contractorsZonePath: 'C:\\Users\\Administrator\\Dropbox\\contractorsZone',
     contractorsRecordKeepingPath: 'C:\\Users\\Administrator\\Dropbox\\contractorsRecordKeeping',
     sourceBookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2\\Bookmarks',
-    mergedReportCopyPath: 'C:\\Users\\Administrator\\Dropbox\\MergedReports',
+    reportsMergedCopyPath: 'C:\\Users\\Administrator\\Dropbox\\MergedReports',
 };
 
 // eslint-disable-next-line import/prefer-default-export
