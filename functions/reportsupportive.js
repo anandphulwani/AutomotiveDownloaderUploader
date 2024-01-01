@@ -11,7 +11,7 @@ import { setCurrentDealerConfiguration, getDealerNameFromDC } from './excelsuppo
 /* eslint-enable import/extensions */
 
 function addAllotmentToReport(allotmentDetails) {
-    const reportDateFolder = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted);
+    const reportDateFolder = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted);
     makeDir(reportDateFolder);
     const reportJSONFilePath = path.join(reportDateFolder, `${instanceRunDateFormatted}_report.json`);
     try {
@@ -64,7 +64,7 @@ function addAllotmentToReport(allotmentDetails) {
 }
 
 function addUploadingToReport(uploadingDetail) {
-    const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
+    const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
     try {
         if (!fs.existsSync(reportJSONFilePath)) {
             lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Exiting.`);
@@ -115,7 +115,7 @@ function addUploadingToReport(uploadingDetail) {
 
 // eslint-disable-next-line consistent-return
 function getUnderProcessingAcToReport() {
-    const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
+    const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
     try {
         if (!fs.existsSync(reportJSONFilePath)) {
             return { underProcessingDealerFolders: undefined, underProcessingImgQty: undefined };

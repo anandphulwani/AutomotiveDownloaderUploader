@@ -107,7 +107,7 @@ if (
 //     includingMainProcess: true,
 // });
 
-const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
+const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
 let reportJSONObj;
 let isDumbUploader = false;
 try {

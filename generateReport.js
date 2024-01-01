@@ -125,14 +125,14 @@ while (loopIndexDate <= endDate) {
 }
 
 const monthInMMM = formatDateDateFNS(parseDateDateFNS(month, 'MM', new Date()), 'MMM');
-const reportGenerationPath = `${config.reportsPath}\\generated\\${year}-${month} (${formatDateDateFNS(new Date(), 'yyyy-MM-dd_HHmmss_SSS')})`;
+const reportGenerationPath = `${config.reportsExcelOutputPath}\\${year}-${month} (${formatDateDateFNS(new Date(), 'yyyy-MM-dd_HHmmss_SSS')})`;
 const allUsernamesFromConfig = config.credentials.map((item) => item.username);
 
 const missingDates = [];
 for (let i = 0; i < dates.length; i++) {
     const rowsDate = dates[i];
     const formattedDate = formatDate(rowsDate, 'DD-MMM-YYYY__YYYY-MM-DD');
-    const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', `${year}-${month}`, `${formattedDate}_report.json`);
+    const reportJSONFilePath = path.join(config.reportsJSONPath, `${year}-${month}`, `${formattedDate}_report.json`);
     if (!fs.existsSync(reportJSONFilePath)) {
         const dateWithDayOfWeek = formatDate(rowsDate, 'DD-MMM-YYYY__DD(EEE)');
         missingDates.push(dateWithDayOfWeek);
@@ -186,7 +186,7 @@ for (const typeOfExcel of typesOfExcel) {
             }
             const rowsDate = transposedData[i][0];
             const formattedDate = formatDate(rowsDate, 'DD-MMM-YYYY__YYYY-MM-DD');
-            const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', `${year}-${month}`, `${formattedDate}_report.json`);
+            const reportJSONFilePath = path.join(config.reportsJSONPath, `${year}-${month}`, `${formattedDate}_report.json`);
             if (!fs.existsSync(reportJSONFilePath)) {
                 // eslint-disable-next-line no-continue
                 continue;
@@ -1002,10 +1002,10 @@ for (const typeOfExcel of typesOfExcel) {
         }
 
         if (typeOfExcel === 'merged') {
-            if (!fs.existsSync(config.mergedReportCopyPath)) {
-                makeDir(config.mergedReportCopyPath);
+            if (!fs.existsSync(config.reportsMergedCopyPath)) {
+                makeDir(config.reportsMergedCopyPath);
             }
-            createDirAndCopyFile(excelFullPath, path.join(config.mergedReportCopyPath, path.basename(excelFullPath)), true);
+            createDirAndCopyFile(excelFullPath, path.join(config.reportsMergedCopyPath, path.basename(excelFullPath)), true);
         }
     }
     // eslint-disable-next-line no-nested-ternary
@@ -1067,7 +1067,7 @@ for (const contractor of Object.keys(config.contractors)) {
         }
         const rowsDate = transposedData[i][0];
         const formattedDate = formatDate(rowsDate, 'DD-MMM-YYYY__YYYY-MM-DD');
-        const reportJSONFilePath = path.join(config.reportsPath, 'jsondata', `${year}-${month}`, `${formattedDate}_report.json`);
+        const reportJSONFilePath = path.join(config.reportsJSONPath, `${year}-${month}`, `${formattedDate}_report.json`);
         if (!fs.existsSync(reportJSONFilePath)) {
             // eslint-disable-next-line no-continue
             continue;
