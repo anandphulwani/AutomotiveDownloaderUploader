@@ -96,11 +96,16 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
     lineSeparator = lineSeparator === undefined ? LineSeparator.true : lineSeparator;
 
     let logMesg = [];
+    const isSectionSeperator = message.replace(/-/g, '') === '';
     if (loggingPrefix.name === true && typeOfLogFormat === 'console') {
-        if (uniqueId !== undefined && (level === 'unhandledexception' || level === 'unreachable' || level === 'catcherror' || level === 'severe')) {
+        if (
+            !isSectionSeperator &&
+            uniqueId !== undefined &&
+            (level === 'unhandledexception' || level === 'unreachable' || level === 'catcherror' || level === 'severe')
+        ) {
             logMesg.push(`[${uniqueId}]`);
         }
-        if (level !== 'hiccup' && level !== 'info' && message.replace(/-/g, '') !== '') {
+        if (level !== 'hiccup' && level !== 'info' && !isSectionSeperator) {
             logMesg.push(`${level.toUpperCase()}:`);
         }
     }
@@ -150,7 +155,7 @@ function logFormat(typeOfLogFormat, detailsObj, logFilename) {
     if (lineSeparator.name === true && callerHierarchy !== '') {
         if (
             typeOfLogFormat === 'file' ||
-            (typeOfLogFormat === 'console' && (level === 'unreachable' || level === 'catcherror' || level === 'severe'))
+            (typeOfLogFormat === 'console' && !isSectionSeperator && (level === 'unreachable' || level === 'catcherror' || level === 'severe'))
         ) {
             logMesg.push(`(${callerHierarchy})`);
         }
@@ -198,4 +203,4 @@ const logFormatConsole = printf((detailsObj) => logFormat('console', detailsObj,
 
 /* #endregion logFormatFile and logFormatConsole : End */
 
-export { logFormatFile, logFormatConsole };
+export { levelToChalkColor, logFormatFile, logFormatConsole };
