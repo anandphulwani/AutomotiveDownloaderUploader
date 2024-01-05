@@ -205,6 +205,7 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
                 // ONPROJECTFINISH: Check if you can replace this with lg* function, you will have to check for proper lineSeperators so that it logs properly.
                 process.stdout.write(chalk.cyan(` ■`));
             }
+            const radomNumberBetween25and50 = Math.floor(Math.random() * (50 - 25 + 1)) + 25;
             if (checkSync(fileToOperateOn, { stale: stale })) {
                 if (debug) {
                     fs.appendFileSync(
@@ -212,7 +213,6 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
                         `....... Lock on '${fileToOperateOn}' is already with someone, Waiting and trying again, caller: ${callerWithFunctionNameHierarchy}.\n`
                     );
                 }
-                const radomNumberBetween25and50 = Math.floor(Math.random() * (50 - 25 + 1)) + 25;
                 msleep(radomNumberBetween25and50);
                 // eslint-disable-next-line no-continue
                 continue;
