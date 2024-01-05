@@ -287,13 +287,13 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
                     continue;
                 }
             }
-        if (checkIfLocked) {
-            unlockSync(fileToOperateOn);
-            if (debug) {
-                const filename = `${logPath}/${currentTime()}_ReleasedLock_${callerFunctionName}.txt`;
-                fs.appendFileSync(filename, `Released A Lock On '${fileToOperateOn}', caller: ${callerWithFunctionNameHierarchy}.\n`);
+            if (checkIfLocked) {
+                unlockSync(fileToOperateOn);
+                if (debug) {
+                    const filename = `${logPath}/${currentTime()}_ReleasedLock_${callerFunctionName}.txt`;
+                    fs.appendFileSync(filename, `Released A Lock On '${fileToOperateOn}', caller: ${callerWithFunctionNameHierarchy}.\n`);
+                }
             }
-        }
             break;
         }
     } catch (error) {
