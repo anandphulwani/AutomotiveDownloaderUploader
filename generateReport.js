@@ -39,7 +39,7 @@ import {
     styleOfVerticalListDealerNumber,
 } from './functions/reportsupportive.js';
 import { copyDirOrFile, createDirAndCopyFile, makeDir } from './functions/filesystem.js';
-import { attainLock, releaseLock, lge, lgi, lgw, lgd, lgwc } from './functions/loggerandlocksupportive.js';
+import { attainLock, releaseLock, lge, lgi, lgw, lgd, lgwc, lgu } from './functions/loggerandlocksupportive.js';
 import { printSectionSeperator } from './functions/others.js';
 import { zeroPad } from './functions/stringformatting.js';
 // import {
@@ -63,6 +63,7 @@ try {
     }
     lockSync('generateReport.js', { stale: 15000 });
 } catch (error) {
+    lgu('Unable to checkSync or lockSync.', error);
     process.exit(1);
 }
 

@@ -65,6 +65,7 @@ try {
     }
     lockSync('uploader.js', { stale: 15000 });
 } catch (error) {
+    lgu('Unable to checkSync or lockSync.', error);
     process.exit(1);
 }
 
