@@ -192,7 +192,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         releaseLock(processingBookmarkPathWithoutSync, undefined, false);
         releaseLock(sourceBookmarkPath, undefined, false);
         lgt(`06:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false);
-        printSectionSeperator('trace');
+        printSectionSeperator('info');
     } catch (err) {
         lgc(`Unable to download Bookmarks from source to processing`, err);
         printSectionSeperator('catcherror');
