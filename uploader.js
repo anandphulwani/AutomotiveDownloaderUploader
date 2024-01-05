@@ -8,7 +8,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { attainLock, releaseLock, lge, lgc, lgi, lgu, lgd, lgif, lgwc } from './functions/loggerandlocksupportive.js';
+import { attainLock, releaseLock, lge, lgc, lgi, lgu, lgd, lgif, lgwc, lgic } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength } from './functions/bookmarksupportive.js';
@@ -316,4 +316,5 @@ try {
 } catch (err) {
     checkBrowserClosed(err, false);
 }
+lgic('Program has ended successfully.', Color.bgWhite);
 process.exit(0);

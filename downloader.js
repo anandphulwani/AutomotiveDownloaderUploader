@@ -36,7 +36,7 @@ import { validateConfigFile } from './functions/configvalidation.js';
 import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
-import { lgc, lge, lgi, lgif, lgu, lgwc } from './functions/loggerandlocksupportive.js';
+import { lgc, lge, lgi, lgic, lgif, lgu, lgwc } from './functions/loggerandlocksupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
@@ -323,4 +323,5 @@ try {
 } catch (err) {
     checkBrowserClosed(err, false);
 }
+lgic('Program has ended successfully.', Color.bgWhite);
 process.exit(0);
