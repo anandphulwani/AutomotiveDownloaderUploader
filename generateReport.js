@@ -41,6 +41,7 @@ import {
 import { copyDirOrFile, createDirAndCopyFile, makeDir } from './functions/filesystem.js';
 import { attainLock, releaseLock, lge, lgi, lgw, lgd, lgwc } from './functions/loggerandlocksupportive.js';
 import { printSectionSeperator } from './functions/others.js';
+import { zeroPad } from './functions/stringformatting.js';
 // import {
 //     allTrimStringArrayOfObjects,
 //     trimMultipleSpacesInMiddleIntoOneArrayOfObjects,
@@ -78,6 +79,7 @@ async function getPeriod() {
         rl.question('Do you want to generate a report for the "Current (C)" or "Older (O)" period? (C/O): ', (answer) => {
             if (answer.toUpperCase() === 'C') {
                 ({ year, month } = getCurrentDate());
+                month = zeroPad(month, 2);
                 rl.close();
                 resolve();
             } else if (answer.toUpperCase() === 'O') {
@@ -92,6 +94,7 @@ async function getPeriod() {
                             const monthRegexExpression = new RegExp(monthRegexString);
                             if (monthInput === '' || monthRegexExpression.test(monthInput)) {
                                 month = monthInput || defaultDate.month;
+                                month = zeroPad(month, 2);
                                 rl.close();
                                 resolve();
                             } else {
