@@ -42,14 +42,14 @@ const configBasic = {
      *   Below option to go for direct manipulation in bookmarks
      *   sourceBookmarkPath is now shifted to config-production.js/config-development.js
      */
-    // sourceBookmarkPath: '.\\datastore\\Bookmarks',
+    // sourceBookmarkPath: '..\\autodown_datastore\\Bookmarks',
     // processingBookmarkPathWithoutSync: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
     /**
      *   Below option is for syncing
      *   sourceBookmarkPath is now shifted to config-production.js/config-development.js
      */
     // sourceBookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2\\Bookmarks',
-    processingBookmarkPathWithoutSync: '.\\datastore\\Bookmarks',
+    processingBookmarkPathWithoutSync: '..\\autodown_datastore\\Bookmarks',
     bookmarkOptions: {
         shouldIncludeFolders: true,
     },
@@ -67,16 +67,16 @@ const configBasic = {
         //
     ],
     dealerConfigurationFolder: '.\\configs\\DealerConfiguration',
-    downloadPath: '.\\datastore\\Downloads',
-    contractorsZonePath: '.\\datastore\\ContractorsZone',
-    contractorsRecordKeepingPath: '.\\datastore\\ContractorsRecordKeeping',
-    uploadingZonePath: '.\\datastore\\UploadingZone',
-    finishedUploadingZonePath: '.\\datastore\\FinishedUploadingZone',
-    recordKeepingZonePath: '.\\datastore\\RecordKeepingZone',
-    lockingBackupsZonePath: '.\\datastore\\LockingBackupsZone',
-    reportsJSONPath: '.\\datastore\\Reports\\jsondata',
-    reportsExcelOutputPath: '.\\datastore\\Reports\\generated',
-    reportsMergedCopyPath: '.\\datastore\\Reports\\mergedcopy',
+    downloadPath: '..\\autodown_datastore\\Downloads',
+    contractorsZonePath: '..\\autodown_datastore\\ContractorsZone',
+    contractorsRecordKeepingPath: '..\\autodown_datastore\\ContractorsRecordKeeping',
+    uploadingZonePath: '..\\autodown_datastore\\UploadingZone',
+    finishedUploadingZonePath: '..\\autodown_datastore\\FinishedUploadingZone',
+    recordKeepingZonePath: '..\\autodown_datastore\\RecordKeepingZone',
+    lockingBackupsZonePath: '..\\autodown_datastore\\LockingBackupsZone',
+    reportsJSONPath: '..\\autodown_datastore\\Reports\\jsondata',
+    reportsExcelOutputPath: '..\\autodown_datastore\\Reports\\generated',
+    reportsMergedCopyPath: '..\\autodown_datastore\\Reports\\mergedcopy',
     automaticClickSaveButtonOnUpload: true,
     cutterProcessingFolders: ['001_CuttingDone'], // The index of this array are used to detect the folder types, so check before you change
     cutterRecordKeepingFolders: ['002_CuttingAccounting'], // The index of this array are used to detect the folder types, so check before you change

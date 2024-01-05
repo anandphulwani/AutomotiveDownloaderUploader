@@ -11,10 +11,10 @@ const configDevelopment = {
     },
     updateBookmarksOnceDone: true,
     automaticClickSaveButtonOnUpload: false,
-    contractorsZonePath: '.\\datastore\\ContractorsZone',
-    contractorsRecordKeepingPath: '.\\datastore\\ContractorsRecordKeeping',
-    sourceBookmarkPath: '.\\datastore\\Bookmarks_Source',
-    reportsMergedCopyPath: '.\\datastore\\Reports\\mergedcopy',
+    contractorsZonePath: '..\\autodown_datastore\\ContractorsZone',
+    contractorsRecordKeepingPath: '..\\autodown_datastore\\ContractorsRecordKeeping',
+    sourceBookmarkPath: '..\\autodown_datastore\\Bookmarks_Source',
+    reportsMergedCopyPath: '..\\autodown_datastore\\Reports\\mergedcopy',
 };
 
 // eslint-disable-next-line import/prefer-default-export
