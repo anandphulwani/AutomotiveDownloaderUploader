@@ -58,8 +58,8 @@ copy /Y "..\%lastDir%\configs\config.js" ".\configs\"
 copy /Y "..\%lastDir%\configs\config-user.js" ".\configs\"
 xcopy /E /I /Y "..\%lastDir%\configs\DealerConfiguration\*.*" ".\configs\DealerConfiguration"
 
-echo ewogICAicm9vdHMiOiB7CiAgICAgICJib29rbWFya19iYXIiOiB7CiAgICAgICAgICJjaGlsZHJlbiI6IFtdLAogICAgICAgICAiZGF0ZV9hZGRlZCI6ICIxMzMyMTA5NzE4MzQ2NTgzNCIsCiAgICAgICAgICJkYXRlX2xhc3RfdXNlZCI6ICIwIiwKICAgICAgICAgImRhdGVfbW9kaWZpZWQiOiAiMTMzMjg5NjA4Mjc3Nzc1NTEiLAogICAgICAgICAiZ3VpZCI6ICIwYmM1ZDEzZi0yY2JhLTVkNzQtOTUxZi0zZjIzM2ZlNmM5MDgiLAogICAgICAgICAiaWQiOiAiMSIsCiAgICAgICAgICJuYW1lIjogIkJvb2ttYXJrcyBiYXIiLAogICAgICAgICAidHlwZSI6ICJmb2xkZXIiCiAgICAgIH0KICAgfSwKICAgInZlcnNpb24iOiAxCn0= > %TEMP%\temp.b64 && certutil -decode -f %TEMP%\temp.b64 ..\autodown_datastore\Bookmarks && del %TEMP%\temp.b64
-xcopy /E /I /Y "..\autodown_datastore\Bookmarks" "..\autodown_datastore\Bookmarks_Blank"
+echo ewogICAicm9vdHMiOiB7CiAgICAgICJib29rbWFya19iYXIiOiB7CiAgICAgICAgICJjaGlsZHJlbiI6IFtdLAogICAgICAgICAiZGF0ZV9hZGRlZCI6ICIxMzMyMTA5NzE4MzQ2NTgzNCIsCiAgICAgICAgICJkYXRlX2xhc3RfdXNlZCI6ICIwIiwKICAgICAgICAgImRhdGVfbW9kaWZpZWQiOiAiMTMzMjg5NjA4Mjc3Nzc1NTEiLAogICAgICAgICAiZ3VpZCI6ICIwYmM1ZDEzZi0yY2JhLTVkNzQtOTUxZi0zZjIzM2ZlNmM5MDgiLAogICAgICAgICAiaWQiOiAiMSIsCiAgICAgICAgICJuYW1lIjogIkJvb2ttYXJrcyBiYXIiLAogICAgICAgICAidHlwZSI6ICJmb2xkZXIiCiAgICAgIH0KICAgfSwKICAgInZlcnNpb24iOiAxCn0= > %TEMP%\temp.b64 && certutil -decode -f %TEMP%\temp.b64 ..\autodown_datastore\Bookmarks_Blank && del %TEMP%\temp.b64
+IF NOT EXIST "..\autodown_datastore\Bookmarks" xcopy /E /I /Y "..\autodown_datastore\Bookmarks_Blank" "..\autodown_datastore\Bookmarks"
 move /Y ".\resources\InstallNewVersion.exe" "%TEMP%\InstallNewVersion.exe"
 move /Y ".\resources\InstallNewVersionReplacer.exe" "%TEMP%\InstallNewVersionReplacer.exe"
 
