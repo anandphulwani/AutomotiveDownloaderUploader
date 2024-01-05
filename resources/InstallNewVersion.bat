@@ -42,16 +42,16 @@ echo.
 echo Please run `git checkout ^<branchname^>` now, if any, then press Enter to continue.
 echo.
 pause
-mkdir .\datastore\ContractorsZone
-mkdir .\datastore\ContractorsRecordKeeping
-mkdir .\datastore\Downloads
-mkdir .\datastore\FinishedUploadingZone
-mkdir .\datastore\LockingBackupsZone
-mkdir .\datastore\RecordKeepingZone
-mkdir .\datastore\UploadingZone
-mkdir .\datastore\Reports
-mkdir .\datastore\Reports\jsondata
-mkdir .\datastore\Reports\generated
+IF NOT EXIST "..\autodown_datastore\ContractorsZone" mkdir "..\autodown_datastore\ContractorsZone"
+IF NOT EXIST "..\autodown_datastore\ContractorsRecordKeeping" mkdir "..\autodown_datastore\ContractorsRecordKeeping"
+IF NOT EXIST "..\autodown_datastore\Downloads" mkdir "..\autodown_datastore\Downloads"
+IF NOT EXIST "..\autodown_datastore\FinishedUploadingZone" mkdir "..\autodown_datastore\FinishedUploadingZone"
+IF NOT EXIST "..\autodown_datastore\LockingBackupsZone" mkdir "..\autodown_datastore\LockingBackupsZone"
+IF NOT EXIST "..\autodown_datastore\RecordKeepingZone" mkdir "..\autodown_datastore\RecordKeepingZone"
+IF NOT EXIST "..\autodown_datastore\UploadingZone" mkdir "..\autodown_datastore\UploadingZone"
+IF NOT EXIST "..\autodown_datastore\Reports" mkdir "..\autodown_datastore\Reports"
+IF NOT EXIST "..\autodown_datastore\Reports\jsondata" mkdir "..\autodown_datastore\Reports\jsondata"
+IF NOT EXIST "..\autodown_datastore\Reports\generated" mkdir "..\autodown_datastore\Reports\generated"
 
 rem Copy required files from last directory
 copy /Y "..\%lastDir%\configs\config.js" ".\configs\"
