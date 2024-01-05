@@ -255,12 +255,22 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
     const logPath = path.join(getProjectLogsDirPath(), 'lockslog', instanceRunDateFormatted, instanceRunTimeWOMS, path.basename(fileToOperateOn));
     try {
         debug ? fs.mkdirSync(logPath, { recursive: true }) : null;
+        for (let unlockTryIndex = 0; unlockTryIndex <= 12000; unlockTryIndex++) {
+            if (unlockTryIndex !== 0 && unlockTryIndex % 1500 === 0) {
+                lgs(`Trying to get a unlock on: \n${fileToOperateOn}    ......`);
+            } else if (unlockTryIndex !== 0 && unlockTryIndex % 300 === 0) {
+                // ONPROJECTFINISH: Check if you can replace this with lg* function, you will have to check for proper lineSeperators so that it logs properly.
+                process.stdout.write(chalk.yellow(` ■`));
+            }
+            const radomNumberBetween25and50 = Math.floor(Math.random() * (50 - 25 + 1)) + 25;
         if (checkSync(fileToOperateOn, { stale: stale })) {
             unlockSync(fileToOperateOn);
             if (debug) {
                 const filename = `${logPath}/${currentTime()}_ReleasedLock_${callerFunctionName}.txt`;
                 fs.appendFileSync(filename, `Released A Lock On '${fileToOperateOn}', caller: ${callerWithFunctionNameHierarchy}.\n`);
             }
+        }
+            break;
         }
     } catch (error) {
         lgu(`releaseLock(${fileToOperateOn}) section catch block called.`, error);
