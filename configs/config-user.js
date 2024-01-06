@@ -2,15 +2,28 @@
 const configUser = {
     // environment: 'production', // development Or production
     // timezone: 'Asia/Calcutta',
-    // appDomain: 'https://www.homenetiol.com',
     // timeOffsetInMinutesToAvoid: 2,
-    // browserArgs: { headless: false },
-    // sourceBookmarkPath: '..\\autodown_datastore\\Bookmarks',
-    // processingBookmarkPathWithoutSync: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
-    // updateBookmarksOnceDone: true,
+    // appDomain: 'https://www.homenetiol.com',
+    // allottedFolderRegex: '^(\\d[\\S]*)(?: ([\\S| ]*))? ([\\S]+) (\\d{1,3}) \\((#(\\d{5}))\\)$',
     loggingFileLevel: 'trace',
     loggingConsoleLevel: 'trace',
     // sendLogToNtfyUptoDate: '2024-07-01',
+    // browserArgs: {
+    //     headless: false,
+    //     defaultViewport: null,
+    //     protocolTimeout: 0,
+    //     executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    //     args: [
+    //         '--user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data',
+    //         '--hide-crash-restore-bubble',
+    //         '--window-size=1600,860',
+    //     ],
+    // },
+    // sourceBookmarkPath: '..\\autodown_datastore\\Bookmarks_Source',
+    // processingBookmarkPathWithoutSync: '..\\autodown_datastore\\Bookmarks',
+    // bookmarkOptions: {
+    //     shouldIncludeFolders: true,
+    // },
     ignoreBookmarkURLS: [
         {
             URLStartsWith: '{config.appDomain}/inventory/photo-manager?',
@@ -64,24 +77,12 @@ const configUser = {
     // reportsJSONPath: '..\\autodown_datastore\\Reports\\jsondata',
     // reportsExcelOutputPath: '..\\autodown_datastore\\Reports\\generated',
     // reportsMergedCopyPath: '..\\autodown_datastore\\Reports\\mergedcopy',
-    automaticClickSaveButtonOnUpload: true,
-    credentials: [
-        // {
-        //     username: 'dinesharora80@gmail.com',
-        //     password: 'kunsh123',
-        //     credentialsblockSHA1: '',
-        // },
-        {
-            username: 'cute996@gmail.com',
-            password: 'hello*123',
-            credentialsblockSHA1: '',
-        },
-        {
-            username: 'vambackground',
-            password: 'hello*123',
-            credentialsblockSHA1: '',
-        },
-    ],
+    // updateBookmarksOnceDone: false,
+    // automaticClickSaveButtonOnUpload: false,
+    // cutterProcessingFolders: ['001_CuttingDone'], // The index of this array are used to detect the folder types, so check before you change
+    // cutterRecordKeepingFolders: ['002_CuttingAccounting'], // The index of this array are used to detect the folder types, so check before you change
+    // finisherProcessingFolders: ['003_FinishingBuffer', '004_ReadyToUpload'], // The index of this array are used to detect the folder types, so check before you change
+    // finisherRecordKeepingFolders: ['005_FinishingAccounting'], // The index of this array are used to detect the folder types, so check before you change
 };
 
 // eslint-disable-next-line import/prefer-default-export

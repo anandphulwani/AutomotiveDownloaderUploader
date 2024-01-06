@@ -6,15 +6,24 @@
  *
  */
 const configDevelopment = {
-    browserArgs: {
-        headless: false,
-    },
     updateBookmarksOnceDone: true,
-    automaticClickSaveButtonOnUpload: false,
-    contractorsZonePath: '..\\autodown_datastore\\ContractorsZone',
-    contractorsRecordKeepingPath: '..\\autodown_datastore\\ContractorsRecordKeeping',
-    sourceBookmarkPath: '..\\autodown_datastore\\Bookmarks_Source',
-    reportsMergedCopyPath: '..\\autodown_datastore\\Reports\\mergedcopy',
+    credentials: [
+        {
+            username: 'dinesharora80@gmail.com',
+            password: 'kunsh123',
+            credentialsblockSHA1: '',
+        },
+        {
+            username: 'cute996@gmail.com',
+            password: 'hello*123',
+            credentialsblockSHA1: '',
+        },
+        {
+            username: 'vambackground',
+            password: 'hello*123',
+            credentialsblockSHA1: '',
+        },
+    ],
 };
 
 // eslint-disable-next-line import/prefer-default-export

@@ -17,14 +17,14 @@ import { configLots } from './config-lots.js';
 /* eslint-enable import/extensions */
 
 const configBasic = {
-    environment: 'development', // development Or production
-    appDomain: 'https://www.homenetiol.com',
+    environment: 'development',
     timezone: 'Asia/Calcutta',
     timeOffsetInMinutesToAvoid: 2,
+    appDomain: 'https://www.homenetiol.com',
     allottedFolderRegex: '^(\\d[\\S]*)(?: ([\\S| ]*))? ([\\S]+) (\\d{1,3}) \\((#(\\d{5}))\\)$',
     loggingFileLevel: 'billy',
     loggingConsoleLevel: 'billy',
-    sendLogToNtfyUptoDate: '2024-07-01',
+    sendLogToNtfyUptoDate: '1990-01-01',
     browserArgs: {
         headless: false,
         defaultViewport: null,
@@ -34,22 +34,9 @@ const configBasic = {
             '--user-data-dir=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data',
             '--hide-crash-restore-bubble',
             '--window-size=1600,860',
-            // '--disable-extensions-except=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\faacfelnnfhdicdmkdeclkeanllppdbm\\0.4.6.4_0',
-            // '--load-extension=C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\faacfelnnfhdicdmkdeclkeanllppdbm\\0.4.6.4_0',
         ],
     },
-    // sourceBookmarkPath Or processingBookmarkPathWithoutSync: '/path/to/Chrome/Bookmark' OR '%LocalAppData%\\Google\\Chrome\\User Data\\Default\\Bookmarks'
-    /**
-     *   Below option to go for direct manipulation in bookmarks
-     *   sourceBookmarkPath is now shifted to config-production.js/config-development.js
-     */
-    // sourceBookmarkPath: '..\\autodown_datastore\\Bookmarks',
-    // processingBookmarkPathWithoutSync: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks',
-    /**
-     *   Below option is for syncing
-     *   sourceBookmarkPath is now shifted to config-production.js/config-development.js
-     */
-    // sourceBookmarkPath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2\\Bookmarks',
+    sourceBookmarkPath: '..\\autodown_datastore\\Bookmarks_Source',
     processingBookmarkPathWithoutSync: '..\\autodown_datastore\\Bookmarks',
     bookmarkOptions: {
         shouldIncludeFolders: true,
@@ -78,7 +65,8 @@ const configBasic = {
     reportsJSONPath: '..\\autodown_datastore\\Reports\\jsondata',
     reportsExcelOutputPath: '..\\autodown_datastore\\Reports\\generated',
     reportsMergedCopyPath: '..\\autodown_datastore\\Reports\\mergedcopy',
-    automaticClickSaveButtonOnUpload: true,
+    updateBookmarksOnceDone: false,
+    automaticClickSaveButtonOnUpload: false,
     cutterProcessingFolders: ['001_CuttingDone'], // The index of this array are used to detect the folder types, so check before you change
     cutterRecordKeepingFolders: ['002_CuttingAccounting'], // The index of this array are used to detect the folder types, so check before you change
     finisherProcessingFolders: ['003_FinishingBuffer', '004_ReadyToUpload'], // The index of this array are used to detect the folder types, so check before you change
