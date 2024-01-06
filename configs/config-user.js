@@ -10,6 +10,7 @@ const configUser = {
     // updateBookmarksOnceDone: true,
     loggingFileLevel: 'trace',
     loggingConsoleLevel: 'trace',
+    // sendLogToNtfyUptoDate: '2024-07-01',
     ignoreBookmarkURLS: [
         {
             URLStartsWith: '{config.appDomain}/inventory/photo-manager?',

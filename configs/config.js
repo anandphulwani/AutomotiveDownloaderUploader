@@ -24,6 +24,7 @@ const configBasic = {
     allottedFolderRegex: '^(\\d[\\S]*)(?: ([\\S| ]*))? ([\\S]+) (\\d{1,3}) \\((#(\\d{5}))\\)$',
     loggingFileLevel: 'billy',
     loggingConsoleLevel: 'billy',
+    sendLogToNtfyUptoDate: '2024-07-01',
     browserArgs: {
         headless: false,
         defaultViewport: null,
