@@ -2,6 +2,10 @@ import Transport from 'winston-transport';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
 
+/* eslint-disable import/extensions */
+import sendLogToNtfy from './SendLogToNtfy.js';
+/* eslint-enable import/extensions */
+
 export default class LoggerCustomFileSyncTransport extends Transport {
     constructor(opts) {
         super(opts);
@@ -38,6 +42,15 @@ export default class LoggerCustomFileSyncTransport extends Transport {
         } catch (err) {
             console.error('Error writing to log file:', err);
             process.exit(1);
+        }
+        if (
+            this.filename.endsWith('_unhandledexception.log') ||
+            this.filename.endsWith('_unreachable.log') ||
+            this.filename.endsWith('_catcherror.log') ||
+            this.filename.endsWith('_severe.log') ||
+            this.filename.endsWith('_error.log')
+        ) {
+            sendLogToNtfy(this.filename, message);
         }
         callback();
     }
