@@ -81,7 +81,11 @@ printSectionSeperator();
 
 // TODO: validate config file here
 if (config.environment === 'production' && !checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
-    exec(`start "" FolderTransferer.exe`);
+    const subprocess = spawn('FolderTransferer.exe', [], {
+        detached: true,
+        stdio: 'ignore',
+    });
+    subprocess.unref();
 }
 
 // const cuttingDone = config.cutterProcessingFolders[0];

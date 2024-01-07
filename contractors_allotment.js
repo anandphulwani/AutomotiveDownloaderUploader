@@ -3,7 +3,7 @@
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { keyInYN } from 'readline-sync';
 import cfonts from 'cfonts';
 import beautify from 'json-beautify';
@@ -91,7 +91,7 @@ while (!hasLotFirstIndexMatches) {
 lgtf(`region : Validation section 02: END`);
 
 if (config.environment === 'production') {
-    exec(`explorer.exe ${process.cwd()}\\${lotFolderPath}"`);
+    spawn('explorer.exe', [`${process.cwd()}\\${lotFolderPath}`]);
     while (!keyInYN('Please review your lot folders, to remove any unneccesary photos, press Y to continue?')) {
         sleep(1);
     }

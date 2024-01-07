@@ -103,7 +103,11 @@ if (
 }
 
 if (config.environment === 'production' && !checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
-    exec(`start "" FolderTransferer.exe`);
+    const subprocess = spawn('FolderTransferer.exe', [], {
+        detached: true,
+        stdio: 'ignore',
+    });
+    subprocess.unref();
 }
 
 // await killChrome({
@@ -125,9 +129,21 @@ LotIndexArray.pop();
 for (const LotIndexEle of LotIndexArray) {
     const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
     if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\${LotIndexEle}`)) {
-        exec(
-            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndexToAllot} ${instanceRunDateFormatted} && pause && pause && exit"`
+        const subprocess = spawn(
+            'cmd.exe',
+            [
+                '/c',
+                'start',
+                'cmd.exe',
+                '/K',
+                `@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndexToAllot} ${instanceRunDateFormatted} && pause && pause && exit`,
+            ],
+            {
+                detached: true,
+                stdio: 'ignore',
+            }
         );
+        subprocess.unref();
     }
     sleep(3);
 }
@@ -213,9 +229,21 @@ try {
                         (lotCfgImagesQty === undefined || imagesQtyInLot >= lotCfgImagesQty)
                     ) {
                         if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
-                            exec(
-                                `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
+                            const subprocess = spawn(
+                                'cmd.exe',
+                                [
+                                    '/c',
+                                    'start',
+                                    'cmd.exe',
+                                    '/K',
+                                    `@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit`,
+                                ],
+                                {
+                                    detached: true,
+                                    stdio: 'ignore',
+                                }
                             );
+                            subprocess.unref();
                         }
                         dealerFolderCntInLot = 0;
                         imagesQtyInLot = 0;
@@ -316,10 +344,22 @@ try {
         await downloadBookmarksFromSourceToProcessing();
     }
 
-    if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(`lotIndex`, 2)}`)) {
-        exec(
-            `start cmd.exe /K "@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit"`
+    if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
+        const subprocess = spawn(
+            'cmd.exe',
+            [
+                '/c',
+                'start',
+                'cmd.exe',
+                '/K',
+                `@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit`,
+            ],
+            {
+                detached: true,
+                stdio: 'ignore',
+            }
         );
+        subprocess.unref();
     }
 } catch (err) {
     checkBrowserClosed(err, false);
