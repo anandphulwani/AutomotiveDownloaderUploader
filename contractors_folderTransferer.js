@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { checkSync, lockSync } from 'proper-lockfile';
+import cfonts from 'cfonts';
 
 /* eslint-disable import/extensions */
 import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
@@ -81,6 +82,18 @@ try {
 // const cuttingAccounting = config.cutterRecordKeepingFolders[0];
 // const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
+const headingOptions = {
+    font: 'block', // font to use for the output
+    align: 'center', // alignment of the output
+    colors: ['cyan', 'blue'], // colors of the output (gradient)
+    background: 'black', // background color of the output
+    letterSpacing: 1, // letter spacing of the output
+    lineHeight: 0, // line height of the output
+    space: false, // add space between letters
+    maxLength: '0', // maximum length of the output (0 = unlimited)
+};
+
+let isFirstRun = true;
 let lastLockTime = Date.now();
 // eslint-disable-next-line no-constant-condition
 while (true) {
@@ -92,6 +105,11 @@ while (true) {
     moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, false);
     checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer();
 
+    if (isFirstRun) {
+        cfonts.say(`Folder`, headingOptions);
+        cfonts.say(`Transferer`, headingOptions);
+    }
+    isFirstRun = false;
     /**
      * Check if downloader and uploader is not running for 2 hours,
      * if yes then exit the script
