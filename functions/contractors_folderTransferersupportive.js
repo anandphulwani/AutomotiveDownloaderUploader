@@ -297,6 +297,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             }
         }
     }
+    return foldersToShift;
 }
 
 function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccountingType, foldersToShift, isDryRun = true) {
