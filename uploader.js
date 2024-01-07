@@ -19,7 +19,7 @@ import { getCredentialsForUsername } from './functions/configsupportive.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
-import { addUploadingToReport, getUnderProcessingAcToReport } from './functions/reportsupportive.js';
+import { addUploadingToReport, getUnderProcessingAcToReport, readAndUpdateReportJSONObj } from './functions/reportsupportive.js';
 import { validateConfigFile } from './functions/configvalidation.js';
 import {
     createDirAndMoveFile,
@@ -115,20 +115,9 @@ if (
 const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
 let reportJSONObj;
 let isDumbUploader = false;
-try {
-    if (!fs.existsSync(reportJSONFilePath)) {
-        lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Shifting to DUMB uploader mode.`);
-        isDumbUploader = true;
-    } else {
-        attainLock(reportJSONFilePath, undefined, false);
-        const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
-        reportJSONObj = JSON.parse(reportJSONContents);
-        releaseLock(reportJSONFilePath, undefined, false);
-    }
-} catch (err) {
-    lgc(err);
-    releaseLock(reportJSONFilePath, undefined, false);
-    process.exit(1);
+if (!fs.existsSync(reportJSONFilePath)) {
+    lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Shifting to DUMB uploader mode.`);
+    isDumbUploader = true;
 }
 
 try {
@@ -138,6 +127,7 @@ try {
     while (true) {
         foundNewFoldersInMiddle = false;
         if (!isDumbUploader) {
+            reportJSONObj = readAndUpdateReportJSONObj(reportJSONFilePath);
             let foldersToShift = validationBeforeMoving('uploadingZone', reportJSONObj, debug);
             foldersToShift = moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, true);
             moveFilesFromSourceToDestinationAndAccounting('uploadingZone', foldersToShift, false);

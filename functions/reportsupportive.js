@@ -10,6 +10,21 @@ import { makeDir } from './filesystem.js';
 import { setCurrentDealerConfiguration, getDealerNameFromDC } from './excelsupportive.js';
 /* eslint-enable import/extensions */
 
+function readAndUpdateReportJSONObj(reportJSONFilePath) {
+    let reportJSONObj;
+    try {
+        attainLock(reportJSONFilePath, undefined, false);
+        const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+        reportJSONObj = JSON.parse(reportJSONContents);
+        releaseLock(reportJSONFilePath, undefined, false);
+    } catch (err) {
+        lgc(err);
+        releaseLock(reportJSONFilePath, undefined, false);
+        process.exit(1);
+    }
+    return reportJSONObj;
+}
+
 function addAllotmentToReport(allotmentDetails) {
     const reportDateFolder = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted);
     makeDir(reportDateFolder);
@@ -392,6 +407,7 @@ const contractorExcelStyleOfBottomTotalRow = {
 };
 
 export {
+    readAndUpdateReportJSONObj,
     addAllotmentToReport,
     addUploadingToReport,
     getUnderProcessingAcToReport,
