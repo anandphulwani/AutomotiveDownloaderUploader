@@ -275,14 +275,14 @@ try {
                 }
                 if (foundNewFoldersInMiddle) break;
             }
-            // eslint-disable-next-line no-continue
-            if (foundNewFoldersInMiddle) continue;
             if (typeof browser !== 'boolean') {
                 lgi('Waiting for the browser to close, in order to continue.', LineSeparator.false);
                 await browser.close();
                 lgi('..........Done', LoggingPrefix.false);
             }
             lastRunTime = Date.now();
+            // eslint-disable-next-line no-continue
+            if (foundNewFoldersInMiddle) continue;
         } else if (Date.now() - lastRunTime <= 15 * 60 * 1000 /* 15 mins in milliseconds */) {
             const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength();
             if (remainingBookmarksNotDownloadedLength > 0) {
