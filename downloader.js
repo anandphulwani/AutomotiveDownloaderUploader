@@ -218,6 +218,7 @@ try {
                 const credentials = getCredentialsForUsername(usernameBookmark.name);
 
                 setCurrentDealerConfiguration(usernameBookmark.name);
+                const usernameTrimmed = usernameBookmark.name.includes('@') ? usernameBookmark.name.split('@')[0] : usernameBookmark.name;
                 // const dealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) => dealerLevelBookmark.name.includes(' |#| '));
                 const dealerLevelBookmarks = usernameBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
@@ -311,6 +312,17 @@ try {
                             }
                             await waitForSeconds(0);
                         }
+                    }
+                    const dealerLevelPath = path.join(
+                        config.downloadPath,
+                        instanceRunDateFormatted,
+                        `Lot_${zeroPad(lotIndex, 2)}`,
+                        usernameTrimmed,
+                        dealerLevelBookmarkName
+                    );
+                    if (fs.existsSync(dealerLevelPath)) {
+                        imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
+                        dealerFolderCntInLot++;
                     }
                 }
             }
