@@ -108,6 +108,7 @@ while (true) {
     if (isFirstRun) {
         cfonts.say(`Folder`, headingOptions);
         cfonts.say(`Transferer`, headingOptions);
+        console.log('');
     }
     isFirstRun = false;
     /**
