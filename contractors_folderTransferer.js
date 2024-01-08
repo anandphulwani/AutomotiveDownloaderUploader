@@ -93,7 +93,10 @@ const headingOptions = {
     maxLength: '0', // maximum length of the output (0 = unlimited)
 };
 
-let isFirstRun = true;
+cfonts.say(`Folder`, headingOptions);
+cfonts.say(`Transferer`, headingOptions);
+console.log('');
+
 let lastLockTime = Date.now();
 // eslint-disable-next-line no-constant-condition
 while (true) {
@@ -105,12 +108,6 @@ while (true) {
     moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, false);
     checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer();
 
-    if (isFirstRun) {
-        cfonts.say(`Folder`, headingOptions);
-        cfonts.say(`Transferer`, headingOptions);
-        console.log('');
-    }
-    isFirstRun = false;
     /**
      * Check if downloader and uploader is not running for 2 hours,
      * if yes then exit the script
