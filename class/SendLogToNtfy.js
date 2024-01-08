@@ -1,4 +1,4 @@
-import axios from 'axios';
+import syncRequest from 'sync-request';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
@@ -47,7 +47,8 @@ export default async function sendLogToNtfy(filename, mesg) {
     tags += `,${level},${uniqueCode}`;
     mesg = mesg === '' ? 'ㅤ' : mesg;
     try {
-        await axios.post(URLToCall, mesg, {
+        syncRequest('POST', URLToCall, {
+            body: mesg,
             timeout: 10000,
             headers: { Title: title, Tags: tags, Priority: priority },
         });
