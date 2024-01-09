@@ -115,7 +115,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             const oldSourceJSONString = sourceJSONString;
             sourceJSONString = sourceJSONString.replace(replaceExpression, downloadedBookmarkBlockMatch[0]);
             oldSourceJSONString !== sourceJSONString ? (isGUIDInProcessingBookmarksPresentInSourceBookmarks = true) : null;
-            if (oldSourceJSONString !== sourceJSONString) {
+            if (oldSourceJSONString === sourceJSONString) {
                 debug ? lgd(`Unable to find URL's GUID:${downloadedBookmarkBlockMatch[2]} in source bookmarks, possible removal/deletion.`) : null;
             }
             downloadedBookmarkBlockMatch = downloadedRegexExpression.exec(processingJSONString);
@@ -172,7 +172,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             const replaceExpression = new RegExp(replaceString);
             const oldSourceJSONString = sourceJSONString;
             sourceJSONString = sourceJSONString.replace(replaceExpression, allottedFolderBookmarkBlockMatch[0]);
-            if (oldSourceJSONString !== sourceJSONString) {
+            if (oldSourceJSONString === sourceJSONString) {
                 debug ? lgd(`Unable to find folder's GUID:${allottedFolderBookmarkBlockMatch[2]} in source bookmarks, possible removal/deletion.`): null;
             }
             allottedFolderBookmarkBlockMatch = allottedFolderRegexExpression.exec(processingJSONString);
