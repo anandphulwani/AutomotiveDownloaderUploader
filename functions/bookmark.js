@@ -160,7 +160,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
 
         let allottedFolderBookmarkBlockMatch = allottedFolderRegexExpression.exec(processingJSONString);
         while (allottedFolderBookmarkBlockMatch !== null) {
-            debug ? lgd(`Found bookmark folder with GUID: ${downloadedBookmarkBlockMatch[2]}`) : null;
+            debug ? lgd(`Found bookmark folder with GUID: ${allottedFolderBookmarkBlockMatch[2]}`) : null;
             if (allottedFolderBookmarkBlockMatch[0].split(/\r\n|\r|\n/).length > 9) {
                 lgu(
                     `Bookmarks Folders Allotted Section: allottedFolderBookmarkBlockMatch's length is more than 9:\n${allottedFolderBookmarkBlockMatch}`
@@ -173,7 +173,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             const oldSourceJSONString = sourceJSONString;
             sourceJSONString = sourceJSONString.replace(replaceExpression, allottedFolderBookmarkBlockMatch[0]);
             if (oldSourceJSONString !== sourceJSONString) {
-                debug ? lgd(`Unable to find folder's GUID:${downloadedBookmarkBlockMatch[2]} in source bookmarks, possible removal/deletion.`) : null;
+                debug ? lgd(`Unable to find folder's GUID:${allottedFolderBookmarkBlockMatch[2]} in source bookmarks, possible removal/deletion.`): null;
             }
             allottedFolderBookmarkBlockMatch = allottedFolderRegexExpression.exec(processingJSONString);
         }
