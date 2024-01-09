@@ -33,6 +33,282 @@ function reformatJSONString(contents) {
     return JSONString;
 }
 
+function getDownloadedRegexString() {
+    /**
+     * 
+     * Sample string to match:
+     * 
+
+    {
+        "date_added": "13347947383854433",
+        "date_last_used": "0",
+        "guid": "6cadd41c-9d57-4e04-a677-e3c8c9d19ce5",
+        "id": "4917",
+        "name": "Germain Toyota of Naples - Inventory Online |#| Ignoring (Photo-Upload)",
+        "type": "url",
+        "url": "https://www.homenetiol.com/reporting/photo-upload?i=5&r=2390851"
+    }
+
+     *
+     *
+     */
+    /**
+     * Old download regex string
+     */
+    // const regexString = `({[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ")(.* \\|#\\| .*)("[\\s|\\S]*?"url": ".*"\\n[\\s]*})`;
+
+    /**
+     * Capture Block 01: Section 01: Matches `{ "date_added": "`
+     */
+    let regexString = `(`;
+    regexString += `{`;
+    regexString += `[\\s]*"date_added": "`;
+    regexString += `)`;
+
+    /**
+     * Section 02: Matches `date_added` value
+     */
+    regexString += `.*`;
+
+    /**
+     * Capture Block 02: Section 03: Matches `"date_last_used": "` after `date_added` value,
+     * Added a non capturing group, with an option that `"date_added"` string is not present
+     */
+    regexString += `(`;
+
+    regexString += `"`;
+
+    regexString += `(?:`;
+    regexString += `(?!"date_added")`;
+    regexString += `[\\s|\\S]`;
+    regexString += `)`;
+
+    regexString += `*?`;
+
+    regexString += `"date_last_used": "`;
+
+    regexString += `)`;
+
+    /**
+     * Section 04: Matches `date_last_used` value
+     */
+    regexString += `.*`;
+
+    /**
+     * Capture Block 03
+     */
+    regexString += `(`;
+
+    /**
+     * Capture Block 03: Section 05: Matches text after `date_last_used` value,
+     * Added a non capturing group, with an option that `"date_last_used"` string is not present
+     */
+    regexString += `"`;
+
+    regexString += `(?:`;
+    regexString += `(?!"date_last_used")`;
+    regexString += `[\\s|\\S]`;
+    regexString += `)`;
+
+    regexString += `*?`;
+
+    /**
+     * Capture Block 03: Section 06: Matches `"guid": "` text,
+     * with a capturing group, matching guid value
+     */
+    regexString += `"guid": "`;
+
+    regexString += `(`;
+    regexString += `.*`;
+    regexString += `)`;
+
+    regexString += `"`;
+
+    /**
+     * Capture Block 03: Section 07: Matches text after `guid` value which includes `"name": "` text,
+     * Added a non capturing group, with an option that `"guid"` string is not present
+     */
+    regexString += `(?:`;
+    regexString += `(?!"guid": )`;
+    regexString += `[\\s|\\S]`;
+    regexString += `)`;
+
+    regexString += `*?`;
+
+    regexString += `"name": "`;
+
+    regexString += `)`;
+
+    /**
+     * Capture Block 04: Section 08: Matches name values which contain hash tags
+     */
+    regexString += `(`;
+    regexString += `.* \\|#\\| .*`;
+    regexString += `)`;
+
+    /**
+     * Capture Block 05: Section 09: Matches everything after name value with hash tag, which includes
+     * `"url"` text with a value and a closing curly bracket
+     */
+    regexString += `(`;
+    regexString += `"[\\s|\\S]*?"url": ".*"\\n[\\s]*`;
+    regexString += `}`;
+    regexString += `)`;
+
+    return regexString;
+}
+
+function getAllottedFolderRegexString() {
+    /**
+     * 
+     * Sample string to match:
+     * 
+
+                     "date_added": "13347947383854329",
+                     "date_last_used": "0",
+                     "date_modified": "13347947383854678",
+                     "guid": "df441576-b1b1-4724-842d-a5ada02b5d85",
+                     "id": "4916",
+                     "name": "224a |#| 01002",
+                     "type": "folder"
+
+     *
+     *
+     */
+    /**
+     * Old download regex string
+     */
+    // const allottedFolderRegexString = `([ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ")(.* \\|#\\| .*)("(?:(?!"name": )[\\s|\\S])*?"type": "folder")`;
+
+    /**
+     * Capture Block 01: Section 01: Matches spaces with `"date_added": "`
+     */
+    let regexString = `(`;
+    regexString += `[ ]*"date_added"`;
+    regexString += `)`;
+
+    /**
+     * Section 02: Matches `date_added` value
+     */
+    regexString += `.*`;
+
+    /**
+     * Capture Block 02: Section 03: Matches `"date_last_used": "` after `date_added` value,
+     * Added a non capturing group, with an option that `"date_added"` string is not present
+     */
+    regexString += `(`;
+
+    regexString += `"`;
+
+    regexString += `(?:`;
+    regexString += `(?!"date_added")`;
+    regexString += `[\\s|\\S]`;
+    regexString += `)`;
+    regexString += `*?`;
+
+    regexString += `"date_last_used": "`;
+    regexString += `)`;
+
+    /**
+     * Section 04: Matches `date_last_used` value
+     */
+    regexString += `.*`;
+
+    /**
+     * Capture Block 03: Section 05: Matches `"date_modified": "` after `date_last_used` value,
+     * Added a non capturing group, with an option that `"date_last_used"` string is not present
+     */
+    regexString += `(`;
+
+    regexString += `"`;
+
+    regexString += `(?:`;
+    regexString += `(?!"date_last_used")`;
+    regexString += `[\\s|\\S]`;
+    regexString += `)`;
+    regexString += `*?`;
+
+    regexString += `"date_modified": "`;
+    regexString += `)`;
+
+    /**
+     * Section 06: Matches `date_modified` value
+     */
+    regexString += `.*`;
+
+    /**
+     * Capture Block 04
+     */
+    regexString += `(`;
+
+    /**
+     * Capture Block 04: Section 07: Matches text after `date_modified` value,
+     * Added a non capturing group, with an option that `"date_modified"` string is not present
+     */
+    regexString += `"`;
+
+    regexString += `(?:`;
+    regexString += `(?!"date_modified")`;
+    regexString += `[\\s|\\S]`;
+    regexString += `)`;
+
+    regexString += `*?`;
+
+    /**
+     * Capture Block 04: Section 08: Matches `"guid": "` text,
+     * with a capturing group, matching guid value
+     */
+    regexString += `"guid": "`;
+
+    regexString += `(`;
+    regexString += `.*`;
+    regexString += `)`;
+
+    regexString += `"`;
+
+    /**
+     * Capture Block 04: Section 09: Matches text after `guid` value which includes `"name": "` text,
+     * Added a non capturing group, with an option that `"guid"` string is not present
+     */
+    regexString += `(?:`;
+    regexString += `(?!"guid": )`;
+    regexString += `[\\s|\\S]`;
+    regexString += `)`;
+
+    regexString += `*?`;
+
+    regexString += `"name": "`;
+
+    regexString += `)`;
+
+    /**
+     * Capture Block 05: Section 10: Matches name values which contain hash tags
+     */
+    regexString += `(`;
+    regexString += `.* \\|#\\| .*`;
+    regexString += `)`;
+
+    /**
+     * Capture Block 06: Section 11: Matches everything after name value with hash tag, which includes
+     * `"url"` text with a value and a closing curly bracket
+     */
+    regexString += `(`;
+
+    regexString += `"`;
+    regexString += `(?:`;
+    regexString += `(?!"name": )`;
+    regexString += `[\\s|\\S]`;
+    regexString += `)`;
+
+    regexString += `*?`;
+
+    regexString += `"type": "folder"`;
+
+    regexString += `)`;
+
+    return regexString;
+}
+
 async function downloadBookmarksFromSourceToProcessing(debug = false) {
     lgt(`Fetching bookmarks from the source: `, Color.cyanNormal, LineSeparator.false);
     const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
@@ -98,8 +374,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         /**
          * Copying the names of bookmark urls which are downloaded
          */
-        const downloadedRegexString = `({[\\s]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ")(.* \\|#\\| .*)("[\\s|\\S]*?"url": ".*"\\n[\\s]*})`;
-        const downloadedRegexExpression = new RegExp(downloadedRegexString, 'g');
+
+        const downloadedRegexExpression = new RegExp(getDownloadedRegexString(), 'g');
 
         let isGUIDInProcessingBookmarksPresentInSourceBookmarks = false;
         let downloadedBookmarkBlockMatch = downloadedRegexExpression.exec(processingJSONString);
@@ -155,9 +431,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         /**
          * Copying the names of bookmarks folders which are allotted
          */
-        const allottedFolderRegexString = `([ ]*"date_added"(?:(?!"date_added")[\\s|\\S])*?"guid": "(.*)"(?:(?!"guid": )[\\s|\\S])*?"name": ")(.* \\|#\\| .*)("(?:(?!"name": )[\\s|\\S])*?"type": "folder")`;
-        const allottedFolderRegexExpression = new RegExp(allottedFolderRegexString, 'g');
-
+        const allottedFolderRegexExpression = new RegExp(getAllottedFolderRegexString(), 'g');
         let allottedFolderBookmarkBlockMatch = allottedFolderRegexExpression.exec(processingJSONString);
         while (allottedFolderBookmarkBlockMatch !== null) {
             debug ? lgd(`Found bookmark folder with GUID: ${allottedFolderBookmarkBlockMatch[2]}`) : null;
