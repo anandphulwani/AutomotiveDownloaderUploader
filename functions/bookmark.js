@@ -386,7 +386,9 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                 process.exit(1);
             }
 
-            const replaceString = `${escapeRegExp(downloadedBookmarkBlockMatch[1])}.*${escapeRegExp(downloadedBookmarkBlockMatch[4])}`;
+            const replaceString = `${escapeRegExp(downloadedBookmarkBlockMatch[1])}.*${escapeRegExp(downloadedBookmarkBlockMatch[2])}.*${escapeRegExp(
+                downloadedBookmarkBlockMatch[3]
+            )}.*${escapeRegExp(downloadedBookmarkBlockMatch[6])}`;
             const replaceExpression = new RegExp(replaceString);
             const oldSourceJSONString = sourceJSONString;
             sourceJSONString = sourceJSONString.replace(replaceExpression, downloadedBookmarkBlockMatch[0]);
@@ -442,7 +444,11 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                 process.exit(1);
             }
 
-            const replaceString = `${escapeRegExp(allottedFolderBookmarkBlockMatch[1])}.*${escapeRegExp(allottedFolderBookmarkBlockMatch[4])}`;
+            const replaceString = `${escapeRegExp(allottedFolderBookmarkBlockMatch[1])}.*${escapeRegExp(
+                allottedFolderBookmarkBlockMatch[2]
+            )}.*${escapeRegExp(allottedFolderBookmarkBlockMatch[3])}.*${escapeRegExp(allottedFolderBookmarkBlockMatch[4])}.*${escapeRegExp(
+                allottedFolderBookmarkBlockMatch[7]
+            )}`;
             const replaceExpression = new RegExp(replaceString);
             const oldSourceJSONString = sourceJSONString;
             sourceJSONString = sourceJSONString.replace(replaceExpression, allottedFolderBookmarkBlockMatch[0]);
