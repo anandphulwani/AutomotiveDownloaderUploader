@@ -311,5 +311,5 @@ try {
 } catch (err) {
     checkBrowserClosed(err, false);
 }
-lgic('Program has ended successfully.', Color.bgWhite);
+lgi('Program has ended successfully.', Color.bgWhite);
 process.exit(0);

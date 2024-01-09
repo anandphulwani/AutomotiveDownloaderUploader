@@ -15,6 +15,7 @@ import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer from './functions/contractors_workdonefile.js';
 import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
+import Color from './class/Colors.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -121,3 +122,4 @@ while (true) {
     }
     await waitForSeconds(30);
 }
+lgi('Program has ended successfully.', Color.bgWhite);
