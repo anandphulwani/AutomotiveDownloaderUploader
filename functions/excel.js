@@ -13,7 +13,7 @@ import { lgd, lge } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 function readDealerConfigurationExcel(username, debug = false) {
-    const excelFilename = `${config.dealerConfigurationFolder}\\${username}.xlsx`;
+    const excelFilename = `${config.dealerConfigurationPath}\\${username}.xlsx`;
     if (!fs.existsSync(excelFilename)) {
         lge(`Dealer configuration excel file: ${excelFilename} does not exist, Please check.`);
         process.exit(1);

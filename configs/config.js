@@ -36,8 +36,8 @@ const configBasic = {
             '--window-size=1600,860',
         ],
     },
-    sourceBookmarkPath: '..\\autodown_datastore\\Bookmarks_Source',
-    processingBookmarkPathWithoutSync: '..\\autodown_datastore\\Bookmarks',
+    sourceBookmarkFilePath: '..\\autodown_datastore\\Bookmarks_Source',
+    processingBookmarkWithoutSyncFilePath: '..\\autodown_datastore\\Bookmarks',
     bookmarkOptions: {
         shouldIncludeFolders: true,
     },
@@ -54,7 +54,7 @@ const configBasic = {
     browserClosingErrors: [
         //
     ],
-    dealerConfigurationFolder: '.\\configs\\DealerConfiguration',
+    dealerConfigurationPath: '.\\configs\\DealerConfiguration',
     downloadPath: '..\\autodown_datastore\\Downloads',
     contractorsZonePath: '..\\autodown_datastore\\ContractorsZone',
     contractorsRecordKeepingPath: '..\\autodown_datastore\\ContractorsRecordKeeping',

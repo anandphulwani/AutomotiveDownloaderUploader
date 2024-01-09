@@ -7,8 +7,8 @@ import { lge } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 function getAllUsernamesBookmarks() {
-    const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
-    const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
+    const { processingBookmarkWithoutSyncFilePath, bookmarkOptions } = config;
+    const bookmarks = getChromeBookmark(processingBookmarkWithoutSyncFilePath, bookmarkOptions);
 
     let bookmarksBarData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
     if (bookmarksBarData.length <= 0) {

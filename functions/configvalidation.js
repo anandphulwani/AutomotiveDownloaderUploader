@@ -11,14 +11,14 @@ import { lgd, lge } from './loggerandlocksupportive.js';
 
 function validateConfigFile(debug = false) {
     let validationStatus = 'success';
-    debug ? lgd(`Making sure that 'config.sourceBookmarkPath' and 'config.processingBookmarkPathWithoutSync' are not same file: Executing.`) : null;
-    const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
-    if (path.resolve(sourceBookmarkPath) === path.resolve(processingBookmarkPathWithoutSync)) {
+    debug ? lgd(`Making sure that 'config.sourceBookmarkFilePath' and 'config.processingBookmarkWithoutSyncFilePath' are not same file: Executing.`) : null;
+    const { sourceBookmarkFilePath, processingBookmarkWithoutSyncFilePath } = config;
+    if (path.resolve(sourceBookmarkFilePath) === path.resolve(processingBookmarkWithoutSyncFilePath)) {
         validationStatus = 'error';
-        lge(`Config's 'sourceBookmarkPath' and Config's 'processingBookmarkPathWithoutSync' are reflecting the same file.`);
+        lge(`Config's 'sourceBookmarkFilePath' and Config's 'processingBookmarkWithoutSyncFilePath' are reflecting the same file.`);
         return validationStatus;
     }
-    debug ? lgd(`Making sure that 'config.sourceBookmarkPath' and 'config.processingBookmarkPathWithoutSync' are not same file: Done.`) : null;
+    debug ? lgd(`Making sure that 'config.sourceBookmarkFilePath' and 'config.processingBookmarkWithoutSyncFilePath' are not same file: Done.`) : null;
 
     debug ? lgd(`Validating bookmarks and checking if credentials are present: Executing.`) : null;
     validationStatus = 'success';

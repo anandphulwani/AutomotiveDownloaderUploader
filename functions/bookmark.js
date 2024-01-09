@@ -311,19 +311,19 @@ function getAllottedFolderRegexString() {
 
 async function downloadBookmarksFromSourceToProcessing(debug = false) {
     lgt(`Fetching bookmarks from the source: `, Color.cyanNormal, LineSeparator.false);
-    const { sourceBookmarkPath, processingBookmarkPathWithoutSync } = config;
+    const { sourceBookmarkFilePath, processingBookmarkWithoutSyncFilePath } = config;
     let initialSourceJSONString;
     let initialLineCount;
     let sourceJSONString;
 
-    attainLock(sourceBookmarkPath, undefined, false);
-    attainLock(processingBookmarkPathWithoutSync, undefined, false);
+    attainLock(sourceBookmarkFilePath, undefined, false);
+    attainLock(processingBookmarkWithoutSyncFilePath, undefined, false);
     lgt(`01:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
 
     try {
         // Read the contents of both JSON files into memory
-        const sourceContents = fs.readFileSync(sourceBookmarkPath, 'utf8');
-        const processingContents = fs.readFileSync(processingBookmarkPathWithoutSync, 'utf8');
+        const sourceContents = fs.readFileSync(sourceBookmarkFilePath, 'utf8');
+        const processingContents = fs.readFileSync(processingBookmarkWithoutSyncFilePath, 'utf8');
 
         lgt(`02:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
         // Parse the contents of both JSON files into JavaScript objects
@@ -332,9 +332,9 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             sourceObj = JSON.parse(sourceContents);
         } catch (err) {
             console.log('');
-            lgs(`Source 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source, \nPath :${sourceBookmarkPath}.`);
-            releaseLock(processingBookmarkPathWithoutSync, undefined, false);
-            releaseLock(sourceBookmarkPath, undefined, false);
+            lgs(`Source 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source, \nPath :${sourceBookmarkFilePath}.`);
+            releaseLock(processingBookmarkWithoutSyncFilePath, undefined, false);
+            releaseLock(sourceBookmarkFilePath, undefined, false);
             return;
         }
 
@@ -344,10 +344,10 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         } catch (err) {
             console.log('');
             lgs(
-                `Processing 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source, \nPath: '${processingBookmarkPathWithoutSync}'`
+                `Processing 'Bookmarks' file, is a corrupted JSON, cannot sync bookmarks from the source, \nPath: '${processingBookmarkWithoutSyncFilePath}'`
             );
-            releaseLock(processingBookmarkPathWithoutSync, undefined, false);
-            releaseLock(sourceBookmarkPath, undefined, false);
+            releaseLock(processingBookmarkWithoutSyncFilePath, undefined, false);
+            releaseLock(sourceBookmarkFilePath, undefined, false);
             process.exit(1);
         }
 
@@ -414,8 +414,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                     lgif(`${questionToRefreshBookmarksInSameDay}: ${resultOfKeyInYNToRefreshBookmarksInSameDay.answer}`);
                 }
                 if (!resultOfKeyInYNToRefreshBookmarksInSameDay.answer) {
-                    releaseLock(processingBookmarkPathWithoutSync, undefined, false);
-                    releaseLock(sourceBookmarkPath, undefined, false);
+                    releaseLock(processingBookmarkWithoutSyncFilePath, undefined, false);
+                    releaseLock(sourceBookmarkFilePath, undefined, false);
                     return;
                 }
             }
@@ -470,9 +470,9 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         lgt(`05:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
 
         debug ? lgd('Writing bookmarks file') : null;
-        writeFileWithComparingSameLinesWithOldContents(processingBookmarkPathWithoutSync, sourceJSONString, initialSourceJSONString);
-        releaseLock(processingBookmarkPathWithoutSync, undefined, false);
-        releaseLock(sourceBookmarkPath, undefined, false);
+        writeFileWithComparingSameLinesWithOldContents(processingBookmarkWithoutSyncFilePath, sourceJSONString, initialSourceJSONString);
+        releaseLock(processingBookmarkWithoutSyncFilePath, undefined, false);
+        releaseLock(sourceBookmarkFilePath, undefined, false);
         lgt(`06:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false);
         printSectionSeperator('info');
     } catch (err) {
@@ -488,8 +488,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             }`
         );
         printSectionSeperator('catcherror');
-        releaseLock(processingBookmarkPathWithoutSync, undefined, false);
-        releaseLock(sourceBookmarkPath, undefined, false);
+        releaseLock(processingBookmarkWithoutSyncFilePath, undefined, false);
+        releaseLock(sourceBookmarkFilePath, undefined, false);
         process.exit(1);
     }
 }
@@ -579,7 +579,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
             elementAlreadySubstituedSubstitutionValue: `"name": "$1,${appendText}"`,
         },
     };
-    const fileToOperateOn = config.processingBookmarkPathWithoutSync;
+    const fileToOperateOn = config.processingBookmarkWithoutSyncFilePath;
     attainLock(fileToOperateOn, undefined, false);
     try {
         const fileContents = fs.readFileSync(fileToOperateOn, 'utf8');
@@ -638,8 +638,8 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
 }
 
 function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
-    const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
-    const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
+    const { processingBookmarkWithoutSyncFilePath, bookmarkOptions } = config;
+    const bookmarks = getChromeBookmark(processingBookmarkWithoutSyncFilePath, bookmarkOptions);
     let filteredData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
     if (filteredData.length === 0) {
         return null;
@@ -678,8 +678,8 @@ function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
 }
 
 function getBookmarkUsernameFolderFromUniqueId(uniqueId) {
-    const { processingBookmarkPathWithoutSync, bookmarkOptions } = config;
-    const bookmarks = getChromeBookmark(processingBookmarkPathWithoutSync, bookmarkOptions);
+    const { processingBookmarkWithoutSyncFilePath, bookmarkOptions } = config;
+    const bookmarks = getChromeBookmark(processingBookmarkWithoutSyncFilePath, bookmarkOptions);
     let filteredData = bookmarks.filter((topLevelBookmark) => topLevelBookmark.name === 'Bookmarks bar');
     if (filteredData.length > 1) {
         filteredData = filteredData.reduce((earliest, current) => {
