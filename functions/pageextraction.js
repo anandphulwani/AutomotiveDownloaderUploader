@@ -63,7 +63,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
     const imageOriginalURLS = await imageULContainer.$$eval('img.tn-car', (el) => el.map((x) => x.getAttribute('originalUrl')));
 
     const tempPath = generateTempFolderWithRandomText();
-    makeDir(tempPath, debug);
+    makeDir(tempPath, undefined, debug);
 
     debug ? '' : lgi('  ', LineSeparator.false);
     const imageNumbersToDownload = getImageNumbersToDownloadFromDC(dealerFolder);

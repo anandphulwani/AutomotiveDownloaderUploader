@@ -11,13 +11,17 @@ import { lgc, lgd, lgdf, lge, lgs } from './loggerandlocksupportive.js';
 import { sleep } from './sleep.js';
 /* eslint-enable import/extensions */
 
-function makeDir(dirPath, debug = false) {
+function makeDir(dirPath, escalateError = false, debug = false) {
     try {
         fs.mkdirSync(dirPath, { recursive: true });
         debug ? lgd(`Folder path created successfully : ${dirPath}`) : null;
     } catch (error) {
+        if (escalateError) {
+            throw error;
+        } else {
         lgc(`Unable to create a directory : ${dirPath}`, error);
         process.exit(1);
+        }
     }
 }
 
@@ -58,7 +62,7 @@ function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
 function createDirAndMoveFile(fromPath, toPath, overwrite = false, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
         debug ? lgd(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : null;
-        makeDir(`${path.dirname(toPath)}/`, debug);
+        makeDir(`${path.dirname(toPath)}/`, undefined, debug);
         debug ? lgd(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : null;
     }
     moveDirOrFile(fromPath, toPath, overwrite, debug);
@@ -67,7 +71,7 @@ function createDirAndMoveFile(fromPath, toPath, overwrite = false, debug = false
 function createDirAndCopyFile(fromPath, toPath, overwrite = false, debug = false) {
     if (!fs.existsSync(path.dirname(toPath))) {
         debug ? lgd(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Executing.`) : null;
-        makeDir(`${path.dirname(toPath)}/`, debug);
+        makeDir(`${path.dirname(toPath)}/`, undefined, debug);
         debug ? lgd(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Done.`) : null;
     }
     copyDirOrFile(fromPath, toPath, overwrite, debug);
