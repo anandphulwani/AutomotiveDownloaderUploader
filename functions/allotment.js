@@ -19,7 +19,7 @@ import {
     recalculateRatioOfImagesAllotted,
     recalculateAllotmentPriority,
     getDealerFolderContractorsZonePath,
-    getDealerFolderRecordKeepingZonePath,
+    getDealerFolderFinishedAllotmentZonePath,
 } from './allotmentsupportive.js';
 import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */

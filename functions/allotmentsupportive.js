@@ -149,7 +149,7 @@ function getDealerFolderContractorsZonePath(sourcePath, contractorsName, additio
     return sourcePath;
 }
 
-function getDealerFolderRecordKeepingZonePath(sourcePath, additionalText) {
+function getDealerFolderFinishedAllotmentZonePath(sourcePath, additionalText) {
     const sourcePathFoldersArr = [];
     for (let cnt = 0; cnt < 4; cnt++) {
         sourcePathFoldersArr.push(path.basename(sourcePath));
@@ -275,7 +275,7 @@ export {
     recalculateRatioOfImagesAllotted,
     recalculateAllotmentPriority,
     getDealerFolderContractorsZonePath,
-    getDealerFolderRecordKeepingZonePath,
+    getDealerFolderFinishedAllotmentZonePath,
     validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs,
     returnImageCountFromDealerDir,
     returnImageCountFromDealerDirs,

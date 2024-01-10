@@ -4,7 +4,7 @@ import path from 'path';
 /* eslint-disable import/extensions */
 import {
     getDealerFolderContractorsZonePath,
-    getDealerFolderRecordKeepingZonePath,
+    getDealerFolderFinishedAllotmentZonePath,
     returnImageCountFromDealerDir,
 } from '../functions/allotmentsupportive.js';
 import { getAddTextToFolderNameByUsernameFromDC } from '../functions/excelsupportive.js';
@@ -142,7 +142,7 @@ export default class FolderToBeAllotted {
 
     computeDestinationRecordKeepingPath() {
         // TODO: Bring this function to this class, if this function isnt used anywhere.
-        return getDealerFolderRecordKeepingZonePath(this._dealerFolderPath, this._suffixTextToFolderName);
+        return getDealerFolderFinishedAllotmentZonePath(this._dealerFolderPath, this._suffixTextToFolderName);
     }
 
     computeDestinationFolderName() {
@@ -157,6 +157,6 @@ export default class FolderToBeAllotted {
     // const contractorAllotted = contractors[contractorsIndex][0];
     // const uniqueIdOfFolder = zeroPad(lotIndex, 2) + zeroPad(foldersAllotted + 1, 3);
 
-    // const destinationRecordKeepingPath = getDealerFolderRecordKeepingZonePath(dealerFolderPath, addTextToFolderName);
+    // const destinationRecordKeepingPath = getDealerFolderFinishedAllotmentZonePath(dealerFolderPath, addTextToFolderName);
     // const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
 }
