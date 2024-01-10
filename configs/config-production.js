@@ -25,7 +25,7 @@ const configProduction = {
     reportsMergedCopyPath: 'C:\\Users\\Administrator\\Dropbox\\MergedReports',
 
     finishedUploadingZonePath: '..\\autodown_datastore\\FinishedUploadingZone',
-    recordKeepingZonePath: '..\\autodown_datastore\\RecordKeepingZone',
+    finishedAllotmentZonePath: '..\\autodown_datastore\\RecordKeepingZone',
 
     sendLogToNtfyUptoDate: '2024-07-01',
     updateBookmarksOnceDone: true,

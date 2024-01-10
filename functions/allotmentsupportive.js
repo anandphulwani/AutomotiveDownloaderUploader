@@ -162,7 +162,7 @@ function getDealerFolderRecordKeepingZonePath(sourcePath, additionalText) {
     sourcePathFoldersArr.reverse();
     sourcePathFoldersArr.splice(1, 2);
 
-    sourcePath = `${config.recordKeepingZonePath}\\${sourcePathFoldersArr.join('\\')}`;
+    sourcePath = `${config.finishedAllotmentZonePath}\\${sourcePathFoldersArr.join('\\')}`;
     sourcePath += ` ${additionalText}`;
     return sourcePath;
 }

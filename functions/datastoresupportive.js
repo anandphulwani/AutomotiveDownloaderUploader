@@ -29,7 +29,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
     const foldersToCleanUp = [
         config.lockingBackupsZonePath,
         config.downloadPath,
-        config.recordKeepingZonePath,
+        config.finishedAllotmentZonePath,
         config.uploadingZonePath,
         config.finishedUploadingZonePath,
         `${config.finishedUploadingZonePath}\\DeletedUrls`,

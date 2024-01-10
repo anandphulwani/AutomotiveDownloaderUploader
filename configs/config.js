@@ -60,7 +60,7 @@ const configBasic = {
     contractorsRecordKeepingPath: '..\\autodown_datastore\\ContractorsRecordKeeping',
     uploadingZonePath: '..\\autodown_datastore\\UploadingZone',
     finishedUploadingZonePath: '..\\autodown_datastore\\FinishedUploadingZone',
-    recordKeepingZonePath: '..\\autodown_datastore\\RecordKeepingZone',
+    finishedAllotmentZonePath: '..\\autodown_datastore\\FinishedAllotmentZone',
     lockingBackupsZonePath: '..\\autodown_datastore\\LockingBackupsZone',
     reportsJSONPath: '..\\autodown_datastore\\Reports\\jsondata',
     reportsExcelOutputPath: '..\\autodown_datastore\\Reports\\generated',
