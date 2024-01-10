@@ -19,8 +19,8 @@ function makeDir(dirPath, escalateError = false, debug = false) {
         if (escalateError) {
             throw error;
         } else {
-        lgc(`Unable to create a directory : ${dirPath}`, error);
-        process.exit(1);
+            lgc(`Unable to create a directory : ${dirPath}`, error);
+            process.exit(1);
         }
     }
 }
