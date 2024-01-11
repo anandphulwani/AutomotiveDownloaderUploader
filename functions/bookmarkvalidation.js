@@ -36,7 +36,7 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
             }
         }
     }
-    debug ? lgd(`Validating excel file: Done.`) : null;
+    debug ? lgd(`Validating bookmarks and checking if credentials are present: Done.`) : null;
     return validationStatus;
 }
 

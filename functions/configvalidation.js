@@ -71,6 +71,7 @@ function splitObjIntoTwoByCondition(configObj, conditionFunction) {
 }
 
 function validateConfigFile(debug = false) {
+    debug ? lgd(`Validating config file: Executing.`) : null;
     let validationStatus = 'success';
 
     /**
@@ -826,7 +827,7 @@ function validateConfigFile(debug = false) {
     // Check every contractor has a finisher which exists itself as a contractor.
     // Check every contractor has all required elements including finisher
     // validationStatus = 'error';
-    debug ? lgd(`Validating excel file: Done.`) : null;
+    debug ? lgd(`Validating config file: Done.`) : null;
     return validationStatus;
 }
 
