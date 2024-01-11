@@ -96,6 +96,63 @@ function validateConfigFile(debug = false) {
     let filteredConfigByKeysTypeObj;
     let filteredConfigReamining = config;
 
+    /* #region Config's 'nonCatchErrorLogLevels9DigitUniqueId' and 'catchErrorLogLevels6DigitUniqueId' handling */
+    /**
+     * Config's 'nonCatchErrorLogLevels9DigitUniqueId' and 'catchErrorLogLevels6DigitUniqueId' handling
+     */
+    ({ filteredConfigByKeysTypeObj, filteredConfigReamining } = splitObjIntoTwoByCondition(
+        filteredConfigReamining,
+        (key) => key === 'nonCatchErrorLogLevels9DigitUniqueId' || key === 'catchErrorLogLevels6DigitUniqueId'
+    ));
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [configsKey, configsValue] of Object.entries(filteredConfigByKeysTypeObj)) {
+        // Check if its string
+        if (typeof configsValue !== 'string') {
+            lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
+            validationStatus = 'error';
+        } else if (configsValue !== '' && Number.isNaN(Number(configsValue))) {
+            lge(`Config's '${configsKey}': Invalid value (${configsValue}) is not a number, inside string literal i.e. ' and '.`);
+            validationStatus = 'error';
+        }
+    }
+    /* #endregion */
+
+    /* #region Config's 'lotLastRunNumber' and 'lotLastRunDate' handling */
+    /**
+     * Config's 'lotLastRunNumber' and 'lotLastRunDate' handling
+     */
+    ({ filteredConfigByKeysTypeObj, filteredConfigReamining } = splitObjIntoTwoByCondition(
+        filteredConfigReamining,
+        (key) => key === 'lotLastRunNumber' || key === 'lotLastRunDate'
+    ));
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [configsKey, configsValue] of Object.entries(filteredConfigByKeysTypeObj)) {
+        // Check if its string
+        if (typeof configsValue !== 'string') {
+            lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
+            validationStatus = 'error';
+        } else if (configsKey === 'lotLastRunNumber' && configsValue !== '') {
+            if (
+                configsValue.length !== 6 ||
+                !configsValue.startsWith('Lot_') ||
+                Number.isNaN(Number(configsValue.substring(configsValue.length - 2)))
+            ) {
+                lge(
+                    `Config's '${configsKey}': Invalid value (${configsValue}) which is not a valid value which should start with 'Lot_' and end with two digit number.`
+                );
+                validationStatus = 'error';
+            }
+        } else if (configsKey === 'lotLastRunDate' && configsValue !== '') {
+            if (configsValue.length !== 10 || !isValid(parse(configsValue, 'yyyy-MM-dd', new Date()))) {
+                lge(
+                    `Config's '${configsKey}': Invalid value (${configsValue}) which is not a valid value which should be date in 'YYYY-MM-DD' format.`
+                );
+                validationStatus = 'error';
+            }
+        }
+    }
+    /* #endregion */
+
     /* #region Config's key 'environment' handling */
     /**
      * Config's key 'environment' handling
@@ -612,63 +669,6 @@ function validateConfigFile(debug = false) {
             const nonStringItems = folderValue.filter((item) => typeof item !== 'string');
             if (nonStringItems.length > 0) {
                 lge(`Config's '${folderKey}': Invalid value (${nonStringItems.join(', ')}) which is not string.`);
-                validationStatus = 'error';
-            }
-        }
-    }
-    /* #endregion */
-
-    /* #region Config's 'nonCatchErrorLogLevels9DigitUniqueId' and 'catchErrorLogLevels6DigitUniqueId' handling */
-    /**
-     * Config's 'nonCatchErrorLogLevels9DigitUniqueId' and 'catchErrorLogLevels6DigitUniqueId' handling
-     */
-    ({ filteredConfigByKeysTypeObj, filteredConfigReamining } = splitObjIntoTwoByCondition(
-        filteredConfigReamining,
-        (key) => key === 'nonCatchErrorLogLevels9DigitUniqueId' || key === 'catchErrorLogLevels6DigitUniqueId'
-    ));
-    // eslint-disable-next-line no-restricted-syntax
-    for (const [configsKey, configsValue] of Object.entries(filteredConfigByKeysTypeObj)) {
-        // Check if its string
-        if (typeof configsValue !== 'string') {
-            lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
-            validationStatus = 'error';
-        } else if (configsValue !== '' && Number.isNaN(Number(configsValue))) {
-            lge(`Config's '${configsKey}': Invalid value (${configsValue}) is not a number, inside string literal i.e. ' and '.`);
-            validationStatus = 'error';
-        }
-    }
-    /* #endregion */
-
-    /* #region Config's 'lotLastRunNumber' and 'lotLastRunDate' handling */
-    /**
-     * Config's 'lotLastRunNumber' and 'lotLastRunDate' handling
-     */
-    ({ filteredConfigByKeysTypeObj, filteredConfigReamining } = splitObjIntoTwoByCondition(
-        filteredConfigReamining,
-        (key) => key === 'lotLastRunNumber' || key === 'lotLastRunDate'
-    ));
-    // eslint-disable-next-line no-restricted-syntax
-    for (const [configsKey, configsValue] of Object.entries(filteredConfigByKeysTypeObj)) {
-        // Check if its string
-        if (typeof configsValue !== 'string') {
-            lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
-            validationStatus = 'error';
-        } else if (configsKey === 'lotLastRunNumber' && configsValue !== '') {
-            if (
-                configsValue.length !== 6 ||
-                !configsValue.startsWith('Lot_') ||
-                Number.isNaN(Number(configsValue.substring(configsValue.length - 2)))
-            ) {
-                lge(
-                    `Config's '${configsKey}': Invalid value (${configsValue}) which is not a valid value which should start with 'Lot_' and end with two digit number.`
-                );
-                validationStatus = 'error';
-            }
-        } else if (configsKey === 'lotLastRunDate' && configsValue !== '') {
-            if (configsValue.length !== 10 || !isValid(parse(configsValue, 'yyyy-MM-dd', new Date()))) {
-                lge(
-                    `Config's '${configsKey}': Invalid value (${configsValue}) which is not a valid value which should be date in 'YYYY-MM-DD' format.`
-                );
                 validationStatus = 'error';
             }
         }
