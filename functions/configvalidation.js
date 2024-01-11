@@ -821,6 +821,31 @@ function validateConfigFile(debug = false) {
         ? lgd(`Making sure that 'config.sourceBookmarkFilePath' and 'config.processingBookmarkWithoutSyncFilePath' are not same file: Done.`)
         : null;
 
+    filteredConfigReamining = config;
+    // Remove 'FilePath' suffix as they will interfere with 'Path' suffix.
+    ({ filteredConfigByKeysTypeObj, filteredConfigReamining } = splitObjIntoTwoByCondition(filteredConfigReamining, (key) =>
+        key.endsWith('FilePath')
+    ));
+    ({ filteredConfigByKeysTypeObj, filteredConfigReamining } = splitObjIntoTwoByCondition(filteredConfigReamining, (key) => key.endsWith('Path')));
+
+    const valueOccurrences = {};
+    const duplicates = {};
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [key, value] of Object.entries(filteredConfigByKeysTypeObj)) {
+        if (valueOccurrences[value]) {
+            valueOccurrences[value].push(key);
+            duplicates[value] = valueOccurrences[value];
+        } else {
+            valueOccurrences[value] = [key];
+        }
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [value, keys] of Object.entries(duplicates)) {
+        lge(`Config's Duplicate value '${value}' found in config parameters: (${keys.join(', ')}), as they are reflecting same path.`);
+    }
+
     debug ? lgd(`Validating config file: Done.`) : null;
     return validationStatus;
 }
