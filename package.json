@@ -28,6 +28,7 @@
     "lodash": "^4.17.21",
     "log-symbols": "^5.1.0",
     "logform": "^2.5.1",
+    "moment-timezone": "^0.5.44",
     "mv": "^2.1.1",
     "npm-time": "^1.0.0",
     "ntp-time-sync": "^0.3.0",
