@@ -821,12 +821,6 @@ function validateConfigFile(debug = false) {
         ? lgd(`Making sure that 'config.sourceBookmarkFilePath' and 'config.processingBookmarkWithoutSyncFilePath' are not same file: Done.`)
         : null;
 
-    debug ? lgd(`Validating bookmarks and checking if credentials are present: Executing.`) : null;
-    validationStatus = 'success';
-    // ONPROJECTFINISH: Complete the validation of config file.
-    // Check every contractor has a finisher which exists itself as a contractor.
-    // Check every contractor has all required elements including finisher
-    // validationStatus = 'error';
     debug ? lgd(`Validating config file: Done.`) : null;
     return validationStatus;
 }
