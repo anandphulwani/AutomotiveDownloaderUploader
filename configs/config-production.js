@@ -28,8 +28,8 @@ const configProduction = {
     finishedAllotmentZonePath: '..\\autodown_datastore\\RecordKeepingZone',
 
     sendLogToNtfyUptoDate: '2024-07-01',
-    updateBookmarksOnceDone: true,
-    automaticClickSaveButtonOnUpload: true,
+    isUpdateBookmarksOnceDone: true,
+    isAutomaticClickSaveButtonOnUpload: true,
 
     credentials: [
         {

@@ -460,9 +460,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     lgi(`${logSymbols.success}${' '.repeat(2)}`, LoggingPrefix.false, LineSeparator.false);
     lgi(` Saving Now: `, LoggingPrefix.false, LineSeparator.false);
 
-    /* #region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin */
+    /* #region: Bring save button to focus, move mouse over it, if isAutomaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin */
     lgtf(
-        `region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin`
+        `region: Bring save button to focus, move mouse over it, if isAutomaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : Begin`
     );
     const saveButtonSelector = `#aspnetForm > div.canvas.standard-canvas.viewport > div.canvas-body.canvas-body-no-padding.container > div > div.vehicle-details-body.container > div.vehicle-actions > ul:nth-child(2) > li:nth-child(3) > a`;
     const saveButtonElement = await page.waitForSelector(saveButtonSelector);
@@ -484,7 +484,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         return { x, y, width, height };
     }, saveButtonElement);
 
-    if (config.automaticClickSaveButtonOnUpload) {
+    if (config.isAutomaticClickSaveButtonOnUpload) {
         await clickOnButton(page, saveButtonSelector);
     } else {
         await page.mouse.move(saveButtonElementRect.x + saveButtonElementRect.width / 2, saveButtonElementRect.y + saveButtonElementRect.height / 2, {
@@ -492,9 +492,9 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         });
     }
     lgtf(
-        `region: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End`
+        `region: Bring save button to focus, move mouse over it, if isAutomaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End`
     );
-    /* #endregion: Bring save button to focus, move mouse over it, if automaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End */
+    /* #endregion: Bring save button to focus, move mouse over it, if isAutomaticClickSaveButtonOnUpload is enabled, then click on it, otherwise just move mouse over it : End */
 
     lgi(`${logSymbols.success}${' '.repeat(16)}`, LoggingPrefix.false, LineSeparator.false);
     lgi(` Saved: `, LoggingPrefix.false, LineSeparator.false);

@@ -77,8 +77,8 @@ const configUser = {
     // reportsJSONPath: '..\\autodown_datastore\\Reports\\jsondata',
     // reportsExcelOutputPath: '..\\autodown_datastore\\Reports\\generated',
     // reportsMergedCopyPath: '..\\autodown_datastore\\Reports\\mergedcopy',
-    // updateBookmarksOnceDone: false,
-    // automaticClickSaveButtonOnUpload: false,
+    // isUpdateBookmarksOnceDone: false,
+    // isAutomaticClickSaveButtonOnUpload: false,
     // cutterProcessingFolders: ['001_CuttingDone'], // The index of this array are used to detect the folder types, so check before you change
     // cutterRecordKeepingFolders: ['002_CuttingAccounting'], // The index of this array are used to detect the folder types, so check before you change
     // finisherProcessingFolders: ['003_FinishingBuffer', '004_ReadyToUpload'], // The index of this array are used to detect the folder types, so check before you change

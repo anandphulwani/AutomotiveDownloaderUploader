@@ -288,11 +288,11 @@ try {
                                 urlsDownloaded
                             );
                             urlsDownloaded = returnObj.urlsDownloaded;
-                            if (config.updateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
+                            if (config.isUpdateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
                                 replaceBookmarksElementByGUIDAndWriteToBookmarksFile('name', vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
                             } else {
                                 lgu('Bookmark not appended!');
-                                if (config.updateBookmarksOnceDone) {
+                                if (config.isUpdateBookmarksOnceDone) {
                                     try {
                                         const bookmarksNotAppendFile = path.join(getProjectLogsDirPath(), 'bookmarksNotAppend.txt');
                                         fs.appendFileSync(bookmarksNotAppendFile, `${'-'.repeat(120)}\n`);

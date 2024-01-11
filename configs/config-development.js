@@ -6,7 +6,7 @@
  *
  */
 const configDevelopment = {
-    updateBookmarksOnceDone: true,
+    isUpdateBookmarksOnceDone: true,
     credentials: [
         {
             username: 'dinesharora80@gmail.com',
