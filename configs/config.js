@@ -42,11 +42,11 @@ const configBasic = {
         shouldIncludeFolders: true,
     },
     ignoreBookmarkURLS: [
-        {
-            URLStartsWith: '',
-            ignoreMesgInConsole: '',
-            ignoreMesgInBookmark: '',
-        },
+        // {
+        //     URLStartsWith: '',
+        //     ignoreMesgInConsole: '',
+        //     ignoreMesgInBookmark: '',
+        // },
     ],
     urlCrawlingErrorsEligibleForRetrying: [
         //
