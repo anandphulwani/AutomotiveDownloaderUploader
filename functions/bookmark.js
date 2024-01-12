@@ -388,10 +388,13 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
 
             const replaceString = `${escapeRegExp(downloadedBookmarkBlockMatch[1])}.*${escapeRegExp(downloadedBookmarkBlockMatch[2])}.*${escapeRegExp(
                 downloadedBookmarkBlockMatch[3]
-            )}.*${escapeRegExp(downloadedBookmarkBlockMatch[6])}`;
+            )}(.*)${escapeRegExp(downloadedBookmarkBlockMatch[6])}`;
             const replaceExpression = new RegExp(replaceString);
             const oldSourceJSONString = sourceJSONString;
-            sourceJSONString = sourceJSONString.replace(replaceExpression, downloadedBookmarkBlockMatch[0]);
+            sourceJSONString = sourceJSONString.replace(
+                replaceExpression,
+                downloadedBookmarkBlockMatch[0].replace(/"name": ".* \|#\|/, '"name": "$1 |#|')
+            );
             oldSourceJSONString !== sourceJSONString ? (isGUIDInProcessingBookmarksPresentInSourceBookmarks = true) : null;
             if (oldSourceJSONString === sourceJSONString) {
                 debug ? lgd(`Unable to find URL's GUID:${downloadedBookmarkBlockMatch[4]} in source bookmarks, possible removal/deletion.`) : null;
@@ -446,12 +449,15 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
 
             const replaceString = `${escapeRegExp(allottedFolderBookmarkBlockMatch[1])}.*${escapeRegExp(
                 allottedFolderBookmarkBlockMatch[2]
-            )}.*${escapeRegExp(allottedFolderBookmarkBlockMatch[3])}.*${escapeRegExp(allottedFolderBookmarkBlockMatch[4])}.*${escapeRegExp(
+            )}.*${escapeRegExp(allottedFolderBookmarkBlockMatch[3])}.*${escapeRegExp(allottedFolderBookmarkBlockMatch[4])}(.*)${escapeRegExp(
                 allottedFolderBookmarkBlockMatch[7]
             )}`;
             const replaceExpression = new RegExp(replaceString);
             const oldSourceJSONString = sourceJSONString;
-            sourceJSONString = sourceJSONString.replace(replaceExpression, allottedFolderBookmarkBlockMatch[0]);
+            sourceJSONString = sourceJSONString.replace(
+                replaceExpression,
+                allottedFolderBookmarkBlockMatch[0].replace(/"name": ".* \|#\|/, '"name": "$1 |#|')
+            );
             if (oldSourceJSONString === sourceJSONString) {
                 debug
                     ? lgd(`Unable to find folder's GUID:${allottedFolderBookmarkBlockMatch[5]} in source bookmarks, possible removal/deletion.`)
