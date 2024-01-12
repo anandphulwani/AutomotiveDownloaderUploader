@@ -59,7 +59,9 @@ export default async function sendLogToNtfy(filename, mesg) {
     } else {
         return;
     }
-    tags += `,${level},${uniqueCode}`;
+    tags += `,${level}`;
+    tags += uniqueCode.trim() !== '' ? `,${uniqueCode}` : '';
+    tags += `,${os.hostname}`;
     mesg = mesg === '' ? 'ㅤ' : mesg;
     try {
         syncRequest('POST', URLToCall, {
