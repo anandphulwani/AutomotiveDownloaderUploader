@@ -1,16 +1,26 @@
 import syncRequest from 'sync-request';
+import crypto from 'crypto';
+import os from 'os';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { instanceRunDateFormatted } from '../functions/datetime.js';
 /* eslint-enable import/extensions */
 
+const encryptionAlgorithm = 'aes-256-cbc';
+const encryptionPassword = 'password';
+const encryptionKey = crypto.scryptSync(encryptionPassword, 'salt', 32);
+
 export default async function sendLogToNtfy(filename, mesg) {
     if (new Date(instanceRunDateFormatted) > new Date(config.sendLogToNtfyUptoDate)) {
         return;
     }
 
-    let URLToCall = 'http://ntfy.sh/dinesharora_autodown';
+    let URLTOCallIV = '5d8842f3d25cfb5c0326ee40376beb86';
+    let URLTOCallEncrypted = 'e7fde35330c30fceef73e6db5f7c57b9e7249b5926d8339a680ab1b74f838e052564b4454b5668e8c3b4cab7027f8c6c';
+    let URLTOCallDecipher = crypto.createDecipheriv(encryptionAlgorithm, encryptionKey, Buffer.from(URLTOCallIV.toString('hex'), 'hex'));
+    let URLToCall = URLTOCallDecipher.update(URLTOCallEncrypted, 'hex', 'utf8') + URLTOCallDecipher.final('utf8');
+
     const uniqueCode = mesg.substring(25, 34);
     mesg = mesg.substring(60);
     const mesgpParts = mesg.split('\n');
@@ -40,7 +50,12 @@ export default async function sendLogToNtfy(filename, mesg) {
         level = 'error';
         priority = 1;
         tags = 'red_circle';
-        URLToCall = 'http://ntfy.sh/dinesharora_autodown_errorlevelonly';
+
+        URLTOCallIV = 'fab88ec04c27bf0c4e1aaf87aa382b66';
+        URLTOCallEncrypted =
+            'c346ec58434eb2c633ea171949a552bdf9c909d33803290f786947908e70613c7be5aeedd305e88529fe4978e8d216ebda82111258809c8c3b1a89a279b76213';
+        URLTOCallDecipher = crypto.createDecipheriv(encryptionAlgorithm, encryptionKey, Buffer.from(URLTOCallIV.toString('hex'), 'hex'));
+        URLToCall = URLTOCallDecipher.update(URLTOCallEncrypted, 'hex', 'utf8') + URLTOCallDecipher.final('utf8');
     } else {
         return;
     }
