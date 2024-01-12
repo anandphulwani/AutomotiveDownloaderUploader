@@ -210,9 +210,9 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
             try {
                 checkIfLocked = checkSync(fileToOperateOn, { stale: stale });
             } catch (err) {
-                const operationNotPermittedRegexString = '^EPERM: operation not permitted';
-                const operationNotPermittedRegexExpression = new RegExp(operationNotPermittedRegexString);
-                if (operationNotPermittedRegexExpression.test(err.message)) {
+                const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
+                const resourceBusyOrLockedOrNotPermittedRegexExpression = new RegExp(resourceBusyOrLockedOrNotPermittedRegexString);
+                if (resourceBusyOrLockedOrNotPermittedRegexExpression.test(err.message)) {
                     msleep(radomNumberBetween25and50);
                     // eslint-disable-next-line no-continue
                     continue;
@@ -279,9 +279,9 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
             try {
                 checkIfLocked = checkSync(fileToOperateOn, { stale: stale });
             } catch (err) {
-                const operationNotPermittedRegexString = '^EPERM: operation not permitted';
-                const operationNotPermittedRegexExpression = new RegExp(operationNotPermittedRegexString);
-                if (operationNotPermittedRegexExpression.test(err.message)) {
+                const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
+                const resourceBusyOrLockedOrNotPermittedRegexExpression = new RegExp(resourceBusyOrLockedOrNotPermittedRegexString);
+                if (resourceBusyOrLockedOrNotPermittedRegexExpression.test(err.message)) {
                     msleep(radomNumberBetween25and50);
                     // eslint-disable-next-line no-continue
                     continue;

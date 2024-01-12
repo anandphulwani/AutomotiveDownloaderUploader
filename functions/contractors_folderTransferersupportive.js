@@ -126,9 +126,9 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                     fs.renameSync(`${filteredContractorDestinationSubFolderPath} `, filteredContractorDestinationSubFolderPath.trim());
                     unlockedFolders.push(filteredContractorDestinationSubFolderAndFiles);
                 } catch (err) {
-                    const resourceBusyOrLockedRegexString = '^EBUSY: resource busy or locked';
-                    const resourceBusyOrLockedRegexExpression = new RegExp(resourceBusyOrLockedRegexString);
-                    if (resourceBusyOrLockedRegexExpression.test(err.message)) {
+                    const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
+                    const resourceBusyOrLockedOrNotPermittedRegexExpression = new RegExp(resourceBusyOrLockedOrNotPermittedRegexString);
+                    if (resourceBusyOrLockedOrNotPermittedRegexExpression.test(err.message)) {
                         warnNowOrLater(
                             `Folder in ${typeOfContractor}'s ${typeOfSourceFolder} locked, maybe a contractor working/moving it, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
                             sourceDestinationAccountingType,

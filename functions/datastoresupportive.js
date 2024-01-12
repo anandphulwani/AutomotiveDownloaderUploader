@@ -196,7 +196,9 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
                 try {
                     isSizeZero = fs.statSync(filePath).size === 0;
                 } catch (error) {
-                    if (error.message.trim().startsWith('EPERM: operation not permitted, ')) {
+                    const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
+                    const resourceBusyOrLockedOrNotPermittedRegexExpression = new RegExp(resourceBusyOrLockedOrNotPermittedRegexString);
+                    if (resourceBusyOrLockedOrNotPermittedRegexExpression.test(error.message.trim())) {
                         isSizeZero = false;
                     } else {
                         throw error;

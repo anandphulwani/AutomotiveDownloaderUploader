@@ -34,11 +34,9 @@ function moveDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
             lgdf(movingMesg);
             break;
         } catch (error) {
-            if (
-                i < 29 &&
-                (error.message.trim().startsWith('EPERM: operation not permitted, ') ||
-                    error.message.trim().startsWith('EBUSY: resource busy or locked, '))
-            ) {
+            const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
+            const resourceBusyOrLockedOrNotPermittedRegexExpression = new RegExp(resourceBusyOrLockedOrNotPermittedRegexString);
+            if (i < 29 && resourceBusyOrLockedOrNotPermittedRegexExpression.test(error.message)) {
                 sleep(4);
             } else {
                 lgc(`${'Unable to move file from the \n\tSource Directory: '}${fromPath} \n\t\t\tTo \n\tDestination Directory: ${toPath}`, error);
