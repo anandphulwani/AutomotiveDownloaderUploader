@@ -15,7 +15,7 @@ const configProduction = {
             '--window-size=1600,860',
         ],
     },
-    sourceBookmarkFilePath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2\\Bookmarks',
+    sourceBookmarksFilePath: 'C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2\\Bookmarks',
 
     contractorsZonePath: 'C:\\Users\\Administrator\\Dropbox\\contractorsZone',
     contractorsRecordKeepingPath: 'C:\\Users\\Administrator\\Dropbox\\contractorsRecordKeeping',

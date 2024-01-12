@@ -36,8 +36,8 @@ const configBasic = {
             '--window-size=1600,860',
         ],
     },
-    sourceBookmarkFilePath: '..\\autodown_datastore\\Bookmarks_Source',
-    processingBookmarkWithoutSyncFilePath: '..\\autodown_datastore\\Bookmarks',
+    sourceBookmarksFilePath: '..\\autodown_datastore\\Bookmarks_Source',
+    processingBookmarksWithoutSyncFilePath: '..\\autodown_datastore\\Bookmarks',
     bookmarkOptions: {
         shouldIncludeFolders: true,
     },

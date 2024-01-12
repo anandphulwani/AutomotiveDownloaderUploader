@@ -24,8 +24,8 @@ const currentConfigParams = [
     'loggingConsoleLevel',
     'sendLogToNtfyUptoDate',
     'browserArgs',
-    'sourceBookmarkFilePath',
-    'processingBookmarkWithoutSyncFilePath',
+    'sourceBookmarksFilePath',
+    'processingBookmarksWithoutSyncFilePath',
     'bookmarkOptions',
     'ignoreBookmarkURLS',
     'urlCrawlingErrorsEligibleForRetrying',
@@ -809,16 +809,16 @@ function validateConfigFile(debug = false) {
      */
 
     debug
-        ? lgd(`Making sure that 'config.sourceBookmarkFilePath' and 'config.processingBookmarkWithoutSyncFilePath' are not same file: Executing.`)
+        ? lgd(`Making sure that 'config.sourceBookmarksFilePath' and 'config.processingBookmarksWithoutSyncFilePath' are not same file: Executing.`)
         : null;
-    const { sourceBookmarkFilePath, processingBookmarkWithoutSyncFilePath } = config;
-    if (path.resolve(sourceBookmarkFilePath) === path.resolve(processingBookmarkWithoutSyncFilePath)) {
+    const { sourceBookmarksFilePath, processingBookmarksWithoutSyncFilePath } = config;
+    if (path.resolve(sourceBookmarksFilePath) === path.resolve(processingBookmarksWithoutSyncFilePath)) {
         validationStatus = 'error';
-        lge(`Config's 'sourceBookmarkFilePath' and Config's 'processingBookmarkWithoutSyncFilePath' are reflecting the same file.`);
+        lge(`Config's 'sourceBookmarksFilePath' and Config's 'processingBookmarksWithoutSyncFilePath' are reflecting the same file.`);
         return validationStatus;
     }
     debug
-        ? lgd(`Making sure that 'config.sourceBookmarkFilePath' and 'config.processingBookmarkWithoutSyncFilePath' are not same file: Done.`)
+        ? lgd(`Making sure that 'config.sourceBookmarksFilePath' and 'config.processingBookmarksWithoutSyncFilePath' are not same file: Done.`)
         : null;
 
     filteredConfigReamining = config;

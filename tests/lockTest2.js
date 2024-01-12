@@ -10,10 +10,10 @@ let previousTime = Date.now();
 function lockChecker() {
     if (counter % 2 === 0) {
         process.stdout.write('Performing operation attainLock: ');
-        attainLock(`../${config.processingBookmarkWithoutSyncFilePath}`, 10000, true);
+        attainLock(`../${config.processingBookmarksWithoutSyncFilePath}`, 10000, true);
     } else {
         process.stdout.write('Performing operation releaseLock: ');
-        releaseLock(`../${config.processingBookmarkWithoutSyncFilePath}`, 10000, true);
+        releaseLock(`../${config.processingBookmarksWithoutSyncFilePath}`, 10000, true);
     }
     const currentTime = Date.now();
     let difference = (currentTime - previousTime) / 1000;
