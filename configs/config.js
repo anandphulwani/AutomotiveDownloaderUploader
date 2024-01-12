@@ -17,7 +17,7 @@ import { configLots } from './config-lots.js';
 /* eslint-enable import/extensions */
 
 const configBasic = {
-    environment: 'development',
+    environment: 'development', // DON'T CHANGE THIS VALUE HERE
     timezone: 'Asia/Calcutta',
     timeOffsetInMinutesToAvoid: 2,
     appDomain: 'https://www.homenetiol.com',
