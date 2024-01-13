@@ -38,12 +38,6 @@ import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
 /* eslint-enable import/extensions */
 
-// const {
-//     db: { host, port, name },
-// } = config;
-// console.log(`${host}:${port}/${name}`);
-// console.log(config);
-
 /**
  *
  * Only make a single instance run of the script.

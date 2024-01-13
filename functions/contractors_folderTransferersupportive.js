@@ -14,9 +14,7 @@ import LoggingPrefix from '../class/LoggingPrefix.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder, getUniqueIDWithHashFromAllottedDealerNumberFolder } from './datastoresupportive.js';
 /* eslint-enable import/extensions */
 
-// const cuttingDoneFolderName = config.cutterProcessingFolders[0];
 const finishingBufferFolderName = config.finisherProcessingFolders[0];
-// const readyToUploadFolderName = config.finisherProcessingFolders[1];
 
 const cuttingAccountingFolderName = config.cutterRecordKeepingFolders[0];
 const finishingAccountingFolderName = config.finisherRecordKeepingFolders[0];

@@ -153,10 +153,4 @@ export default class FolderToBeAllotted {
         const dateFromDestinationFolderPath = path.basename(path.dirname(this._destinationPath));
         return path.join(dateFromDestinationFolderPath, this._destinationFolderName);
     }
-
-    // const contractorAllotted = contractors[contractorsIndex][0];
-    // const uniqueIdOfFolder = zeroPad(lotIndex, 2) + zeroPad(foldersAllotted + 1, 3);
-
-    // const destinationRecordKeepingPath = getDealerFolderFinishedAllotmentZonePath(dealerFolderPath, addTextToFolderName);
-    // const destinationDealerFolderName = `${path.basename(path.dirname(destinationPath))}/${path.basename(destinationPath)}`;
 }
