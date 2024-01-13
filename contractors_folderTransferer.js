@@ -75,12 +75,7 @@ try {
 }
 // TODO: Delete accounting folders for last 5 dates only.
 
-// const cuttingDone = config.cutterProcessingFolders[0];
-// const finishingBuffer = config.finisherProcessingFolders[0];
-// const readyToUpload = config.finisherProcessingFolders[1];
 
-// const cuttingAccounting = config.cutterRecordKeepingFolders[0];
-// const finishingAccounting = config.finisherRecordKeepingFolders[0];
 
 const headingOptions = {
     font: 'block', // font to use for the output

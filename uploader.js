@@ -87,13 +87,6 @@ if (config.environment === 'production' && !checkSync('contractors_folderTransfe
     subprocess.unref();
 }
 
-// const cuttingDone = config.cutterProcessingFolders[0];
-// const finishingBuffer = config.finisherProcessingFolders[0];
-// const readyToUpload = config.finisherProcessingFolders[1];
-
-// const cuttingAccounting = config.cutterRecordKeepingFolders[0];
-// const finishingAccounting = config.finisherRecordKeepingFolders[0];
-
 if (
     !(
         true && // validateConfigFile()
