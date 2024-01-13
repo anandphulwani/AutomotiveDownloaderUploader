@@ -79,14 +79,6 @@ if (config.environment === 'production') {
 autoCleanUpDatastoreZones();
 printSectionSeperator();
 
-if (config.environment === 'production' && !checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
-    const subprocess = spawn('FolderTransferer.exe', [], {
-        detached: true,
-        stdio: 'ignore',
-    });
-    subprocess.unref();
-}
-
 if (
     [
         validateConfigFile() === 'error',
@@ -98,6 +90,14 @@ if (
     if (config.environment === 'production') {
         process.exit(1);
     }
+}
+
+if (config.environment === 'production' && !checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
+    const subprocess = spawn('FolderTransferer.exe', [], {
+        detached: true,
+        stdio: 'ignore',
+    });
+    subprocess.unref();
 }
 
 // await killChrome({
