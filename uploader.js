@@ -79,7 +79,6 @@ if (config.environment === 'production') {
 autoCleanUpDatastoreZones();
 printSectionSeperator();
 
-// TODO: validate config file here
 if (config.environment === 'production' && !checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
     const subprocess = spawn('FolderTransferer.exe', [], {
         detached: true,

@@ -84,7 +84,6 @@ const billyLogFile = `${instanceRunLogFilePrefix}_billy.log`;
 const debugLogFile = `${instanceRunLogFilePrefix}_debug.log`;
 const traceLogFile = `${instanceRunLogFilePrefix}_trace.log`;
 
-// TODO: Check unhandledexceptionFileWinston's: `handleExceptions: true` parameter, not being handled in `LoggerCustomFileSyncTransport.js`.
 const unhandledexceptionFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'unhandledexception',

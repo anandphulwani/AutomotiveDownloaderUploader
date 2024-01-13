@@ -218,8 +218,6 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     }
     lgtf(`uniqueIdFolderPath\\VINNumberFromBookmark: ${uniqueIdFolderPath}\\${VINNumberFromBookmark}`);
 
-    // TODO: Total bookmarks number do not change while writing
-    // TODO: Shift images into date folders in all zones
     // TODO: Get all the folders which have codein ReadyToUpload, pull them only in the UploadingZone, also give warning for folders which do not satisy this criteeria also give warning when imageQty doesnt matches
     // TODO: For bookmarks which are done or not found give warning and move forward
     // TODO: Bookmarks which give "Duplicate | Ignoring" message, need to append duplicate from what?

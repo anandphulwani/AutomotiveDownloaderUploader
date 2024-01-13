@@ -40,7 +40,6 @@ function recalculateRatioOfThreshHoldWithOtherContractors(contractorsArr, totalO
             }
         }
     });
-    lgtf(`recalculateRatioOfThreshHoldWithOtherContractors: ${beautify(contractorsArr, null, 3, 120)}`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
     debug ? lgd(`recalculateRatioOfThreshHoldWithOtherContractors: ${beautify(contractorsArr, null, 3, 120)}`) : null;
     return contractorsArr;
 }
@@ -118,7 +117,6 @@ function recalculateAllotmentPriority(contractorsArr, debug = false) {
             }
         }
     });
-    lgtf(`recalculateAllotmentPriority: ${beautify(contractorsArr, null, 3, 120)}`); // ONPROJECTFINISH: Remove this as this is temporary means to check if allotment is working fine or not.
     debug ? lgd(`recalculateAllotmentPriority: ${beautify(contractorsArr, null, 3, 120)}`) : null;
     return contractorsArr;
 }
