@@ -3,7 +3,7 @@ import logSymbols from 'log-symbols';
 /* eslint-disable import/extensions */
 import { waitForSeconds } from './sleep.js';
 import { waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith } from './waiting.js';
-import { lgc, lgcf, lgd, lge } from './loggerandlocksupportive.js';
+import { lgc, lgcc, lgcf, lgd, lge } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
@@ -18,13 +18,14 @@ async function handleErrorWhileURLNavigation(err, URLToCrawlOrFilename, gotoCnt,
         )
     ) {
         lgcf(`SUCCESSFULLY ERROR HANDLED (WITHOUT HASH):#${err.message}#`);
-        lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
+        lgcc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
         if (gotoCnt < 4) {
             // Sleep for 30 seconds
             for (let cnt = 0; cnt < 10; cnt++) {
-                lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
+                lgcc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
                 await waitForSeconds(3);
             }
+            lgcf(` ${logSymbols.warning}${'.'.repeat(10)}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
         } else {
             console.log('');
             lgc(
@@ -56,13 +57,14 @@ async function gotoURL(page, URLToCrawl, debug = false) {
             // await page.goto(URLToCrawl, { waitUntil: "networkidle2" });
             const pageContent = await page.content();
             if (pageContent.includes('/Framework/Resources/Images/Layout/Errors/500_error.png')) {
-                lgc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
+                lgcc(` ${logSymbols.warning}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
                 if (gotoCnt < 4) {
                     // Sleep for 5 mins
                     for (let cnt = 0; cnt < 100; cnt++) {
-                        lgc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
+                        lgcc('.', Color.yellow, LoggingPrefix.false, LineSeparator.false);
                         await waitForSeconds(3);
                     }
+                    lgcf(` ${logSymbols.warning}${'.'.repeat(100)}`, Color.yellow, LoggingPrefix.false, LineSeparator.false);
                 } else {
                     console.log('');
                     lge(`Unable to open the url after 4 retries in interval of 5 mins each (20 mins), found error 500.`);
