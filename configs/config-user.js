@@ -52,6 +52,7 @@ const configUser = {
         /net::ERR_NAME_NOT_RESOLVED at .*/g,
         /net::ERR_CONNECTION_CLOSED at .*/g,
         /net::ERR_ABORTED at .*/g,
+        /net::ERR_NETWORK_CHANGED at .*/g,
         /getaddrinfo ENOTFOUND .*/g,
         /connect ETIMEDOUT .*/g,
         'socket hang up',
