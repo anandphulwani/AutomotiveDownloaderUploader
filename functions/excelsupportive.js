@@ -25,7 +25,7 @@ function getUsernameTrimmed(username) {
 }
 
 function getSettingValueFromDC(filterBySettingName, filterBySettingValue, settingToExtract) {
-    if (dealerConfiguration === []) {
+    if (Array.isArray(dealerConfiguration) && dealerConfiguration.length === 0) {
         return false;
     }
     const singleelement = dealerConfiguration.filter((a) => a[filterBySettingName] === filterBySettingValue)[0];
@@ -35,7 +35,7 @@ function getSettingValueFromDC(filterBySettingName, filterBySettingValue, settin
 }
 
 function getSettingValueFromDCAsIs(filterBySettingName, filterBySettingValue, settingToExtract) {
-    if (dealerConfigurationAsIs === []) {
+    if (Array.isArray(dealerConfigurationAsIs) && dealerConfigurationAsIs.length === 0) {
         return false;
     }
     const indexOfObject = dealerConfiguration.findIndex((object) => object[filterBySettingName] === filterBySettingValue);
