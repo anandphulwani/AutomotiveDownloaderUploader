@@ -1,6 +1,7 @@
-// eslint-disable-next-line import/extensions
+/* eslint-disable import/extensions */
 import { readDealerConfigurationExcel, readDealerConfigurationFormatted } from './excel.js';
 import { lgu } from './loggerandlocksupportive.js';
+/* eslint-enable import/extensions */
 
 let dealerConfiguration = [];
 let dealerConfigurationAsIs = [];
