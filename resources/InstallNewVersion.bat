@@ -70,6 +70,7 @@ for %%F in (RunDownloader.exe RunUploader.exe) do (
     echo Set oLink = oWS.CreateShortcut^(sLinkFile^) >> CreateShortcut.vbs
     echo oLink.TargetPath = "%CD%\%%F" >> CreateShortcut.vbs
     echo oLink.Arguments = "!runCount!" >> CreateShortcut.vbs
+    echo oLink.WorkingDirectory = "%CD%" >> CreateShortcut.vbs
     echo oLink.Save >> CreateShortcut.vbs
     cscript CreateShortcut.vbs
     del CreateShortcut.vbs
