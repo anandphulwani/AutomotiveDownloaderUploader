@@ -88,11 +88,11 @@ if (config.environment === 'production' && !checkSync('contractors_folderTransfe
 }
 
 if (
-    !(
-        true && // validateConfigFile()
-        // // TODO: validateBookmarksAndCheckCredentialsPresent() => Dealer Name space in the middle gives validation error which it shoudl not
-        [validateDealerConfigurationExcelFile() !== 'error', validateBookmarksAndCheckCredentialsPresent() !== 'error'].every((i) => i)
-    )
+    [
+        validateConfigFile() === 'error',
+        validateDealerConfigurationExcelFile() === 'error',
+        validateBookmarksAndCheckCredentialsPresent() === 'error',
+    ].some((i) => i)
 ) {
     lge(`Please correct the above errors, in order to continue.`);
     if (config.environment === 'production') {

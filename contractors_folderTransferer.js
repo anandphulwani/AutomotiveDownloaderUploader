@@ -16,6 +16,9 @@ import { printSectionSeperator } from './functions/others.js';
 import checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer from './functions/contractors_workdonefile.js';
 import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
+import { validateConfigFile } from './functions/configvalidation.js';
+import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
+import { validateBookmarksAndCheckCredentialsPresent } from './functions/bookmarkvalidation.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -75,6 +78,18 @@ try {
 }
 // TODO: Delete accounting folders for last 5 dates only.
 
+if (
+    [
+        validateConfigFile() === 'error',
+        validateDealerConfigurationExcelFile() === 'error',
+        validateBookmarksAndCheckCredentialsPresent() === 'error',
+    ].some((i) => i)
+) {
+    lge(`Please correct the above errors, in order to continue.`);
+    if (config.environment === 'production') {
+        process.exit(1);
+    }
+}
 
 
 const headingOptions = {

@@ -88,11 +88,11 @@ await downloadBookmarksFromSourceToProcessing();
 // Non-shortcircuiting or: [f1(), f2()].some(i => i)
 
 if (
-    !(
-        true && // validateConfigFile()
-        // // TODO: validateBookmarksAndCheckCredentialsPresent() => Dealer Name space in the middle gives validation error which it shoudl not
-        [validateDealerConfigurationExcelFile() !== 'error', validateBookmarksAndCheckCredentialsPresent() !== 'error'].every((i) => i)
-    )
+    [
+        validateConfigFile() === 'error',
+        validateDealerConfigurationExcelFile() === 'error',
+        validateBookmarksAndCheckCredentialsPresent() === 'error',
+    ].some((i) => i)
 ) {
     lge(`Please correct the above errors, in order to continue.`);
     if (config.environment === 'production') {
@@ -352,6 +352,7 @@ try {
             }
         }
         await downloadBookmarksFromSourceToProcessing();
+        validateBookmarksAndCheckCredentialsPresent();
     }
 
     if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
