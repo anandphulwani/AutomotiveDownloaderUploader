@@ -1,14 +1,8 @@
 import fs from 'fs';
 import xlsx from 'xlsx';
-import chalk from 'chalk';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import {
-    allTrimStringArrayOfObjects,
-    trimMultipleSpacesInMiddleIntoOneArrayOfObjects,
-    trimSingleSpaceInMiddleArrayOfObjects,
-    trimSingleSpaceInMiddleArray,
-} from './stringformatting.js';
+import { allTrimStringArrayOfObjects, trimMultipleSpacesInMiddleIntoOneArrayOfObjects } from './stringformatting.js';
 import { lgd, lge } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 

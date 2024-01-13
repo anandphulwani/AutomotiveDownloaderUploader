@@ -1,13 +1,11 @@
 import fs from 'fs';
 import fsExtra from 'fs-extra';
-import mv from 'mv';
 import os from 'os';
-import chalk from 'chalk';
 import path from 'path';
 import randomstring from 'randomstring';
 
 /* eslint-disable import/extensions */
-import { lgc, lgd, lgdf, lge, lgs } from './loggerandlocksupportive.js';
+import { lgc, lgd, lgdf, lgs } from './loggerandlocksupportive.js';
 import { sleep } from './sleep.js';
 /* eslint-enable import/extensions */
 

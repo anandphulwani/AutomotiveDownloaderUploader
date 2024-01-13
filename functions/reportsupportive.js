@@ -4,7 +4,6 @@ import path from 'path';
 /* eslint-disable import/extensions */
 import { attainLock, releaseLock, lgc, lge } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
-// import { createBackupOfFile } from './datastoresupportive.js';
 import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
 import { makeDir } from './filesystem.js';
 import { setCurrentDealerConfiguration, getDealerNameFromDC } from './excelsupportive.js';

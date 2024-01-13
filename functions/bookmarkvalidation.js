@@ -1,8 +1,4 @@
-import chalk from 'chalk';
-
 /* eslint-disable import/extensions */
-import { config } from '../configs/config.js';
-import { getCredentialsForUsername } from './configsupportive.js';
 import { getAllUsernamesBookmarks } from './bookmarksupportive.js';
 import { setCurrentDealerConfiguration, getAllDealerNumbers } from './excelsupportive.js';
 import { checkForSpaceInBeginOrEnd, checkForMultipleSpacesInMiddle, allTrimString, trimMultipleSpacesInMiddleIntoOne } from './stringformatting.js';

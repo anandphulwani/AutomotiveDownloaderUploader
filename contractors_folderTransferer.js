@@ -1,18 +1,12 @@
-import chalk from 'chalk';
-import fs from 'fs';
-import path from 'path';
 import { checkSync, lockSync } from 'proper-lockfile';
 import cfonts from 'cfonts';
 
 /* eslint-disable import/extensions */
-import { currentTimeWOMSFormatted, instanceRunDateFormatted } from './functions/datetime.js';
+import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lge, lgc, lgi, lgif, lgu, lgd, lgwc } from './functions/loggerandlocksupportive.js';
+import { lge, lgi, lgu, lgwc } from './functions/loggerandlocksupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
-import { createDirAndCopyFile, createDirAndMoveFile, getFileCountRecursively, getFolderSizeInBytes, removeDir } from './functions/filesystem.js';
-import { getNumberOfImagesFromAllottedDealerNumberFolder } from './functions/datastoresupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
-import { printSectionSeperator } from './functions/others.js';
 import checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer from './functions/contractors_workdonefile.js';
 import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
@@ -90,7 +84,6 @@ if (
         process.exit(1);
     }
 }
-
 
 const headingOptions = {
     font: 'block', // font to use for the output

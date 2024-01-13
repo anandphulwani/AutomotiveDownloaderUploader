@@ -1,9 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs';
-import killChrome from 'kill-chrome';
-import puppeteer from 'puppeteer';
-import { exec, spawn } from 'child_process';
-import { keyInYN } from 'readline-sync';
+import { spawn } from 'child_process';
 import { URL as URLparser } from 'url';
 import path from 'path';
 import beautify from 'json-beautify';
@@ -12,21 +8,18 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { getCredentialsForUsername, getAppDomain, getLotConfigPropertiesValues } from './functions/configsupportive.js';
+import { getCredentialsForUsername, getLotConfigPropertiesValues } from './functions/configsupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
-import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
+import { sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength } from './functions/bookmarksupportive.js';
 import keyInYNWithTimeout from './functions/keyInYNWithTimeout.js';
-import { fillInTextbox, clickOnButton } from './functions/actionOnElements.js';
-import { waitForElementContainsOrEqualsText, waitForElementContainsOrEqualsHTML, waitTillCurrentURLStartsWith } from './functions/waiting.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
-import { gotoURL, gotoPageAndWaitTillCurrentURLStartsWith } from './functions/goto.js';
+import { gotoURL } from './functions/goto.js';
 import {
     downloadBookmarksFromSourceToProcessing,
     handleBookmarkURL,
-    removeChecksumFromBookmarksObj,
     replaceBookmarksElementByGUIDAndWriteToBookmarksFile,
 } from './functions/bookmark.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
@@ -36,7 +29,7 @@ import { validateConfigFile } from './functions/configvalidation.js';
 import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
-import { lgc, lge, lgi, lgic, lgif, lgu, lgwc } from './functions/loggerandlocksupportive.js';
+import { lgc, lge, lgi, lgif, lgu, lgwc } from './functions/loggerandlocksupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';

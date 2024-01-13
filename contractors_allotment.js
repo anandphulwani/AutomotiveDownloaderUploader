@@ -1,25 +1,21 @@
-// ONPROJECTFINISH: Do cleanup
-/* #region : Supporting functions */ /* #endregion */
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-import { exec, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import { keyInYN } from 'readline-sync';
 import cfonts from 'cfonts';
 import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
-import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
-import { lge, lgw, lgif, lgi, lgtf, lgd } from './functions/loggerandlocksupportive.js';
+import { sleep } from './functions/sleep.js';
+import { lge, lgtf, lgd } from './functions/loggerandlocksupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { config } from './configs/config.js';
-import { makeDir, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
+import { getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { createProcessingAndRecordKeepingFolders, setContractorsCurrentAllotted, setLastLotNumberAndDate } from './functions/configsupportive.js';
 import {
     recalculateRatioOfThreshHoldWithOtherContractors,
     validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs,
-    returnImageCountFromDealerDirs,
 } from './functions/allotmentsupportive.js';
 import { doAllotment } from './functions/allotment.js';
 import { printSectionSeperator } from './functions/others.js';

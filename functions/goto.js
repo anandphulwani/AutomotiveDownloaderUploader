@@ -1,10 +1,9 @@
-import chalk from 'chalk';
 import logSymbols from 'log-symbols';
 
 /* eslint-disable import/extensions */
 import { waitForSeconds } from './sleep.js';
 import { waitTillCurrentURLStartsWith, waitTillCurrentURLEndsWith } from './waiting.js';
-import { lgbf, lgc, lgcf, lgd, lge, lgi, lgu } from './loggerandlocksupportive.js';
+import { lgc, lgcf, lgd, lge } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';

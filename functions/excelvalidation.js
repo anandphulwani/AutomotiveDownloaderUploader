@@ -1,14 +1,7 @@
-import chalk from 'chalk';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { readDealerConfigurationExcel } from './excel.js';
-import {
-    allTrimStringArray,
-    trimMultipleSpacesInMiddleIntoOneArray,
-    trimSingleSpaceInMiddleArrayOfObjects,
-    trimSingleSpaceInMiddleArray,
-    removeDuplicates,
-} from './stringformatting.js';
+import { allTrimStringArray, trimMultipleSpacesInMiddleIntoOneArray, trimSingleSpaceInMiddleArray, removeDuplicates } from './stringformatting.js';
 import { lgd, lge, lgw } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 

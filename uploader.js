@@ -1,14 +1,13 @@
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { URL } from 'url';
-import { exec, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import { currentTimeWOMSFormatted, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
+import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { attainLock, releaseLock, lge, lgc, lgi, lgu, lgd, lgif, lgwc, lgic } from './functions/loggerandlocksupportive.js';
+import { lge, lgi, lgu, lgd, lgif, lgwc } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength } from './functions/bookmarksupportive.js';
@@ -19,23 +18,14 @@ import { getCredentialsForUsername } from './functions/configsupportive.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
-import { addUploadingToReport, getUnderProcessingAcToReport, readAndUpdateReportJSONObj } from './functions/reportsupportive.js';
+import { getUnderProcessingAcToReport, readAndUpdateReportJSONObj } from './functions/reportsupportive.js';
 import { validateConfigFile } from './functions/configvalidation.js';
 import {
-    createDirAndMoveFile,
     getFileCountNonRecursively,
     getFileCountRecursively,
-    getFolderSizeInBytes,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
-    createDirAndCopyFile,
 } from './functions/filesystem.js';
-import {
-    autoCleanUpDatastoreZones,
-    getUploadRemainingSummary,
-    getNumberOfImagesFromAllottedDealerNumberFolder,
-    getUniqueIDFromAllottedDealerNumberFolder,
-    getUniqueIDWithHashFromAllottedDealerNumberFolder,
-} from './functions/datastoresupportive.js';
+import { autoCleanUpDatastoreZones, getUploadRemainingSummary } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { getFoldersInUploadingZone, typeOfVINPathAndOtherVars, uploadBookmarkURL } from './functions/upload.js';
 import {

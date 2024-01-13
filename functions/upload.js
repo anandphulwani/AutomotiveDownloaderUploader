@@ -1,5 +1,4 @@
 import fs from 'fs';
-import chalk from 'chalk';
 import path from 'path';
 import logSymbols from 'log-symbols';
 import { URL as URLparser } from 'url';
@@ -7,9 +6,9 @@ import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './datetime.js';
-import { lgc, lgu, lge, lgw, lgi, lgcf, lgef, lgwf, lgif, lgh, lgtf, lgs, lgd, lgic } from './loggerandlocksupportive.js';
+import { lgc, lgu, lge, lgw, lgi, lgif, lgh, lgtf, lgs, lgd, lgic } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
-import { sleep, msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
+import { msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
 import {
     getDealerNameFromDCAsIs,
@@ -30,7 +29,7 @@ import {
     perImageTimeToUpload,
     perVINTimeToUpload,
 } from './datastoresupportive.js';
-import { createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty, getFileCountNonRecursively } from './filesystem.js';
+import { getFileCountNonRecursively } from './filesystem.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';

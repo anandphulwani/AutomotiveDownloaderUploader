@@ -1,9 +1,6 @@
 /* eslint-disable import/extensions */
-import chalk from 'chalk';
-import { config } from '../configs/config.js';
 import { lgu, lgc, lge, lgw, lgi, lgv, lgd, lgb, lgs, lgh, lgt } from '../functions/loggerandlocksupportive.js';
-import { sleep, waitForMilliSeconds } from '../functions/sleep.js';
-import { getColPosOnTerminal } from '../functions/terminal.js';
+import { waitForMilliSeconds } from '../functions/sleep.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import Color from '../class/Colors.js';

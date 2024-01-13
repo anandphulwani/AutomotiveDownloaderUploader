@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */

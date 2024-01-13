@@ -1,26 +1,17 @@
-// ONPROJECTFINISH: Do cleanup
 import chalk from 'chalk';
-import path from 'path';
 import fs from 'fs';
 import { question } from 'readline-sync';
-import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { zeroPad } from './stringformatting.js';
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock, lge, lgi, lgs, lgu, lgd, lgtf } from './loggerandlocksupportive.js';
+import { lge, lgi, lgu } from './loggerandlocksupportive.js';
 import { getIndexOfHighestIn2DArrayColumn } from './others.js';
 import { createDirAndCopyFile, createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty } from './filesystem.js';
-import { setCurrentDealerConfiguration, getAddTextToFolderNameFromDC } from './excelsupportive.js';
 import { addToContractorsCurrentAllotted, getLotConfigPropertiesValues } from './configsupportive.js';
 import { addAllotmentToReport } from './reportsupportive.js';
 import { getBookmarkFolderGUIDFromUsernameDealerNumber, replaceBookmarksElementByGUIDAndWriteToBookmarksFile } from './bookmark.js';
-import {
-    recalculateRatioOfImagesAllotted,
-    recalculateAllotmentPriority,
-    getDealerFolderContractorsZonePath,
-    getDealerFolderFinishedAllotmentZonePath,
-} from './allotmentsupportive.js';
+import { recalculateRatioOfImagesAllotted, recalculateAllotmentPriority } from './allotmentsupportive.js';
 import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 

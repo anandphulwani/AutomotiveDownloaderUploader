@@ -1,17 +1,14 @@
 import fs from 'fs';
 import path from 'path';
-import chalk from 'chalk';
 import logSymbols from 'log-symbols';
-import fsExtra from 'fs-extra';
-import { checkSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted, currentTime } from './datetime.js';
 import { config } from '../configs/config.js';
-import { attainLock, releaseLock, lge, lgc, lgi, lgb, lgu, lgd } from './loggerandlocksupportive.js';
+import { lgc, lgi, lgu, lgd } from './loggerandlocksupportive.js';
 import { createDirAndCopyFile, makeDir, removeDir } from './filesystem.js';
 import { instanceRunLogFilePrefix } from './loggervariables.js';
-import { getProjectConfigDirPath, getProjectLogsDirPath } from './projectpaths.js';
+import { getProjectLogsDirPath } from './projectpaths.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import { getUnderProcessingAcToReport } from './reportsupportive.js';

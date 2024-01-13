@@ -1,14 +1,10 @@
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment-timezone';
 import { isValid, parse } from 'date-fns';
-import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { getCredentialsForUsername } from './configsupportive.js';
-import { getAllDealerNumbers } from './excelsupportive.js';
 import { lgd, lge } from './loggerandlocksupportive.js';
 import { makeDir } from './filesystem.js';
 import { levels } from './logger.js';

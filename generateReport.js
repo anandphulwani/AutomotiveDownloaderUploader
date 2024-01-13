@@ -9,7 +9,6 @@ import { checkSync, lockSync } from 'proper-lockfile';
 import { config } from './configs/config.js';
 import { readDealerConfigurationFormatted } from './functions/excel.js';
 import { formatDate, getCurrentDate, getLastMonthDate } from './functions/datetime.js';
-import { msleep, sleep, waitForSeconds } from './functions/sleep.js';
 import {
     addAdditionalImagesColumnAlternatively,
     styleOfDateHeading,
@@ -42,12 +41,6 @@ import { copyDirOrFile, createDirAndCopyFile, makeDir } from './functions/filesy
 import { attainLock, releaseLock, lge, lgi, lgw, lgd, lgwc, lgu } from './functions/loggerandlocksupportive.js';
 import { printSectionSeperator } from './functions/others.js';
 import { zeroPad } from './functions/stringformatting.js';
-// import {
-//     allTrimStringArrayOfObjects,
-//     trimMultipleSpacesInMiddleIntoOneArrayOfObjects,
-//     trimSingleSpaceInMiddleArrayOfObjects,
-//     trimSingleSpaceInMiddleArray,
-// } from './stringformatting.js';
 /* eslint-enable import/extensions */
 
 const debug = false;

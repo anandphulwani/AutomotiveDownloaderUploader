@@ -1,14 +1,12 @@
-import chalk from 'chalk';
 import puppeteer from 'puppeteer';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { getCredentialsForUsername, getAppDomain } from './configsupportive.js';
+import { getAppDomain } from './configsupportive.js';
 import { fillInTextbox, clickOnButton } from './actionOnElements.js';
 import { waitForElementContainsOrEqualsText, waitTillCurrentURLStartsWith } from './waiting.js';
 import { gotoPageAndWaitTillCurrentURLStartsWith } from './goto.js';
-import { lge, lgi, lgu } from './loggerandlocksupportive.js';
-import Color from '../class/Colors.js';
+import { lge, lgu } from './loggerandlocksupportive.js';
 import checkBrowserClosed from './browserclosed.js';
 /* eslint-enable import/extensions */
 

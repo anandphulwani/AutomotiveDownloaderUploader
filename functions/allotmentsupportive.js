@@ -1,5 +1,3 @@
-// ONPROJECTFINISH: Do cleanup
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import beautify from 'json-beautify';
@@ -7,7 +5,7 @@ import beautify from 'json-beautify';
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
-import { lgd, lgs, lgtf, lgu } from './loggerandlocksupportive.js';
+import { lgd, lgu } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 /* #region : Supporting functions */

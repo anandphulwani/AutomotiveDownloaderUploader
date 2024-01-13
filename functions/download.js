@@ -1,7 +1,6 @@
 import https from 'https';
 import crypto from 'crypto';
 import fs from 'fs';
-import chalk from 'chalk';
 import path from 'path';
 import logSymbols from 'log-symbols';
 

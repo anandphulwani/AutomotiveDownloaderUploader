@@ -3,14 +3,7 @@ import path from 'path';
 import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
-import {
-    currentTime,
-    instanceRunDateFormatted,
-    instanceRunDateTimeSeparated,
-    instanceRunDateTimeWOMSSeparated,
-    instanceRunTime,
-    instanceRunTimeWOMS,
-} from './datetime.js';
+import { currentTime, instanceRunDateFormatted, instanceRunTime, instanceRunTimeWOMS } from './datetime.js';
 import { getProjectLogsDirPath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 

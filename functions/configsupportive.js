@@ -1,15 +1,10 @@
-import chalk from 'chalk';
 import fs from 'fs';
-import path from 'path';
 
 /* eslint-disable import/extensions */
-import { attainLock, releaseLock, lgc, lgs, lgu } from './loggerandlocksupportive.js';
+import { attainLock, releaseLock, lgc, lgu } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
-import { waitForMilliSeconds } from './sleep.js';
-// import { createBackupOfFile } from './datastoresupportive.js';
 import { makeDir } from './filesystem.js';
-import { instanceRunDateFormatted } from './datetime.js';
-import { getProjectConfigContractorsFilePath, getProjectConfigFilePath, getProjectConfigLotLastFilePath } from './projectpaths.js';
+import { getProjectConfigContractorsFilePath, getProjectConfigLotLastFilePath } from './projectpaths.js';
 /* eslint-enable import/extensions */
 
 function getCredentialsForUsername(username) {

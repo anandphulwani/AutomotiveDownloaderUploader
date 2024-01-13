@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { NtpTimeSync } from 'ntp-time-sync';
+
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
 import { lge, lgi } from './loggerandlocksupportive.js';
