@@ -110,9 +110,9 @@ function validateDealerConfigurationExcelFileColumnBooleanOrBlankOnly(usernameTr
 
 /**
  *
+ *
+ *
  * Supporting functions
- *
- *
  *
  *
  *
@@ -273,6 +273,7 @@ function checkForNumbersAndCommaOnlyInArray(usernameTrimmed, data, columnName) {
  * Default status is success,
  * Once set to warn, it cannot be set back to success
  * Once set to error, it cannot be set back to warn or success
+ *
  */
 function setResultStatus(statusToSet) {
     if (statusToSet === 'success') {
