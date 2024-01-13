@@ -64,9 +64,6 @@ if (config.environment === 'production') {
 autoCleanUpDatastoreZones();
 printSectionSeperator();
 
-await downloadBookmarksFromSourceToProcessing();
-
-// ONPROJECTFINISH: Remove the unused imports
 // NORMALPRIORITY: Error summary in the end.
 // TODO: disallow same dealerNumber folders in a username folder, and same username folder in bookmark bar
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
@@ -75,11 +72,9 @@ await downloadBookmarksFromSourceToProcessing();
 // Non-shortcircuiting or: [f1(), f2()].some(i => i)
 
 if (
-    [
-        validateConfigFile() === 'error',
-        validateDealerConfigurationExcelFile() === 'error',
-        validateBookmarksAndCheckCredentialsPresent() === 'error',
-    ].some((i) => i)
+    validateConfigFile() === 'error' ||
+    (await downloadBookmarksFromSourceToProcessing()) || // Check whether config is valid, then only update bookmarks first and then run `validateBookmarksAndCheckCredentialsPresent`
+    [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i)
 ) {
     lge(`Please correct the above errors, in order to continue.`);
     if (config.environment === 'production') {
