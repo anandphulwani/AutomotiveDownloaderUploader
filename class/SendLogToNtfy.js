@@ -21,8 +21,13 @@ export default async function sendLogToNtfy(filename, mesg) {
     let URLTOCallDecipher = crypto.createDecipheriv(encryptionAlgorithm, encryptionKey, Buffer.from(URLTOCallIV.toString('hex'), 'hex'));
     let URLToCall = URLTOCallDecipher.update(URLTOCallEncrypted, 'hex', 'utf8') + URLTOCallDecipher.final('utf8');
 
-    const uniqueCode = mesg.substring(25, 34);
-    mesg = mesg.substring(60);
+    const regexString = '^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}:\\d{3} \\[\\s*\\d*\\s*\\] \\[\\s*[A-Z]*\\s*\\]';
+    const regexExpression = new RegExp(regexString);
+    let uniqueCode = '';
+    if (regexExpression.test(mesg)) {
+        uniqueCode = mesg.substring(25, 34);
+        mesg = mesg.substring(60);
+    }
     const mesgpParts = mesg.split('\n');
     const title = mesgpParts[0];
     mesg = mesgpParts.length > 1 ? mesgpParts.slice(1).join('\n') : '';
