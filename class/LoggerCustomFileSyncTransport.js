@@ -1,5 +1,5 @@
 import Transport from 'winston-transport';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import fs from 'fs';
 import { dirname } from 'path';
 
 /* eslint-disable import/extensions */
@@ -11,8 +11,8 @@ export default class LoggerCustomFileSyncTransport extends Transport {
         super(opts);
         // Ensure log directory exists
         const logDir = dirname(opts.filename);
-        if (!existsSync(logDir)) {
-            mkdirSync(logDir, { recursive: true });
+        if (!fs.existsSync(logDir)) {
+            fs.mkdirSync(logDir, { recursive: true });
         }
         this.filename = opts.filename;
         this.logFormat = opts.format; // Your custom formatting pipeline
@@ -38,7 +38,7 @@ export default class LoggerCustomFileSyncTransport extends Transport {
         message = message.replace(/§×§/g, '×');
         // Synchronously write log message to file
         try {
-            writeFileSync(this.filename, message, { flag: 'a' });
+            fs.writeFileSync(this.filename, message, { flag: 'a' });
         } catch (err) {
             console.error('Error writing to log file:', err);
             process.exit(1);
