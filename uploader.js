@@ -70,11 +70,8 @@ autoCleanUpDatastoreZones();
 printSectionSeperator();
 
 if (
-    [
-        validateConfigFile() === 'error',
-        validateDealerConfigurationExcelFile() === 'error',
-        validateBookmarksAndCheckCredentialsPresent() === 'error',
-    ].some((i) => i)
+    validateConfigFile() === 'error' ||
+    [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i)
 ) {
     lge(`Please correct the above errors, in order to continue.`);
     if (config.environment === 'production') {
