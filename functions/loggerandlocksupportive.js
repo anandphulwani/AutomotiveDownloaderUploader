@@ -184,6 +184,10 @@ const getCallerDetails = (...args) => {
  */
 // Attempt to attainLock, retrying multiple times in a duration of 5 to 10 mins, before timing out
 function attainLock(fileToOperateOn, stale = 15000, debug = false) {
+    if (!syncOperationWithErrorHandling(fs.existsSync, fileToOperateOn)) {
+        lgs(`Unable to attainLock on file because it doesn't exist. fn attainLock(${fileToOperateOn})`);
+        process.exit(0);
+    }
     const callerDetailsList = getCallerDetailsList(new Error().stack).slice(1);
     const callerWithFunctionNameHierarchy = getCallerHierarchyWithFunctionNameFormatted(callerDetailsList);
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;
@@ -264,6 +268,10 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
 }
 
 function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
+    if (!syncOperationWithErrorHandling(fs.existsSync, fileToOperateOn)) {
+        lgs(`Unable to releaseLock on file because it doesn't exist. fn releaseLock(${fileToOperateOn})`);
+        process.exit(0);
+    }
     const callerDetailsList = getCallerDetailsList(new Error().stack).slice(1);
     const callerWithFunctionNameHierarchy = getCallerHierarchyWithFunctionNameFormatted(callerDetailsList);
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;
