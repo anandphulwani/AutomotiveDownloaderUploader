@@ -35,7 +35,7 @@ for /F "delims=" %%A in ('dir /b /ad /o-n AutomotiveDownloaderUploader*') do (
 :continue
 
 mkdir %folder%
-cd %folder%
+cd /D %folder%
 git clone https://github.com/anandphulwani/AutomotiveDownloaderUploader .
 echo.
 echo.
