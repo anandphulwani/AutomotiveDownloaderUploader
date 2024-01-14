@@ -188,7 +188,7 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;
     const logPath = path.join(getProjectLogsDirPath(), 'lockslog', instanceRunDateFormatted, instanceRunTimeWOMS, path.basename(fileToOperateOn));
     try {
-        debug ? fs.mkdirSync(logPath, { recursive: true }) : null;
+        debug && !fs.existsSync(logPath) ? fs.mkdirSync(logPath, { recursive: true }) : null;
         for (let lockTryIndex = 0; lockTryIndex <= 12000; lockTryIndex++) {
             if (lockTryIndex === 12000) {
                 lgs(`attainLock(${fileToOperateOn}): Unable to get the lock.`);
@@ -266,7 +266,7 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;
     const logPath = path.join(getProjectLogsDirPath(), 'lockslog', instanceRunDateFormatted, instanceRunTimeWOMS, path.basename(fileToOperateOn));
     try {
-        debug ? fs.mkdirSync(logPath, { recursive: true }) : null;
+        debug && !fs.existsSync(logPath) ? fs.mkdirSync(logPath, { recursive: true }) : null;
         for (let unlockTryIndex = 0; unlockTryIndex <= 12000; unlockTryIndex++) {
             if (unlockTryIndex !== 0 && unlockTryIndex % 1500 === 0) {
                 lgs(`Trying to get a unlock on: \n${fileToOperateOn}    ......`);
