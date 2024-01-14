@@ -182,7 +182,7 @@ const getCallerDetails = (...args) => {
  * being end then the stale is the time, till which the lock is considered active.
  *
  */
-// Attemp to attainLock, retrying multiple times in a duration of 5 to 10 mins, before timing out
+// Attempt to attainLock, retrying multiple times in a duration of 5 to 10 mins, before timing out
 function attainLock(fileToOperateOn, stale = 15000, debug = false) {
     const callerDetailsList = getCallerDetailsList(new Error().stack).slice(1);
     const callerWithFunctionNameHierarchy = getCallerHierarchyWithFunctionNameFormatted(callerDetailsList);
