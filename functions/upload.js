@@ -34,18 +34,19 @@ import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import checkBrowserClosed from './browserclosed.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 function getFoldersInUploadingZone(debug = false) {
     const foldersToUpload = {};
     const uploadingZoneWithTodaysDate = path.join(config.uploadingZonePath, instanceRunDateFormatted);
-    if (!fs.existsSync(uploadingZoneWithTodaysDate)) {
+    if (!syncOperationWithErrorHandling(fs.existsSync, uploadingZoneWithTodaysDate)) {
         return foldersToUpload;
     }
     // eslint-disable-next-line no-restricted-syntax
-    for (const uploadingZoneSubFolderAndFiles of fs.readdirSync(uploadingZoneWithTodaysDate)) {
+    for (const uploadingZoneSubFolderAndFiles of syncOperationWithErrorHandling(fs.readdirSync, uploadingZoneWithTodaysDate)) {
         const uploadingZoneSubFolderPath = path.join(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`, uploadingZoneSubFolderAndFiles);
-        const uploadingZoneStat = fs.statSync(uploadingZoneSubFolderPath);
+        const uploadingZoneStat = syncOperationWithErrorHandling(fs.statSync, uploadingZoneSubFolderPath);
 
         if (uploadingZoneStat.isDirectory()) {
             debug ? lgd(`uploadingZoneSubFolderPath: ${uploadingZoneSubFolderPath}`) : null;
@@ -235,7 +236,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     let VINFolderPathList;
     // eslint-disable-next-line no-useless-catch
     try {
-        VINFolderPathList = typeOfVINPath === 'VINFolder' ? fs.readdirSync(VINFolderOrFilePath) : [VINFolderOrFilePath];
+        VINFolderPathList =
+            typeOfVINPath === 'VINFolder' ? syncOperationWithErrorHandling(fs.readdirSync, VINFolderOrFilePath) : [VINFolderOrFilePath];
         lgi(`(${zeroPad(VINFolderPathList.length, 2)}): `, LoggingPrefix.false, LineSeparator.false);
 
         // eslint-disable-next-line no-restricted-syntax
@@ -246,7 +248,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 firstImage = VINFolderSubFolderAndFiles;
             }
             lgtf(`VINFolderSubFolderAndFiles: ${VINFolderSubFolderAndFiles}, VINFolderSubFolderAndFilesPath: ${VINFolderSubFolderAndFilesPath}`);
-            const VINFolderSubFolderAndFilesStat = fs.statSync(VINFolderSubFolderAndFilesPath);
+            const VINFolderSubFolderAndFilesStat = syncOperationWithErrorHandling(fs.statSync, VINFolderSubFolderAndFilesPath);
 
             if (VINFolderSubFolderAndFilesStat.isFile()) {
                 lgtf(`It is a VINFile.`);
@@ -733,14 +735,22 @@ function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
     let VINFolderOrFilePath;
     const pathOfVINFolderOrFile = path.join(uniqueIdFolderPath, VINNumberFromBookmark);
 
-    if (fs.existsSync(pathOfVINFolderOrFile) && fs.statSync(pathOfVINFolderOrFile).isDirectory()) {
+    if (
+        syncOperationWithErrorHandling(fs.existsSync, pathOfVINFolderOrFile) &&
+        syncOperationWithErrorHandling(fs.statSync, pathOfVINFolderOrFile).isDirectory()
+    ) {
         typeOfVINPath = 'VINFolder';
         VINFolderOrFilePath = pathOfVINFolderOrFile;
-    } else if (fs.existsSync(pathOfVINFolderOrFile) && fs.statSync(pathOfVINFolderOrFile).isFile()) {
+    } else if (
+        syncOperationWithErrorHandling(fs.existsSync, pathOfVINFolderOrFile) &&
+        syncOperationWithErrorHandling(fs.statSync, pathOfVINFolderOrFile).isFile()
+    ) {
         lgu(`Path: '${pathOfVINFolderOrFile}' is a file, without any extension like .jpg/.png, unable to process further.`);
         process.exit(0);
-    } else if (fs.existsSync(uniqueIdFolderPath)) {
-        const filesStartingWithVINNumber = fs.readdirSync(uniqueIdFolderPath).filter((file) => file.startsWith(`${VINNumberFromBookmark}.`));
+    } else if (syncOperationWithErrorHandling(fs.existsSync, uniqueIdFolderPath)) {
+        const filesStartingWithVINNumber = syncOperationWithErrorHandling(fs.readdirSync, uniqueIdFolderPath).filter((file) =>
+            file.startsWith(`${VINNumberFromBookmark}.`)
+        );
         if (filesStartingWithVINNumber.length > 1) {
             lgu(
                 `Multiple files found starting with the same '${'VINNumberFromBookmark'}.', unable to continue, found these: ${beautify(

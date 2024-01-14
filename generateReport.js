@@ -41,6 +41,7 @@ import { copyDirOrFile, createDirAndCopyFile, makeDir } from './functions/filesy
 import { attainLock, releaseLock, lge, lgi, lgw, lgd, lgwc, lgu } from './functions/loggerandlocksupportive.js';
 import { printSectionSeperator } from './functions/others.js';
 import { zeroPad } from './functions/stringformatting.js';
+import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
@@ -130,7 +131,7 @@ for (let i = 0; i < dates.length; i++) {
     const rowsDate = dates[i];
     const formattedDate = formatDate(rowsDate, 'DD-MMM-YYYY__YYYY-MM-DD');
     const reportJSONFilePath = path.join(config.reportsJSONPath, `${year}-${month}`, `${formattedDate}_report.json`);
-    if (!fs.existsSync(reportJSONFilePath)) {
+    if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
         const dateWithDayOfWeek = formatDate(rowsDate, 'DD-MMM-YYYY__DD(EEE)');
         missingDates.push(dateWithDayOfWeek);
     }
@@ -157,7 +158,7 @@ for (const typeOfExcel of typesOfExcel) {
 
         const excelFilename = `${username} (${typeOfExcel})_${monthInMMM}_${year}.xlsx`;
         const excelFullPath = path.join(reportGenerationPath, excelFilename);
-        if (!fs.existsSync(reportGenerationPath)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, reportGenerationPath)) {
             makeDir(reportGenerationPath);
         }
         const dealerConfiguration = readDealerConfigurationFormatted(username);
@@ -184,12 +185,12 @@ for (const typeOfExcel of typesOfExcel) {
             const rowsDate = transposedData[i][0];
             const formattedDate = formatDate(rowsDate, 'DD-MMM-YYYY__YYYY-MM-DD');
             const reportJSONFilePath = path.join(config.reportsJSONPath, `${year}-${month}`, `${formattedDate}_report.json`);
-            if (!fs.existsSync(reportJSONFilePath)) {
+            if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
                 // eslint-disable-next-line no-continue
                 continue;
             }
             attainLock(reportJSONFilePath, undefined, false);
-            const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+            const reportJSONContents = syncOperationWithErrorHandling(fs.readFileSync, reportJSONFilePath, 'utf8');
             releaseLock(reportJSONFilePath, undefined, false);
 
             let reportJSONObj = JSON.parse(reportJSONContents);
@@ -999,7 +1000,7 @@ for (const typeOfExcel of typesOfExcel) {
         }
 
         if (typeOfExcel === 'merged') {
-            if (!fs.existsSync(config.reportsMergedCopyPath)) {
+            if (!syncOperationWithErrorHandling(fs.existsSync, config.reportsMergedCopyPath)) {
                 makeDir(config.reportsMergedCopyPath);
             }
             createDirAndCopyFile(excelFullPath, path.join(config.reportsMergedCopyPath, path.basename(excelFullPath)), true);
@@ -1037,7 +1038,7 @@ const finishers = [...new Set(Object.values(config.contractors).map((contractor)
 for (const contractor of Object.keys(config.contractors)) {
     const excelFilename = `${contractor} ${monthInMMM}_${year}.xlsx`;
     const excelFullPath = path.join(reportGenerationPath, 'contractors', excelFilename);
-    if (!fs.existsSync(path.join(reportGenerationPath, 'contractors'))) {
+    if (!syncOperationWithErrorHandling(fs.existsSync, path.join(reportGenerationPath, 'contractors'))) {
         makeDir(path.join(reportGenerationPath, 'contractors'));
     }
     // const dealerConfigurationWithDates = [['', 'Date', ...dates]];
@@ -1065,12 +1066,12 @@ for (const contractor of Object.keys(config.contractors)) {
         const rowsDate = transposedData[i][0];
         const formattedDate = formatDate(rowsDate, 'DD-MMM-YYYY__YYYY-MM-DD');
         const reportJSONFilePath = path.join(config.reportsJSONPath, `${year}-${month}`, `${formattedDate}_report.json`);
-        if (!fs.existsSync(reportJSONFilePath)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
             // eslint-disable-next-line no-continue
             continue;
         }
         attainLock(reportJSONFilePath, undefined, false);
-        const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+        const reportJSONContents = syncOperationWithErrorHandling(fs.readFileSync, reportJSONFilePath, 'utf8');
         releaseLock(reportJSONFilePath, undefined, false);
 
         const reportJSONObj = JSON.parse(reportJSONContents);
@@ -1184,7 +1185,7 @@ for (const contractor of Object.keys(config.contractors)) {
     xlsx.writeFile(workbook, excelFullPath, { sheetStubs: true });
 
     const contractorExcelReportDir = `${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\excel_reports\\`;
-    if (!fs.existsSync(contractorExcelReportDir)) {
+    if (!syncOperationWithErrorHandling(fs.existsSync, contractorExcelReportDir)) {
         makeDir(contractorExcelReportDir);
     }
     copyDirOrFile(excelFullPath, path.join(contractorExcelReportDir, `${monthInMMM}_${year}.xlsx`), true);

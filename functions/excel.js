@@ -4,11 +4,12 @@ import xlsx from 'xlsx';
 import { config } from '../configs/config.js';
 import { allTrimStringArrayOfObjects, trimMultipleSpacesInMiddleIntoOneArrayOfObjects } from './stringformatting.js';
 import { lgd, lge } from './loggerandlocksupportive.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 function readDealerConfigurationExcel(username, debug = false) {
     const excelFilename = `${config.dealerConfigurationPath}\\${username}.xlsx`;
-    if (!fs.existsSync(excelFilename)) {
+    if (!syncOperationWithErrorHandling(fs.existsSync, excelFilename)) {
         lge(`Dealer configuration excel file: ${excelFilename} does not exist, Please check.`);
         process.exit(1);
     }

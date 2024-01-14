@@ -20,6 +20,7 @@ import {
 import { doAllotment } from './functions/allotment.js';
 import { printSectionSeperator } from './functions/others.js';
 import FolderToBeAllotted from './class/FolderToBeAllotted.js';
+import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
@@ -65,7 +66,7 @@ cfonts.say(lotFolderName.replace('_', ' '), lotHeadingOptions);
 
 lgtf(`region : Validation section 02: BEGIN`);
 /* #region : Validation section 02 */
-if (!fs.existsSync(lotFolderPath)) {
+if (!syncOperationWithErrorHandling(fs.existsSync, lotFolderPath)) {
     lge(`Lot folder path: ${lotFolderPath} does not exist, Please check.`);
     process.exit(1);
 }

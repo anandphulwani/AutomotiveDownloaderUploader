@@ -7,11 +7,12 @@ import randomstring from 'randomstring';
 /* eslint-disable import/extensions */
 import { lgc, lgd, lgdf, lgs } from './loggerandlocksupportive.js';
 import { sleep } from './sleep.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 function makeDir(dirPath, escalateError = false, debug = false) {
     try {
-        fs.mkdirSync(dirPath, { recursive: true });
+        syncOperationWithErrorHandling(fs.mkdirSync, dirPath, { recursive: true });
         debug ? lgd(`Folder path created successfully : ${dirPath}`) : null;
     } catch (error) {
         if (escalateError) {
@@ -56,7 +57,7 @@ function copyDirOrFile(fromPath, toPath, overwrite = false, debug = false) {
 }
 
 function createDirAndMoveFile(fromPath, toPath, overwrite = false, debug = false) {
-    if (!fs.existsSync(path.dirname(toPath))) {
+    if (!syncOperationWithErrorHandling(fs.existsSync, path.dirname(toPath))) {
         debug ? lgd(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Executing.`) : null;
         makeDir(`${path.dirname(toPath)}/`, undefined, debug);
         debug ? lgd(`createDirAndMoveFile function : making directory: ${path.dirname(toPath)} : Done.`) : null;
@@ -65,7 +66,7 @@ function createDirAndMoveFile(fromPath, toPath, overwrite = false, debug = false
 }
 
 function createDirAndCopyFile(fromPath, toPath, overwrite = false, debug = false) {
-    if (!fs.existsSync(path.dirname(toPath))) {
+    if (!syncOperationWithErrorHandling(fs.existsSync, path.dirname(toPath))) {
         debug ? lgd(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Executing.`) : null;
         makeDir(`${path.dirname(toPath)}/`, undefined, debug);
         debug ? lgd(`createDirAndCopyFile function : making directory: ${path.dirname(toPath)} : Done.`) : null;
@@ -85,9 +86,9 @@ function createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(fromPath, toPath
 }
 
 function writeFileWithVerification(pathOfFile, fileContents, noOfLines = -1, noOfLinesComparison = '=', isTrim = false) {
-    fs.writeFileSync(`${pathOfFile}.tempToVerify`, fileContents);
-    if (fs.existsSync(`${pathOfFile}.tempToVerify`)) {
-        let tempToVerifyContents = fs.readFileSync(`${pathOfFile}.tempToVerify`, 'utf8');
+    syncOperationWithErrorHandling(fs.writeFileSync, `${pathOfFile}.tempToVerify`, fileContents);
+    if (syncOperationWithErrorHandling(fs.existsSync, `${pathOfFile}.tempToVerify`)) {
+        let tempToVerifyContents = syncOperationWithErrorHandling(fs.readFileSync, `${pathOfFile}.tempToVerify`, 'utf8');
         if (isTrim) {
             tempToVerifyContents = tempToVerifyContents.trim();
         }
@@ -107,13 +108,16 @@ function writeFileWithVerification(pathOfFile, fileContents, noOfLines = -1, noO
             }
         }
         if (comparisonResult && tempToVerifyContents === fileContents) {
-            fs.renameSync(`${pathOfFile}.tempToVerify`, pathOfFile);
-            if (fs.existsSync(pathOfFile) && !fs.existsSync(`${pathOfFile}.tempToVerify`)) {
+            syncOperationWithErrorHandling(fs.renameSync, `${pathOfFile}.tempToVerify`, pathOfFile);
+            if (
+                syncOperationWithErrorHandling(fs.existsSync, pathOfFile) &&
+                !syncOperationWithErrorHandling(fs.existsSync, `${pathOfFile}.tempToVerify`)
+            ) {
                 return true;
             }
             return false;
         }
-        fs.unlinkSync(`${pathOfFile}.tempToVerify`);
+        syncOperationWithErrorHandling(fs.unlinkSync, `${pathOfFile}.tempToVerify`);
     }
     return false;
 }
@@ -132,7 +136,7 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
      * This is a nodejs problem.
      */
     if (!recursiveDelete) {
-        const dirPathCount = fs.readdirSync(dirPath).length;
+        const dirPathCount = syncOperationWithErrorHandling(fs.readdirSync, dirPath).length;
         if (dirPathCount > 0) {
             lgs(`Unable to remove the directory, because it is not empty : ${dirPath}`);
             process.exit(1);
@@ -150,7 +154,7 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
 
 function removeDirIfExists(dirPath, recursiveDelete = false, debug = false) {
     debug ? lgd('Removing Directory If Exists : Executing') : null;
-    if (fs.existsSync(dirPath)) {
+    if (syncOperationWithErrorHandling(fs.existsSync, dirPath)) {
         removeDir(dirPath, recursiveDelete, debug);
     }
     debug ? lgd('Removing Directory If Exists: Done') : null;
@@ -161,7 +165,7 @@ function removeParentDirIfEmpty(dirPath, recursiveDeleteParentLevel = 1, debug =
     // Run it so that it just not traverses above 3 directories
     for (let loopIndex = 0; loopIndex < recursiveParentLevel; loopIndex++) {
         const parentDir = path.dirname(dirPath);
-        const parentDirFilesCount = fs.readdirSync(parentDir).length;
+        const parentDirFilesCount = syncOperationWithErrorHandling(fs.readdirSync, parentDir).length;
         debug
             ? lgd(
                   `parentDir: ${parentDir},    parentDirFilesCount: ${parentDirFilesCount} ${
@@ -201,13 +205,13 @@ function generateTempFolderWithRandomText(debug = false) {
 
 function getFileCountRecursively(dirPath, debug = false) {
     let count = 0;
-    if (fs.existsSync(dirPath)) {
-        const files = fs.readdirSync(dirPath);
+    if (syncOperationWithErrorHandling(fs.existsSync, dirPath)) {
+        const files = syncOperationWithErrorHandling(fs.readdirSync, dirPath);
         debug ? lgd(`files.length: ${files.length}`) : null;
         // eslint-disable-next-line no-restricted-syntax
         for (const file of files) {
             const filePath = path.join(dirPath, file);
-            const stat = fs.statSync(filePath);
+            const stat = syncOperationWithErrorHandling(fs.statSync, filePath);
             if (stat.isFile()) {
                 count++;
             } else if (stat.isDirectory()) {
@@ -221,8 +225,8 @@ function getFileCountRecursively(dirPath, debug = false) {
 
 function getFileCountNonRecursively(dirPath) {
     let count = 0;
-    if (fs.existsSync(dirPath)) {
-        fs.readdirSync(dirPath).forEach(() => {
+    if (syncOperationWithErrorHandling(fs.existsSync, dirPath)) {
+        syncOperationWithErrorHandling(fs.readdirSync, dirPath).forEach(() => {
             count++;
         });
     }
@@ -232,9 +236,9 @@ function getFileCountNonRecursively(dirPath) {
 function getListOfSubfoldersStartingWith(dirPath, startingTxt, isStrict = false) {
     let filteredSubFoldersAndFiles = [];
     try {
-        const subFoldersAndFiles = fs.readdirSync(dirPath);
+        const subFoldersAndFiles = syncOperationWithErrorHandling(fs.readdirSync, dirPath);
         filteredSubFoldersAndFiles = subFoldersAndFiles.filter((subFolderOrFile) => {
-            const isDirectory = fs.statSync(`${dirPath}/${subFolderOrFile}`).isDirectory();
+            const isDirectory = syncOperationWithErrorHandling(fs.statSync, `${dirPath}/${subFolderOrFile}`).isDirectory();
             return isDirectory && subFolderOrFile.startsWith(startingTxt);
         });
         filteredSubFoldersAndFiles.sort((a, b) => {
@@ -261,11 +265,11 @@ function getListOfSubfoldersStartingWith(dirPath, startingTxt, isStrict = false)
 
 function getFolderSizeInBytes(folderPath) {
     let totalSize = 0;
-    const files = fs.readdirSync(folderPath);
+    const files = syncOperationWithErrorHandling(fs.readdirSync, folderPath);
     // eslint-disable-next-line no-restricted-syntax
     for (const file of files) {
         const filePath = path.join(folderPath, file);
-        const stat = fs.statSync(filePath);
+        const stat = syncOperationWithErrorHandling(fs.statSync, filePath);
         if (stat.isFile()) {
             totalSize += stat.size;
         } else if (stat.isDirectory()) {

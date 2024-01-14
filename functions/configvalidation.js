@@ -8,6 +8,7 @@ import { config } from '../configs/config.js';
 import { lgd, lge } from './loggerandlocksupportive.js';
 import { makeDir } from './filesystem.js';
 import { levels } from './logger.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 const currentConfigParams = [
@@ -292,7 +293,7 @@ function validateConfigFile(debug = false) {
                     `Config's '${configsKey}': '${configsSubKey}': Invalid value (${configsSubValue}) which is not enclosed in string literal i.e ' and '.`
                 );
                 validationStatus = 'error';
-            } else if (configsSubKey === 'executablePath' && !fs.existsSync(configsSubValue)) {
+            } else if (configsSubKey === 'executablePath' && !syncOperationWithErrorHandling(fs.existsSync, configsSubValue)) {
                 // For 'executablePath' validation
                 lge(`Config's '${configsKey}': '${configsSubKey}': File '${configsSubValue}' does not exist.`);
                 validationStatus = 'error';
@@ -325,10 +326,10 @@ function validateConfigFile(debug = false) {
                                 validationStatus = 'error';
                             } else {
                                 const userDataDir = userDataDirArg.split('=')[1];
-                                if (!fs.existsSync(userDataDir)) {
+                                if (!syncOperationWithErrorHandling(fs.existsSync, userDataDir)) {
                                     lge(`Config's '${configsKey}': '${configsSubKey}': '--user-data-dir=' Path does not exist.`);
                                     validationStatus = 'error';
-                                } else if (!fs.statSync(userDataDir).isDirectory()) {
+                                } else if (!syncOperationWithErrorHandling(fs.statSync, userDataDir).isDirectory()) {
                                     lge(`Config's '${configsKey}': '${configsSubKey}': '--user-data-dir=' Path exists, but is not a directory.`);
                                     validationStatus = 'error';
                                 }
@@ -615,7 +616,7 @@ function validateConfigFile(debug = false) {
         if (typeof filePathValue !== 'string') {
             lge(`Config's '${filePathKey}': Invalid value (${filePathValue}) which is not string.`);
             validationStatus = 'error';
-        } else if (!fs.existsSync(filePathValue)) {
+        } else if (!syncOperationWithErrorHandling(fs.existsSync, filePathValue)) {
             lge(`Config's '${filePathKey}': File '${filePathValue}' does not exist.`);
             validationStatus = 'error';
         }
@@ -632,7 +633,7 @@ function validateConfigFile(debug = false) {
         if (typeof pathValue !== 'string') {
             lge(`Config's '${pathKey}': Invalid value (${pathValue}) which is not string.`);
             validationStatus = 'error';
-        } else if (!fs.existsSync(pathValue)) {
+        } else if (!syncOperationWithErrorHandling(fs.existsSync, pathValue)) {
             try {
                 makeDir(pathValue, true);
             } catch (err) {
@@ -640,7 +641,7 @@ function validateConfigFile(debug = false) {
                  * Do Nothing
                  */
             }
-            if (!fs.existsSync(pathValue)) {
+            if (!syncOperationWithErrorHandling(fs.existsSync, pathValue)) {
                 lge(`Config's '${pathKey}': Folder '${pathValue}' does not exist, Unable to create it programmatically.`);
                 validationStatus = 'error';
             }

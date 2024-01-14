@@ -5,6 +5,7 @@ import path from 'path';
 import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
 import { config } from '../configs/config.js';
 import { getRemainingBookmarksNotDownloadedLength } from './bookmarksupportive.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 const cuttingDoneFolderName = config.cutterProcessingFolders[0];
@@ -16,7 +17,7 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
     // Check if JSON file of report exists, because that means some download is done and the first lot is allotted.
     const reportDateFolder = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted);
     const reportJSONFilePath = path.join(reportDateFolder, `${instanceRunDateFormatted}_report.json`);
-    if (!fs.existsSync(reportJSONFilePath)) {
+    if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
         return;
     }
 
@@ -32,7 +33,10 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
      * Ignore if downloadPath/TodaysDate contains some data.
      */
     const downloadPathWithTodaysDate = `${config.downloadPath}\\${instanceRunDateFormatted}`;
-    if (fs.existsSync(downloadPathWithTodaysDate) && fs.readdirSync(downloadPathWithTodaysDate).length !== 0) {
+    if (
+        syncOperationWithErrorHandling(fs.existsSync, downloadPathWithTodaysDate) &&
+        syncOperationWithErrorHandling(fs.readdirSync, downloadPathWithTodaysDate).length !== 0
+    ) {
         return;
     }
 
@@ -50,7 +54,7 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
          * Ignore `contractor` if its contractorsZonePath is not present.
          */
         const contractorPath = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted);
-        if (!fs.existsSync(contractorPath)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, contractorPath)) {
             // eslint-disable-next-line no-continue
             continue;
         }
@@ -58,7 +62,7 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
          * Ignore if contractorZonePath contains files allotted are already present, i.e. folders except
          * cuttingDoneFolderName, finishingBufferFolderName, readyToUploadFolderName
          */
-        let contractorPathFiles = fs.readdirSync(contractorPath);
+        let contractorPathFiles = syncOperationWithErrorHandling(fs.readdirSync, contractorPath);
         contractorPathFiles = contractorPathFiles.filter(
             (filename) => ![cuttingDoneFolderName, finishingBufferFolderName, readyToUploadFolderName].includes(filename)
         );
@@ -70,14 +74,14 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
          * Ignore `contractor` if its contractors cuttingDone folder is not present.
          */
         const contractorPathCuttingDone = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted, cuttingDoneFolderName);
-        if (!fs.existsSync(contractorPath)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, contractorPath)) {
             // eslint-disable-next-line no-continue
             continue;
         }
         /**
          * Ignore `contractor` if its contractors cuttingDone folder has files present in the cuttingDone folder.
          */
-        const contractorPathCuttingDoneFiles = fs.readdirSync(contractorPathCuttingDone);
+        const contractorPathCuttingDoneFiles = syncOperationWithErrorHandling(fs.readdirSync, contractorPathCuttingDone);
         if (contractorPathCuttingDoneFiles.length !== 0) {
             // eslint-disable-next-line no-continue
             continue;
@@ -90,8 +94,8 @@ function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
             finishingBufferFolderName
         );
         const allWorkDoneFileFullPath = path.join(cuttersFinishersFinishingBufferPath, allWorkDoneFile);
-        if (!fs.existsSync(allWorkDoneFileFullPath)) {
-            fs.closeSync(fs.openSync(allWorkDoneFileFullPath, 'a'));
+        if (!syncOperationWithErrorHandling(fs.existsSync, allWorkDoneFileFullPath)) {
+            syncOperationWithErrorHandling(fs.closeSync, fs.openSync(allWorkDoneFileFullPath, 'a'));
             cuttersCompletedAndDoneFileCreated.push(allWorkDoneFile);
         }
     }

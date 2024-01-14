@@ -36,6 +36,7 @@ import LoggingPrefix from './class/LoggingPrefix.js';
 import { levels, loggerConsoleLevel } from './functions/logger.js';
 import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
+import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -108,7 +109,7 @@ LotIndexArray.pop();
 // eslint-disable-next-line no-restricted-syntax
 for (const LotIndexEle of LotIndexArray) {
     const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
-    if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\${LotIndexEle}`)) {
+    if (syncOperationWithErrorHandling(fs.existsSync, `${config.downloadPath}\\${instanceRunDateFormatted}\\${LotIndexEle}`)) {
         const subprocess = spawn(
             'cmd.exe',
             [
@@ -181,7 +182,7 @@ try {
                         usernameTrimmed,
                         dealerLevelBookmarkName
                     );
-                    if (fs.existsSync(dealerLevelPath)) {
+                    if (syncOperationWithErrorHandling(fs.existsSync, dealerLevelPath)) {
                         imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
                         dealerFolderCntInLot++;
                     }
@@ -209,7 +210,12 @@ try {
                         (lotCfgMinDealerFolders === undefined || dealerFolderCntInLot >= lotCfgMinDealerFolders) &&
                         (lotCfgImagesQty === undefined || imagesQtyInLot >= lotCfgImagesQty)
                     ) {
-                        if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
+                        if (
+                            syncOperationWithErrorHandling(
+                                fs.existsSync,
+                                `${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`
+                            )
+                        ) {
                             const subprocess = spawn(
                                 'cmd.exe',
                                 [
@@ -275,16 +281,28 @@ try {
                                 if (config.isUpdateBookmarksOnceDone) {
                                     try {
                                         const bookmarksNotAppendFile = path.join(getProjectLogsDirPath(), 'bookmarksNotAppend.txt');
-                                        fs.appendFileSync(bookmarksNotAppendFile, `${'-'.repeat(120)}\n`);
+                                        syncOperationWithErrorHandling(fs.appendFileSync, bookmarksNotAppendFile, `${'-'.repeat(120)}\n`);
                                         fs.appendFileSync(
                                             bookmarksNotAppendFile,
                                             `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, \nvehicleBookmark.name: ${vehicleBookmark.name}, \nvehicleBookmark.url: ${vehicleBookmark.url}\n`
                                         );
 
-                                        fs.appendFileSync(bookmarksNotAppendFile, `vehicleBookmark.guid: ${vehicleBookmark.guid}\n`);
-                                        fs.appendFileSync(bookmarksNotAppendFile, `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}\n`);
-                                        fs.appendFileSync(bookmarksNotAppendFile, `returnObj: ${beautify(returnObj, null, 3, 120)}\n`);
-                                        fs.appendFileSync(bookmarksNotAppendFile, `${'+'.repeat(120)}\n`);
+                                        syncOperationWithErrorHandling(
+                                            fs.appendFileSync,
+                                            bookmarksNotAppendFile,
+                                            `vehicleBookmark.guid: ${vehicleBookmark.guid}\n`
+                                        );
+                                        syncOperationWithErrorHandling(
+                                            fs.appendFileSync,
+                                            bookmarksNotAppendFile,
+                                            `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}\n`
+                                        );
+                                        syncOperationWithErrorHandling(
+                                            fs.appendFileSync,
+                                            bookmarksNotAppendFile,
+                                            `returnObj: ${beautify(returnObj, null, 3, 120)}\n`
+                                        );
+                                        syncOperationWithErrorHandling(fs.appendFileSync, bookmarksNotAppendFile, `${'+'.repeat(120)}\n`);
                                     } catch (err) {
                                         lgc(err);
                                     }
@@ -300,7 +318,7 @@ try {
                         usernameTrimmed,
                         dealerLevelBookmarkName
                     );
-                    if (fs.existsSync(dealerLevelPath)) {
+                    if (syncOperationWithErrorHandling(fs.existsSync, dealerLevelPath)) {
                         imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
                         dealerFolderCntInLot++;
                     }
@@ -337,7 +355,7 @@ try {
         validateBookmarksAndCheckCredentialsPresent();
     }
 
-    if (fs.existsSync(`${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
+    if (syncOperationWithErrorHandling(fs.existsSync, `${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
         const subprocess = spawn(
             'cmd.exe',
             [

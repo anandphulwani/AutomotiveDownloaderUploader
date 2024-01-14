@@ -40,6 +40,7 @@ import keyInYNWithTimeout from './functions/keyInYNWithTimeout.js';
 import { levels, loggerConsoleLevel } from './functions/logger.js';
 import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
+import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
@@ -94,7 +95,7 @@ if (config.environment === 'production' && !checkSync('contractors_folderTransfe
 const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
 let reportJSONObj;
 let isDumbUploader = false;
-if (!fs.existsSync(reportJSONFilePath)) {
+if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
     lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Shifting to DUMB uploader mode.`);
     isDumbUploader = true;
 }
@@ -153,7 +154,7 @@ try {
                     const uniqueIdArrCommonInUploadDiretoryAndBookmarksName = uniqueIdArr.filter((value) => uniqueIdOfFoldersShifted.includes(value));
                     // eslint-disable-next-line no-restricted-syntax
                     for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
-                        if (!fs.existsSync(foldersToUpload[uniqueIdElement].path)) {
+                        if (!syncOperationWithErrorHandling(fs.existsSync, foldersToUpload[uniqueIdElement].path)) {
                             lge(
                                 `Unable to find dealer folder: '${path.basename(
                                     foldersToUpload[uniqueIdElement].path
@@ -225,7 +226,7 @@ try {
                                     returnObj.result === true ||
                                     (returnObj.result === false && returnObj.bookmarkAppendMesg === 'Ignoring (Does not Exist)')
                                 ) {
-                                    if (fs.existsSync(returnObj.moveSource)) {
+                                    if (syncOperationWithErrorHandling(fs.existsSync, returnObj.moveSource)) {
                                         createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(
                                             returnObj.moveSource,
                                             returnObj.moveDestination,

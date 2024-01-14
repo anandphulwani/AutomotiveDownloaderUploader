@@ -10,6 +10,7 @@ import { lgd, lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
@@ -60,7 +61,7 @@ async function downloadFileAndCompareWithChecksum(
                 // after download completed close filestream
                 file.close();
 
-                const fileBuffer = fs.readFileSync(file.path);
+                const fileBuffer = syncOperationWithErrorHandling(fs.readFileSync, file.path);
                 const hashSum = crypto.createHash(hashAlgo);
                 hashSum.update(fileBuffer);
                 if (checksumOfFile === hashSum.digest('hex')) {

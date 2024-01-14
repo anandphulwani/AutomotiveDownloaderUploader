@@ -5,6 +5,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { currentTime, instanceRunDateFormatted, instanceRunTime, instanceRunTimeWOMS } from './datetime.js';
 import { getProjectLogsDirPath } from './projectpaths.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
@@ -38,11 +39,11 @@ const instanceRunLogFilePrefix = path.join(
     ].join('')
 );
 const instanceRunLogFilePrefixDir = path.dirname(instanceRunLogFilePrefix);
-if (!fs.existsSync(instanceRunLogFilePrefixDir)) {
-    fs.mkdirSync(instanceRunLogFilePrefixDir, { recursive: true });
+if (!syncOperationWithErrorHandling(fs.existsSync, instanceRunLogFilePrefixDir)) {
+    syncOperationWithErrorHandling(fs.mkdirSync, instanceRunLogFilePrefixDir, { recursive: true });
 }
-if (!fs.existsSync(instanceRunLogFilePrefix)) {
-    fs.writeFileSync(instanceRunLogFilePrefix, '', (err) => {});
+if (!syncOperationWithErrorHandling(fs.existsSync, instanceRunLogFilePrefix)) {
+    syncOperationWithErrorHandling(fs.writeFileSync, instanceRunLogFilePrefix, '', (err) => {});
 }
 if (!checkSync(instanceRunLogFilePrefix, { stale: 15000 })) {
     // Stale for 12 hours
@@ -69,8 +70,8 @@ if (!checkSync(instanceRunLogFilePrefix, { stale: 15000 })) {
             instanceRunTimeWOMS,
             `logs{Slash}${instanceRunDateFormatted}{Slash}${path.basename(instanceRunLogFilePrefix)}`
         );
-        if (!fs.existsSync(logPath)) {
-            fs.mkdirSync(logPath, { recursive: true });
+        if (!syncOperationWithErrorHandling(fs.existsSync, logPath)) {
+            syncOperationWithErrorHandling(fs.mkdirSync, logPath, { recursive: true });
         }
         fs.appendFileSync(
             `${logPath}/${currentTime()}_AttainedLock_loggervariables.js.txt`,

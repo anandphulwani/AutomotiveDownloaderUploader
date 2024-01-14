@@ -13,6 +13,7 @@ import { addAllotmentToReport } from './reportsupportive.js';
 import { getBookmarkFolderGUIDFromUsernameDealerNumber, replaceBookmarksElementByGUIDAndWriteToBookmarksFile } from './bookmark.js';
 import { recalculateRatioOfImagesAllotted, recalculateAllotmentPriority } from './allotmentsupportive.js';
 import Color from '../class/Colors.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 function checkDealerDirectoriesExistsInBookmarkFile(dealerDirectories, isDryRun) {
@@ -197,7 +198,7 @@ function doAllotment(
             /* #region Check paths already exists */
             const pathsToCheck = [dealerDirectories[index].destinationRecordKeepingPath, dealerDirectories[index].destinationPath];
             for (let i = 0; i < pathsToCheck.length; i++) {
-                if (fs.existsSync(pathsToCheck[i])) {
+                if (syncOperationWithErrorHandling(fs.existsSync, pathsToCheck[i])) {
                     lge(`Folder: ${pathsToCheck[i]} already exists, cannot process ${dealerDirectories[index].dealerFolderPath} to its location.`);
                     doesDestinationFolderAlreadyExists = true;
                 }

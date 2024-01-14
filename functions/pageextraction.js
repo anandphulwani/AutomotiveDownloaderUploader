@@ -14,6 +14,7 @@ import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import { handleErrorWhileURLNavigation } from './goto.js';
 import checkBrowserClosed from './browserclosed.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 async function getImagesFromContent(page, lotIndex, username, dealerFolder, debug = false) {
@@ -77,7 +78,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         }
 
         debug ? lgd(`Downloading image: ${imageOriginalURLS[imageNumberToDownload - 1]}`) : null;
-        const file = fs.createWriteStream(`${tempPath}/${zeroPad(imageNumberToDownload, 3)}.jpg`);
+        const file = syncOperationWithErrorHandling(fs.createWriteStream, `${tempPath}/${zeroPad(imageNumberToDownload, 3)}.jpg`);
 
         let shortFilename = '';
         if (imageNumbersToDownload.length === 1) {

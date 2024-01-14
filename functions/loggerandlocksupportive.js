@@ -30,6 +30,7 @@ import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import CallerHierarchyAndUniqueId from '../class/CallerHierarchyAndUniqueId.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 /* #region callerDetails.js */
@@ -188,7 +189,9 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;
     const logPath = path.join(getProjectLogsDirPath(), 'lockslog', instanceRunDateFormatted, instanceRunTimeWOMS, path.basename(fileToOperateOn));
     try {
-        debug && !fs.existsSync(logPath) ? fs.mkdirSync(logPath, { recursive: true }) : null;
+        debug && !syncOperationWithErrorHandling(fs.existsSync, logPath)
+            ? syncOperationWithErrorHandling(fs.mkdirSync, logPath, { recursive: true })
+            : null;
         for (let lockTryIndex = 0; lockTryIndex <= 12000; lockTryIndex++) {
             if (lockTryIndex === 12000) {
                 lgs(`attainLock(${fileToOperateOn}): Unable to get the lock.`);
@@ -266,7 +269,9 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
     const callerFunctionName = getCallerDetails(callerDetailsList).functionName;
     const logPath = path.join(getProjectLogsDirPath(), 'lockslog', instanceRunDateFormatted, instanceRunTimeWOMS, path.basename(fileToOperateOn));
     try {
-        debug && !fs.existsSync(logPath) ? fs.mkdirSync(logPath, { recursive: true }) : null;
+        debug && !syncOperationWithErrorHandling(fs.existsSync, logPath)
+            ? syncOperationWithErrorHandling(fs.mkdirSync, logPath, { recursive: true })
+            : null;
         for (let unlockTryIndex = 0; unlockTryIndex <= 12000; unlockTryIndex++) {
             if (unlockTryIndex !== 0 && unlockTryIndex % 1500 === 0) {
                 lgs(`Trying to get a unlock on: \n${fileToOperateOn}    ......`);
@@ -291,7 +296,11 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
                 unlockSync(fileToOperateOn);
                 if (debug) {
                     const filename = `${logPath}/${currentTime()}_ReleasedLock_${callerFunctionName}.txt`;
-                    fs.appendFileSync(filename, `Released A Lock On '${fileToOperateOn}', caller: ${callerWithFunctionNameHierarchy}.\n`);
+                    syncOperationWithErrorHandling(
+                        fs.appendFileSync,
+                        filename,
+                        `Released A Lock On '${fileToOperateOn}', caller: ${callerWithFunctionNameHierarchy}.\n`
+                    );
                 }
             }
             break;
@@ -326,7 +335,7 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
 // ONPROJECTFINISH: Check if all codes are present in log files which are generated because winston is found to not log in files just before process.exit(1)
 /* #region getLastNonCatchErrorLogLevels9DigitUniqueId(), generateAndGetNonCatchErrorLogLevels9DigitUniqueId() : Begin */
 function getLastNonCatchErrorLogLevels9DigitUniqueId() {
-    const configContent = fs.readFileSync(getProjectConfigUniqueIdsFilePath(), 'utf8');
+    const configContent = syncOperationWithErrorHandling(fs.readFileSync, getProjectConfigUniqueIdsFilePath(), 'utf8');
     const lastNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',[\\r\\n|\\n])`;
     const lastNonCatchErrorRegexExpression = new RegExp(lastNonCatchErrorRegexString);
 
@@ -350,7 +359,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
     let nonCatchErrorCode;
     try {
         const currentNonCatchErrorLogLevels9DigitUniqueId = getLastNonCatchErrorLogLevels9DigitUniqueId();
-        const configContent = fs.readFileSync(fileToOperateOn, 'utf8');
+        const configContent = syncOperationWithErrorHandling(fs.readFileSync, fileToOperateOn, 'utf8');
 
         const currentNonCatchErrorRegexString = `(    nonCatchErrorLogLevels9DigitUniqueId: ')(.*?)(',[\\r\\n|\\n])`;
         const currentNonCatchErrorRegexExpression = new RegExp(currentNonCatchErrorRegexString);
@@ -376,7 +385,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
             releaseLock(fileToOperateOn, undefined, false);
             process.exit(1);
         }
-        fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
+        syncOperationWithErrorHandling(fs.writeFileSync, fileToOperateOn, newConfigContent, 'utf8');
         releaseLock(fileToOperateOn, undefined, false);
     } catch (err) {
         lgu(err, new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block04', ''));
@@ -388,7 +397,7 @@ function generateAndGetNonCatchErrorLogLevels9DigitUniqueId() {
 
 /* #region getLastCatchErrorLogLevels6DigitUniqueId(), generateAndGetCatchErrorLogLevels6DigitUniqueId() : Begin */
 function getLastCatchErrorLogLevels6DigitUniqueId() {
-    const configContent = fs.readFileSync(getProjectConfigUniqueIdsFilePath(), 'utf8');
+    const configContent = syncOperationWithErrorHandling(fs.readFileSync, getProjectConfigUniqueIdsFilePath(), 'utf8');
     const lastCatchErrorRegexString = `(    catchErrorLogLevels6DigitUniqueId: ')(.*?)(',[\\r\\n|\\n])`;
     const lastCatchErrorRegexExpression = new RegExp(lastCatchErrorRegexString);
 
@@ -412,7 +421,7 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
     let catchErrorCode;
     try {
         const currentCatchErrorLogLevels6DigitUniqueId = getLastCatchErrorLogLevels6DigitUniqueId();
-        const configContent = fs.readFileSync(fileToOperateOn, 'utf8');
+        const configContent = syncOperationWithErrorHandling(fs.readFileSync, fileToOperateOn, 'utf8');
 
         const currentCatchErrorRegexString = `(    catchErrorLogLevels6DigitUniqueId: ')(.*?)(',[\\r\\n|\\n])`;
         const currentCatchErrorRegexExpression = new RegExp(currentCatchErrorRegexString);
@@ -438,7 +447,7 @@ function generateAndGetCatchErrorLogLevels6DigitUniqueId() {
             releaseLock(fileToOperateOn, undefined, false);
             process.exit(1);
         }
-        fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
+        syncOperationWithErrorHandling(fs.writeFileSync, fileToOperateOn, newConfigContent, 'utf8');
         releaseLock(fileToOperateOn, undefined, false);
     } catch (err) {
         lgu(err, new CallerHierarchyAndUniqueId('loggerandlocksupportive.js:Block08', ''));

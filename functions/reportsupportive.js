@@ -7,13 +7,14 @@ import { config } from '../configs/config.js';
 import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
 import { makeDir } from './filesystem.js';
 import { setCurrentDealerConfiguration, getDealerNameFromDC } from './excelsupportive.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 function readAndUpdateReportJSONObj(reportJSONFilePath) {
     let reportJSONObj;
     try {
         attainLock(reportJSONFilePath, undefined, false);
-        const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+        const reportJSONContents = syncOperationWithErrorHandling(fs.readFileSync, reportJSONFilePath, 'utf8');
         reportJSONObj = JSON.parse(reportJSONContents);
         releaseLock(reportJSONFilePath, undefined, false);
     } catch (err) {
@@ -29,14 +30,14 @@ function addAllotmentToReport(allotmentDetails) {
     makeDir(reportDateFolder);
     const reportJSONFilePath = path.join(reportDateFolder, `${instanceRunDateFormatted}_report.json`);
     try {
-        if (!fs.existsSync(reportJSONFilePath)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
             const jsonString = JSON.stringify({}, null, 3);
-            fs.writeFileSync(reportJSONFilePath, jsonString);
+            syncOperationWithErrorHandling(fs.writeFileSync, reportJSONFilePath, jsonString);
         }
         // createBackupOfFile(fileToOperateOn, newConfigUserContent);
         attainLock(reportJSONFilePath, undefined, false);
 
-        const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+        const reportJSONContents = syncOperationWithErrorHandling(fs.readFileSync, reportJSONFilePath, 'utf8');
         const reportJSONObj = JSON.parse(reportJSONContents);
 
         let currentUsernamesDealerConfiguration = null;
@@ -68,7 +69,7 @@ function addAllotmentToReport(allotmentDetails) {
             };
         }
         const updatedReportJSONObj = JSON.stringify(reportJSONObj, null, 3);
-        fs.writeFileSync(reportJSONFilePath, updatedReportJSONObj, 'utf8');
+        syncOperationWithErrorHandling(fs.writeFileSync, reportJSONFilePath, updatedReportJSONObj, 'utf8');
         releaseLock(reportJSONFilePath, undefined, false);
     } catch (err) {
         lgc(err);
@@ -80,14 +81,14 @@ function addAllotmentToReport(allotmentDetails) {
 function addUploadingToReport(uploadingDetail) {
     const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
     try {
-        if (!fs.existsSync(reportJSONFilePath)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
             lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Exiting.`);
             process.exit(1);
         }
         // createBackupOfFile(fileToOperateOn, newConfigUserContent);
         attainLock(reportJSONFilePath, undefined, false);
 
-        const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+        const reportJSONContents = syncOperationWithErrorHandling(fs.readFileSync, reportJSONFilePath, 'utf8');
         const reportJSONObj = JSON.parse(reportJSONContents);
 
         const allotmentFolderName = uploadingDetail[0];
@@ -118,7 +119,7 @@ function addUploadingToReport(uploadingDetail) {
             process.exit(1);
         }
         const updatedReportJSONObj = JSON.stringify(reportJSONObj, null, 3);
-        fs.writeFileSync(reportJSONFilePath, updatedReportJSONObj, 'utf8');
+        syncOperationWithErrorHandling(fs.writeFileSync, reportJSONFilePath, updatedReportJSONObj, 'utf8');
         releaseLock(reportJSONFilePath, undefined, false);
     } catch (err) {
         lgc(err);
@@ -131,13 +132,13 @@ function addUploadingToReport(uploadingDetail) {
 function getUnderProcessingAcToReport() {
     const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
     try {
-        if (!fs.existsSync(reportJSONFilePath)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
             return { underProcessingDealerFolders: undefined, underProcessingImgQty: undefined };
         }
         // createBackupOfFile(fileToOperateOn, newConfigUserContent);
         attainLock(reportJSONFilePath, undefined, false);
 
-        const reportJSONContents = fs.readFileSync(reportJSONFilePath, 'utf8');
+        const reportJSONContents = syncOperationWithErrorHandling(fs.readFileSync, reportJSONFilePath, 'utf8');
         const reportJSONObj = JSON.parse(reportJSONContents);
 
         const unfinishedObjects = Object.values(reportJSONObj).filter(

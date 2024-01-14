@@ -12,6 +12,7 @@ import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import { getNumberOfImagesFromAllottedDealerNumberFolder, getUniqueIDWithHashFromAllottedDealerNumberFolder } from './datastoresupportive.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 const finishingBufferFolderName = config.finisherProcessingFolders[0];
@@ -68,18 +69,21 @@ function checkIfFoldersPresentInFinishersUploadingZoneDir() {
         /**
          * Check ReadyToUpload folder exists.
          */
-        if (!fs.existsSync(filteredContractorDestinationDir)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, filteredContractorDestinationDir)) {
             // eslint-disable-next-line no-continue
             continue;
         }
 
         // eslint-disable-next-line no-restricted-syntax
-        for (const filteredContractorDestinationSubFolderAndFiles of fs.readdirSync(filteredContractorDestinationDir)) {
+        for (const filteredContractorDestinationSubFolderAndFiles of syncOperationWithErrorHandling(
+            fs.readdirSync,
+            filteredContractorDestinationDir
+        )) {
             const filteredContractorDestinationSubFolderPath = path.join(
                 filteredContractorDestinationDir,
                 filteredContractorDestinationSubFolderAndFiles
             );
-            const filteredContractorDestinationStat = fs.statSync(filteredContractorDestinationSubFolderPath);
+            const filteredContractorDestinationStat = syncOperationWithErrorHandling(fs.statSync, filteredContractorDestinationSubFolderPath);
             if (filteredContractorDestinationStat.isDirectory()) {
                 return true;
             }
@@ -103,7 +107,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
     for (const filteredContractor of filteredContractorsByType) {
         const filteredContractorDestinationDir = `${config.contractorsZonePath}\\${filteredContractor}\\${instanceRunDateFormatted}\\${sourceFolderName}`;
         // Check CuttingDone/ReadyToUpload folder exists.
-        if (!fs.existsSync(filteredContractorDestinationDir)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, filteredContractorDestinationDir)) {
             lgw(`${typeOfContractor}'s ${typeOfSourceFolder} folder doesn't exist: ${filteredContractorDestinationDir}, Ignoring.`);
             // eslint-disable-next-line no-continue
             continue;
@@ -112,16 +116,27 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
         // Get all the folders which are not holding any locks
         const unlockedFolders = [];
         // eslint-disable-next-line no-restricted-syntax
-        for (const filteredContractorDestinationSubFolderAndFiles of fs.readdirSync(filteredContractorDestinationDir)) {
+        for (const filteredContractorDestinationSubFolderAndFiles of syncOperationWithErrorHandling(
+            fs.readdirSync,
+            filteredContractorDestinationDir
+        )) {
             const filteredContractorDestinationSubFolderPath = path.join(
                 filteredContractorDestinationDir,
                 filteredContractorDestinationSubFolderAndFiles
             );
-            const filteredContractorDestinationStat = fs.statSync(filteredContractorDestinationSubFolderPath);
+            const filteredContractorDestinationStat = syncOperationWithErrorHandling(fs.statSync, filteredContractorDestinationSubFolderPath);
             if (filteredContractorDestinationStat.isDirectory()) {
                 try {
-                    fs.renameSync(filteredContractorDestinationSubFolderPath, `${filteredContractorDestinationSubFolderPath} `);
-                    fs.renameSync(`${filteredContractorDestinationSubFolderPath} `, filteredContractorDestinationSubFolderPath.trim());
+                    syncOperationWithErrorHandling(
+                        fs.renameSync,
+                        filteredContractorDestinationSubFolderPath,
+                        `${filteredContractorDestinationSubFolderPath} `
+                    );
+                    syncOperationWithErrorHandling(
+                        fs.renameSync,
+                        `${filteredContractorDestinationSubFolderPath} `,
+                        filteredContractorDestinationSubFolderPath.trim()
+                    );
                     unlockedFolders.push(filteredContractorDestinationSubFolderAndFiles);
                 } catch (err) {
                     const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
@@ -146,7 +161,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                 filteredContractorDestinationDir,
                 filteredContractorDestinationSubFolderAndFiles
             );
-            const filteredContractorDestinationStat = fs.statSync(filteredContractorDestinationSubFolderPath);
+            const filteredContractorDestinationStat = syncOperationWithErrorHandling(fs.statSync, filteredContractorDestinationSubFolderPath);
             // Check CuttingDone/ReadyToUpload item is a folder
             if (!filteredContractorDestinationStat.isDirectory()) {
                 warnNowOrLater(
@@ -168,7 +183,11 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                 const newFilteredContractorDestinationSubFolderPath = `${path.dirname(
                     filteredContractorDestinationSubFolderPath
                 )}/${folderWithOkAlreadMovedRemoved}`;
-                fs.renameSync(filteredContractorDestinationSubFolderPath, newFilteredContractorDestinationSubFolderPath);
+                syncOperationWithErrorHandling(
+                    fs.renameSync,
+                    filteredContractorDestinationSubFolderPath,
+                    newFilteredContractorDestinationSubFolderPath
+                );
                 filteredContractorDestinationSubFolderAndFiles = folderWithOkAlreadMovedRemoved;
                 filteredContractorDestinationSubFolderPath = path.join(
                     filteredContractorDestinationDir,
@@ -219,7 +238,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                 for (const contractorInSubLoop of Object.keys(config.contractors)) {
                     const contractorDoneSubFolderDir = `${config.contractorsRecordKeepingPath}\\${contractorInSubLoop}_Acnt\\${cuttingAccountingFolderName}\\${instanceRunDateFormatted}\\${filteredContractorDestinationSubFolderAndFiles}`;
                     // const contractorDoneSubFolderDir = `${config.contractorsZonePath}\\${contractorInSubLoop}\\${instanceRunDateFormatted}\\000_Done\\${contractorReadyToUploadSubFolderAndFiles}`;
-                    if (fs.existsSync(contractorDoneSubFolderDir)) {
+                    if (syncOperationWithErrorHandling(fs.existsSync, contractorDoneSubFolderDir)) {
                         cutter = contractorInSubLoop;
                         break;
                     }
@@ -338,11 +357,11 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
             if (isOverwrite === false) {
                 let doesDestinationFolderAlreadyExists = false;
                 let folderExistMesg = `Folder cannot be moved to new location as it already exists, Renaming to 'AlreadyMoved_',\nFolder: ${dealerImagesFolder}`;
-                if (fs.existsSync(destinationPath)) {
+                if (syncOperationWithErrorHandling(fs.existsSync, destinationPath)) {
                     folderExistMesg += `\nDestination: ${destinationPath}`;
                     doesDestinationFolderAlreadyExists = true;
                 }
-                if (fs.existsSync(contractorAccountingPath)) {
+                if (syncOperationWithErrorHandling(fs.existsSync, contractorAccountingPath)) {
                     folderExistMesg += `\nDestination (Accounting): ${contractorAccountingPath}`;
                     doesDestinationFolderAlreadyExists = true;
                 }
@@ -356,14 +375,18 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
                         instanceRunDateFormatted,
                         path.basename(dealerImagesFolder)
                     );
-                    if (fs.existsSync(otherAccountingZonePath)) {
+                    if (syncOperationWithErrorHandling(fs.existsSync, otherAccountingZonePath)) {
                         folderExistMesg += `\nDestination (Other Accounting): ${otherAccountingZonePath}`;
                         doesDestinationFolderAlreadyExists = true;
                     }
                 }
                 if (doesDestinationFolderAlreadyExists) {
                     lgw(folderExistMesg);
-                    fs.renameSync(dealerImagesFolder, `${path.dirname(dealerImagesFolder)}/AlreadyMoved_${path.basename(dealerImagesFolder)}`);
+                    syncOperationWithErrorHandling(
+                        fs.renameSync,
+                        dealerImagesFolder,
+                        `${path.dirname(dealerImagesFolder)}/AlreadyMoved_${path.basename(dealerImagesFolder)}`
+                    );
                     foldersToShift.splice(cnt, 1);
                 }
             }

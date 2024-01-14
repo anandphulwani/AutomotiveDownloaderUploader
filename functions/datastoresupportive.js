@@ -12,6 +12,7 @@ import { getProjectLogsDirPath } from './projectpaths.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import { getUnderProcessingAcToReport } from './reportsupportive.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -50,15 +51,15 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
     /* #region: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
     // eslint-disable-next-line no-restricted-syntax
     for (const folderToCleanUp of foldersToCleanUp) {
-        if (!fs.existsSync(folderToCleanUp)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, folderToCleanUp)) {
             // eslint-disable-next-line no-continue
             continue;
         }
         const dateRegexString = `^\\d{4}-\\d{2}-\\d{2}$`;
         const dateRegexExpression = new RegExp(dateRegexString);
-        const folderPathChildren = fs.readdirSync(folderToCleanUp);
+        const folderPathChildren = syncOperationWithErrorHandling(fs.readdirSync, folderToCleanUp);
         const folderPathChildrenSubDirsOnly = folderPathChildren.filter(
-            (file) => fs.lstatSync(path.join(folderToCleanUp, file)).isDirectory() && dateRegexExpression.test(file)
+            (file) => syncOperationWithErrorHandling(fs.lstatSync, path.join(folderToCleanUp, file)).isDirectory() && dateRegexExpression.test(file)
         ); // Filter out only subdirectories and subdirectories which match YYYY-MM-DD format using regex
         folderPathChildrenSubDirsOnly.sort(); // Sort subdirectories by name
         let overrideNoOfDaysToKeep = noOfDaysDataToKeep;
@@ -76,16 +77,16 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
     lgi(`01:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
     /* #region: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
-    if (fs.existsSync(config.lockingBackupsZonePath)) {
+    if (syncOperationWithErrorHandling(fs.existsSync, config.lockingBackupsZonePath)) {
         // eslint-disable-next-line no-restricted-syntax
-        for (const dateDir of fs.readdirSync(config.lockingBackupsZonePath)) {
+        for (const dateDir of syncOperationWithErrorHandling(fs.readdirSync, config.lockingBackupsZonePath)) {
             const datePath = path.join(config.lockingBackupsZonePath, dateDir);
-            if (fs.statSync(datePath).isDirectory()) {
-                const dateDirFilesAndFolders = fs.readdirSync(datePath);
+            if (syncOperationWithErrorHandling(fs.statSync, datePath).isDirectory()) {
+                const dateDirFilesAndFolders = syncOperationWithErrorHandling(fs.readdirSync, datePath);
                 // Filter only the files that are not in lockDirectories
                 const zeroSizeFiles = dateDirFilesAndFolders.filter((file) => {
                     const filePath = path.join(datePath, file);
-                    const statSync = fs.statSync(filePath);
+                    const statSync = syncOperationWithErrorHandling(fs.statSync, filePath);
                     const isDirectory = statSync.isDirectory();
                     const isSizeZero = statSync.size === 0;
                     return !isDirectory && isSizeZero;
@@ -94,7 +95,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
                 // eslint-disable-next-line no-restricted-syntax
                 for (const file of zeroSizeFiles) {
                     const filePath = path.join(datePath, file);
-                    fs.unlinkSync(filePath);
+                    syncOperationWithErrorHandling(fs.unlinkSync, filePath);
                 }
             }
         }
@@ -104,8 +105,8 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
 
     /* #region: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
     const lockingBackupsDirWithTodaysDate = `${config.lockingBackupsZonePath}\\${instanceRunDateFormatted}`;
-    if (fs.existsSync(lockingBackupsDirWithTodaysDate)) {
-        const lockingBackupsFiles = fs.readdirSync(lockingBackupsDirWithTodaysDate);
+    if (syncOperationWithErrorHandling(fs.existsSync, lockingBackupsDirWithTodaysDate)) {
+        const lockingBackupsFiles = syncOperationWithErrorHandling(fs.readdirSync, lockingBackupsDirWithTodaysDate);
         const ignoreFilesStartWith = ['Bookmarks'];
 
         // Step 1: Group files by their prefix
@@ -165,7 +166,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
 
         finalFiles.forEach((filePath) => {
             try {
-                fs.unlinkSync(path.join(lockingBackupsDirWithTodaysDate, filePath));
+                syncOperationWithErrorHandling(fs.unlinkSync, path.join(lockingBackupsDirWithTodaysDate, filePath));
             } catch (error) {
                 lgc(`Failed to delete file: ${filePath}`, error);
             }
@@ -175,10 +176,10 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
     lgi(`03:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const dateDir of fs.readdirSync(getProjectLogsDirPath())) {
+    for (const dateDir of syncOperationWithErrorHandling(fs.readdirSync, getProjectLogsDirPath())) {
         const entryPath = path.join(getProjectLogsDirPath(), dateDir);
-        if (fs.statSync(entryPath).isDirectory()) {
-            const dateDirFilesAndFolders = fs.readdirSync(entryPath, { withFileTypes: true });
+        if (syncOperationWithErrorHandling(fs.statSync, entryPath).isDirectory()) {
+            const dateDirFilesAndFolders = syncOperationWithErrorHandling(fs.readdirSync, entryPath, { withFileTypes: true });
             let lockDirectories = dateDirFilesAndFolders
                 .filter((dirent) => dirent.isDirectory() && dirent.name.endsWith('.lock'))
                 .map((dirent) => path.join(entryPath, dirent.name));
@@ -191,7 +192,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
                 const isNotLocked = !lockDirectories.some((lockDir) => dirent.name.startsWith(lockDir));
                 let isSizeZero;
                 try {
-                    isSizeZero = fs.statSync(filePath).size === 0;
+                    isSizeZero = syncOperationWithErrorHandling(fs.statSync, filePath).size === 0;
                 } catch (error) {
                     const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
                     const resourceBusyOrLockedOrNotPermittedRegexExpression = new RegExp(resourceBusyOrLockedOrNotPermittedRegexString);
@@ -207,7 +208,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
             // eslint-disable-next-line no-restricted-syntax
             for (const file of nonLockFiles) {
                 const filePath = path.join(entryPath, file.name);
-                fs.unlinkSync(filePath);
+                syncOperationWithErrorHandling(fs.unlinkSync, filePath);
             }
         }
     }
@@ -300,7 +301,7 @@ function createBackupOfFile(fileToOperateOn, dataToBeWritten, debug = false) {
     createDirAndCopyFile(fromPath, toPath);
     if (path.basename(fileToOperateOn) === 'Bookmarks') {
         makeDir(path.dirname(toPathToWrite));
-        fs.writeFileSync(toPathToWrite, dataToBeWritten);
+        syncOperationWithErrorHandling(fs.writeFileSync, toPathToWrite, dataToBeWritten);
     }
 }
 

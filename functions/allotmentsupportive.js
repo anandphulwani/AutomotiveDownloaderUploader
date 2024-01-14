@@ -6,6 +6,7 @@ import beautify from 'json-beautify';
 import { config } from '../configs/config.js';
 import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
 import { lgd, lgu } from './loggerandlocksupportive.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 /* #region : Supporting functions */
@@ -178,23 +179,23 @@ function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lot
     let doesLotFolderPathContainsFiles = false;
     const dealerDirs = [];
     // eslint-disable-next-line no-restricted-syntax
-    for (const usernameFolder of fs.readdirSync(lotFldrPath)) {
+    for (const usernameFolder of syncOperationWithErrorHandling(fs.readdirSync, lotFldrPath)) {
         // TODO: one of the config.credentials.username matches usernameFolder
         const usernameFolderPath = path.join(lotFldrPath, usernameFolder);
 
-        if (fs.statSync(usernameFolderPath).isDirectory()) {
+        if (syncOperationWithErrorHandling(fs.statSync, usernameFolderPath).isDirectory()) {
             // eslint-disable-next-line no-restricted-syntax
-            for (const dealerFolder of fs.readdirSync(usernameFolderPath)) {
+            for (const dealerFolder of syncOperationWithErrorHandling(fs.readdirSync, usernameFolderPath)) {
                 const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
 
-                if (fs.statSync(dealerFolderPath).isDirectory()) {
+                if (syncOperationWithErrorHandling(fs.statSync, dealerFolderPath).isDirectory()) {
                     // TODO: Replace below variable VINFolder to VINFolderOrFile
                     // eslint-disable-next-line no-restricted-syntax
-                    for (const VINFolder of fs.readdirSync(dealerFolderPath)) {
+                    for (const VINFolder of syncOperationWithErrorHandling(fs.readdirSync, dealerFolderPath)) {
                         const VINFolderPath = path.join(dealerFolderPath, VINFolder);
 
-                        if (fs.statSync(VINFolderPath).isDirectory()) {
-                            const VINFolderLength = fs.readdirSync(VINFolderPath).length;
+                        if (syncOperationWithErrorHandling(fs.statSync, VINFolderPath).isDirectory()) {
+                            const VINFolderLength = syncOperationWithErrorHandling(fs.readdirSync, VINFolderPath).length;
                             debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : null;
                             if (VINFolderLength > 0) {
                                 doesLotFolderPathContainsFiles = true;
@@ -205,7 +206,7 @@ function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lot
                             doesLotFolderPathContainsFiles = true;
                         }
                     }
-                    if (fs.existsSync(dealerFolderPath)) {
+                    if (syncOperationWithErrorHandling(fs.existsSync, dealerFolderPath)) {
                         dealerDirs.push(dealerFolderPath);
                     }
                 }
@@ -227,14 +228,14 @@ function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lot
 /* #region : returnImageCountFromDealerDir (lotFldrPath, debug = false) {...} */
 function returnImageCountFromDealerDir(dealerDir, debug = false) {
     let totalNoOfDealerFolderFiles = 0;
-    if (fs.existsSync(dealerDir)) {
+    if (syncOperationWithErrorHandling(fs.existsSync, dealerDir)) {
         // eslint-disable-next-line no-restricted-syntax
-        for (const VINFolder of fs.readdirSync(dealerDir)) {
+        for (const VINFolder of syncOperationWithErrorHandling(fs.readdirSync, dealerDir)) {
             const VINFolderPath = path.join(dealerDir, VINFolder);
-            const VINFolderStat = fs.statSync(VINFolderPath);
+            const VINFolderStat = syncOperationWithErrorHandling(fs.statSync, VINFolderPath);
 
             if (VINFolderStat.isDirectory()) {
-                const VINFolderLength = fs.readdirSync(VINFolderPath).length;
+                const VINFolderLength = syncOperationWithErrorHandling(fs.readdirSync, VINFolderPath).length;
                 debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : null;
                 if (VINFolderLength > 0) {
                     totalNoOfDealerFolderFiles += VINFolderLength;

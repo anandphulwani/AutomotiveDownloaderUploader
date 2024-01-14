@@ -5,6 +5,7 @@ import { attainLock, releaseLock, lgc, lgu } from './loggerandlocksupportive.js'
 import { config } from '../configs/config.js';
 import { makeDir } from './filesystem.js';
 import { getProjectConfigContractorsFilePath, getProjectConfigLotLastFilePath } from './projectpaths.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 function getCredentialsForUsername(username) {
@@ -36,7 +37,7 @@ function setContractorsCurrentAllotted(contractor, allottedQty) {
             releaseLock(fileToOperateOn, undefined, false);
             return;
         }
-        const configContractorsContent = fs.readFileSync(fileToOperateOn, 'utf8');
+        const configContractorsContent = syncOperationWithErrorHandling(fs.readFileSync, fileToOperateOn, 'utf8');
 
         const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*[\\r\\n|\\n])([ ]*)(currentAllotted: )(\\d+)(,)`;
         const regexExpression = new RegExp(regexString);
@@ -48,7 +49,7 @@ function setContractorsCurrentAllotted(contractor, allottedQty) {
             releaseLock(fileToOperateOn, undefined, false);
             process.exit(1);
         }
-        fs.writeFileSync(fileToOperateOn, newconfigContractorsContent, 'utf8');
+        syncOperationWithErrorHandling(fs.writeFileSync, fileToOperateOn, newconfigContractorsContent, 'utf8');
         // createBackupOfFile(fileToOperateOn, newconfigContractorsContent);
         releaseLock(fileToOperateOn, undefined, false);
     } catch (err) {
@@ -58,7 +59,7 @@ function setContractorsCurrentAllotted(contractor, allottedQty) {
 }
 
 function getContractorsCurrentAllotted(contractor) {
-    const configContractorsContent = fs.readFileSync(getProjectConfigContractorsFilePath(), 'utf8');
+    const configContractorsContent = syncOperationWithErrorHandling(fs.readFileSync, getProjectConfigContractorsFilePath(), 'utf8');
     const regexString = `(const configContractors = {[\\s|\\S]*contractors: {[\\s|\\S]*${contractor}: {[\\s]*[\\r\\n|\\n])([ ]*)(currentAllotted: )(\\d+)(,)`;
     const regexExpression = new RegExp(regexString);
 
@@ -78,7 +79,7 @@ function addToContractorsCurrentAllotted(contractor, quantity) {
 }
 
 function getLastLotNumber() {
-    const configContent = fs.readFileSync(getProjectConfigLotLastFilePath(), 'utf8');
+    const configContent = syncOperationWithErrorHandling(fs.readFileSync, getProjectConfigLotLastFilePath(), 'utf8');
     const lastLotNumberRegexString = `(    lotLastRunNumber: ')(.*?)(',[\\r\\n|\\n])`;
     const lastLotNumberRegexExpression = new RegExp(lastLotNumberRegexString);
 
@@ -90,7 +91,7 @@ function getLastLotNumber() {
 }
 
 function getLastLotDate() {
-    const configContent = fs.readFileSync(getProjectConfigLotLastFilePath(), 'utf8');
+    const configContent = syncOperationWithErrorHandling(fs.readFileSync, getProjectConfigLotLastFilePath(), 'utf8');
     const lastLotDateRegexString = `(    lotLastRunDate: ')(.*?)(',[\\r\\n|\\n])`;
     const lastLotDateRegexExpression = new RegExp(lastLotDateRegexString);
 
@@ -112,7 +113,7 @@ function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
             releaseLock(fileToOperateOn, undefined, false);
             return;
         }
-        let configContent = fs.readFileSync(fileToOperateOn, 'utf8');
+        let configContent = syncOperationWithErrorHandling(fs.readFileSync, fileToOperateOn, 'utf8');
         let newConfigContent;
 
         if (currentLotLastRunNumber !== lastLotNumber) {
@@ -137,7 +138,7 @@ function setLastLotNumberAndDate(lastLotNumber, lastLotDate) {
                 process.exit(1);
             }
         }
-        fs.writeFileSync(fileToOperateOn, newConfigContent, 'utf8');
+        syncOperationWithErrorHandling(fs.writeFileSync, fileToOperateOn, newConfigContent, 'utf8');
         // createBackupOfFile(fileToOperateOn, newConfigContent);
         releaseLock(fileToOperateOn, undefined, false);
     } catch (err) {
@@ -181,13 +182,13 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
         const { cutterProcessingFolders, cutterRecordKeepingFolders } = config;
         for (let i = 0; i < cutterProcessingFolders.length; i++) {
             const cutterProcessingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${cutterProcessingFolders[i]}`;
-            if (!fs.existsSync(cutterProcessingFolderPath)) {
+            if (!syncOperationWithErrorHandling(fs.existsSync, cutterProcessingFolderPath)) {
                 makeDir(cutterProcessingFolderPath);
             }
         }
         for (let i = 0; i < cutterRecordKeepingFolders.length; i++) {
             const cutterRecordKeepingFolderPath = `${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\${cutterRecordKeepingFolders[i]}\\${dateToCreate}`;
-            if (!fs.existsSync(cutterRecordKeepingFolderPath)) {
+            if (!syncOperationWithErrorHandling(fs.existsSync, cutterRecordKeepingFolderPath)) {
                 makeDir(cutterRecordKeepingFolderPath);
             }
         }
@@ -198,13 +199,13 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
             const { finisherProcessingFolders, finisherRecordKeepingFolders } = config;
             for (let i = 0; i < finisherProcessingFolders.length; i++) {
                 const finisherProcessingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${finisherProcessingFolders[i]}`;
-                if (!fs.existsSync(finisherProcessingFolderPath)) {
+                if (!syncOperationWithErrorHandling(fs.existsSync, finisherProcessingFolderPath)) {
                     makeDir(finisherProcessingFolderPath);
                 }
             }
             for (let i = 0; i < finisherRecordKeepingFolders.length; i++) {
                 const finisherRecordKeepingFolderPath = `${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\${finisherRecordKeepingFolders[i]}\\${dateToCreate}`;
-                if (!fs.existsSync(finisherRecordKeepingFolderPath)) {
+                if (!syncOperationWithErrorHandling(fs.existsSync, finisherRecordKeepingFolderPath)) {
                     makeDir(finisherRecordKeepingFolderPath);
                 }
             }
@@ -216,7 +217,7 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
         const { extraProcessingFolders } = config.contractors[contractor];
         for (let i = 0; i < extraProcessingFolders.length; i++) {
             const extraProcessingFolderPath = `${config.contractorsZonePath}\\${contractor}\\${dateToCreate}\\${extraProcessingFolders[i]}`;
-            if (!fs.existsSync(extraProcessingFolderPath)) {
+            if (!syncOperationWithErrorHandling(fs.existsSync, extraProcessingFolderPath)) {
                 makeDir(extraProcessingFolderPath);
             }
         }

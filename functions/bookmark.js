@@ -20,6 +20,7 @@ import LineSeparator from '../class/LineSeparator.js';
 import { instanceRunDateFormatted } from './datetime.js';
 import keyInYNWithTimeout from './keyInYNWithTimeout.js';
 import { clearLastLinesOnConsole } from './consolesupportive.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -319,8 +320,8 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
 
     try {
         // Read the contents of both JSON files into memory
-        const sourceContents = fs.readFileSync(sourceBookmarksFilePath, 'utf8');
-        const processingContents = fs.readFileSync(processingBookmarksWithoutSyncFilePath, 'utf8');
+        const sourceContents = syncOperationWithErrorHandling(fs.readFileSync, sourceBookmarksFilePath, 'utf8');
+        const processingContents = syncOperationWithErrorHandling(fs.readFileSync, processingBookmarksWithoutSyncFilePath, 'utf8');
 
         lgt(`02:${logSymbols.success} `, Color.cyanNormal, LoggingPrefix.false, LineSeparator.false);
         // Parse the contents of both JSON files into JavaScript objects
@@ -585,7 +586,7 @@ function replaceBookmarksElementByGUIDAndWriteToBookmarksFile(element, guid, app
     const fileToOperateOn = config.processingBookmarksWithoutSyncFilePath;
     attainLock(fileToOperateOn, undefined, false);
     try {
-        const fileContents = fs.readFileSync(fileToOperateOn, 'utf8');
+        const fileContents = syncOperationWithErrorHandling(fs.readFileSync, fileToOperateOn, 'utf8');
 
         let bookmarksFileJSONObj = JSON.parse(fileContents);
         bookmarksFileJSONObj = removeChecksumFromBookmarksObj(bookmarksFileJSONObj);
