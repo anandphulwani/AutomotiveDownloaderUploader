@@ -56,7 +56,7 @@ if (!checkSync(instanceRunLogFilePrefix, { stale: 15000 })) {
 
     /* #region */
     try {
-        lockSync(instanceRunLogFilePrefix, { stale: 15000 });
+        syncOperationWithErrorHandling(lockSync, instanceRunLogFilePrefix, { stale: 15000 });
     } catch (error) {
         if (error.message.trim() !== 'Lock file is already being held') {
             throw error;

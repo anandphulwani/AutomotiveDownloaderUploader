@@ -211,7 +211,7 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
             const radomNumberBetween25and50 = Math.floor(Math.random() * (50 - 25 + 1)) + 25;
             let checkIfLocked;
             try {
-                checkIfLocked = checkSync(fileToOperateOn, { stale: stale });
+                checkIfLocked = syncOperationWithErrorHandling(checkSync, fileToOperateOn, { stale: stale });
             } catch (err) {
                 const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
                 const resourceBusyOrLockedOrNotPermittedRegexExpression = new RegExp(resourceBusyOrLockedOrNotPermittedRegexString);
@@ -233,7 +233,7 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
                 continue;
             }
             try {
-                lockSync(fileToOperateOn, { stale: stale });
+                syncOperationWithErrorHandling(lockSync, fileToOperateOn, { stale: stale });
             } catch (error) {
                 if (error.message.trim() === 'Lock file is already being held') {
                     // eslint-disable-next-line no-continue
@@ -282,7 +282,7 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
             const radomNumberBetween25and50 = Math.floor(Math.random() * (50 - 25 + 1)) + 25;
             let checkIfLocked;
             try {
-                checkIfLocked = checkSync(fileToOperateOn, { stale: stale });
+                checkIfLocked = syncOperationWithErrorHandling(checkSync, fileToOperateOn, { stale: stale });
             } catch (err) {
                 const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
                 const resourceBusyOrLockedOrNotPermittedRegexExpression = new RegExp(resourceBusyOrLockedOrNotPermittedRegexString);
@@ -293,7 +293,7 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
                 }
             }
             if (checkIfLocked) {
-                unlockSync(fileToOperateOn);
+                syncOperationWithErrorHandling(unlockSync, fileToOperateOn);
                 if (debug) {
                     const filename = `${logPath}/${currentTime()}_ReleasedLock_${callerFunctionName}.txt`;
                     syncOperationWithErrorHandling(

@@ -13,6 +13,7 @@ import Color from './class/Colors.js';
 import { validateConfigFile } from './functions/configvalidation.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent } from './functions/bookmarkvalidation.js';
+import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -65,7 +66,7 @@ try {
         lgwc('Lock already held, another instace is already running.');
         process.exit(1);
     }
-    lockSync('contractors_folderTransferer.js', { stale: 15000 });
+    syncOperationWithErrorHandling(lockSync, 'contractors_folderTransferer.js', { stale: 15000 });
 } catch (error) {
     lgu('Unable to checkSync or lockSync.', error);
     process.exit(1);
@@ -112,8 +113,8 @@ while (true) {
      * Check if downloader or uploader is not running for 2 hours,
      * if yes then exit the script
      */
-    const downloaderLocked = checkSync('downloader.js', { stale: 15000 });
-    const uploaderLocked = checkSync('uploader.js', { stale: 15000 });
+    const downloaderLocked = syncOperationWithErrorHandling(checkSync, 'downloader.js', { stale: 15000 });
+    const uploaderLocked = syncOperationWithErrorHandling(checkSync, 'uploader.js', { stale: 15000 });
     if (downloaderLocked || uploaderLocked) {
         lastLockTime = Date.now();
     } else if (Date.now() - lastLockTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {

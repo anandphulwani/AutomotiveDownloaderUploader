@@ -49,7 +49,7 @@ try {
         lgwc('Lock already held, another instace is already running.');
         process.exit(1);
     }
-    lockSync('downloader.js', { stale: 15000 });
+    syncOperationWithErrorHandling(lockSync, 'downloader.js', { stale: 15000 });
 } catch (error) {
     lgu('Unable to checkSync or lockSync.', error);
     process.exit(1);
