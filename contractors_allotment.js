@@ -88,6 +88,11 @@ while (!hasLotFirstIndexMatches) {
 lgtf(`region : Validation section 02: END`);
 
 if (config.environment === 'production') {
+    const subprocess = spawn(`${process.cwd()}/cmdmp3win.exe`, [`${process.cwd()}/notification.mp3`], {
+        detached: true,
+        stdio: 'ignore',
+    });
+    subprocess.unref();
     spawn('explorer.exe', [`${process.cwd()}\\${lotFolderPath}`]);
     while (!keyInYN('Please review your lot folders, to remove any unneccesary photos, press Y to continue?')) {
         sleep(1);
@@ -261,3 +266,4 @@ if (keyInYN('To use manual allotment system press Y, to exit from this process p
         printSectionSeperator();
     }
 }
+process.exit(0);
