@@ -49,7 +49,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 4, debug = false) {
         foldersToCleanUp.push([`${config.contractorsRecordKeepingPath}\\${finisher}_Acnt\\${finishingAccounting}`, 3]);
     }
 
-    /* #region: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
+    /* #region: Cleanup all the folders > subFolders here, to keep last `noOfDaysDataToKeep` days / no of days data to keep, keep last date folders accordingly. */
     // eslint-disable-next-line no-restricted-syntax
     for (const folderToCleanUp of foldersToCleanUp) {
         if (!syncOperationWithErrorHandling(fs.existsSync, folderToCleanUp[0])) {
@@ -66,7 +66,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 4, debug = false) {
                 instanceRunDateFormatted !== file
         ); // Filter out only subdirectories and subdirectories which match YYYY-MM-DD format using regex
         folderPathChildrenSubDirsOnly.sort(); // Sort subdirectories by name
-        const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, -folderToCleanUp[1]); // Delete all but the last 5 subdirectories
+        const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, -folderToCleanUp[1]); // Delete all but the last `noOfDaysDataToKeep` subdirectories
 
         // eslint-disable-next-line no-restricted-syntax
         for (const folderPathChildrenSubDirToDelete of folderPathChildrenSubDirsToDelete) {
@@ -74,7 +74,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 4, debug = false) {
             removeDir(directoryPath, true);
         }
     }
-    /* #endregion: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
+    /* #endregion: Cleanup all the folders > subFolders here, to keep last no of days data to keep, keep last date folders accordingly. */
     lgi(`01:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
     /* #region: Cleanup config.lockingBackupsZonePath/dateFolder files which have size 0 . */
