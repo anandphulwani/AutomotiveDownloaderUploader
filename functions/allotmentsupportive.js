@@ -125,48 +125,6 @@ function recalculateAllotmentPriority(contractorsArr, debug = false) {
 
 /**
  * 004
- * Convert the path of a folder from `Download` to `Allotment`
- */
-/* #region : getDealerFolderContractorsZonePath (sourcePath, contractorsName, additionalText){...} */
-function getDealerFolderContractorsZonePath(sourcePath, contractorsName, additionalText) {
-    const sourcePathFoldersArr = [];
-    for (let cnt = 0; cnt < 4; cnt++) {
-        sourcePathFoldersArr.push(path.basename(sourcePath));
-        sourcePath = path.dirname(sourcePath);
-    }
-    if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
-        lgu(`Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`);
-        process.exit(0);
-    }
-    sourcePathFoldersArr.reverse();
-    sourcePathFoldersArr.splice(1, 2);
-
-    sourcePath = `${config.contractorsZonePath}\\${contractorsName}\\${sourcePathFoldersArr.join('\\')}`;
-    sourcePath += ` ${additionalText}`;
-    return sourcePath;
-}
-
-function getDealerFolderFinishedAllotmentZonePath(sourcePath, additionalText) {
-    const sourcePathFoldersArr = [];
-    for (let cnt = 0; cnt < 4; cnt++) {
-        sourcePathFoldersArr.push(path.basename(sourcePath));
-        sourcePath = path.dirname(sourcePath);
-    }
-    if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
-        lgu(`Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`);
-        process.exit(0);
-    }
-    sourcePathFoldersArr.reverse();
-    sourcePathFoldersArr.splice(1, 2);
-
-    sourcePath = `${config.finishedAllotmentZonePath}\\${sourcePathFoldersArr.join('\\')}`;
-    sourcePath += ` ${additionalText}`;
-    return sourcePath;
-}
-/* #endregion */
-
-/**
- * 005
  * Check whether LotFolder / Username / VINFolder / At least a single file{type:jpg} exists.
  * If no files exist and VINFolder is empty, remove the VINFolder if it is empty
  * Also remove the parents of VINFolder recursively if they are empty.
@@ -222,7 +180,7 @@ function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lot
 /* #endregion */
 
 /**
- * 006
+ * 005
  * Get total image count from a dealer directory, which includes VIN folders and VIN files
  */
 /* #region : returnImageCountFromDealerDir (lotFldrPath, debug = false) {...} */
@@ -252,7 +210,7 @@ function returnImageCountFromDealerDir(dealerDir, debug = false) {
 /* #endregion */
 
 /**
- * 007
+ * 006
  * Get total image count from an array of dealer directories, which includes VIN folders and VIN files
  */
 // TODO: Check if the calls to the function is making sense.
@@ -271,8 +229,6 @@ export {
     recalculateRatioOfThreshHoldWithOtherContractors,
     recalculateRatioOfImagesAllotted,
     recalculateAllotmentPriority,
-    getDealerFolderContractorsZonePath,
-    getDealerFolderFinishedAllotmentZonePath,
     validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs,
     returnImageCountFromDealerDir,
     returnImageCountFromDealerDirs,

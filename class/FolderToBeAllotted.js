@@ -2,12 +2,10 @@
 import path from 'path';
 
 /* eslint-disable import/extensions */
-import {
-    getDealerFolderContractorsZonePath,
-    getDealerFolderFinishedAllotmentZonePath,
-    returnImageCountFromDealerDir,
-} from '../functions/allotmentsupportive.js';
+import { returnImageCountFromDealerDir } from '../functions/allotmentsupportive.js';
 import { getAddTextToFolderNameByUsernameFromDC } from '../functions/excelsupportive.js';
+import { config } from '../configs/config.js';
+import { lgu } from '../functions/loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 export default class FolderToBeAllotted {
@@ -136,13 +134,11 @@ export default class FolderToBeAllotted {
     }
 
     computeDestinationPath() {
-        // TODO: Bring this function to this class, if this function isnt used anywhere.
-        return getDealerFolderContractorsZonePath(this._dealerFolderPath, this._contractorAllotted, this._suffixTextToFolderName);
+        return this.getDealerFolderContractorsZonePath(this._dealerFolderPath, this._contractorAllotted, this._suffixTextToFolderName);
     }
 
     computeDestinationRecordKeepingPath() {
-        // TODO: Bring this function to this class, if this function isnt used anywhere.
-        return getDealerFolderFinishedAllotmentZonePath(this._dealerFolderPath, this._suffixTextToFolderName);
+        return this.getDealerFolderFinishedAllotmentZonePath(this._dealerFolderPath, this._suffixTextToFolderName);
     }
 
     computeDestinationFolderName() {
@@ -153,4 +149,54 @@ export default class FolderToBeAllotted {
         const dateFromDestinationFolderPath = path.basename(path.dirname(this._destinationPath));
         return path.join(dateFromDestinationFolderPath, this._destinationFolderName);
     }
+
+    /**
+     * Convert the path of a folder from `Download` to `Allotment`
+     */
+    /* #region : getDealerFolderContractorsZonePath (sourcePath, contractorsName, additionalText){...} */
+    getDealerFolderContractorsZonePath(sourcePath, contractorsName, additionalText) {
+        const sourcePathFoldersArr = [];
+        for (let cnt = 0; cnt < 4; cnt++) {
+            sourcePathFoldersArr.push(path.basename(sourcePath));
+            sourcePath = path.dirname(sourcePath);
+        }
+        if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
+            lgu(
+                `Unknown state in getDealerFolderContractorsZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
+            );
+            process.exit(0);
+        }
+        sourcePathFoldersArr.reverse();
+        sourcePathFoldersArr.splice(1, 2);
+
+        sourcePath = `${config.contractorsZonePath}\\${contractorsName}\\${sourcePathFoldersArr.join('\\')}`;
+        sourcePath += ` ${additionalText}`;
+        return sourcePath;
+    }
+    /* #endregion */
+
+    /**
+     * Convert the path of a folder from `Download` to `FinishedAllotmentZonePath`
+     */
+    /* #region : getDealerFolderFinishedAllotmentZonePath (sourcePath, additionalText){...} */
+    getDealerFolderFinishedAllotmentZonePath(sourcePath, additionalText) {
+        const sourcePathFoldersArr = [];
+        for (let cnt = 0; cnt < 4; cnt++) {
+            sourcePathFoldersArr.push(path.basename(sourcePath));
+            sourcePath = path.dirname(sourcePath);
+        }
+        if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
+            lgu(
+                `Unknown state in getDealerFolderFinishedAllotmentZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
+            );
+            process.exit(0);
+        }
+        sourcePathFoldersArr.reverse();
+        sourcePathFoldersArr.splice(1, 2);
+
+        sourcePath = `${config.finishedAllotmentZonePath}\\${sourcePathFoldersArr.join('\\')}`;
+        sourcePath += ` ${additionalText}`;
+        return sourcePath;
+    }
+    /* #endregion */
 }
