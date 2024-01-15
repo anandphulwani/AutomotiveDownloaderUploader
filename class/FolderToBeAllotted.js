@@ -104,7 +104,7 @@ export default class FolderToBeAllotted {
         this._uniqueId = value;
         this._suffixTextToFolderName = this.computeSuffixTextToFolderName();
         this._destinationPath = this.computeDestinationPath();
-        this._destinationRecordKeepingPath = this.computeDestinationRecordKeepingPath();
+        this._destinationDoneAllotmentPath = this.computeDestinationDoneAllotmentPath();
         this._destinationFolderName = this.computeDestinationFolderName();
         this._destinationFolderNameWithDate = this.computeDestinationFolderNameWithDate();
     }
@@ -117,8 +117,8 @@ export default class FolderToBeAllotted {
         return this._destinationPath;
     }
 
-    get destinationRecordKeepingPath() {
-        return this._destinationRecordKeepingPath;
+    get destinationDoneAllotmentPath() {
+        return this._destinationDoneAllotmentPath;
     }
 
     get destinationFolderName() {
@@ -137,7 +137,7 @@ export default class FolderToBeAllotted {
         return this.getDealerFolderContractorsZonePath(this._dealerFolderPath, this._contractorAllotted, this._suffixTextToFolderName);
     }
 
-    computeDestinationRecordKeepingPath() {
+    computeDestinationDoneAllotmentPath() {
         return this.getDealerFolderDoneAllotmentZonePath(this._dealerFolderPath, this._suffixTextToFolderName);
     }
 

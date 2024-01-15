@@ -42,11 +42,11 @@ function getDealerDirectoryObjWithMaxImageCount(dealerDirectories) {
 
 function executeSingleFolderAllotment(dealerDirectoryObj) {
     const { imageCount, username, dealerFolderName, dealerFolderPath, usernameAndDealerFolderName, contractorAllotted } = dealerDirectoryObj;
-    const { uniqueId, destinationPath, destinationRecordKeepingPath, destinationFolderName } = dealerDirectoryObj;
+    const { uniqueId, destinationPath, destinationDoneAllotmentPath, destinationFolderName } = dealerDirectoryObj;
     const bookmarkFolderGUID = getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerFolderName);
     replaceBookmarksElementByGUIDAndWriteToBookmarksFile('foldername', bookmarkFolderGUID, uniqueId);
 
-    createDirAndCopyFile(dealerFolderPath, destinationRecordKeepingPath);
+    createDirAndCopyFile(dealerFolderPath, destinationDoneAllotmentPath);
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(dealerFolderPath, destinationPath, false, 3);
     addToContractorsCurrentAllotted(contractorAllotted, imageCount);
     addAllotmentToReport([[`#${uniqueId}`, usernameAndDealerFolderName, contractorAllotted, imageCount, destinationFolderName]]);
@@ -196,7 +196,7 @@ function doAllotment(
             const allotmentMesg = getAllotmentMesgForFolder(dealerDirectories[index], true);
             !isManualAllotment ? lgi(allotmentMesg, Color.bgCyan) : null;
             /* #region Check paths already exists */
-            const pathsToCheck = [dealerDirectories[index].destinationRecordKeepingPath, dealerDirectories[index].destinationPath];
+            const pathsToCheck = [dealerDirectories[index].destinationDoneAllotmentPath, dealerDirectories[index].destinationPath];
             for (let i = 0; i < pathsToCheck.length; i++) {
                 if (syncOperationWithErrorHandling(fs.existsSync, pathsToCheck[i])) {
                     lge(`Folder: ${pathsToCheck[i]} already exists, cannot process ${dealerDirectories[index].dealerFolderPath} to its location.`);
