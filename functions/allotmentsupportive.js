@@ -7,6 +7,7 @@ import { config } from '../configs/config.js';
 import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
 import { lgd, lgu } from './loggerandlocksupportive.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
+import { getUsernameTrimmed } from './excelsupportive.js';
 /* eslint-enable import/extensions */
 
 /* #region : Supporting functions */
@@ -131,14 +132,17 @@ function recalculateAllotmentPriority(contractorsArr, debug = false) {
  * Also make sure one dealerDirectory with single file exists in the lot
  * Return all dealerDirs with an additional column of '0', later to be used to put image count
  */
-// TODO: Check if the calls to the function is making sense.
 /* #region : validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs (lotFldrPath, debug = false) {...} */
 function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFldrPath, debug = false) {
     let doesLotFolderPathContainsFiles = false;
     const dealerDirs = [];
     /* eslint-disable no-restricted-syntax, no-continue */
     for (const usernameLevelFolder of syncOperationWithErrorHandling(fs.readdirSync, lotFldrPath)) {
-        // TODO: one of the config.credentials.username matches usernameLevelFolder
+        const allUsernamesFromConfig = config.credentials.map((item) => getUsernameTrimmed(item.username));
+        if (!allUsernamesFromConfig.includes(usernameLevelFolder)) {
+            lgu(`Unknown folder '${usernameLevelFolder}' present in 'Downloads' path, Unable to continue allotment.`);
+            process.exit(0);
+        }
         const usernameLevelFolderPath = path.join(lotFldrPath, usernameLevelFolder);
         if (!syncOperationWithErrorHandling(fs.statSync, usernameLevelFolderPath).isDirectory()) {
             continue;
