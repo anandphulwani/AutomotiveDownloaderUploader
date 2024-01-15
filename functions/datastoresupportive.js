@@ -25,13 +25,13 @@ const perVINTimeToUpload = 7;
 function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
     lgi(`Auto cleaning up the datastore: `, LineSeparator.false);
     const foldersToCleanUp = [
-        config.lockingBackupsZonePath,
-        config.downloadPath,
-        config.doneAllotmentZonePath,
-        config.uploadingZonePath,
-        config.doneUploadingZonePath,
-        `${config.doneUploadingZonePath}\\DeletedUrls`,
-        getProjectLogsDirPath(), // Static delete after 120 days
+        [config.lockingBackupsZonePath, 2],
+        [config.downloadPath, noOfDaysDataToKeep],
+        [config.doneAllotmentZonePath, noOfDaysDataToKeep],
+        [config.uploadingZonePath, noOfDaysDataToKeep],
+        [config.doneUploadingZonePath, noOfDaysDataToKeep],
+        [`${config.doneUploadingZonePath}\\DeletedUrls`, noOfDaysDataToKeep],
+        [getProjectLogsDirPath(), 120], // Static delete after 120 days
     ];
 
     const cuttingAccounting = config.cutterRecordKeepingFolders[0];
@@ -39,37 +39,35 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
 
     // eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
     for (const contractor of Object.keys(config.contractors)) {
-        foldersToCleanUp.push(`${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\${cuttingAccounting}`);
+        foldersToCleanUp.push([`${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\${cuttingAccounting}`, noOfDaysDataToKeep]);
     }
 
     const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
     // eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
     for (const finisher of Object.keys(finishers)) {
-        foldersToCleanUp.push(`${config.contractorsRecordKeepingPath}\\${finisher}_Acnt\\${finishingAccounting}`);
+        foldersToCleanUp.push([`${config.contractorsRecordKeepingPath}\\${finisher}_Acnt\\${finishingAccounting}`, noOfDaysDataToKeep]);
     }
 
     /* #region: Cleanup all the folders > subFolders here, to keep last 5 days / no of days data to keep, keep last date folders accordingly. */
     // eslint-disable-next-line no-restricted-syntax
     for (const folderToCleanUp of foldersToCleanUp) {
-        if (!syncOperationWithErrorHandling(fs.existsSync, folderToCleanUp)) {
+        if (!syncOperationWithErrorHandling(fs.existsSync, folderToCleanUp[0])) {
             // eslint-disable-next-line no-continue
             continue;
         }
         const dateRegexString = `^\\d{4}-\\d{2}-\\d{2}$`;
         const dateRegexExpression = new RegExp(dateRegexString);
-        const folderPathChildren = syncOperationWithErrorHandling(fs.readdirSync, folderToCleanUp);
+        const folderPathChildren = syncOperationWithErrorHandling(fs.readdirSync, folderToCleanUp[0]);
         const folderPathChildrenSubDirsOnly = folderPathChildren.filter(
-            (file) => syncOperationWithErrorHandling(fs.lstatSync, path.join(folderToCleanUp, file)).isDirectory() && dateRegexExpression.test(file)
+            (file) =>
+                syncOperationWithErrorHandling(fs.lstatSync, path.join(folderToCleanUp[0], file)).isDirectory() && dateRegexExpression.test(file)
         ); // Filter out only subdirectories and subdirectories which match YYYY-MM-DD format using regex
         folderPathChildrenSubDirsOnly.sort(); // Sort subdirectories by name
-        let overrideNoOfDaysToKeep = noOfDaysDataToKeep;
-        overrideNoOfDaysToKeep = folderToCleanUp === getProjectLogsDirPath() ? 120 : overrideNoOfDaysToKeep;
-        overrideNoOfDaysToKeep = folderToCleanUp === config.lockingBackupsZonePath ? 2 : overrideNoOfDaysToKeep;
-        const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, -overrideNoOfDaysToKeep); // Delete all but the last 5 subdirectories
+        const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, -folderToCleanUp[1]); // Delete all but the last 5 subdirectories
 
         // eslint-disable-next-line no-restricted-syntax
         for (const folderPathChildrenSubDirToDelete of folderPathChildrenSubDirsToDelete) {
-            const directoryPath = path.join(folderToCleanUp, folderPathChildrenSubDirToDelete);
+            const directoryPath = path.join(folderToCleanUp[0], folderPathChildrenSubDirToDelete);
             removeDir(directoryPath, true);
         }
     }
