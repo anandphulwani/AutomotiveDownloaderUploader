@@ -792,7 +792,7 @@ function getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, isURLDo
     }
 
     const moveSource = VINFolderOrFilePath;
-    let moveDestination = config.finishedUploadingZonePath;
+    let moveDestination = config.doneUploadingZonePath;
     moveDestination = isURLDoesNotExist ? path.join(moveDestination, 'DeletedURLs') : moveDestination;
     moveDestination = path.join(moveDestination, instanceRunDateFormatted);
     moveDestination = path.join(moveDestination, path.basename(path.dirname(VINFolderOrFilePath)), path.basename(VINFolderOrFilePath));

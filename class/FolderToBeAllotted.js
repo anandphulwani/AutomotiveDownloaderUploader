@@ -138,7 +138,7 @@ export default class FolderToBeAllotted {
     }
 
     computeDestinationRecordKeepingPath() {
-        return this.getDealerFolderFinishedAllotmentZonePath(this._dealerFolderPath, this._suffixTextToFolderName);
+        return this.getDealerFolderDoneAllotmentZonePath(this._dealerFolderPath, this._suffixTextToFolderName);
     }
 
     computeDestinationFolderName() {
@@ -176,10 +176,10 @@ export default class FolderToBeAllotted {
     /* #endregion */
 
     /**
-     * Convert the path of a folder from `Download` to `FinishedAllotmentZonePath`
+     * Convert the path of a folder from `Download` to `DoneAllotmentZonePath`
      */
-    /* #region : getDealerFolderFinishedAllotmentZonePath (sourcePath, additionalText){...} */
-    getDealerFolderFinishedAllotmentZonePath(sourcePath, additionalText) {
+    /* #region : getDealerFolderDoneAllotmentZonePath (sourcePath, additionalText){...} */
+    getDealerFolderDoneAllotmentZonePath(sourcePath, additionalText) {
         const sourcePathFoldersArr = [];
         for (let cnt = 0; cnt < 4; cnt++) {
             sourcePathFoldersArr.push(path.basename(sourcePath));
@@ -187,14 +187,14 @@ export default class FolderToBeAllotted {
         }
         if (path.resolve(sourcePath) !== path.resolve(config.downloadPath)) {
             lgu(
-                `Unknown state in getDealerFolderFinishedAllotmentZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
+                `Unknown state in getDealerFolderDoneAllotmentZonePath function, the resolve of '${sourcePath}' does not match '${config.downloadPath}'.`
             );
             process.exit(0);
         }
         sourcePathFoldersArr.reverse();
         sourcePathFoldersArr.splice(1, 2);
 
-        sourcePath = `${config.finishedAllotmentZonePath}\\${sourcePathFoldersArr.join('\\')}`;
+        sourcePath = `${config.doneAllotmentZonePath}\\${sourcePathFoldersArr.join('\\')}`;
         sourcePath += ` ${additionalText}`;
         return sourcePath;
     }

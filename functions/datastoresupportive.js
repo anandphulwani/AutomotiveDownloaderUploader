@@ -27,10 +27,10 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
     const foldersToCleanUp = [
         config.lockingBackupsZonePath,
         config.downloadPath,
-        config.finishedAllotmentZonePath,
+        config.doneAllotmentZonePath,
         config.uploadingZonePath,
-        config.finishedUploadingZonePath,
-        `${config.finishedUploadingZonePath}\\DeletedUrls`,
+        config.doneUploadingZonePath,
+        `${config.doneUploadingZonePath}\\DeletedUrls`,
         getProjectLogsDirPath(), // Static delete after 120 days
     ];
 
