@@ -157,6 +157,7 @@ function getLockTheImagesCheckMarkFromDC(dealerNumber) {
 // eslint-disable-next-line import/prefer-default-export
 export {
     getCurrentActiveDealerConfigurationsUsername,
+    getUsernameTrimmed,
     getAddTextToFolderNameByUsernameFromDC,
     setCurrentDealerConfiguration,
     getImageNumbersToDownloadFromDC,
