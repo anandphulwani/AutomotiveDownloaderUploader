@@ -6,6 +6,7 @@ import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datet
 import { config } from '../configs/config.js';
 import { getRemainingBookmarksNotDownloadedLength } from './bookmarksupportive.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
+import { lgu } from './loggerandlocksupportive.js';
 /* eslint-enable import/extensions */
 
 const cuttingDoneFolderName = config.cutterProcessingFolders[0];
@@ -14,6 +15,10 @@ const readyToUploadFolderName = config.finisherProcessingFolders[1];
 
 const cuttersCompletedAndDoneFileCreated = [];
 function checkIfWorkDoneAndCreateDoneFile(mode) {
+    if (mode !== 'finisher' && mode !== 'cutter') {
+        lgu(`Unknown mode(${mode}) used in checkIfWorkDoneAndCreateDoneFile(mode) fn, valid modes are 'finisher' or 'cutter'.`);
+        process.exit(1);
+    }
     // Check if JSON file of report exists, because that means some download is done and the first lot is allotted.
     const reportDateFolder = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted);
     const reportJSONFilePath = path.join(reportDateFolder, `${instanceRunDateFormatted}_report.json`);
