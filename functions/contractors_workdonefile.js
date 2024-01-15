@@ -13,7 +13,7 @@ const finishingBufferFolderName = config.finisherProcessingFolders[0];
 const readyToUploadFolderName = config.finisherProcessingFolders[1];
 
 const cuttersCompletedAndDoneFileCreated = [];
-function checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer() {
+function checkIfWorkDoneAndCreateDoneFile(mode) {
     // Check if JSON file of report exists, because that means some download is done and the first lot is allotted.
     const reportDateFolder = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted);
     const reportJSONFilePath = path.join(reportDateFolder, `${instanceRunDateFormatted}_report.json`);
