@@ -40,6 +40,7 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
     // eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
     for (const contractor of Object.keys(config.contractors)) {
         foldersToCleanUp.push([`${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\${cuttingAccounting}`, 3]);
+        foldersToCleanUp.push([`${config.contractorsZonePath}\\${contractor}`, 3]);
     }
 
     const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
