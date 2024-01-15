@@ -147,18 +147,17 @@ function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lot
                 const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
 
                 if (syncOperationWithErrorHandling(fs.statSync, dealerFolderPath).isDirectory()) {
-                    // TODO: Replace below variable VINFolder to VINFolderOrFile
                     // eslint-disable-next-line no-restricted-syntax
-                    for (const VINFolder of syncOperationWithErrorHandling(fs.readdirSync, dealerFolderPath)) {
-                        const VINFolderPath = path.join(dealerFolderPath, VINFolder);
+                    for (const VINFolderOrFile of syncOperationWithErrorHandling(fs.readdirSync, dealerFolderPath)) {
+                        const VINFolderOrFilePath = path.join(dealerFolderPath, VINFolderOrFile);
 
-                        if (syncOperationWithErrorHandling(fs.statSync, VINFolderPath).isDirectory()) {
-                            const VINFolderLength = syncOperationWithErrorHandling(fs.readdirSync, VINFolderPath).length;
-                            debug ? lgd(`VINFolderPath: ${VINFolderPath}     VINFolderLength: ${VINFolderLength}`) : null;
-                            if (VINFolderLength > 0) {
+                        if (syncOperationWithErrorHandling(fs.statSync, VINFolderOrFilePath).isDirectory()) {
+                            const VINFolderOrFileLength = syncOperationWithErrorHandling(fs.readdirSync, VINFolderOrFilePath).length;
+                            debug ? lgd(`VINFolderOrFilePath: ${VINFolderOrFilePath}     VINFolderOrFileLength: ${VINFolderOrFileLength}`) : null;
+                            if (VINFolderOrFileLength > 0) {
                                 doesLotFolderPathContainsFiles = true;
                             } else {
-                                removeDirAndRemoveParentDirIfEmpty(VINFolderPath, 3, true);
+                                removeDirAndRemoveParentDirIfEmpty(VINFolderOrFilePath, 3, true);
                             }
                         } else {
                             doesLotFolderPathContainsFiles = true;
