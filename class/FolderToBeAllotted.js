@@ -151,7 +151,7 @@ export default class FolderToBeAllotted {
     }
 
     /**
-     * Convert the path of a folder from `Download` to `Allotment`
+     * Convert the path of a folder from `Download` to `Contractor's FolderNameAfterAllotment(Dealer folder)`
      */
     /* #region : getDealerFolderContractorsZonePath (sourcePath, contractorsName, additionalText){...} */
     getDealerFolderContractorsZonePath(sourcePath, contractorsName, additionalText) {
@@ -176,7 +176,7 @@ export default class FolderToBeAllotted {
     /* #endregion */
 
     /**
-     * Convert the path of a folder from `Download` to `DoneAllotmentZonePath`
+     * Convert the path of a folder from `Download` to `DoneAllotmentZone's  FolderNameAfterAllotment(Dealer folder)`
      */
     /* #region : getDealerFolderDoneAllotmentZonePath (sourcePath, additionalText){...} */
     getDealerFolderDoneAllotmentZonePath(sourcePath, additionalText) {
