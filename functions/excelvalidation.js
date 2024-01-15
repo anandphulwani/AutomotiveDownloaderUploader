@@ -3,6 +3,7 @@ import { config } from '../configs/config.js';
 import { readDealerConfigurationExcel } from './excel.js';
 import { allTrimStringArray, trimMultipleSpacesInMiddleIntoOneArray, trimSingleSpaceInMiddleArray, removeDuplicates } from './stringformatting.js';
 import { lgd, lge, lgw } from './loggerandlocksupportive.js';
+import { getUsernameTrimmed } from './excelsupportive.js';
 /* eslint-enable import/extensions */
 
 let resultStatus;
@@ -11,7 +12,7 @@ function validateDealerConfigurationExcelFile(debug = false) {
     resultStatus = 'success';
     Object.keys(config.credentials).forEach((credential) => {
         const { username } = config.credentials[credential];
-        const usernameTrimmed = username.includes('@') ? username.split('@')[0] : username;
+        const usernameTrimmed = getUsernameTrimmed(username);
 
         const data = readDealerConfigurationExcel(usernameTrimmed);
 

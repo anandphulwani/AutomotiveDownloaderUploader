@@ -7,7 +7,7 @@ import { config } from '../configs/config.js';
 import { zeroPad } from './stringformatting.js';
 import { makeDir, removeDir, generateTempFolderWithRandomText } from './filesystem.js';
 import { getChecksumFromURL, downloadFileAndCompareWithChecksum } from './download.js';
-import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs } from './excelsupportive.js';
+import { getImageNumbersToDownloadFromDC, getDealerNameFromDCAsIs, getUsernameTrimmed } from './excelsupportive.js';
 import { lgd, lgi, lgw } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
@@ -18,7 +18,7 @@ import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js'
 /* eslint-enable import/extensions */
 
 async function getImagesFromContent(page, lotIndex, username, dealerFolder, debug = false) {
-    const usernameTrimmed = username.includes('@') ? username.split('@')[0] : username;
+    const usernameTrimmed = getUsernameTrimmed(username);
     const hashAlgo = 'sha1';
     /**
      * Get dealer name from excel and compare it with dealer name in the page: Begin

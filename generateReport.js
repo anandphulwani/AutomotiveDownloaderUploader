@@ -42,6 +42,7 @@ import { attainLock, releaseLock, lge, lgi, lgw, lgd, lgwc, lgu } from './functi
 import { printSectionSeperator } from './functions/others.js';
 import { zeroPad } from './functions/stringformatting.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
+import { getUsernameTrimmed } from './functions/excelsupportive.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
@@ -154,7 +155,7 @@ const typesOfExcel = ['individual', 'merged'];
 for (const typeOfExcel of typesOfExcel) {
     // eslint-disable-next-line no-restricted-syntax
     for (let username of allUsernamesFromConfig) {
-        username = username.includes('@') ? username.split('@')[0] : username;
+        username = getUsernameTrimmed(username);
 
         const excelFilename = `${username} (${typeOfExcel})_${monthInMMM}_${year}.xlsx`;
         const excelFullPath = path.join(reportGenerationPath, excelFilename);

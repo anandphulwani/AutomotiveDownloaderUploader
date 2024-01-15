@@ -21,6 +21,7 @@ import { instanceRunDateFormatted } from './datetime.js';
 import keyInYNWithTimeout from './keyInYNWithTimeout.js';
 import { clearLastLinesOnConsole } from './consolesupportive.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
+import { getUsernameTrimmed } from './excelsupportive.js';
 /* eslint-enable import/extensions */
 
 const ignoreBookmarkURLObjects = getIgnoreBookmarkURLObjects();
@@ -658,10 +659,7 @@ function getBookmarkFolderGUIDFromUsernameDealerNumber(username, dealerNumber) {
     }
     // eslint-disable-next-line prefer-destructuring
     filteredData = filteredData[0].children;
-    filteredData = filteredData.filter(
-        (usernameLevelBookmark) =>
-            (usernameLevelBookmark.name.includes('@') ? usernameLevelBookmark.name.split('@')[0] : usernameLevelBookmark.name) === username
-    );
+    filteredData = filteredData.filter((usernameLevelBookmark) => getUsernameTrimmed(usernameLevelBookmark.name) === username);
     if (filteredData.length === 0) {
         return null;
     }

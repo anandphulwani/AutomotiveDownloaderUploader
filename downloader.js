@@ -22,7 +22,7 @@ import {
     handleBookmarkURL,
     replaceBookmarksElementByGUIDAndWriteToBookmarksFile,
 } from './functions/bookmark.js';
-import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
+import { getUsernameTrimmed, setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
 import { validateConfigFile } from './functions/configvalidation.js';
@@ -174,7 +174,7 @@ try {
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {
                     const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
-                    const usernameTrimmed = usernameBookmark.name.includes('@') ? usernameBookmark.name.split('@')[0] : usernameBookmark.name;
+                    const usernameTrimmed = getUsernameTrimmed(usernameBookmark.name);
                     const dealerLevelPath = path.join(
                         config.downloadPath,
                         instanceRunDateFormatted,
@@ -199,7 +199,7 @@ try {
                 const credentials = getCredentialsForUsername(usernameBookmark.name);
 
                 setCurrentDealerConfiguration(usernameBookmark.name);
-                const usernameTrimmed = usernameBookmark.name.includes('@') ? usernameBookmark.name.split('@')[0] : usernameBookmark.name;
+                const usernameTrimmed = getUsernameTrimmed(usernameBookmark.name);
                 // const dealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) => dealerLevelBookmark.name.includes(' |#| '));
                 const dealerLevelBookmarks = usernameBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
