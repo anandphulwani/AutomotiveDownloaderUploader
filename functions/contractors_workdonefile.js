@@ -106,4 +106,4 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
     }
 }
 
-export default checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer;
+export default checkIfWorkDoneAndCreateDoneFile;
