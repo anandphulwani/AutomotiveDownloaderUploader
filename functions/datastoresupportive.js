@@ -22,7 +22,7 @@ instanceRunLogFilePrefix;
 const perImageTimeToUpload = 7.25;
 const perVINTimeToUpload = 7;
 
-function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
+function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 4, debug = false) {
     lgi(`Auto cleaning up the datastore: `, LineSeparator.false);
     const foldersToCleanUp = [
         [config.lockingBackupsZonePath, 2],
@@ -61,7 +61,9 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 5, debug = false) {
         const folderPathChildren = syncOperationWithErrorHandling(fs.readdirSync, folderToCleanUp[0]);
         const folderPathChildrenSubDirsOnly = folderPathChildren.filter(
             (file) =>
-                syncOperationWithErrorHandling(fs.lstatSync, path.join(folderToCleanUp[0], file)).isDirectory() && dateRegexExpression.test(file)
+                syncOperationWithErrorHandling(fs.lstatSync, path.join(folderToCleanUp[0], file)).isDirectory() &&
+                dateRegexExpression.test(file) &&
+                instanceRunDateFormatted !== file
         ); // Filter out only subdirectories and subdirectories which match YYYY-MM-DD format using regex
         folderPathChildrenSubDirsOnly.sort(); // Sort subdirectories by name
         const folderPathChildrenSubDirsToDelete = folderPathChildrenSubDirsOnly.slice(0, -folderToCleanUp[1]); // Delete all but the last 5 subdirectories
