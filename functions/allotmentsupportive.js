@@ -137,14 +137,14 @@ function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lot
     let doesLotFolderPathContainsFiles = false;
     const dealerDirs = [];
     /* eslint-disable no-restricted-syntax, no-continue */
-    for (const usernameFolder of syncOperationWithErrorHandling(fs.readdirSync, lotFldrPath)) {
-        // TODO: one of the config.credentials.username matches usernameFolder
-        const usernameFolderPath = path.join(lotFldrPath, usernameFolder);
-        if (!syncOperationWithErrorHandling(fs.statSync, usernameFolderPath).isDirectory()) {
+    for (const usernameLevelFolder of syncOperationWithErrorHandling(fs.readdirSync, lotFldrPath)) {
+        // TODO: one of the config.credentials.username matches usernameLevelFolder
+        const usernameLevelFolderPath = path.join(lotFldrPath, usernameLevelFolder);
+        if (!syncOperationWithErrorHandling(fs.statSync, usernameLevelFolderPath).isDirectory()) {
             continue;
         }
-        for (const dealerFolder of syncOperationWithErrorHandling(fs.readdirSync, usernameFolderPath)) {
-            const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
+        for (const dealerFolder of syncOperationWithErrorHandling(fs.readdirSync, usernameLevelFolderPath)) {
+            const dealerFolderPath = path.join(usernameLevelFolderPath, dealerFolder);
             if (!syncOperationWithErrorHandling(fs.statSync, dealerFolderPath).isDirectory()) {
                 continue;
             }
