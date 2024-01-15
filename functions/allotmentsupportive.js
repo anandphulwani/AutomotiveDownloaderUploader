@@ -136,44 +136,38 @@ function recalculateAllotmentPriority(contractorsArr, debug = false) {
 function validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs(lotFldrPath, debug = false) {
     let doesLotFolderPathContainsFiles = false;
     const dealerDirs = [];
-    // eslint-disable-next-line no-restricted-syntax
+    /* eslint-disable no-restricted-syntax, no-continue */
     for (const usernameFolder of syncOperationWithErrorHandling(fs.readdirSync, lotFldrPath)) {
         // TODO: one of the config.credentials.username matches usernameFolder
         const usernameFolderPath = path.join(lotFldrPath, usernameFolder);
-
-        if (syncOperationWithErrorHandling(fs.statSync, usernameFolderPath).isDirectory()) {
-            // eslint-disable-next-line no-restricted-syntax
-            for (const dealerFolder of syncOperationWithErrorHandling(fs.readdirSync, usernameFolderPath)) {
-                const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
-
-                if (syncOperationWithErrorHandling(fs.statSync, dealerFolderPath).isDirectory()) {
-                    // eslint-disable-next-line no-restricted-syntax
-                    for (const VINFolderOrFile of syncOperationWithErrorHandling(fs.readdirSync, dealerFolderPath)) {
-                        const VINFolderOrFilePath = path.join(dealerFolderPath, VINFolderOrFile);
-
-                        if (syncOperationWithErrorHandling(fs.statSync, VINFolderOrFilePath).isDirectory()) {
-                            const VINFolderOrFileLength = syncOperationWithErrorHandling(fs.readdirSync, VINFolderOrFilePath).length;
-                            debug ? lgd(`VINFolderOrFilePath: ${VINFolderOrFilePath}     VINFolderOrFileLength: ${VINFolderOrFileLength}`) : null;
-                            if (VINFolderOrFileLength > 0) {
-                                doesLotFolderPathContainsFiles = true;
-                            } else {
-                                removeDirAndRemoveParentDirIfEmpty(VINFolderOrFilePath, 3, true);
-                            }
-                        } else {
-                            doesLotFolderPathContainsFiles = true;
-                        }
-                    }
-                    if (syncOperationWithErrorHandling(fs.existsSync, dealerFolderPath)) {
-                        dealerDirs.push(dealerFolderPath);
-                    }
-                }
+        if (!syncOperationWithErrorHandling(fs.statSync, usernameFolderPath).isDirectory()) {
+            continue;
+        }
+        for (const dealerFolder of syncOperationWithErrorHandling(fs.readdirSync, usernameFolderPath)) {
+            const dealerFolderPath = path.join(usernameFolderPath, dealerFolder);
+            if (!syncOperationWithErrorHandling(fs.statSync, dealerFolderPath).isDirectory()) {
+                continue;
             }
+            for (const VINFolderOrFile of syncOperationWithErrorHandling(fs.readdirSync, dealerFolderPath)) {
+                const VINFolderOrFilePath = path.join(dealerFolderPath, VINFolderOrFile);
+                if (!syncOperationWithErrorHandling(fs.statSync, VINFolderOrFilePath).isDirectory()) {
+                    doesLotFolderPathContainsFiles = true;
+                    continue;
+                }
+                const VINFolderOrFileLength = syncOperationWithErrorHandling(fs.readdirSync, VINFolderOrFilePath).length;
+                debug ? lgd(`VINFolderOrFilePath: ${VINFolderOrFilePath}     VINFolderOrFileLength: ${VINFolderOrFileLength}`) : null;
+                VINFolderOrFileLength > 0
+                    ? (doesLotFolderPathContainsFiles = true)
+                    : removeDirAndRemoveParentDirIfEmpty(VINFolderOrFilePath, 3, true);
+            }
+            syncOperationWithErrorHandling(fs.existsSync, dealerFolderPath) ? dealerDirs.push(dealerFolderPath) : null;
         }
     }
     if (!doesLotFolderPathContainsFiles) {
         lgu(`The lot folder does not contain any files to allot.`);
         process.exit(1);
     }
+    /* eslint-enable no-restricted-syntax, no-continue */
     return dealerDirs;
 }
 /* #endregion */
