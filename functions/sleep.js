@@ -24,7 +24,8 @@ async function waitForSeconds(seconds, debug = false) {
 
 async function waitForMilliSeconds(milliseconds, debug = false) {
     debug ? process.stdout.write(`Waiting start for ${milliseconds} milliseconds: Executing.  `) : '';
-    for (let cnt = 0; cnt < milliseconds; cnt++) {
+    const startingTime = Date.now();
+    for (let cnt = 0; cnt < milliseconds && Date.now() - startingTime < milliseconds; cnt++) {
         /**
          * Cannot change below to lgi function as it creates cyclic dependency problem.
          */
