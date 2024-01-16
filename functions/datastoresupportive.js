@@ -176,24 +176,35 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 4, debug = false) {
     /* #endregion: In config.lockingBackupsZonePath/todaysDate folder, keep last 30 files of each types, and in remaining files just keep a single file of filename_HHmm pattern. */
     lgi(`03:${logSymbols.success} `, LoggingPrefix.false, LineSeparator.false);
 
+    /* #region: Cleanup logs folder files which have size 0 in earlier dates, and not locked and size 0 in today's date. */
     // eslint-disable-next-line no-restricted-syntax
     for (const dateDir of syncOperationWithErrorHandling(fs.readdirSync, getProjectLogsDirPath())) {
         const entryPath = path.join(getProjectLogsDirPath(), dateDir);
         if (syncOperationWithErrorHandling(fs.statSync, entryPath).isDirectory()) {
             const dateDirFilesAndFolders = syncOperationWithErrorHandling(fs.readdirSync, entryPath, { withFileTypes: true });
-            let lockDirectories = dateDirFilesAndFolders
-                .filter((dirent) => dirent.isDirectory() && dirent.name.endsWith('.lock'))
-                .map((dirent) => path.join(entryPath, dirent.name));
-            lockDirectories = lockDirectories.map((dir) => dir.replace(/\.lock$/, ''));
+            let lockDirectories = [];
+            if (dateDir === instanceRunDateFormatted) {
+                lockDirectories = dateDirFilesAndFolders
+                    .filter((dirent) => dirent.isDirectory() && dirent.name.endsWith('.lock'))
+                    .map((dirent) => path.join(entryPath, dirent.name));
+                lockDirectories = lockDirectories.map((dir) => path.basename(dir).replace(/\.lock$/, ''));
+            }
 
             // Filter only the files that are not in lockDirectories
             const nonLockFiles = dateDirFilesAndFolders.filter((dirent) => {
+                let isSizeZero = false;
                 const filePath = path.join(entryPath, dirent.name);
-                const isDirectory = dirent.isDirectory();
-                const isNotLocked = !lockDirectories.some((lockDir) => dirent.name.startsWith(lockDir));
-                let isSizeZero;
+                const isNotLocked = dateDir === instanceRunDateFormatted ? !lockDirectories.some((lockDir) => dirent.name.startsWith(lockDir)) : true;
+                if (!isNotLocked) {
+                    return false;
+                }
                 try {
-                    isSizeZero = syncOperationWithErrorHandling(fs.statSync, filePath).size === 0;
+                    if (dirent.isDirectory()) {
+                        const directoryItemsCount = syncOperationWithErrorHandling(fs.readdirSync, filePath).length;
+                        isSizeZero = dirent.name.endsWith('.lock') && directoryItemsCount === 0 ? true : isSizeZero;
+                    } else {
+                        isSizeZero = syncOperationWithErrorHandling(fs.statSync, filePath).size === 0;
+                    }
                 } catch (error) {
                     const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
                     const resourceBusyOrLockedOrNotPermittedRegexExpression = new RegExp(resourceBusyOrLockedOrNotPermittedRegexString);
@@ -203,16 +214,21 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 4, debug = false) {
                         throw error;
                     }
                 }
-                return !isDirectory && isNotLocked && isSizeZero;
+                return isSizeZero;
             });
 
             // eslint-disable-next-line no-restricted-syntax
-            for (const file of nonLockFiles) {
-                const filePath = path.join(entryPath, file.name);
-                syncOperationWithErrorHandling(fs.unlinkSync, filePath);
+            for (const fileOrFolder of nonLockFiles) {
+                const fileOrFolderPath = path.join(entryPath, fileOrFolder.name);
+                if (syncOperationWithErrorHandling(fs.statSync, fileOrFolderPath).isDirectory()) {
+                    removeDir(fileOrFolderPath, true);
+                } else {
+                    syncOperationWithErrorHandling(fs.unlinkSync, fileOrFolderPath);
+                }
             }
         }
     }
+    /* #endregion: Cleanup logs folder files which have size 0 in earlier dates, and not locked and size 0 in today's date. */
     lgi(`04:${logSymbols.success}`, LoggingPrefix.false);
 }
 
