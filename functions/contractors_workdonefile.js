@@ -15,6 +15,8 @@ const readyToUploadFolderName = config.finisherProcessingFolders[1];
 
 const cuttersCompletedAndDoneFileCreated = [];
 const allAllottedAndDoneFileCreated = [];
+let cutterConditionNotMetLastTime = Date.now();
+
 function checkIfWorkDoneAndCreateDoneFile(mode) {
     if (mode !== 'finisher' && mode !== 'cutter') {
         lgu(`Unknown mode(${mode}) used in checkIfWorkDoneAndCreateDoneFile(mode) fn, valid modes are 'finisher' or 'cutter'.`);
@@ -25,6 +27,7 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
     const reportDateFolder = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted);
     const reportJSONFilePath = path.join(reportDateFolder, `${instanceRunDateFormatted}_report.json`);
     if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
+        cutterConditionNotMetLastTime = Date.now();
         return;
     }
 
@@ -33,6 +36,7 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
      */
     const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength();
     if (remainingBookmarksNotDownloadedLength !== 0) {
+        cutterConditionNotMetLastTime = Date.now();
         return;
     }
 
@@ -44,10 +48,15 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
         syncOperationWithErrorHandling(fs.existsSync, downloadPathWithTodaysDate) &&
         syncOperationWithErrorHandling(fs.readdirSync, downloadPathWithTodaysDate).length !== 0
     ) {
+        cutterConditionNotMetLastTime = Date.now();
         return;
     }
 
     if (mode === 'cutter') {
+        if (Date.now() - cutterConditionNotMetLastTime < 30 * 60 * 1000 /* 30 minutes in milliseconds */) {
+            return;
+        }
+
         // eslint-disable-next-line no-restricted-syntax
         for (const contractor of Object.keys(config.contractors)) {
             const allWorkAllottedFile = `allwork_allotted_${instanceRunDateFormatted}.txt`;
