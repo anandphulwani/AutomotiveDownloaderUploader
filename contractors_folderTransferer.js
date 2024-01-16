@@ -71,7 +71,6 @@ try {
     lgu('Unable to checkSync or lockSync.', error);
     process.exit(1);
 }
-// TODO: Delete accounting folders for last 5 dates only.
 
 if (
     validateConfigFile() === 'error' ||
