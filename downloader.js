@@ -66,7 +66,6 @@ autoCleanUpDatastoreZones();
 printSectionSeperator();
 
 // NORMALPRIORITY: Error summary in the end.
-// TODO: disallow same dealerNumber folders in a username folder, and same username folder in bookmark bar
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
 
 // Non-shortcircuiting and: [f1(), f2()].every(i => i)
