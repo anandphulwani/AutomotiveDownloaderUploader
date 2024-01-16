@@ -22,7 +22,6 @@ function trimMultipleSpacesInMiddleIntoOne(txt) {
 }
 
 function allTrimStringArrayOfObjects(arrObj) {
-    // return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (v !== undefined ? (o[k] = v.trim()) : ''))); // LOWPRIORITY: Check doing nothing on false ternary operator
     // eslint-disable-next-line no-return-assign
     return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (o[k] = v.trim())));
 }
@@ -33,7 +32,6 @@ function allTrimStringArray(arr) {
 }
 
 function trimMultipleSpacesInMiddleIntoOneArrayOfObjects(arrObj) {
-    // return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (v !== undefined ? (o[k] = v.replace(/  +/g, ' ')) : ''))); // LOWPRIORITY: Check doing nothing on false ternary operator
     // eslint-disable-next-line no-return-assign
     return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (o[k] = v.replace(/  +/g, ' '))));
 }
@@ -44,7 +42,6 @@ function trimMultipleSpacesInMiddleIntoOneArray(arr) {
 }
 
 function trimSingleSpaceInMiddleArrayOfObjects(arrObj) {
-    // return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (v !== undefined ? (o[k] = v.replace(/  +/g, ' ')) : ''))); // LOWPRIORITY:  Check doing nothing on false ternary operator
     // eslint-disable-next-line no-return-assign
     return _.each(structuredClone(arrObj), (o) => _.each(o, (v, k) => (o[k] = v.replace(/  +/g, ''))));
 }
