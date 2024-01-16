@@ -19,6 +19,7 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
         lgu(`Unknown mode(${mode}) used in checkIfWorkDoneAndCreateDoneFile(mode) fn, valid modes are 'finisher' or 'cutter'.`);
         process.exit(1);
     }
+
     // Check if JSON file of report exists, because that means some download is done and the first lot is allotted.
     const reportDateFolder = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted);
     const reportJSONFilePath = path.join(reportDateFolder, `${instanceRunDateFormatted}_report.json`);
@@ -45,6 +46,8 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
         return;
     }
 
+    if (mode === 'cutter') {
+    } else if (mode === 'finisher') {
     // eslint-disable-next-line no-restricted-syntax
     for (const contractor of Object.keys(config.contractors)) {
         const allWorkDoneFile = `${contractor}_${instanceRunDateFormatted}.txt`;
@@ -103,6 +106,7 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
             syncOperationWithErrorHandling(fs.closeSync, fs.openSync(allWorkDoneFileFullPath, 'a'));
             cuttersCompletedAndDoneFileCreated.push(allWorkDoneFile);
         }
+    }
     }
 }
 
