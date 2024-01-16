@@ -9,8 +9,21 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
     let validationStatus = 'success';
     debug ? lgd(`Validating bookmarks and checking if credentials are present: Executing.`) : null;
     const allUsernamesBookmarks = getAllUsernamesBookmarks();
+    const uniqueUsernamesBookmarks = [];
+
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
+        const uniqueUsernamesArr = uniqueUsernamesBookmarks.map((uniqueUsernameBookmark) => uniqueUsernameBookmark.name);
+        if (uniqueUsernamesArr.includes(usernameBookmark.name)) {
+            validationStatus = 'error';
+            lge(`Duplicate Username level bookmark name found, a folder '${usernameBookmark.name}' is already present.`);
+        } else {
+            uniqueUsernamesBookmarks.push(usernameBookmark);
+        }
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const usernameBookmark of uniqueUsernamesBookmarks) {
         setCurrentDealerConfiguration(usernameBookmark.name);
         const allDealerNumbers = getAllDealerNumbers();
         const dealerLevelBookmarks = usernameBookmark.children;
