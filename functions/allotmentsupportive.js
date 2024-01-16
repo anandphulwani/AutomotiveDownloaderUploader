@@ -206,21 +206,6 @@ function returnImageCountFromDealerDir(dealerDir, debug = false) {
 }
 /* #endregion */
 
-/**
- * 006
- * Get total image count from an array of dealer directories, which includes VIN folders and VIN files
- */
-// TODO: Check if the calls to the function is making sense.
-/* #region : returnImageCountFromDealerDirs (lotFldrPath, debug = false) {...} */
-function returnImageCountFromDealerDirs(dealerDirs, debug = false) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const dealerDir of dealerDirs) {
-        dealerDir[1] = returnImageCountFromDealerDir(dealerDir, debug);
-    }
-    return dealerDirs;
-}
-/* #endregion */
-
 // eslint-disable-next-line import/prefer-default-export
 export {
     recalculateRatioOfThreshHoldWithOtherContractors,
@@ -228,5 +213,4 @@ export {
     recalculateAllotmentPriority,
     validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs,
     returnImageCountFromDealerDir,
-    returnImageCountFromDealerDirs,
 };
