@@ -7,7 +7,7 @@ import { config } from './configs/config.js';
 import { lge, lgi, lgu, lgwc } from './functions/loggerandlocksupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
-import checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer from './functions/contractors_workdonefile.js';
+import checkIfWorkDoneAndCreateDoneFile from './functions/contractors_workdonefile.js';
 import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
 import { validateConfigFile } from './functions/configvalidation.js';
@@ -106,7 +106,8 @@ while (true) {
 
     foldersToShift = moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, true);
     moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, false);
-    checkIfCuttingWorkDoneAndCreateDoneFileInFinishingBuffer();
+    checkIfWorkDoneAndCreateDoneFile('cutter');
+    checkIfWorkDoneAndCreateDoneFile('finisher');
 
     /**
      * Check if downloader or uploader is not running for 2 hours,
