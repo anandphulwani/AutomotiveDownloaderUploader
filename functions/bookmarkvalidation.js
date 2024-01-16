@@ -39,7 +39,7 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
             }
             if (dealerLevelBookmarkNames.includes(dealerLevelBookmarkName)) {
                 validationStatus = 'error';
-                lge(`Duplicate Dealer level bookmark name found, a folder ${dealerLevelBookmarkName} is already present.`);
+                lge(`Duplicate Dealer level bookmark name found, a folder '${dealerLevelBookmarkName}' is already present.`);
             } else {
                 dealerLevelBookmarkNames.push(dealerLevelBookmarkName);
             }
