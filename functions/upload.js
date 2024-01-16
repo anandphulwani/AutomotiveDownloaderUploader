@@ -299,7 +299,6 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         lgc(`region: Uploading the files, Try Error: `, error);
     }
     lgtf(`region: Uploading the files: End`);
-    // TODO: Verify all files are uploaded in qty, also rename bookmarks by giving quantity while download
     /* #endregion: Uploading the files: End */
 
     const endingRow = await getRowPosOnTerminal();
