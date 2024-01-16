@@ -141,7 +141,7 @@ try {
             const allUsernamesBookmarks = getAllUsernamesBookmarks();
 
             // Create a set of all completed bookmarks to compare for duplicates
-            let urlsDownloaded = [];
+            let urlsDownloaded = {};
             // eslint-disable-next-line no-restricted-syntax
             for (const usernameBookmark of allUsernamesBookmarks) {
                 const dealerLevelBookmarks = usernameBookmark.children;
@@ -153,7 +153,7 @@ try {
                         if (vehicleBookmark.name.includes('|#|')) {
                             let vehicleBookmarkUrlWOQueryParams = new URLparser(vehicleBookmark.url);
                             vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
-                            urlsDownloaded.push(vehicleBookmarkUrlWOQueryParams);
+                            urlsDownloaded[vehicleBookmarkUrlWOQueryParams] = dealerLevelBookmark.name;
                         }
                     }
                 }

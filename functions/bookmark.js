@@ -531,13 +531,20 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
 
     let vehicleBookmarkUrlWOQueryParams = new URLparser(URL);
     vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
-    if (urlsDownloaded.includes(vehicleBookmarkUrlWOQueryParams)) {
+    if (Object.keys(urlsDownloaded).includes(vehicleBookmarkUrlWOQueryParams)) {
         debug ? '' : process.stdout.moveCursor(0, -diffInRows); // up one line
         debug ? '' : process.stdout.clearLine(diffInRows); // from cursor to end
         debug ? '' : process.stdout.cursorTo(0);
-        lgh(`\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded ...... (Ignoring)`);
+        lgh(
+            `\t${name} : ${URL} : Supplied URL is a duplicate, already downloaded by: ${urlsDownloaded[vehicleBookmarkUrlWOQueryParams]} ...... (Ignoring)`
+        );
         await waitForSeconds(5);
-        return { result: false, bookmarkAppendMesg: 'Ignoring (Duplicate, Already downloaded)', imagesDownloaded: 0, urlsDownloaded: urlsDownloaded };
+        return {
+            result: false,
+            bookmarkAppendMesg: `Ignoring (Duplicate, Already downloaded by: ${urlsDownloaded[vehicleBookmarkUrlWOQueryParams]})`,
+            imagesDownloaded: 0,
+            urlsDownloaded: urlsDownloaded,
+        };
     }
 
     let parsedCurrentUrlWOQueryParams = new URLparser(page.url());
@@ -556,7 +563,7 @@ async function handleBookmarkURL(page, lotIndex, username, dealerFolder, name, U
 
     const returnObj = await getImagesFromContent(page, lotIndex, username, dealerFolder);
     if (returnObj.result) {
-        urlsDownloaded.push(vehicleBookmarkUrlWOQueryParams);
+        urlsDownloaded[vehicleBookmarkUrlWOQueryParams] = dealerFolder;
         returnObj.urlsDownloaded = urlsDownloaded;
     } else {
         returnObj.urlsDownloaded = urlsDownloaded;
