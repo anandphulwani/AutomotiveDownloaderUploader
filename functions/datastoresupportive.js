@@ -39,14 +39,14 @@ function autoCleanUpDatastoreZones(noOfDaysDataToKeep = 4, debug = false) {
 
     // eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
     for (const contractor of Object.keys(config.contractors)) {
-        foldersToCleanUp.push([`${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\${cuttingAccounting}`, 3]);
-        foldersToCleanUp.push([`${config.contractorsZonePath}\\${contractor}`, 3]);
+        foldersToCleanUp.push([`${config.contractorsRecordKeepingPath}\\${contractor}_Acnt\\${cuttingAccounting}`, 2]);
+        foldersToCleanUp.push([`${config.contractorsZonePath}\\${contractor}`, 2]);
     }
 
     const finishers = [...new Set(Object.values(config.contractors).map((contractor) => contractor.finisher))];
     // eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
     for (const finisher of finishers) {
-        foldersToCleanUp.push([`${config.contractorsRecordKeepingPath}\\${finisher}_Acnt\\${finishingAccounting}`, 3]);
+        foldersToCleanUp.push([`${config.contractorsRecordKeepingPath}\\${finisher}_Acnt\\${finishingAccounting}`, 2]);
     }
 
     /* #region: Cleanup all the folders > subFolders here, to keep last `noOfDaysDataToKeep` days / no of days data to keep, keep last date folders accordingly. */
