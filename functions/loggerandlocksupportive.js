@@ -209,8 +209,13 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
             } else if (lockTryIndex !== 0 && lockTryIndex % 1500 === 0) {
                 lgs(`Trying to get a lock on: \n${fileToOperateOn}    ......`);
             } else if (lockTryIndex !== 0 && lockTryIndex % 300 === 0) {
-                // ONPROJECTFINISH: Check if you can replace this with lg* function, you will have to check for proper lineSeperators so that it logs properly.
-                process.stdout.write(chalk.cyan(` ■`));
+                lgw(
+                    ` ■`,
+                    Color.cyanNormal,
+                    new CallerHierarchyAndUniqueId('loggerandlocksupportive.js: attainLock fn(): Section 01', ''),
+                    LoggingPrefix.false,
+                    LineSeparator.false
+                );
             }
             const radomNumberBetween25and50 = Math.floor(Math.random() * (50 - 25 + 1)) + 25;
             let checkIfLocked;
@@ -284,8 +289,13 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
             if (unlockTryIndex !== 0 && unlockTryIndex % 1500 === 0) {
                 lgs(`Trying to get a unlock on: \n${fileToOperateOn}    ......`);
             } else if (unlockTryIndex !== 0 && unlockTryIndex % 300 === 0) {
-                // ONPROJECTFINISH: Check if you can replace this with lg* function, you will have to check for proper lineSeperators so that it logs properly.
-                process.stdout.write(chalk.yellow(` ■`));
+                lgw(
+                    ` ■`,
+                    Color.yellow,
+                    new CallerHierarchyAndUniqueId('loggerandlocksupportive.js: releaseLock fn(): Section 01', ''),
+                    LoggingPrefix.false,
+                    LineSeparator.false
+                );
             }
             const radomNumberBetween25and50 = Math.floor(Math.random() * (50 - 25 + 1)) + 25;
             let checkIfLocked;
