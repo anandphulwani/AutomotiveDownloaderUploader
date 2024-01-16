@@ -14,6 +14,7 @@ const finishingBufferFolderName = config.finisherProcessingFolders[0];
 const readyToUploadFolderName = config.finisherProcessingFolders[1];
 
 const cuttersCompletedAndDoneFileCreated = [];
+const allAllottedAndDoneFileCreated = [];
 function checkIfWorkDoneAndCreateDoneFile(mode) {
     if (mode !== 'finisher' && mode !== 'cutter') {
         lgu(`Unknown mode(${mode}) used in checkIfWorkDoneAndCreateDoneFile(mode) fn, valid modes are 'finisher' or 'cutter'.`);
@@ -47,6 +48,32 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
     }
 
     if (mode === 'cutter') {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const contractor of Object.keys(config.contractors)) {
+            const allWorkAllottedFile = `allwork_allotted_${instanceRunDateFormatted}.txt`;
+            /**
+             * Ignore `contractor` if it the file is created, i.e. its filename is already present `allAllottedAndDoneFileCreated`.
+             */
+            if (allAllottedAndDoneFileCreated.includes(allWorkAllottedFile)) {
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+            /**
+             * Ignore `contractor` if its contractorsZonePath is not present.
+             */
+            const contractorPath = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted);
+            if (!syncOperationWithErrorHandling(fs.existsSync, contractorPath)) {
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+
+            const cuttersPath = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted);
+            const allWorkAllottedFileFullPath = path.join(cuttersPath, allWorkAllottedFile);
+            if (!syncOperationWithErrorHandling(fs.existsSync, allWorkAllottedFileFullPath)) {
+                syncOperationWithErrorHandling(fs.closeSync, fs.openSync(allWorkAllottedFileFullPath, 'a'));
+                cuttersCompletedAndDoneFileCreated.push(allWorkAllottedFile);
+            }
+        }
     } else if (mode === 'finisher') {
     // eslint-disable-next-line no-restricted-syntax
     for (const contractor of Object.keys(config.contractors)) {
