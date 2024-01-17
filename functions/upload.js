@@ -251,7 +251,6 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
                 await fileChooser.accept([path.resolve(VINFolderSubFolderAndFilesPath)]);
             }
-            // TODO: Folder still exists after picking from 004_ReadyToUpload, was a user fault earlier, but have to create a system to create a failsafe.
             let imageNumber;
             if (typeOfVINPath === 'VINFolder') {
                 const fileNameWOExt = VINFolderSubFolderAndFiles.split('.')[0];

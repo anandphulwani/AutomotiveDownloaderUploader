@@ -129,7 +129,6 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         `Images (Downloaded/Requested)  /Available: (${imagesDownloaded}/${imageNumbersToDownload.length})  /${imageOriginalURLS.length}         `,
         Color.bgCyan
     );
-    // LOWPRIORITY:  Make sure this removeDir runs properly
     removeDir(tempPath, true, debug);
     return { result: true, bookmarkAppendMesg: VINNumber, imagesDownloaded: imagesDownloaded };
 }
