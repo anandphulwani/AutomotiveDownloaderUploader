@@ -220,10 +220,6 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
 
     // TODO: Get all the folders which have codein ReadyToUpload, pull them only in the UploadingZone, also give warning for folders which do not satisy this criteeria also give warning when imageQty doesnt matches
     // TODO: For bookmarks which are done or not found give warning and move forward
-    // Done: Change variable for old images to just stay as there to be introduced in excel (No change required, if files are set to not delete, then keep files at the same place, only if shift paramater is there, shift 1st file to down, keep rest there itself.)
-    // Done: Single image which is not in VIN folder (use the path system rather than image number parseIntsystem)
-    // Update bookmark when its done
-    // Later: error handling if stuck delete all previous images and start again.
 
     const startingRow = await getRowPosOnTerminal();
     lgi(` Total Files`, LineSeparator.false);
