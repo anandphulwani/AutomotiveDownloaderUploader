@@ -33,8 +33,7 @@ if %count% GTR 1 (
     exit
 )
 
-REM TODO: Change 500 to 15 or less number or appropriate number accordingly.
-for /L %%i in (1,1,500) do (
+for /L %%i in (1,1,5) do (
     node contractors_folderTransferer.js
     pause
 )
