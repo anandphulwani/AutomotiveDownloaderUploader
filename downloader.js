@@ -65,7 +65,6 @@ if (config.environment === 'production') {
 autoCleanUpDatastoreZones();
 printSectionSeperator();
 
-// NORMALPRIORITY: Error summary in the end.
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
 
 // Non-shortcircuiting and: [f1(), f2()].every(i => i)
