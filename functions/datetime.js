@@ -66,6 +66,11 @@ function formatDate(inputDate, fromAndTo) {
     return false;
 }
 
+function isValidDate(dateString) {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    return dateString.match(regex) && !Number.isNaN(new Date(dateString).getTime());
+}
+
 export {
     instanceRunDateFormatted,
     instanceRunDateWODayFormatted,
@@ -90,4 +95,5 @@ export {
     getCurrentDate,
     getLastMonthDate,
     formatDate,
+    isValidDate,
 };
