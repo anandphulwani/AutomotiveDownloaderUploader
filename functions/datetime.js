@@ -50,6 +50,15 @@ function formatDate(inputDate, fromAndTo) {
         const formattedDate = new Date(`${year}-${numericMonth.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`);
         return formattedDate.toISOString().split('T')[0];
     }
+    if (fromAndTo === 'YYYY-MM-DD__DD MMM YYYY') {
+        const parts = inputDate.split('-');
+        const year = parts[0];
+        const month = parts[1];
+        const day = parts[2];
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthName = monthNames[month - 1];
+        return `${day} ${monthName} ${year}`;
+    }
     if (fromAndTo === 'DD-MMM-YYYY__DD(EEE)') {
         const parts = inputDate.split('-');
         const day = `${parseInt(parts[0], 10)}`.padStart(2, '0');
