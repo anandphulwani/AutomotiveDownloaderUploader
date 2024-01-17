@@ -108,7 +108,7 @@ function sortAndPrintIndividualLogs() {
     individualLogs.sort((a, b) => a.dateTimeForSorting.localeCompare(b.dateTimeForSorting));
     // eslint-disable-next-line no-restricted-syntax
     for (const individualLog of individualLogs) {
-        printSectionSeperator('billy', true);
+        printSectionSeperator('info', true);
         const level = individualLog.logType.toLowerCase();
         let firstLineLength = 0;
 
@@ -139,5 +139,5 @@ function sortAndPrintIndividualLogs() {
             .join('\n');
         console.log(levelToChalkColor[level][1](mesgToPrint));
     }
-    printSectionSeperator('billy', true);
+    printSectionSeperator('info', true);
 }
