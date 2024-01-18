@@ -62,6 +62,26 @@ function getFoldersInUploadingZone(debug = false) {
     return foldersToUpload;
 }
 
+function getFoldersInUploadingZoneWithUniqueIDs(uniqueIdArr, debug = false) {
+    const foldersInUploadingZone = [];
+    const uploadingZoneWithTodaysDate = path.join(config.uploadingZonePath, instanceRunDateFormatted);
+    if (!syncOperationWithErrorHandling(fs.existsSync, uploadingZoneWithTodaysDate)) {
+        return foldersInUploadingZone;
+    }
+    // eslint-disable-next-line no-restricted-syntax
+    for (const uploadingZoneSubFolderAndFiles of syncOperationWithErrorHandling(fs.readdirSync, uploadingZoneWithTodaysDate)) {
+        const uploadingZoneSubFolderPath = path.join(`${config.uploadingZonePath}\\${instanceRunDateFormatted}`, uploadingZoneSubFolderAndFiles);
+        const uploadingZoneStat = syncOperationWithErrorHandling(fs.statSync, uploadingZoneSubFolderPath);
+        if (uploadingZoneStat.isDirectory()) {
+            debug ? lgd(`uploadingZoneSubFolderPath: ${uploadingZoneSubFolderPath}`) : null;
+            if (uniqueIdArr.some((uniqueId) => uploadingZoneSubFolderAndFiles.includes(`(#${uniqueId})`))) {
+                foldersInUploadingZone.push(uploadingZoneSubFolderAndFiles);
+            }
+        }
+    }
+    return foldersInUploadingZone;
+}
+
 const printToLogBuffer = [];
 
 async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, URL, userLoggedIn, debug = false) {
@@ -859,4 +879,4 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { typeOfVINPathAndOtherVars, getFoldersInUploadingZone, uploadBookmarkURL };
+export { typeOfVINPathAndOtherVars, getFoldersInUploadingZone, getFoldersInUploadingZoneWithUniqueIDs, uploadBookmarkURL };
