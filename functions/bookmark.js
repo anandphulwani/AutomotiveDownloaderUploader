@@ -356,10 +356,17 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
                 delete sourceObj[key];
             }
         }
+
+        const allUsernamesFromConfig = config.credentials.map((item) => item.username);
+
         // eslint-disable-next-line no-restricted-syntax
         for (const key in sourceObj.roots) {
             if (key !== 'bookmark_bar') {
                 delete sourceObj.roots[key];
+            } else {
+                sourceObj.roots[key].children = sourceObj.roots[key].children.filter(
+                    (child) => child.type === 'folder' && allUsernamesFromConfig.includes(child.name)
+                );
             }
         }
 
