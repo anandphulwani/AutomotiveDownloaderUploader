@@ -59,5 +59,35 @@ function getRemainingBookmarksNotDownloadedLength() {
     );
 }
 
+function getUniqueIDsOfBookmarkFoldersAllotted() {
+    const allUsernamesBookmarks = getAllUsernamesBookmarks();
+    const extractedNames = [];
+    allUsernamesBookmarks
+        .map((usernameBookmark) => ({
+            ...usernameBookmark,
+            children: usernameBookmark.children
+                .map((dealerLevelBookmark) => {
+                    if (dealerLevelBookmark.name.includes(' |#| ')) {
+                        const extractedText = dealerLevelBookmark.name.split(' |#| ')[1];
+                        if (extractedText) {
+                            extractedNames.push(extractedText);
+                        }
+                    }
+                    return {
+                        ...dealerLevelBookmark,
+                        children: dealerLevelBookmark.children.filter((vehicleBookmark) => !vehicleBookmark.name.includes(' |#| ')),
+                    };
+                })
+                .filter((dealerLevelBookmark) => dealerLevelBookmark.children.length > 0),
+        }))
+        .filter((usernameBookmark) => usernameBookmark.children.length > 0);
+    return extractedNames;
+}
+
 // eslint-disable-next-line import/prefer-default-export
-export { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloaded, getRemainingBookmarksNotDownloadedLength };
+export {
+    getAllUsernamesBookmarks,
+    getRemainingBookmarksNotDownloaded,
+    getRemainingBookmarksNotDownloadedLength,
+    getUniqueIDsOfBookmarkFoldersAllotted,
+};
