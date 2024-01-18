@@ -238,7 +238,6 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     }
     lgtf(`uniqueIdFolderPath\\VINNumberFromBookmark: ${uniqueIdFolderPath}\\${VINNumberFromBookmark}`);
 
-    // TODO: Get all the folders which have codein ReadyToUpload, pull them only in the UploadingZone, also give warning for folders which do not satisy this criteeria also give warning when imageQty doesnt matches
     // TODO: For bookmarks which are done or not found give warning and move forward
 
     const startingRow = await getRowPosOnTerminal();
