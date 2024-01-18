@@ -151,6 +151,12 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                         lgc('Unknown error while checking for contractor locked:', err);
                     }
                 }
+            } else {
+                warnNowOrLater(
+                    `Found a file in ${typeOfContractor}'s ${typeOfSourceFolder} directory, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
+                    sourceDestinationAccountingType,
+                    true
+                );
             }
         }
 
@@ -161,17 +167,6 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                 filteredContractorDestinationDir,
                 filteredContractorDestinationSubFolderAndFiles
             );
-            const filteredContractorDestinationStat = syncOperationWithErrorHandling(fs.statSync, filteredContractorDestinationSubFolderPath);
-            // Check CuttingDone/ReadyToUpload item is a folder
-            if (!filteredContractorDestinationStat.isDirectory()) {
-                warnNowOrLater(
-                    `Found a file in ${typeOfContractor}'s ${typeOfSourceFolder} directory, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
-                    sourceDestinationAccountingType,
-                    true
-                );
-                // eslint-disable-next-line no-continue
-                continue;
-            }
 
             // Check CuttingDone/ReadyToUpload folder has OK_AlreadyMoved_ prefixed to it, if has set overwrite to true and rename the folder to proper format
             const regexallottedFolderAlreadyMovedRegexString = config.allottedFolderRegex.replace('^', '^[O|o][K|k]_AlreadyMoved_');
