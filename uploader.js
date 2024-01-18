@@ -133,7 +133,29 @@ try {
         const uniqueIdOfFoldersShifted = Object.keys(foldersToUpload);
         debug ? lgd(`uniqueIdOfFoldersShifted :${uniqueIdOfFoldersShifted}`) : null;
 
-        if (uniqueIdOfFoldersShifted.length > 0) {
+        const uniqueIdOfBookmarkFoldersAllotted = getUniqueIDsOfBookmarkFoldersAllotted();
+        debug ? lgd(`uniqueIdOfBookmarkFoldersAllotted :${uniqueIdOfBookmarkFoldersAllotted}`) : null;
+
+        const [uniqueIdOfFoldersInBothShiftedAndBookmarks, uniqueIdOfFoldersInNotBookmarks] = uniqueIdOfFoldersShifted.reduce(
+            (acc, element) => {
+                if (uniqueIdOfBookmarkFoldersAllotted.includes(element)) {
+                    acc[0].push(element);
+                } else {
+                    acc[1].push(element);
+                }
+                return acc;
+            },
+            [[], []]
+        );
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const uploadingFoldersInNotBookmarks of getFoldersInUploadingZoneWithUniqueIDs(uniqueIdOfFoldersInNotBookmarks)) {
+            lgw(
+                `Folder's '${uploadingFoldersInNotBookmarks}' unique id of folder not found in bookmarks(probably deleted), to upload; redownload, reallot, replace contents of the folder.`
+            );
+        }
+
+        if (uniqueIdOfFoldersInBothShiftedAndBookmarks.length > 0) {
             /**
              * Read chrome bookmarks from chrome browser
              */
@@ -160,7 +182,9 @@ try {
                     const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
                     const uniqueIdArr = getUniqueIdPairsFromDealerBookmarkName(dealerLevelBookmark.name);
 
-                    const uniqueIdArrCommonInUploadDiretoryAndBookmarksName = uniqueIdArr.filter((value) => uniqueIdOfFoldersShifted.includes(value));
+                    const uniqueIdArrCommonInUploadDiretoryAndBookmarksName = uniqueIdArr.filter((value) =>
+                        uniqueIdOfFoldersInBothShiftedAndBookmarks.includes(value)
+                    );
                     // eslint-disable-next-line no-restricted-syntax
                     for (const uniqueIdElement of uniqueIdArrCommonInUploadDiretoryAndBookmarksName) {
                         if (!syncOperationWithErrorHandling(fs.existsSync, foldersToUpload[uniqueIdElement].path)) {
@@ -278,7 +302,7 @@ try {
         } else {
             break;
         }
-        if (uniqueIdOfFoldersShifted.length === 0) {
+        if (uniqueIdOfFoldersInBothShiftedAndBookmarks.length === 0) {
             lgi(`No data present in the uploading zone.`, Color.green);
             printSectionSeperator();
             const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
