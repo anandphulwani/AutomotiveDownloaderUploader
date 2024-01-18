@@ -37,6 +37,7 @@ import { levels, loggerConsoleLevel } from './functions/logger.js';
 import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
+import { getRowPosOnTerminal } from './functions/terminal.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -332,6 +333,7 @@ try {
             break;
         }
         if (remainingBookmarksNotDownloadedLength === 0) {
+            const inLoopRowBeforeQuestion = await getRowPosOnTerminal();
             const questionOfKeyInYNToAddMoreBookmarks =
                 'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
             const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
@@ -340,9 +342,13 @@ try {
             }
             if (resultOfKeyInYNToAddMoreBookmarks.isDefaultOption) {
                 printSectionSeperator(undefined, true);
+                const inLoopRowAFterQuestion = await getRowPosOnTerminal();
                 await waitForSeconds(5);
 
-                const noOfLines = levels[loggerConsoleLevel] >= levels.trace ? 4 : 2;
+                const noOfLines =
+                    levels[loggerConsoleLevel] >= levels.trace
+                        ? inLoopRowAFterQuestion - inLoopRowBeforeQuestion + 2
+                        : inLoopRowAFterQuestion - inLoopRowBeforeQuestion;
                 clearLastLinesOnConsole(noOfLines);
                 await waitForSeconds(5);
             } else {
