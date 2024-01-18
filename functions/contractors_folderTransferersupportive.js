@@ -197,7 +197,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             }
 
             // Check CuttingDone/ReadyToUpload folder has AlreadyMoved_ prefixed to it, if has ignore the folder
-            const alreadyMovedRegexString = `^AlreadyMoved_.*$`;
+            const alreadyMovedRegexString = config.allottedFolderRegex.replace('^', '^AlreadyMoved_');
             const alreadyMovedRegexExpression = new RegExp(alreadyMovedRegexString);
             if (alreadyMovedRegexExpression.test(filteredContractorDestinationSubFolderAndFiles)) {
                 // eslint-disable-next-line no-continue
