@@ -465,6 +465,27 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
             allottedFolderBookmarkBlockMatch = allottedFolderRegexExpression.exec(processingJSONString);
         }
 
+        /**
+         * Reset `name mismatch` when folder is renamed
+         */
+        const nameMismatchBlockRegex = `\\[[^\\[\\]]*(?:"name": ".*? \\|#\\| \\(.*\\) name mismatch, web: .*?")[^\\[\\]]*\\][^\\[\\]]+"name": "(.*?)",\\s+"type": "folder"`;
+        const nameMismatchBlockRegexExpression = new RegExp(nameMismatchBlockRegex, 'g');
+        let nameMismatchBlockMatch = nameMismatchBlockRegexExpression.exec(sourceJSONString);
+        while (nameMismatchBlockMatch !== null) {
+            const nameMismatchLineSearchRegex = `\\|#\\| \\((.*)\\) name mismatch, web: `;
+            const nameMismatchLineSearchRegexExpression = new RegExp(nameMismatchLineSearchRegex, 'g');
+            const nameMismatchLineSearchMatches = [...nameMismatchBlockMatch[0].matchAll(nameMismatchLineSearchRegexExpression)];
+            const nameMismatchLineSearchMatchesArr = [...nameMismatchLineSearchMatches.map((match) => match[1]), nameMismatchBlockMatch[1]];
+            const nameMismatchLineSearchMatchesUniqueArr = [...new Set(nameMismatchLineSearchMatchesArr)];
+            if (nameMismatchLineSearchMatchesUniqueArr.length > 1) {
+                const nameMismatchLineReplaceRegex = ` \\|#\\| \\(.*\\) name mismatch, web: .*",`;
+                const nameMismatchLineReplaceRegexExpression = new RegExp(nameMismatchLineReplaceRegex, 'g');
+                const nameMismatchBlockReplaced = nameMismatchBlockMatch[0].replace(nameMismatchLineReplaceRegexExpression, '",');
+                sourceJSONString = sourceJSONString.replace(nameMismatchBlockMatch[0], nameMismatchBlockReplaced);
+            }
+            nameMismatchBlockMatch = nameMismatchBlockRegexExpression.exec(sourceJSONString);
+        }
+
         sourceJSONStringLength = sourceJSONString.trim().split(/\r\n|\r|\n/).length;
         if (initialLineCount - sourceJSONStringLength !== 0) {
             lgu(
