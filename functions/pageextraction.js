@@ -36,7 +36,7 @@ async function getImagesFromContent(page, lotIndex, username, dealerFolder, debu
         lgw(`Dealer folder: ${dealerFolder} name mismatch, name from web is '${dealerNameFromPage}' vs excel is '${dealerNameFromDCAsIs}'.`);
         return {
             result: false,
-            bookmarkAppendMesg: `${dealerFolder} name mismatch, web:${dealerNameFromPage}/excel:${dealerNameFromDCAsIs}`,
+            bookmarkAppendMesg: `(${dealerFolder}) name mismatch, web:${dealerNameFromPage}/excel:${dealerNameFromDCAsIs}`,
             imagesDownloaded: 0,
         };
     }
