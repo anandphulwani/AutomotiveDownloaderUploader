@@ -7,10 +7,14 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lge, lgi, lgu, lgd, lgif, lgwc } from './functions/loggerandlocksupportive.js';
+import { lge, lgi, lgu, lgd, lgif, lgwc, lgw } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
-import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength } from './functions/bookmarksupportive.js';
+import {
+    getAllUsernamesBookmarks,
+    getRemainingBookmarksNotDownloadedLength,
+    getUniqueIDsOfBookmarkFoldersAllotted,
+} from './functions/bookmarksupportive.js';
 import { gotoURL } from './functions/goto.js';
 import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { getUniqueIdPairsFromDealerBookmarkName } from './functions/bookmark.js';
@@ -27,7 +31,12 @@ import {
 } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones, getUploadRemainingSummary } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
-import { getFoldersInUploadingZone, typeOfVINPathAndOtherVars, uploadBookmarkURL } from './functions/upload.js';
+import {
+    getFoldersInUploadingZone,
+    getFoldersInUploadingZoneWithUniqueIDs,
+    typeOfVINPathAndOtherVars,
+    uploadBookmarkURL,
+} from './functions/upload.js';
 import {
     checkIfFoldersPresentInFinishersUploadingZoneDir,
     moveFilesFromSourceToDestinationAndAccounting,
