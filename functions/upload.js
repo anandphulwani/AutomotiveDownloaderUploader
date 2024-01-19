@@ -229,8 +229,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
 
     const imageDIVContainer = await page.$('.tn-list-container');
     const imageULContainer = await imageDIVContainer.$('.container.tn-list.sortable.deletable.ui-sortable');
-    const imageOriginalURLS = await imageULContainer.$$eval('img.tn-car', (el) => el.map((x) => x.getAttribute('originalUrl')));
-    const imageOriginalURLSLength = imageOriginalURLS.length;
+    await imageULContainer.$$eval('img.tn-car', (el) => el.map((x) => x.getAttribute('originalUrl')));
 
     if (!page.url().endsWith('#imagery')) {
         await clickOnButton(page, '.vehicle-detail-tab.vehicle-detail-tab-imagery');
