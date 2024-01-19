@@ -8,7 +8,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { getCredentialsForUsername, getLotConfigPropertiesValues } from './functions/configsupportive.js';
+import { getCredentialsForUsername, getLastLotDate, getLastLotNumber, getLotConfigPropertiesValues } from './functions/configsupportive.js';
 import { zeroPad } from './functions/stringformatting.js';
 import { sleep, waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
@@ -90,8 +90,8 @@ if (config.environment === 'production' && !checkSync('contractors_folderTransfe
 const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${instanceRunDateFormatted}`, 'Lot_');
 let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
 if (LotLastIndex === null) {
-    if (config.lotLastRunDate === instanceRunDateFormatted) {
-        LotLastIndex = parseInt(config.lotLastRunNumber.substring(4), 10) + 1;
+    if (getLastLotDate() === instanceRunDateFormatted) {
+        LotLastIndex = parseInt(getLastLotNumber().substring(4), 10) + 1;
     } else {
         LotLastIndex = 1;
     }

@@ -10,7 +10,7 @@ import { getRowPosOnTerminal } from './terminal.js';
 import { attainLock, releaseLock, lgc, lgi, lgu, lgh, lgd, lgt, lgs, lgif } from './loggerandlocksupportive.js';
 import { gotoURL } from './goto.js';
 import { getImagesFromContent } from './pageextraction.js';
-import { getIgnoreBookmarkURLObjects, getAppDomain } from './configsupportive.js';
+import { getIgnoreBookmarkURLObjects, getAppDomain, getLastLotDate } from './configsupportive.js';
 import { trimMultipleSpacesInMiddleIntoOne, allTrimString, escapeRegExp } from './stringformatting.js';
 import { writeFileWithComparingSameLinesWithOldContents } from './filesystem.js';
 import { printSectionSeperator } from './others.js';
@@ -409,7 +409,7 @@ async function downloadBookmarksFromSourceToProcessing(debug = false) {
         }
 
         if (!isGUIDInProcessingBookmarksPresentInSourceBookmarks) {
-            if (config.lotLastRunDate === instanceRunDateFormatted) {
+            if (getLastLotDate() === instanceRunDateFormatted) {
                 console.log('');
                 printSectionSeperator(undefined, true);
                 const questionToRefreshBookmarksInSameDay =
