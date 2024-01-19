@@ -255,7 +255,8 @@ try {
                                         dealerLevelBookmarkName,
                                         vehicleBookmark.name,
                                         vehicleBookmark.url,
-                                        userLoggedIn
+                                        userLoggedIn,
+                                        debug
                                     );
                                 } catch (err) {
                                     lgw(

@@ -113,12 +113,12 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
         printToLogBuffer.pop();
         lgh(`\t${name} : ${URL} : Supplied URL doesn't exist ...... (Ignoring)`);
         const VINNumberFromBookmark = name.split(' |#| ')[1].trim();
-        const { typeOfVINPath, VINFolderOrFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
+        const { typeOfVINPath, VINFolderOrFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark, debug);
         if (typeOfVINPath === undefined) {
             lge(`Unable to find file/folder for the VIN number: ${VINNumberFromBookmark} on the disk, data does not exist.`);
             return { result: false, bookmarkAppendMesg: '', imagesUploaded: 0 };
         }
-        const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, true);
+        const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, true, debug);
         await waitForSeconds(5);
         const returnObj = {
             result: false,
@@ -144,7 +144,7 @@ async function uploadBookmarkURL(page, uniqueIdElement, uniqueIdFolderPath, deal
     printToLogBuffer.length = 0;
 
     const startTime = new Date();
-    const returnObj = await uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name);
+    const returnObj = await uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath, dealerFolder, name, debug);
     if (returnObj.result === true) {
         const elapsedTimeInSeconds = (new Date().getTime() - startTime.getTime()) / 1000;
         const minutes = Math.floor(elapsedTimeInSeconds / 60)
@@ -220,7 +220,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         return { result: false, bookmarkAppendMesg: '', imagesUploaded: 0 };
     }
 
-    const { typeOfVINPath, VINFolderOrFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark);
+    const { typeOfVINPath, VINFolderOrFilePath } = typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark, debug);
 
     if (typeOfVINPath === undefined) {
         lge(`Unable to find file/folder for the VIN number: ${VINNumberFromBookmark} on the disk, data does not exist.`);
@@ -277,7 +277,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             lgtf(`imagesToUpload.push(imageNumber: ${imageNumber})`);
             imagesToUpload.push(imageNumber);
         }
-        await showUploadFilesAndPercentages(page, startingRow, VINFolderPathList.length, false);
+        await showUploadFilesAndPercentages(page, startingRow, VINFolderPathList.length, false, debug);
         await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', 30, true);
         lgtf(`putFirstPositionEditedImageInTheLastPositionAlsoFromDC: ${putFirstPositionEditedImageInTheLastPositionAlsoFromDC}`);
         lgtf(
@@ -302,7 +302,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
             const [fileChooser] = await Promise.all([page.waitForFileChooser(), page.click('.uploadifive-button')]);
             await fileChooser.accept([path.resolve(firstImagePath)]);
 
-            await showUploadFilesAndPercentages(page, startingRow, VINFolderPathList.length, true);
+            await showUploadFilesAndPercentages(page, startingRow, VINFolderPathList.length, true, debug);
             await waitForElementContainsOrEqualsHTML(page, '#uploadifive-fileInput-queue', '', 30, true);
         }
     } catch (error) {
@@ -411,7 +411,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 imageOriginalURLSLength2,
                 imageOriginalURLSLength2 - 1,
                 imagesToUpload[imageToUploadIndex - 1],
-                false
+                false,
+                debug
             );
         } else {
             lgtf(`Loop 01 Else`);
@@ -421,7 +422,14 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 }, imagesToUpload[imageToUploadIndex - 1]: ${imagesToUpload[imageToUploadIndex - 1]}`
             );
             lgtf(`Moving image from ${imageOriginalURLSLength2} To ${imagesToUpload[imageToUploadIndex - 1]}`);
-            await moveImageToPositionNumber(page, imageOriginalURLSLength2, imageOriginalURLSLength2, imagesToUpload[imageToUploadIndex - 1], false);
+            await moveImageToPositionNumber(
+                page,
+                imageOriginalURLSLength2,
+                imageOriginalURLSLength2,
+                imagesToUpload[imageToUploadIndex - 1],
+                false,
+                debug
+            );
         }
     }
     lgtf(`region: Move uploaded files on the correct location: End`);
@@ -436,7 +444,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     if (shiftOriginalFirstPositionToLastPositionFromDC) {
         lgtf(`Shift Original First Position Moving image from ${imagesToUpload[0] + 1} To ${imageOriginalURLSLength2}`);
-        await moveImageToPositionNumber(page, imageOriginalURLSLength2, imagesToUpload[0] + 1, imageOriginalURLSLength2);
+        await moveImageToPositionNumber(page, imageOriginalURLSLength2, imagesToUpload[0] + 1, imageOriginalURLSLength2, undefined, debug);
     }
     lgtf(
         `region: Move files to the last if original files are set to retain(not delete), and if files are set to delete then check shiftOriginalFirstPositionToLastPositionFromDC and take action accordingly: End`
@@ -517,7 +525,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
 
     lgi(`${logSymbols.success}${' '.repeat(5)}`, LoggingPrefix.false, LineSeparator.false);
 
-    const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, false);
+    const { moveSource, moveDestination } = getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, false, debug);
     const returnObj = {
         result: true,
         bookmarkAppendMesg: '',
