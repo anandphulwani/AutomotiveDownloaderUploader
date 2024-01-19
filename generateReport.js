@@ -150,7 +150,7 @@ if (missingDates.length > 0) {
 }
 
 const typesOfExcel = ['individual', 'merged'];
-// for (let isIndividualOrMerged = 'individual'; isIndividualOrMerged !== false; ) {
+
 // eslint-disable-next-line no-restricted-syntax
 for (const typeOfExcel of typesOfExcel) {
     // eslint-disable-next-line no-restricted-syntax
@@ -1007,8 +1007,6 @@ for (const typeOfExcel of typesOfExcel) {
             createDirAndCopyFile(excelFullPath, path.join(config.reportsMergedCopyPath, path.basename(excelFullPath)), true);
         }
     }
-    // eslint-disable-next-line no-nested-ternary
-    // isIndividualOrMerged = isIndividualOrMerged === 'individual' ? 'merged' : isIndividualOrMerged === 'merged' ? false : null;
 }
 
 /**
@@ -1042,7 +1040,6 @@ for (const contractor of Object.keys(config.contractors)) {
     if (!syncOperationWithErrorHandling(fs.existsSync, path.join(reportGenerationPath, 'contractors'))) {
         makeDir(path.join(reportGenerationPath, 'contractors'));
     }
-    // const dealerConfigurationWithDates = [['', 'Date', ...dates]];
     const excelData = [['DATE', ...dates]];
 
     let transposedData = [];

@@ -49,7 +49,7 @@ const lotIndex = parseInt(process.argv[2], 10);
 const lotFolderName = `Lot_${zeroPad(lotIndex, 2)}`;
 const lotTodaysDate = process.argv[3] !== undefined ? process.argv[3] : instanceRunDateFormatted;
 const { downloadPath } = config;
-const lotFolderPath = `${downloadPath}\\${lotTodaysDate}\\${lotFolderName}`; // ${config.downloadPath}/${lotTodaysDate}/Lot_${zeroPad(lotIndex, 2)}/${usernameTrimmed}/${dealerFolder}/${VINNumber}/
+const lotFolderPath = `${downloadPath}\\${lotTodaysDate}\\${lotFolderName}`;
 const lotHeadingOptions = {
     font: 'block', // font to use for the output
     align: 'center', // alignment of the output

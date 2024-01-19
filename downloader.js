@@ -90,10 +90,6 @@ if (config.environment === 'production' && !checkSync('contractors_folderTransfe
     subprocess.unref();
 }
 
-// await killChrome({
-//     includingMainProcess: true,
-// });
-
 const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${instanceRunDateFormatted}`, 'Lot_');
 let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
 if (LotLastIndex === null) {
@@ -199,7 +195,6 @@ try {
 
                 setCurrentDealerConfiguration(usernameBookmark.name);
                 const usernameTrimmed = getUsernameTrimmed(usernameBookmark.name);
-                // const dealerLevelBookmarks = usernameBookmark.children.filter((dealerLevelBookmark) => dealerLevelBookmark.name.includes(' |#| '));
                 const dealerLevelBookmarks = usernameBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {

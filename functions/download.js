@@ -36,7 +36,6 @@ async function getChecksumFromURL(url, hashAlgo, debug = false) {
         getOperation.on('error', (err) => {
             reject(err);
         });
-        // getOperation.setTimeout(Math.floor(Math.random() * (60 - 50)) + 50, () => {
         getOperation.setTimeout(10000, () => {
             getOperation.destroy();
         });
@@ -97,7 +96,6 @@ async function downloadFileAndCompareWithChecksum(
         getOperation.on('error', (err) => {
             reject(err);
         });
-        // getOperation.setTimeout(Math.floor(Math.random() * (60 - 50)) + 50, () => {
         getOperation.setTimeout(10000, () => {
             getOperation.destroy();
         });

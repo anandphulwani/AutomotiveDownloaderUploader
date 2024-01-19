@@ -8,8 +8,6 @@ async function fillInTextbox(page, selector, textToFill, debug = false) {
     debug ? lgd(`Waiting for the ${selector} to load: Found.`) : null;
 
     debug ? lgd(`Filling the ${selector} with empty value: Executing.`) : null;
-    // await page.evaluate( () => document.querySelector(selector).value = "")
-    // await page.type(selector, "");
     await page.focus(selector);
     await page.keyboard.down('Control');
     await page.keyboard.press('A');
@@ -17,8 +15,6 @@ async function fillInTextbox(page, selector, textToFill, debug = false) {
     await page.keyboard.press('Backspace');
     debug ? lgd(`Filling the ${selector} with empty value: Done.`) : null;
     debug ? lgd(`Checking if ${selector} is empty: Executing.`) : null;
-    // eslint-disable-next-line no-undef, no-shadow
-    // await page.waitForFunction((selector) => document.querySelector(selector).value === '', { timeout: 90000 }, selector);
     await page.evaluate(
         (selectorInner) =>
             new Promise((resolve, reject) => {
@@ -48,8 +44,6 @@ async function fillInTextbox(page, selector, textToFill, debug = false) {
     await page.type(selector, textToFill);
     debug ? lgd(`Filling the ${selector} now: Done.`) : null;
     debug ? lgd(`Checking if ${selector} value matches filled: Executing.`) : null;
-    // eslint-disable-next-line no-undef
-    // await page.waitForFunction((args) => document.querySelector(args[0]).value === args[1], { timeout: 90000 }, [selector, textToFill]);
     await page.evaluate(
         (selectorInner, textToFillInner) =>
             new Promise((resolve, reject) => {
@@ -79,8 +73,6 @@ async function clickOnButton(page, selector, buttonText = false, isMouseClick = 
 
     if (buttonText !== false) {
         debug ? lgd(`Check if the ${selector} contains text: ${buttonText}: Executing.`) : null;
-        // eslint-disable-next-line no-undef
-        // await page.waitForFunction((args) => document.querySelector(args[0]).innerText.includes(args[1]), { timeout: 90000 }, [selector, buttonText]);
         await page.evaluate(
             (selectorInner, buttonTextInner) =>
                 new Promise((resolve, reject) => {
@@ -106,7 +98,6 @@ async function clickOnButton(page, selector, buttonText = false, isMouseClick = 
     }
 
     debug ? lgd(`Clicking the ${selector} button: Executing.`) : null;
-    // await page.click(selector);
     const elementToClick = await page.$(selector);
     if (elementToClick) {
         if (!isMouseClick) {
@@ -116,9 +107,7 @@ async function clickOnButton(page, selector, buttonText = false, isMouseClick = 
                 }
             }, elementToClick);
         } else {
-            // lgtf(`Moving to the fromPositionElement: ${fromPositionElement}`);
             await page.evaluate((element) => element.scrollIntoView(), elementToClick);
-            // lgtf(`Confirming the fromPositionElement is in the browser viewport.`);
             await page.waitForFunction(
                 (element) => {
                     const { top, bottom } = element.getBoundingClientRect();

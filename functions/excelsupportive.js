@@ -30,7 +30,6 @@ function getSettingValueFromDC(filterBySettingName, filterBySettingValue, settin
     }
     const singleelement = dealerConfiguration.filter((a) => a[filterBySettingName] === filterBySettingValue)[0];
     const settingValues = singleelement[settingToExtract] !== undefined ? singleelement[settingToExtract].trim() : undefined;
-    // const settingValues = singleelement[settingToExtract].trim();
     return settingValues;
 }
 

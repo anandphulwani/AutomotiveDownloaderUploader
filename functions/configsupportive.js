@@ -12,8 +12,6 @@ function getCredentialsForUsername(username) {
     const configCredentials = config.credentials;
     const singleelement = configCredentials.filter((a) => a.username === username)[0];
     return singleelement;
-    // const { password } = singleelement;
-    // return password;
 }
 
 function getIgnoreBookmarkURLObjects() {

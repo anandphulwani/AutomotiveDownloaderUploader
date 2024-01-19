@@ -10,8 +10,6 @@ async function waitForElementContainsOrEqualsText(page, selector, elementText, t
 
     debug ? lgd(`Waiting for ${elementText} (${selector}) text to show up: Executing.`) : null;
     if (exactMatch) {
-        // eslint-disable-next-line no-undef
-        // await page.waitForFunction((args) => document.querySelector(args[0]).innerText === args[1], { timeout: 90000 }, [selector, elementText]);
         await page.evaluate(
             (selectorInner, elementTextInner, timeoutSecondsInner) =>
                 new Promise((resolve, reject) => {
@@ -33,11 +31,6 @@ async function waitForElementContainsOrEqualsText(page, selector, elementText, t
             timeoutSeconds
         );
     } else {
-        // eslint-disable-next-line no-undef
-        // await page.waitForFunction((args) => document.querySelector(args[0]).innerText.includes(args[1]), { timeout: 90000 }, [
-        //     selector,
-        //     elementText,
-        // ]);
         await page.evaluate(
             (selectorInner, elementTextInner, timeoutSecondsInner) =>
                 new Promise((resolve, reject) => {
@@ -71,8 +64,6 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, t
 
     debug ? lgd(`Waiting for ${elementHTML} (${selector}) HTML to show up: Executing.`) : null;
     if (exactMatch) {
-        // eslint-disable-next-line no-undef
-        // await page.waitForFunction((args) => document.querySelector(args[0]).innerHTML === args[1], { timeout: 90000 }, [selector, elementHTML]);
         await page.evaluate(
             (selectorInner, elementHTMLInner, timeoutSecondsInner) =>
                 new Promise((resolve, reject) => {
@@ -94,11 +85,6 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, t
             timeoutSeconds
         );
     } else {
-        // eslint-disable-next-line no-undef
-        // await page.waitForFunction((args) => document.querySelector(args[0]).innerHTML.includes(args[1]), { timeout: 90000 }, [
-        //     selector,
-        //     elementHTML,
-        // ]);
         await page.evaluate(
             (selectorInner, elementHTMLInner, timeoutSecondsInner) =>
                 new Promise((resolve, reject) => {
@@ -127,7 +113,6 @@ async function waitForElementContainsOrEqualsHTML(page, selector, elementHTML, t
 
 async function waitTillCurrentURLStartsWith(page, partialURL, debug = false) {
     debug ? lgd(`Waiting for the current URL to start with: ${partialURL}: Executing.`) : null;
-    // await page.waitForFunction(`window.location.href.startsWith('${partialURL}')`, { timeout: 90000 });
     const timeout = 90000;
     const startTime = Date.now();
     while (Date.now() - startTime < timeout) {
@@ -145,7 +130,6 @@ async function waitTillCurrentURLStartsWith(page, partialURL, debug = false) {
 
 async function waitTillCurrentURLEndsWith(page, partialURL, debug = false) {
     debug ? lgd(`Waiting for the current URL to ends with: ${partialURL}: Executing.`) : null;
-    // await page.waitForFunction(`window.location.href.endsWith('${partialURL}')`, { timeout: 90000 });
     const timeout = 10000;
     const startTime = Date.now();
     while (Date.now() - startTime < timeout) {

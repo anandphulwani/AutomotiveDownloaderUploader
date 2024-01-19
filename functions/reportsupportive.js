@@ -284,9 +284,6 @@ const styleOfGrandTotalOnBottomRight = {
     font: { name: 'Arial', sz: 12, color: { rgb: 'FFFFFF' } },
     fill: { fgColor: { rgb: '1f487d' } }, // Background color
     alignment: { horizontal: 'center' },
-    // font: { name: 'Arial', sz: 12 },
-    // fill: { fgColor: { rgb: '5D90C3' } }, // Background color
-    // alignment: { horizontal: 'center' },
 };
 
 const styleOfTotalInventory = {
@@ -332,7 +329,7 @@ const styleOfDailyInventoryHeading = {
 
 const styleOfAdditionalImagesTotalHeading = {
     font: { name: 'Arial', sz: 12, color: { rgb: 'FFFFFF' } },
-    fill: { fgColor: { rgb: 'A8577E' } }, // Background color C8C2AE
+    fill: { fgColor: { rgb: 'A8577E' } }, // Background color
     alignment: { wrapText: true, horizontal: 'center' },
 };
 

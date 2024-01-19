@@ -42,7 +42,6 @@ function checkDirectory(dateString) {
         const headingOptions = {
             font: 'block', // font to use for the output
             align: 'center', // alignment of the output
-            // colors: ['#ffa3af', '#b76e79'], // colors of the output (gradient)
             colors: ['#D3D3D3', '#FFFFFF'], // colors of the output (gradient)
             background: 'black', // background color of the output
             letterSpacing: 1, // letter spacing of the output

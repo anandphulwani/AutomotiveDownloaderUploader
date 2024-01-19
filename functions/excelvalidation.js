@@ -76,8 +76,6 @@ function validateDealerConfigurationExcelFileColumnDealerName(usernameTrimmed, c
     checkForEmptyCellsInArray(usernameTrimmed, columnData, columnName);
     checkForSpaceInBeginOrEndInArray(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
-    // checkForMultipleSpacesInMiddleInArray(usernameTrimmed, columnData, columnName);
-    // columnData = trimMultipleSpacesInMiddleIntoOneArray(columnData);
 }
 
 function validateDealerConfigurationExcelFileColumnImageNumbersToDownload(usernameTrimmed, columnData, columnName) {
@@ -93,7 +91,6 @@ function validateDealerConfigurationExcelFileColumnAddTextToFolderName(usernameT
     checkForSpaceInBeginOrEndInArray(usernameTrimmed, columnData, columnName);
     columnData = allTrimStringArray(columnData);
     checkForMultipleSpacesInMiddleInArray(usernameTrimmed, columnData, columnName);
-    // columnData = trimMultipleSpacesInMiddleIntoOneArray(columnData);
 }
 
 function validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, columnData, columnName) {
