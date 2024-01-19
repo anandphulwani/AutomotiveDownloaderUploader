@@ -37,6 +37,7 @@ export default class LoggerCustomFileSyncTransport extends Transport {
         message = message.replace(/§√§/g, '√');
         message = message.replace(/§‼§/g, '‼');
         message = message.replace(/§×§/g, '×');
+        message = message.replace(/(?:([^\]]) +)([\r\n|\n])/g, '$1$2');
         // Synchronously write log message to file
         try {
             syncOperationWithErrorHandling(fs.writeFileSync, this.filename, message, { flag: 'a' });
