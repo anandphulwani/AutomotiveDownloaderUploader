@@ -68,9 +68,6 @@ printSectionSeperator();
 
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
 
-// Non-shortcircuiting and: [f1(), f2()].every(i => i)
-// Non-shortcircuiting or: [f1(), f2()].some(i => i)
-
 if (
     validateConfigFile() === 'error' ||
     (await downloadBookmarksFromSourceToProcessing()) || // Check whether config is valid, then only update bookmarks first and then run `validateBookmarksAndCheckCredentialsPresent`
