@@ -751,7 +751,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
     lgtf(`fn moveImageToPositionNumber() : END`);
 }
 
-function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
+function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark, debug = false) {
     lgtf(
         `fn typeOfVINPathAndOtherVars() : BEGIN, Params: uniqueIdFolderPath: ${uniqueIdFolderPath}, VINNumberFromBookmark: ${VINNumberFromBookmark}`
     );
@@ -798,7 +798,7 @@ function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
     return { typeOfVINPath, VINFolderOrFilePath };
 }
 
-function getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, isURLDoesNotExist) {
+function getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, isURLDoesNotExist, debug = false) {
     lgtf(
         `fn getSourceAndDestinationFrom() : BEGIN, Params: typeOfVINPath: ${typeOfVINPath}, VINFolderOrFilePath: ${VINFolderOrFilePath}, isURLDoesNotExist: ${isURLDoesNotExist}`
     );
@@ -824,7 +824,7 @@ function getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, isURLDo
     return { moveSource: moveSource, moveDestination: moveDestination };
 }
 
-async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles, isAdditionalFile) {
+async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles, isAdditionalFile, debug = false) {
     let currentQueueContent;
     let previousQueueContent;
     let loopCountOfQueueContent = 0;
