@@ -224,6 +224,8 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
 
 // eslint-disable-next-line import/prefer-default-export
 export {
+    getLastLotDate,
+    getLastLotNumber,
     getCredentialsForUsername,
     getIgnoreBookmarkURLObjects,
     getAppDomain,
