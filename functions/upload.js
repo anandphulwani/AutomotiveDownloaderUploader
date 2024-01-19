@@ -6,7 +6,7 @@ import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './datetime.js';
-import { lgc, lgu, lge, lgw, lgi, lgif, lgh, lgtf, lgs, lgd, lgic } from './loggerandlocksupportive.js';
+import { lge, lgw, lgi, lgif, lgh, lgtf, lgs, lgd, lgic } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
 import { msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';
@@ -237,8 +237,6 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     }
     lgtf(`uniqueIdFolderPath\\VINNumberFromBookmark: ${uniqueIdFolderPath}\\${VINNumberFromBookmark}`);
 
-    // TODO: For bookmarks which are done or not found give warning and move forward
-
     const startingRow = await getRowPosOnTerminal();
     lgi(` Total Files`, LineSeparator.false);
 
@@ -309,7 +307,8 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
         }
     } catch (error) {
         checkBrowserClosed(error, true);
-        lgc(`region: Uploading the files, Try Error: `, error);
+        error.message = `fn uploadImagesFromFolder(): region: Uploading the files: \n${error.message}`;
+        throw error;
     }
     lgtf(`region: Uploading the files: End`);
     /* #endregion: Uploading the files: End */
@@ -337,7 +336,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                 continue;
             }
             // eslint-disable-next-line no-constant-condition
-            while (true) {
+            for (let delTryIndex = 0; delTryIndex < 30; delTryIndex++) {
                 try {
                     const deleteId = `#ctl00_ctl00_ContentPlaceHolder_ContentPlaceHolder_ImagerySection_ctl01_ctl00_RepeaterTNImages_ctl${zeroPad(
                         imageToUpload - 1,
@@ -365,9 +364,14 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
                     lgtf(`deletion set`);
                 } catch (error) {
                     checkBrowserClosed(error, true);
-                    lgc(`region: Mark file to delete the older files so as to replace with the newer files later on, Try Error: `, error);
-                    // eslint-disable-next-line no-continue
-                    continue;
+                    if (delTryIndex === 29) {
+                        error.message = `fn uploadImagesFromFolder(): region: Mark file to delete the older files so as to replace with the newer files later on: \n${error.message}`;
+                        throw error;
+                    } else {
+                        await waitForSeconds(10);
+                        // eslint-disable-next-line no-continue
+                        continue;
+                    }
                 }
                 break;
             }
@@ -576,7 +580,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
         lgtf(`fromPositionElementRect: ${beautify(fromPositionElementRect, null, 3, 120)}`);
 
         // Making sure that the element is selected and its opacity changes to 0.6, which confirms selected.
-        while (true) {
+        for (let elementSelIndex = 0; elementSelIndex < 30; elementSelIndex++) {
             lgtf(
                 `Moving the image little bit to check opacity: X: ${fromPositionElementRect.x + fromPositionElementRect.width / 2}, Y: ${
                     fromPositionElementRect.y + fromPositionElementRect.height / 2
@@ -605,9 +609,16 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                 break;
             } else {
                 lgtf(`opacity: ${opacity} is still not 0.6, so sleeping for 350ms.`);
-                msleep(50);
-                await page.mouse.up();
-                msleep(300);
+                // eslint-disable-next-line no-lonely-if
+                if (elementSelIndex === 29) {
+                    throw new Error(
+                        `region: Making sure that the element is selected and its opacity changes to 0.6, which confirms selected.\nopacity: ${opacity} is still not 0.6, so sleeping for 350ms.`
+                    );
+                } else {
+                    msleep(50);
+                    await page.mouse.up();
+                    msleep(300);
+                }
             }
         }
         isSlow ? await waitForSeconds(4, true) : '';
@@ -629,7 +640,7 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
 
         // After grabbing the image from the old position, and navigating to the new position, doing the moving action here
         let oldToPositionElementRectX;
-        for (let lastIndex = 0; lastIndex <= 100; lastIndex++) {
+        for (let lastIndex = 0; lastIndex < 100; lastIndex++) {
             const toPositionElementRect = await page.evaluate((el) => {
                 const { x, y, width, height } = el.getBoundingClientRect();
                 return { x, y, width, height };
@@ -680,18 +691,21 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
                         lgtf(`Breaking now ${fromPositionSubImageVehicleId} === ${currToPositionSubImageVehicleId}`);
                         break;
                     } else {
-                        lgs(
-                            `Image position changed, but the 'vechileId' from 'fromPositionSubImageVehicleId' and 'currToPositionSubImageVehicleId' doesn't match.` +
-                                `fromPosition > toPosition: ${fromPosition} > ${toPosition}, toPositionSubImageVehicleId === currToPositionNextSubImageVehicleId: ${toPositionSubImageVehicleId} === ${currToPositionNextSubImageVehicleId}` +
-                                `fromPosition < toPosition: ${fromPosition} < ${toPosition}, toPositionSubImageVehicleId === currToPositionPrevSubImageVehicleId: ${toPositionSubImageVehicleId} === ${currToPositionPrevSubImageVehicleId}`
+                        throw new Error(
+                            `region: After grabbing the image from the old position, and navigating to the new position, doing the moving action here. (INNER)` +
+                                `\nImage position changed, but the 'vechileId' from 'fromPositionSubImageVehicleId' and 'currToPositionSubImageVehicleId' doesn't match.` +
+                                `fromPositionSubImageVehicleId(${fromPositionSubImageVehicleId}) === currToPositionSubImageVehicleId(${currToPositionSubImageVehicleId})` +
+                                `\nfromPosition(${fromPosition}) > toPosition(${toPosition}), toPositionSubImageVehicleId(${toPositionSubImageVehicleId}) === currToPositionNextSubImageVehicleId(${currToPositionNextSubImageVehicleId})` +
+                                `\nfromPosition(${fromPosition}) < toPosition(${toPosition}), toPositionSubImageVehicleId(${toPositionSubImageVehicleId}) === currToPositionPrevSubImageVehicleId(${currToPositionPrevSubImageVehicleId})`
                         );
-                        await waitForSeconds(240, true);
-                        process.exit(1);
                     }
                 } else {
-                    lgs(`Image position changed, but the 'vechileId' from previous/next doesn't match.`);
-                    await waitForSeconds(240, true);
-                    process.exit(1);
+                    throw new Error(
+                        `region: After grabbing the image from the old position, and navigating to the new position, doing the moving action here. (OUTER)` +
+                            `\nImage position changed, but the 'vechileId' from previous/next doesn't match.` +
+                            `\nfromPosition(${fromPosition}) > toPosition(${toPosition}), toPositionSubImageVehicleId(${toPositionSubImageVehicleId}) === currToPositionNextSubImageVehicleId(${currToPositionNextSubImageVehicleId})` +
+                            `\nfromPosition(${fromPosition}) < toPosition(${toPosition}), toPositionSubImageVehicleId(${toPositionSubImageVehicleId}) === currToPositionPrevSubImageVehicleId(${currToPositionPrevSubImageVehicleId})`
+                    );
                 }
             }
 
@@ -724,16 +738,15 @@ async function moveImageToPositionNumber(page, totalImages, fromPosition, toPosi
             msleep(10);
             isSlow ? await waitForSeconds(1, true) : '';
             oldToPositionElementRectX = toPositionElementRect.x;
-            if (lastIndex === 100) {
-                lgs(`Tried changing image position for 100 iterations, but it didn't work.`);
-                process.exit(1);
+            if (lastIndex === 99) {
+                throw new Error(`region: Tried changing image position for 100 iterations, but it didn't work.`);
             }
         }
         isSlow ? await waitForSeconds(6, true) : '';
     } catch (error) {
         checkBrowserClosed(error, true);
-        lgc('fn moveImageToPositionNumber() Try Error: ', error);
-        await waitForSeconds(240, true);
+        error.message = `fn moveImageToPositionNumber(): ${error.message}`;
+        throw error;
     }
     lgtf(`fn moveImageToPositionNumber() : END`);
 }
@@ -756,22 +769,22 @@ function typeOfVINPathAndOtherVars(uniqueIdFolderPath, VINNumberFromBookmark) {
         syncOperationWithErrorHandling(fs.existsSync, pathOfVINFolderOrFile) &&
         syncOperationWithErrorHandling(fs.statSync, pathOfVINFolderOrFile).isFile()
     ) {
-        lgu(`Path: '${pathOfVINFolderOrFile}' is a file, without any extension like .jpg/.png, unable to process further.`);
-        process.exit(0);
+        throw new Error(
+            `fn typeOfVINPathAndOtherVars(): Path: '${pathOfVINFolderOrFile}' is a file, without any extension like .jpg/.png, unable to process further.`
+        );
     } else if (syncOperationWithErrorHandling(fs.existsSync, uniqueIdFolderPath)) {
         const filesStartingWithVINNumber = syncOperationWithErrorHandling(fs.readdirSync, uniqueIdFolderPath).filter((file) =>
             file.startsWith(`${VINNumberFromBookmark}.`)
         );
         if (filesStartingWithVINNumber.length > 1) {
-            lgu(
-                `Multiple files found starting with the same '${'VINNumberFromBookmark'}.', unable to continue, found these: ${beautify(
+            throw new Error(
+                `fn typeOfVINPathAndOtherVars(): Multiple files found starting with the same '${'VINNumberFromBookmark'}.', unable to continue, found these: ${beautify(
                     filesStartingWithVINNumber,
                     null,
                     3,
                     120
                 )} `
             );
-            process.exit(0);
         } else if (filesStartingWithVINNumber.length === 1) {
             typeOfVINPath = 'VINFile';
             VINFolderOrFilePath = path.join(uniqueIdFolderPath, filesStartingWithVINNumber[0]);
@@ -790,16 +803,16 @@ function getSourceAndDestinationFrom(typeOfVINPath, VINFolderOrFilePath, isURLDo
         `fn getSourceAndDestinationFrom() : BEGIN, Params: typeOfVINPath: ${typeOfVINPath}, VINFolderOrFilePath: ${VINFolderOrFilePath}, isURLDoesNotExist: ${isURLDoesNotExist}`
     );
     if (typeOfVINPath === undefined) {
-        lgu(`Unable to execute 'getSourceAndDestinationFrom' when 'typeOfVINPath === undefined', i.e. the source doesn't exist`);
-        process.exit(0);
+        throw new Error(
+            `fn getSourceAndDestinationFrom(): Unable to execute 'getSourceAndDestinationFrom' when 'typeOfVINPath === undefined', i.e. the source doesn't exist`
+        );
     }
     if (typeOfVINPath === 'VINFolder') {
         lgtf('typeOfVINPath is VINFolder');
     } else if (typeOfVINPath === 'VINFile') {
         lgtf('typeOfVINPath IS NOT VINFolder');
     } else {
-        lgu(`Unexepected value of typeOfVINPath: '${typeOfVINPath}'`);
-        process.exit(0);
+        throw new Error(`fn getSourceAndDestinationFrom(): Unexepected value of typeOfVINPath: '${typeOfVINPath}'`);
     }
 
     const moveSource = VINFolderOrFilePath;
@@ -816,7 +829,7 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
     let previousQueueContent;
     let loopCountOfQueueContent = 0;
     let earlierCountOfComplete = null;
-    while (loopCountOfQueueContent <= 410) {
+    while (loopCountOfQueueContent < 410) {
         const uploadifiveFileInputQueueEle = await page.$('#uploadifive-fileInput-queue');
         currentQueueContent = await page.$eval('#uploadifive-fileInput-queue', (element) => element.innerHTML);
         if (currentQueueContent !== '' && previousQueueContent === currentQueueContent) {
@@ -864,12 +877,10 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
         } else {
             break;
         }
-        if (loopCountOfQueueContent === 411) {
+        if (loopCountOfQueueContent === 410) {
             lgtf('ERROR: Upload process stuck while uploading files.');
-            lgs('Upload process stuck while uploading files.');
-            process.exit(1);
+            throw new Error(`fn showUploadFilesAndPercentages(): Upload process stuck while uploading files.`);
         }
-        // await waitForSeconds(2);
         await waitForMilliSeconds(30);
         previousQueueContent = currentQueueContent;
     }
