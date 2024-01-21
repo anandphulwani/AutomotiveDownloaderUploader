@@ -144,7 +144,7 @@ function removeDir(dirPath, recursiveDelete = false, debug = false) {
         recursiveDelete = true;
     }
     /* #endregion */
-    fs.rmSync(dirPath, {
+    syncOperationWithErrorHandling(fs.rmSync, dirPath, {
         recursive: recursiveDelete,
         maxRetries: 120,
         retryDelay: 500,

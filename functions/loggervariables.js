@@ -72,7 +72,8 @@ if (!checkSync(instanceRunLogFilePrefix, { stale: 15000 })) {
         if (!syncOperationWithErrorHandling(fs.existsSync, logPath)) {
             syncOperationWithErrorHandling(fs.mkdirSync, logPath, { recursive: true });
         }
-        fs.appendFileSync(
+        syncOperationWithErrorHandling(
+            fs.appendFileSync,
             `${logPath}/${currentTime()}_AttainedLock_loggervariables.js.txt`,
             `Got A Lock On '${instanceRunLogFilePrefix}', caller: loggervariables.js.\n`
         );

@@ -79,7 +79,7 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
             const cuttersPath = path.join(config.contractorsZonePath, contractor, instanceRunDateFormatted);
             const allWorkAllottedFileFullPath = path.join(cuttersPath, allWorkAllottedFile);
             if (!syncOperationWithErrorHandling(fs.existsSync, allWorkAllottedFileFullPath)) {
-                syncOperationWithErrorHandling(fs.closeSync, fs.openSync(allWorkAllottedFileFullPath, 'a'));
+                syncOperationWithErrorHandling(fs.closeSync, syncOperationWithErrorHandling(fs.openSync, allWorkAllottedFileFullPath, 'a'));
                 cuttersCompletedAndDoneFileCreated.push(allWorkAllottedFile);
             }
         }
@@ -139,7 +139,7 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
             );
             const allWorkDoneFileFullPath = path.join(cuttersFinishersFinishingBufferPath, allWorkDoneFile);
             if (!syncOperationWithErrorHandling(fs.existsSync, allWorkDoneFileFullPath)) {
-                syncOperationWithErrorHandling(fs.closeSync, fs.openSync(allWorkDoneFileFullPath, 'a'));
+                syncOperationWithErrorHandling(fs.closeSync, syncOperationWithErrorHandling(fs.openSync, allWorkDoneFileFullPath, 'a'));
                 cuttersCompletedAndDoneFileCreated.push(allWorkDoneFile);
             }
         }

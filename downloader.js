@@ -273,7 +273,8 @@ try {
                                     try {
                                         const bookmarksNotAppendFile = path.join(getProjectLogsDirPath(), 'bookmarksNotAppend.txt');
                                         syncOperationWithErrorHandling(fs.appendFileSync, bookmarksNotAppendFile, `${'-'.repeat(120)}\n`);
-                                        fs.appendFileSync(
+                                        syncOperationWithErrorHandling(
+                                            fs.appendFileSync,
                                             bookmarksNotAppendFile,
                                             `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, \nvehicleBookmark.name: ${vehicleBookmark.name}, \nvehicleBookmark.url: ${vehicleBookmark.url}\n`
                                         );

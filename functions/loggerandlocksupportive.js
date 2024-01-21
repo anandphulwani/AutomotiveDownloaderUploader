@@ -200,7 +200,8 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
             if (lockTryIndex === 12000) {
                 lgs(`attainLock(${fileToOperateOn}): Unable to get the lock.`);
                 if (debug) {
-                    fs.appendFileSync(
+                    syncOperationWithErrorHandling(
+                        fs.appendFileSync,
                         `${logPath}/00_${currentTime()}_UNABLE_TO_GET_A_LOCK-caller_${callerFunctionName}.txt`,
                         `Unable to get the lock on '${fileToOperateOn}', caller: ${callerWithFunctionNameHierarchy}.\n`
                     );
@@ -232,7 +233,8 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
             }
             if (checkIfLocked) {
                 if (debug) {
-                    fs.appendFileSync(
+                    syncOperationWithErrorHandling(
+                        fs.appendFileSync,
                         `${logPath}/${currentTime()}_.....LockAlready-caller_${callerFunctionName}.txt`,
                         `....... Lock on '${fileToOperateOn}' is already with someone, Waiting and trying again, caller: ${callerWithFunctionNameHierarchy}.\n`
                     );
@@ -252,7 +254,8 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
                 }
             }
             if (debug) {
-                fs.appendFileSync(
+                syncOperationWithErrorHandling(
+                    fs.appendFileSync,
                     `${logPath}/${currentTime()}_AttainedLock_${callerFunctionName}.txt`,
                     `Got A Lock On '${fileToOperateOn}', caller: ${callerWithFunctionNameHierarchy}.\n`
                 );
@@ -263,7 +266,8 @@ function attainLock(fileToOperateOn, stale = 15000, debug = false) {
         lgu(`attainLock(${fileToOperateOn}) section catch block called.`, error);
         lgu(`attainLock(${fileToOperateOn}): This piece of code should be unreachable, caller: ${callerWithFunctionNameHierarchy}.\n`);
         if (debug) {
-            fs.appendFileSync(
+            syncOperationWithErrorHandling(
+                fs.appendFileSync,
                 `${logPath}/00_${currentTime()}_CatchError_${callerFunctionName}.txt`,
                 `fn attainLock(${fileToOperateOn}): ${error.message}\n\n caller: ${callerWithFunctionNameHierarchy}.\n`
             );
@@ -327,7 +331,8 @@ function releaseLock(fileToOperateOn, stale = 15000, debug = false) {
         lgu(`releaseLock(${fileToOperateOn}) section catch block called.`, error);
         lgu(`releaseLock(${fileToOperateOn}): This piece of code should be unreachable, caller: ${callerWithFunctionNameHierarchy}.\n`);
         if (debug) {
-            fs.appendFileSync(
+            syncOperationWithErrorHandling(
+                fs.appendFileSync,
                 `${logPath}/00_${currentTime()}_CatchError_${callerFunctionName}.txt`,
                 `fn releaseLock(${fileToOperateOn}): ${error.message}\n\n caller: ${callerWithFunctionNameHierarchy}.\n`
             );

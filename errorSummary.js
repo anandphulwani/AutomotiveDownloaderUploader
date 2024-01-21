@@ -12,6 +12,7 @@ import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import { levelToChalkColor } from './functions/loggerlogformats.js';
 import { getRowPosOnTerminal } from './functions/terminal.js';
 import { levels } from './functions/logger.js';
+import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 const headingOptions = {
@@ -135,7 +136,7 @@ let beforeQuestionPos = await getRowPosOnTerminal();
 const validDate = askDate('Enter a date (YYYY-MM-DD) or press Enter for today: ');
 
 const dirPath = path.join(getProjectLogsDirPath(), validDate);
-if (!fs.existsSync(dirPath)) {
+if (!syncOperationWithErrorHandling(fs.existsSync, dirPath)) {
     lge(`Error: Logs for '${validDate}' to generate error summary does not exist.`);
     process.exit(0);
 }
@@ -143,7 +144,7 @@ if (!fs.existsSync(dirPath)) {
 let afterQuestionPos = await getRowPosOnTerminal();
 clearLastLinesOnConsole(afterQuestionPos - beforeQuestionPos);
 
-let files = fs.readdirSync(dirPath).filter((file) => file.endsWith('_usererrors.log'));
+let files = syncOperationWithErrorHandling(fs.readdirSync, dirPath).filter((file) => file.endsWith('_usererrors.log'));
 const execNames = files
     .map((file) => {
         const match = file.match(/-(.+?)\(/);
@@ -175,7 +176,7 @@ cfonts.say(formatDate(validDate, 'YYYY-MM-DD__DD MMM YYYY'), headingOptions);
 
 // eslint-disable-next-line no-restricted-syntax
 for (const file of files) {
-    const fileContent = fs.readFileSync(path.join(dirPath, file), 'utf8');
+    const fileContent = syncOperationWithErrorHandling(fs.readFileSync, path.join(dirPath, file), 'utf8');
     const logLineRegexExpression = new RegExp(getLogLineRegex(), 'g');
     let logLineBlockMatch = logLineRegexExpression.exec(fileContent);
     while (logLineBlockMatch !== null) {
