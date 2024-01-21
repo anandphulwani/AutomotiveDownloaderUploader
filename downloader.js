@@ -22,11 +22,11 @@ import {
     handleBookmarkURL,
     replaceBookmarksElementByGUIDAndWriteToBookmarksFile,
 } from './functions/bookmark.js';
-import { getUsernameTrimmed, setCurrentDealerConfiguration } from './functions/excelsupportive.js';
+import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
 import { validateConfigFile } from './functions/configvalidation.js';
-import { getFileCountRecursively, getListOfSubfoldersStartingWith } from './functions/filesystem.js';
+import { getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
 import { lgc, lge, lgi, lgif, lgu, lgwc } from './functions/loggerandlocksupportive.js';
@@ -38,6 +38,7 @@ import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 import { getRowPosOnTerminal } from './functions/terminal.js';
+import { getCurrentLotDetails } from './functions/download.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -160,26 +161,7 @@ try {
              */
             let dealerFolderCntInLot = 0;
             let imagesQtyInLot = 0;
-            // eslint-disable-next-line no-restricted-syntax
-            for (const usernameBookmark of allUsernamesBookmarks) {
-                const dealerLevelBookmarks = usernameBookmark.children;
-                // eslint-disable-next-line no-restricted-syntax
-                for (const dealerLevelBookmark of dealerLevelBookmarks) {
-                    const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
-                    const usernameTrimmed = getUsernameTrimmed(usernameBookmark.name);
-                    const dealerLevelPath = path.join(
-                        config.downloadPath,
-                        instanceRunDateFormatted,
-                        `Lot_${zeroPad(lotIndex, 2)}`,
-                        usernameTrimmed,
-                        dealerLevelBookmarkName
-                    );
-                    if (syncOperationWithErrorHandling(fs.existsSync, dealerLevelPath)) {
-                        imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
-                        dealerFolderCntInLot++;
-                    }
-                }
-            }
+            ({ dealerFolderCntInLot, imagesQtyInLot } = getCurrentLotDetails(lotIndex));
 
             let page = false;
             let browser = false;
@@ -191,7 +173,6 @@ try {
                 const credentials = getCredentialsForUsername(usernameBookmark.name);
 
                 setCurrentDealerConfiguration(usernameBookmark.name);
-                const usernameTrimmed = getUsernameTrimmed(usernameBookmark.name);
                 const dealerLevelBookmarks = usernameBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {
@@ -303,17 +284,7 @@ try {
                             await waitForSeconds(0);
                         }
                     }
-                    const dealerLevelPath = path.join(
-                        config.downloadPath,
-                        instanceRunDateFormatted,
-                        `Lot_${zeroPad(lotIndex, 2)}`,
-                        usernameTrimmed,
-                        dealerLevelBookmarkName
-                    );
-                    if (syncOperationWithErrorHandling(fs.existsSync, dealerLevelPath)) {
-                        imagesQtyInLot += getFileCountRecursively(dealerLevelPath);
-                        dealerFolderCntInLot++;
-                    }
+                    ({ dealerFolderCntInLot, imagesQtyInLot } = getCurrentLotDetails(lotIndex));
                 }
             }
             if (typeof browser !== 'boolean') {
