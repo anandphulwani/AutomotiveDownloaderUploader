@@ -107,9 +107,11 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
              * cuttingDoneFolderName, finishingBufferFolderName, readyToUploadFolderName
              */
             let contractorPathFiles = syncOperationWithErrorHandling(fs.readdirSync, contractorPath);
-            contractorPathFiles = contractorPathFiles.filter(
-                (filename) => ![cuttingDoneFolderName, finishingBufferFolderName, readyToUploadFolderName].includes(filename)
-            );
+            contractorPathFiles = contractorPathFiles.filter((filename) => {
+                const isSpecialFolder = [cuttingDoneFolderName, finishingBufferFolderName, readyToUploadFolderName].includes(filename);
+                const isAllottedTextFile = filename.startsWith('allwork_allotted_') && filename.endsWith('.txt');
+                return !isSpecialFolder && !isAllottedTextFile;
+            });
             if (contractorPathFiles.length !== 0) {
                 // eslint-disable-next-line no-continue
                 continue;
