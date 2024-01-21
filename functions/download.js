@@ -5,12 +5,16 @@ import path from 'path';
 import logSymbols from 'log-symbols';
 
 /* eslint-disable import/extensions */
-import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination } from './filesystem.js';
+import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination, getFileCountRecursively } from './filesystem.js';
 import { lgd, lgi, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
+import { getUsernameTrimmed } from './excelsupportive.js';
+import { config } from '../configs/config.js';
+import { instanceRunDateFormatted } from './datetime.js';
+import { zeroPad } from './stringformatting.js';
 /* eslint-enable import/extensions */
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
@@ -102,4 +106,33 @@ async function downloadFileAndCompareWithChecksum(
     });
 }
 
-export { getChecksumFromURL, downloadFileAndCompareWithChecksum };
+const allUsernamesFromConfig = config.credentials.map((item) => item.username);
+function getCurrentLotDetails(lotIndex) {
+    let dealerFolderCntInLot = 0;
+    let imagesQtyInLot = 0;
+
+    const lotFolder = path.join(config.downloadPath, instanceRunDateFormatted, `Lot_${zeroPad(lotIndex, 2)}`);
+
+    if (syncOperationWithErrorHandling(fs.existsSync, lotFolder)) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const usernameFromConfig of allUsernamesFromConfig) {
+            const usernameTrimmed = getUsernameTrimmed(usernameFromConfig);
+            const lotFolderAndUsername = path.join(lotFolder, usernameTrimmed);
+            if (syncOperationWithErrorHandling(fs.existsSync, lotFolderAndUsername)) {
+                // eslint-disable-next-line no-restricted-syntax
+                for (const dealerLevelFolderOrFile of syncOperationWithErrorHandling(fs.readdirSync, lotFolderAndUsername)) {
+                    const dealerLevelFolderOrFileFullPath = path.join(lotFolderAndUsername, dealerLevelFolderOrFile);
+                    if (!syncOperationWithErrorHandling(fs.statSync, dealerLevelFolderOrFileFullPath).isDirectory()) {
+                        // eslint-disable-next-line no-continue
+                        continue;
+                    }
+                    imagesQtyInLot += getFileCountRecursively(dealerLevelFolderOrFileFullPath);
+                    dealerFolderCntInLot++;
+                }
+            }
+        }
+    }
+    return { dealerFolderCntInLot, imagesQtyInLot };
+}
+
+export { getChecksumFromURL, downloadFileAndCompareWithChecksum, getCurrentLotDetails };
