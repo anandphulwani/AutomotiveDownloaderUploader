@@ -84,6 +84,7 @@ const billyLogFile = `${instanceRunLogFilePrefix}_billy.log`;
 const debugLogFile = `${instanceRunLogFilePrefix}_debug.log`;
 const traceLogFile = `${instanceRunLogFilePrefix}_trace.log`;
 
+// eslint-disable-next-line no-unused-vars
 const unhandledexceptionFileWinston = createLogger({
     format: fileTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, fileTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'unhandledexception',
@@ -301,6 +302,7 @@ const traceFileWinston = createLogger({
 /* #endregion File loggers: catcherror, error, warn, info : End */
 
 /* #region Console loggers: catcherror, error, warn, info : Begin */
+// eslint-disable-next-line no-unused-vars
 const unhandledexceptionConsoleWinston = createLogger({
     format: consoleTransportOptions.format, // LANGUAGEBUG:: this line has to be removed, once the bug resolves, this line is no longer required, consoleTransportOptions are defined below in transport but errors({ stack: true }) is ignored in that, BUG: https://github.com/winstonjs/winston/issues/1880
     level: 'unhandledexception',
