@@ -6,7 +6,7 @@ import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './datetime.js';
-import { lge, lgw, lgi, lgif, lgh, lgtf, lgs, lgd, lgic } from './loggerandlocksupportive.js';
+import { lge, lgw, lgi, lgif, lgh, lgtf, lgd, lgic } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
 import { msleep, waitForSeconds, waitForMilliSeconds } from './sleep.js';
 import { enableAndClickOnButton, clickOnButton } from './actionOnElements.js';

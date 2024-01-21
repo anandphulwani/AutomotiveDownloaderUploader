@@ -7,7 +7,7 @@ import { checkSync, lockSync } from 'proper-lockfile';
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lge, lgi, lgu, lgd, lgif, lgwc, lgw, lgwf, lgcf } from './functions/loggerandlocksupportive.js';
+import { lge, lgi, lgu, lgd, lgif, lgwc, lgw, lgcf } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import { printSectionSeperator } from './functions/others.js';
 import {

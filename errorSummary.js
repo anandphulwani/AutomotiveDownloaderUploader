@@ -11,7 +11,6 @@ import { printSectionSeperator } from './functions/others.js';
 import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import { levelToChalkColor } from './functions/loggerlogformats.js';
 import { getRowPosOnTerminal } from './functions/terminal.js';
-import { levels } from './functions/logger.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 

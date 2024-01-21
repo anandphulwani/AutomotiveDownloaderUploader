@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'fs';
-import chalk from 'chalk';
 import { checkSync, lockSync, unlockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
