@@ -43,7 +43,7 @@ if (!syncOperationWithErrorHandling(fs.existsSync, instanceRunLogFilePrefixDir))
     syncOperationWithErrorHandling(fs.mkdirSync, instanceRunLogFilePrefixDir, { recursive: true });
 }
 if (!syncOperationWithErrorHandling(fs.existsSync, instanceRunLogFilePrefix)) {
-    syncOperationWithErrorHandling(fs.writeFileSync, instanceRunLogFilePrefix, '', (err) => {});
+    syncOperationWithErrorHandling(fs.writeFileSync, instanceRunLogFilePrefix, '');
 }
 if (!checkSync(instanceRunLogFilePrefix, { stale: 15000 })) {
     // Stale for 12 hours

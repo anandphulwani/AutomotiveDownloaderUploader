@@ -140,7 +140,7 @@ function getContractors(onlyValid) {
     let contractorsFromConfig;
     if (onlyValid) {
         contractorsFromConfig = Object.entries(config.contractors)
-            .filter(([_, contractor]) => contractor.normalThreshold >= 0)
+            .filter(([, contractor]) => contractor.normalThreshold >= 0)
             .reduce((obj, [key, val]) => {
                 obj[key] = val;
                 return obj;
