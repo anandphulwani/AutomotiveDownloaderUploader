@@ -522,6 +522,15 @@ function validateConfigFile(debug = false) {
                 lge(`Config's 'credentials': ${i} block: '${invalidValueKey}': Invalid value (${item[invalidValueKey]}) which is not string.`);
                 validationStatus = 'error';
             }
+
+            const emptyValueKeys = requiredKeys
+                .filter((key) => key !== 'credentialsblockSHA1')
+                .filter((key) => item[key] !== undefined && typeof item[key] === 'string' && item[key] === '');
+            for (let k = 0; k < emptyValueKeys.length; k++) {
+                const emptyValueKey = emptyValueKeys[k];
+                lge(`Config's 'credentials': ${i} block: '${emptyValueKey}': Empty value found.`);
+                validationStatus = 'error';
+            }
         }
     }
     /* #endregion */
