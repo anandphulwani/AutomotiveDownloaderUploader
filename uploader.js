@@ -273,8 +273,9 @@ try {
                                     await waitForSeconds(300);
                                 }
                                 if (
-                                    returnObj.result === true ||
-                                    (returnObj.result === false && returnObj.bookmarkAppendMesg === 'Ignoring (Does not Exist)')
+                                    returnObj !== undefined &&
+                                    (returnObj.result === true ||
+                                        (returnObj.result === false && returnObj.bookmarkAppendMesg === 'Ignoring (Does not Exist)'))
                                 ) {
                                     if (syncOperationWithErrorHandling(fs.existsSync, returnObj.moveSource)) {
                                         createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty(
