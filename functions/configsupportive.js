@@ -28,13 +28,13 @@ function getCredentialsKeysValueByUsernameRegexString(username, keyToSearch) {
     passwordEncryptedRegex += ` +credentials: \\[`;
     passwordEncryptedRegex += `(?:(?![\\[\\]])[\\s\\S])*?`;
     passwordEncryptedRegex += `\\{`;
-    passwordEncryptedRegex += `(?:(?![\\[\\]\\{\\}])[\\s\\S])*?`;
+    passwordEncryptedRegex += `(?:(?![\\[\\]\\{\\}])(?![\\r\\n|\\n][ ]*//)[\\s\\S])*?`;
     passwordEncryptedRegex += `username: `;
     passwordEncryptedRegex += `'`;
     passwordEncryptedRegex += escapeSpecialCharacters(username);
     passwordEncryptedRegex += `'`;
 
-    passwordEncryptedRegex += `(?:(?![\\[\\]\\{\\}])[\\s\\S])*?`;
+    passwordEncryptedRegex += `(?:(?![\\[\\]\\{\\}])(?![\\r\\n|\\n][ ]*//)[\\s\\S])*?`;
     passwordEncryptedRegex += `${keyToSearch}: `;
     passwordEncryptedRegex += `'`;
     passwordEncryptedRegex += `)`;
