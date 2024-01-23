@@ -30,6 +30,7 @@
     "logform": "^2.5.1",
     "moment-timezone": "^0.5.44",
     "mv": "^2.1.1",
+    "node-machine-id": "^1.1.12",
     "npm-time": "^1.0.0",
     "ntp-time-sync": "^0.3.0",
     "proper-lockfile": "^4.1.2",
