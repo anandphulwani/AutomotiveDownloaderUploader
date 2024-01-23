@@ -263,16 +263,14 @@ try {
                                         debug
                                     );
                                 } catch (err) {
-                                    lgw(
-                                        `Unable to upload, \nfolder: '${path.basename(
-                                            foldersToUpload[uniqueIdElement].path
-                                        )}' for \ndealer bookmark: '${dealerLevelBookmarkName}', \nbookmark name: '${
-                                            vehicleBookmark.name
-                                        }', \nbookmark URL: '${vehicleBookmark.url}'.\n`,
-                                        err
-                                    );
+                                    const errorMesg = `Unable to upload, \nfolder: '${path.basename(
+                                        foldersToUpload[uniqueIdElement].path
+                                    )}' for \ndealer bookmark: '${dealerLevelBookmarkName}', \nbookmark name: '${
+                                        vehicleBookmark.name
+                                    }', \nbookmark URL: '${vehicleBookmark.url}'.\n`;
+                                    lgw(errorMesg);
                                     checkBrowserClosed(err, true);
-                                    lgcf(err);
+                                    lgcf(errorMesg, err);
                                     lgwc('Waiting for 5 mins before continuing further.');
                                     await waitForSeconds(300);
                                 }
