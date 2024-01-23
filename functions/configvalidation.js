@@ -6,7 +6,7 @@ import nodeMachineId from 'node-machine-id';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { lgd, lge, lgi } from './loggerandlocksupportive.js';
+import { lgd, lge, lgi, lgw } from './loggerandlocksupportive.js';
 import { makeDir } from './filesystem.js';
 import { levels } from './logger.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
@@ -859,6 +859,15 @@ function validateConfigFile(debug = false) {
     // eslint-disable-next-line no-restricted-syntax
     for (const [value, keys] of Object.entries(duplicates)) {
         lge(`Config's Duplicate value '${value}' found in config parameters: (${keys.join(', ')}), as they are reflecting same path.`);
+    }
+
+    if (
+        config.browserArgs !== undefined &&
+        config.browserArgs.headless !== undefined &&
+        typeof config.browserArgs.headless === 'boolean' &&
+        config.browserArgs.headless === false
+    ) {
+        lgw(`For better experience, please switch the 'browserArgs' > 'headless' mode to 'true'.`);
     }
 
     debug ? lgd(`Validating config file: Done.`) : null;
