@@ -12,10 +12,14 @@ function encrypt(text, salt) {
 
 // Function to decrypt text
 function decrypt(text, salt) {
-    const secretKey = crypto.createHash('md5').update(salt).digest();
-    const decipher = crypto.createDecipheriv('aes-128-cbc', secretKey, FIXED_IV);
-    const decrypted = decipher.update(text, 'hex', 'utf8') + decipher.final('utf8');
-    return decrypted;
+    try {
+        const secretKey = crypto.createHash('md5').update(salt).digest();
+        const decipher = crypto.createDecipheriv('aes-128-cbc', secretKey, FIXED_IV);
+        const decrypted = decipher.update(text, 'hex', 'utf8') + decipher.final('utf8');
+        return decrypted;
+    } catch (err) {
+        return false;
+    }
 }
 
 export { encrypt, decrypt };
