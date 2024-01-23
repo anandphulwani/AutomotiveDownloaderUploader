@@ -12,6 +12,8 @@ import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import { levelToChalkColor } from './functions/loggerlogformats.js';
 import { getRowPosOnTerminal } from './functions/terminal.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
+import { config } from './configs/config.js';
+
 /* eslint-enable import/extensions */
 
 const headingOptions = {
@@ -128,6 +130,10 @@ function askQuestionForHideByLogType() {
         }
     } while (!isValidExecutableType(filterByLogType, availableOptions));
     return filterByLogType;
+}
+
+if (config.environment !== 'production') {
+    lge('Application currently not running in production mode, please switch to production mode immediately.');
 }
 
 let beforeQuestionPos = await getRowPosOnTerminal();

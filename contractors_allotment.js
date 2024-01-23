@@ -64,6 +64,10 @@ const lotHeadingOptions = {
 lgtf(`Printing Lot number in a bold way`);
 cfonts.say(lotFolderName.replace('_', ' '), lotHeadingOptions);
 
+if (config.environment !== 'production') {
+    lge('Application currently not running in production mode, please switch to production mode immediately.');
+}
+
 lgtf(`region : Validation section 02: BEGIN`);
 /* #region : Validation section 02 */
 if (!syncOperationWithErrorHandling(fs.existsSync, lotFolderPath)) {

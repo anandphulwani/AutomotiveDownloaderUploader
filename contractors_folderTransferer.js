@@ -96,6 +96,9 @@ const headingOptions = {
 cfonts.say(`Folder`, headingOptions);
 cfonts.say(`Transferer`, headingOptions);
 console.log('');
+if (config.environment !== 'production') {
+    lge('Application currently not running in production mode, please switch to production mode immediately.');
+}
 
 let lastLockTime = Date.now();
 // eslint-disable-next-line no-constant-condition

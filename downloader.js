@@ -80,6 +80,9 @@ if (
     }
 }
 await checkCredentialsBlock();
+if (config.environment !== 'production') {
+    lge('Application currently not running in production mode, please switch to production mode immediately.');
+}
 
 if (config.environment === 'production' && !checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
     const subprocess = spawn('FolderTransferer.exe', [], {

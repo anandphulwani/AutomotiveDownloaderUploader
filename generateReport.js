@@ -62,6 +62,10 @@ try {
     process.exit(1);
 }
 
+if (config.environment !== 'production') {
+    lge('Application currently not running in production mode, please switch to production mode immediately.');
+}
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
