@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import nodeMachineId from 'node-machine-id';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
@@ -8,6 +9,7 @@ import { waitForElementContainsOrEqualsText, waitTillCurrentURLStartsWith } from
 import { gotoPageAndWaitTillCurrentURLStartsWith } from './goto.js';
 import { lge, lgu } from './loggerandlocksupportive.js';
 import checkBrowserClosed from './browserclosed.js';
+import { decrypt } from './encryptdecrypt.js';
 /* eslint-enable import/extensions */
 
 async function initBrowserAndGetPage(profile, isFirstRun) {
@@ -40,7 +42,17 @@ async function loginCredentials(page, credentials) {
     await fillInTextbox(page, '#username', credentials.username);
     await clickOnButton(page, '#signIn', 'Next');
     await waitForElementContainsOrEqualsText(page, '#return-link-text', `← ${credentials.username}`, 30, undefined, false);
-    await fillInTextbox(page, '#password', credentials.password);
+
+    let passwordToUse;
+    if (credentials.passwordEncryted !== '') {
+        const machineUUID = nodeMachineId.machineIdSync({ original: true });
+        const decryptedPasswordEncryted = decrypt(credentials.passwordEncryted, machineUUID);
+        passwordToUse = decryptedPasswordEncryted.split('|').slice(1).join('|');
+    } else {
+        passwordToUse = credentials.password;
+    }
+
+    await fillInTextbox(page, '#password', passwordToUse);
     await clickOnButton(page, '#signIn', 'Sign in');
     await waitTillCurrentURLStartsWith(page, `${getAppDomain()}/dashboard`);
     await page.waitForSelector('#bridge-bar-user-menu > div.bb-popover > div > section.bb-userdata', { timeout: 90000 });
