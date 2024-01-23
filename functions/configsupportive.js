@@ -4,7 +4,14 @@ import fs from 'fs';
 import { attainLock, releaseLock, lgc, lgu } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
 import { makeDir } from './filesystem.js';
-import { getProjectConfigContractorsFilePath, getProjectConfigLotLastFilePath } from './projectpaths.js';
+import {
+    getProjectConfigContractorsFilePath,
+    getProjectConfigDevelopmentFilePath,
+    getProjectConfigFilePath,
+    getProjectConfigLotLastFilePath,
+    getProjectConfigProductionFilePath,
+    getProjectConfigUserFilePath,
+} from './projectpaths.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 import { escapeSpecialCharacters } from './stringformatting.js';
 /* eslint-enable import/extensions */
@@ -42,6 +49,40 @@ function getCredentialsKeysValueByUsernameRegexString(username, keyToSearch) {
     passwordEncryptedRegex += `\\]`;
     passwordEncryptedRegex += `)`;
     return passwordEncryptedRegex;
+}
+
+function setCredentialsKeysValue(username, credentialsKey, credentialsValue) {
+    const filesToOperateOn = [
+        getProjectConfigFilePath(),
+        getProjectConfigUserFilePath(),
+        getProjectConfigDevelopmentFilePath(),
+        getProjectConfigProductionFilePath(),
+    ];
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const fileToOperateOn of filesToOperateOn) {
+        attainLock(fileToOperateOn, undefined, false);
+        try {
+            const configContent = syncOperationWithErrorHandling(fs.readFileSync, fileToOperateOn, 'utf8');
+
+            const credentialBlockRegexString = getCredentialsKeysValueByUsernameRegexString(username, credentialsKey);
+            const credentialBlockRegexExpression = new RegExp(credentialBlockRegexString);
+
+            if (credentialBlockRegexExpression.test(configContent)) {
+                const newConfigContent = configContent.replace(credentialBlockRegexExpression, `$1${credentialsValue}$2`);
+                if (configContent === newConfigContent) {
+                    lgu(`Unable to set '${credentialsKey}': '${credentialsValue}' for '${username}'. Serious issue, please contact developer.`);
+                    releaseLock(fileToOperateOn, undefined, false);
+                    process.exit(1);
+                }
+                syncOperationWithErrorHandling(fs.writeFileSync, fileToOperateOn, newConfigContent, 'utf8');
+            }
+            releaseLock(fileToOperateOn, undefined, false);
+        } catch (err) {
+            lgc(err);
+            process.exit(1);
+        }
+    }
 }
 
 function getIgnoreBookmarkURLObjects() {
@@ -254,6 +295,7 @@ function createProcessingAndRecordKeepingFolders(dateToCreate) {
 
 // eslint-disable-next-line import/prefer-default-export
 export {
+    setCredentialsKeysValue,
     getLastLotDate,
     getLastLotNumber,
     getCredentialsForUsername,
