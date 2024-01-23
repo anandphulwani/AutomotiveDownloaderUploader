@@ -513,18 +513,18 @@ function validateConfigFile(debug = false) {
             const additionalKeys = keys.filter((key) => !requiredKeys.includes(key));
 
             if (missingKeys.length > 0) {
-                lge(`Config's 'credentials': ${i} block: Missing parameters '${missingKeys.join(', ')}', Please define them.`);
+                lge(`Config's 'credentials': ${i + 1} block: Missing parameters '${missingKeys.join(', ')}', Please define them.`);
                 validationStatus = 'error';
             }
             if (additionalKeys.length > 0) {
-                lge(`Config's 'credentials': ${i} block: Additional parameters '${additionalKeys.join(', ')}', Please remove them.`);
+                lge(`Config's 'credentials': ${i + 1} block: Additional parameters '${additionalKeys.join(', ')}', Please remove them.`);
                 validationStatus = 'error';
             }
 
             const invalidValueKeys = requiredKeys.filter((key) => item[key] !== undefined && typeof item[key] !== 'string');
             for (let k = 0; k < invalidValueKeys.length; k++) {
                 const invalidValueKey = invalidValueKeys[k];
-                lge(`Config's 'credentials': ${i} block: '${invalidValueKey}': Invalid value (${item[invalidValueKey]}) which is not string.`);
+                lge(`Config's 'credentials': ${i + 1} block: '${invalidValueKey}': Invalid value (${item[invalidValueKey]}) which is not string.`);
                 validationStatus = 'error';
             }
 
@@ -533,7 +533,7 @@ function validateConfigFile(debug = false) {
                 .filter((key) => item[key] !== undefined && typeof item[key] === 'string' && item[key] === '');
             for (let k = 0; k < emptyValueKeys.length; k++) {
                 const emptyValueKey = emptyValueKeys[k];
-                lge(`Config's 'credentials': ${i} block: '${emptyValueKey}': Empty value found.`);
+                lge(`Config's 'credentials': ${i + 1} block: '${emptyValueKey}': Empty value found.`);
                 validationStatus = 'error';
             }
         }
@@ -574,18 +574,22 @@ function validateConfigFile(debug = false) {
             const additionalKeys = keys.filter((key) => !requiredKeys.includes(key));
 
             if (missingKeys.length > 0) {
-                lge(`Config's 'ignoreBookmarkURLS': ${i} block: Missing parameters '${missingKeys.join(', ')}', Please define them.`);
+                lge(`Config's 'ignoreBookmarkURLS': ${i + 1} block: Missing parameters '${missingKeys.join(', ')}', Please define them.`);
                 validationStatus = 'error';
             }
             if (additionalKeys.length > 0) {
-                lge(`Config's 'ignoreBookmarkURLS': ${i} block: Additional parameters '${additionalKeys.join(', ')}', Please remove them.`);
+                lge(`Config's 'ignoreBookmarkURLS': ${i + 1} block: Additional parameters '${additionalKeys.join(', ')}', Please remove them.`);
                 validationStatus = 'error';
             }
 
             const invalidValueKeys = requiredKeys.filter((key) => item[key] !== undefined && typeof item[key] !== 'string');
             for (let k = 0; k < invalidValueKeys.length; k++) {
                 const invalidValueKey = invalidValueKeys[k];
-                lge(`Config's 'ignoreBookmarkURLS': ${i} block: '${invalidValueKey}': Invalid value (${item[invalidValueKey]}) which is not string.`);
+                lge(
+                    `Config's 'ignoreBookmarkURLS': ${i + 1} block: '${invalidValueKey}': Invalid value (${
+                        item[invalidValueKey]
+                    }) which is not string.`
+                );
                 validationStatus = 'error';
             }
         }
@@ -710,21 +714,21 @@ function validateConfigFile(debug = false) {
             const item = configsLot[i];
             const keys = Object.keys(item);
             if (keys.length === 0) {
-                lge(`Config's 'lot' (${i}): Empty block found.`);
+                lge(`Config's 'lot' (${i + 1}): Empty block found.`);
                 validationStatus = 'error';
             }
             for (let j = 0; j < keys.length; j++) {
                 const key = keys[j];
 
                 if (key !== 'minimumDealerFoldersForEachContractors' && key !== 'imagesQty') {
-                    lge(`Config's 'lot' (${i}): Invalid key '${key}' found.`);
+                    lge(`Config's 'lot' (${i + 1}): Invalid key '${key}' found.`);
                     validationStatus = 'error';
                 }
 
                 if (key === 'minimumDealerFoldersForEachContractors') {
                     const value = item[key];
                     if (value !== false && (typeof value !== 'number' || value < 1)) {
-                        lge(`Config's 'lot' (${i}): Invalid value (${value}) for 'minimumDealerFoldersForEachContractors'.`);
+                        lge(`Config's 'lot' (${i + 1}): Invalid value (${value}) for 'minimumDealerFoldersForEachContractors'.`);
                         validationStatus = 'error';
                     }
                 }
@@ -732,7 +736,7 @@ function validateConfigFile(debug = false) {
                 if (key === 'imagesQty') {
                     const value = item[key];
                     if (typeof value !== 'number' || value < 0) {
-                        lge(`Config's 'lot' (${i}): Invalid value (${value}) for 'imagesQty'.`);
+                        lge(`Config's 'lot' (${i + 1}): Invalid value (${value}) for 'imagesQty'.`);
                         validationStatus = 'error';
                     }
                 }
