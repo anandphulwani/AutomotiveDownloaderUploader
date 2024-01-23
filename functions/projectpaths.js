@@ -22,6 +22,14 @@ function getProjectConfigUserFilePath() {
     return path.join(getProjectConfigDirPath(), 'config-user.js');
 }
 
+function getProjectConfigDevelopmentFilePath() {
+    return path.join(getProjectConfigDirPath(), 'config-development.js');
+}
+
+function getProjectConfigProductionFilePath() {
+    return path.join(getProjectConfigDirPath(), 'config-production.js');
+}
+
 function getProjectConfigUniqueIdsFilePath() {
     return path.join(getProjectConfigDirPath(), 'config-unique-ids.js');
 }
@@ -44,6 +52,8 @@ export {
     getProjectLogsDirPath,
     getProjectConfigFilePath,
     getProjectConfigUserFilePath,
+    getProjectConfigDevelopmentFilePath,
+    getProjectConfigProductionFilePath,
     getProjectConfigUniqueIdsFilePath,
     getProjectConfigContractorsFilePath,
     getProjectConfigLotsFilePath,
