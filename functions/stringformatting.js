@@ -66,7 +66,11 @@ function escapeSpecialCharacters(str) {
         .replace(/\\/g, '\\\\') // Escape backslashes first
         .replace(/\n/g, '\\n') // Escape newlines
         .replace(/\r/g, '\\r') // Escape carriage returns
-        .replace(/\t/g, '\\t'); // Escape tabs
+        .replace(/\t/g, '\\t') // Escape tabs
+        .replace(/\f/g, '\\f') // Form feed
+        .replace(/\v/g, '\\v') // Vertical tab
+        .replace(/'/g, "\\'") // Single quotes
+        .replace(/"/g, '\\"'); // Double quotes
 }
 
 function escapeRegExp(string) {
