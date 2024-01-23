@@ -10,9 +10,11 @@ import { lge, lgu } from './loggerandlocksupportive.js';
 import checkBrowserClosed from './browserclosed.js';
 /* eslint-enable import/extensions */
 
-async function initBrowserAndGetPage(profile) {
+async function initBrowserAndGetPage(profile, isFirstRun) {
     setChromeProfile(profile);
-    const browser = await puppeteer.launch(config.browserArgs);
+    const { browserArgs } = config;
+    browserArgs.headless = isFirstRun ? false : browserArgs.headless;
+    const browser = await puppeteer.launch(browserArgs);
     const numberOfOpenPages = (await browser.pages()).length;
     if (numberOfOpenPages > 1) {
         let errorMesg = '';
