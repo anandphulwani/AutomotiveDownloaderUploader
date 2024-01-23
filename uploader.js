@@ -227,7 +227,7 @@ try {
                                 uploadingSummary.map((summaryLine) => lgi(summaryLine, Color.bgCyan));
 
                                 if (typeof page === 'boolean' && !page) {
-                                    ({ page, browser } = await initBrowserAndGetPage('upload'));
+                                    ({ page, browser } = await initBrowserAndGetPage('upload', false));
                                 }
                                 if (userLoggedIn !== usernameBookmark.name) {
                                     const currentURL = await gotoURL(page, vehicleBookmark.url);

@@ -218,7 +218,7 @@ try {
                     for (const vehicleBookmark of vehicleBookmarks) {
                         if (!vehicleBookmark.name.includes(' |#| ')) {
                             if (typeof page === 'boolean' && !page) {
-                                ({ page, browser } = await initBrowserAndGetPage('download'));
+                                ({ page, browser } = await initBrowserAndGetPage('download', false));
                             }
                             if (userLoggedIn !== usernameBookmark.name) {
                                 const currentURL = await gotoURL(page, vehicleBookmark.url);
