@@ -6,12 +6,42 @@ import { config } from '../configs/config.js';
 import { makeDir } from './filesystem.js';
 import { getProjectConfigContractorsFilePath, getProjectConfigLotLastFilePath } from './projectpaths.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
+import { escapeSpecialCharacters } from './stringformatting.js';
 /* eslint-enable import/extensions */
 
 function getCredentialsForUsername(username) {
     const configCredentials = config.credentials;
     const singleelement = configCredentials.filter((a) => a.username === username)[0];
     return singleelement;
+}
+
+function getCredentialsKeysValueByUsernameRegexString(username, keyToSearch) {
+    let passwordEncryptedRegex = '';
+    passwordEncryptedRegex += `(`;
+    passwordEncryptedRegex += ` +credentials: \\[`;
+    passwordEncryptedRegex += `(?:(?![\\[\\]])[\\s\\S])*?`;
+    passwordEncryptedRegex += `\\{`;
+    passwordEncryptedRegex += `(?:(?![\\[\\]\\{\\}])[\\s\\S])*?`;
+    passwordEncryptedRegex += `username: `;
+    passwordEncryptedRegex += `'`;
+    passwordEncryptedRegex += escapeSpecialCharacters(username);
+    passwordEncryptedRegex += `'`;
+
+    passwordEncryptedRegex += `(?:(?![\\[\\]\\{\\}])[\\s\\S])*?`;
+    passwordEncryptedRegex += `${keyToSearch}: `;
+    passwordEncryptedRegex += `'`;
+    passwordEncryptedRegex += `)`;
+
+    passwordEncryptedRegex += `.*`;
+
+    passwordEncryptedRegex += `(`;
+    passwordEncryptedRegex += `'`;
+    passwordEncryptedRegex += `(?:(?![\\[\\]\\{\\}])[\\s\\S])*?`;
+    passwordEncryptedRegex += `\\}`;
+    passwordEncryptedRegex += `(?:(?![\\[\\]])[\\s\\S])*?`;
+    passwordEncryptedRegex += `\\]`;
+    passwordEncryptedRegex += `)`;
+    return passwordEncryptedRegex;
 }
 
 function getIgnoreBookmarkURLObjects() {
