@@ -2,13 +2,18 @@ import fs from 'fs';
 import path from 'path';
 import moment from 'moment-timezone';
 import { isValid, parse } from 'date-fns';
+import nodeMachineId from 'node-machine-id';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { lgd, lge } from './loggerandlocksupportive.js';
+import { lgd, lge, lgi } from './loggerandlocksupportive.js';
 import { makeDir } from './filesystem.js';
 import { levels } from './logger.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
+import { decrypt, encrypt } from './encryptdecrypt.js';
+import { initBrowserAndGetPage, loginCredentials } from './browsersupportive.js';
+import { getCredentialsForUsername, setCredentialsKeysValue } from './configsupportive.js';
+import Color from '../class/Colors.js';
 /* eslint-enable import/extensions */
 
 const currentConfigParams = [
@@ -856,5 +861,44 @@ function validateConfigFile(debug = false) {
     return validationStatus;
 }
 
+async function checkCredentialsBlock(debug = false) {
+    let isShouldRestart = false;
+    const configsCredentials = config.credentials;
+    const machineUUID = nodeMachineId.machineIdSync({ original: true });
+    for (let i = 0; i < configsCredentials.length; i++) {
+        const item = configsCredentials[i];
+        if (item.passwordEncryted !== '') {
+            let decryptedPasswordEncryted = decrypt(item.passwordEncryted, machineUUID);
+            decryptedPasswordEncryted = decryptedPasswordEncryted.split('|');
+            if (machineUUID === decryptedPasswordEncryted[0] && item.password === '**************************************************************') {
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+        }
+
+        const executableTypes = ['download', 'upload'];
+        let loginSuccessful = true;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const executableType of executableTypes) {
+            const { page, browser } = await initBrowserAndGetPage(executableType, true);
+            const credentialsForUsername = getCredentialsForUsername(item.username);
+            loginSuccessful = loginSuccessful ? await loginCredentials(page, credentialsForUsername) : loginSuccessful;
+            await browser.close();
+        }
+        if (loginSuccessful) {
+            setCredentialsKeysValue(item.username, 'password', '**************************************************************');
+            setCredentialsKeysValue(item.username, 'passwordEncryted', encrypt(`${machineUUID}|${item.password}`, machineUUID));
+            isShouldRestart = true;
+        } else {
+            setCredentialsKeysValue(item.username, 'password', '');
+            setCredentialsKeysValue(item.username, 'passwordEncryted', '');
+        }
+    }
+    if (isShouldRestart) {
+        lgi('Credentials successfully validated, please restart to apply changes.', Color.bgGreen);
+        process.exit(1);
+    }
+}
+
 // eslint-disable-next-line import/prefer-default-export
-export { validateConfigFile };
+export { validateConfigFile, checkCredentialsBlock };
