@@ -872,7 +872,7 @@ async function checkCredentialsBlock(debug = false) {
     for (let i = 0; i < configsCredentials.length; i++) {
         const item = configsCredentials[i];
         if (item.passwordEncryted !== '') {
-            let decryptedPasswordEncryted = decrypt(item.passwordEncryted, machineUUID);
+            let decryptedPasswordEncryted = decrypt(item.passwordEncryted, `${machineUUID}|${item.username}`);
             decryptedPasswordEncryted = decryptedPasswordEncryted.split('|');
             if (machineUUID === decryptedPasswordEncryted[0] && item.password === '**************************************************************') {
                 // eslint-disable-next-line no-continue
@@ -891,7 +891,7 @@ async function checkCredentialsBlock(debug = false) {
         }
         if (loginSuccessful) {
             setCredentialsKeysValue(item.username, 'password', '**************************************************************');
-            setCredentialsKeysValue(item.username, 'passwordEncryted', encrypt(`${machineUUID}|${item.password}`, machineUUID));
+            setCredentialsKeysValue(item.username, 'passwordEncryted', encrypt(`${machineUUID}|${item.password}`, `${machineUUID}|${item.username}`));
             isShouldRestart = true;
         } else {
             setCredentialsKeysValue(item.username, 'password', '');

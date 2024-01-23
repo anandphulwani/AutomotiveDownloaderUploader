@@ -46,7 +46,7 @@ async function loginCredentials(page, credentials) {
     let passwordToUse;
     if (credentials.passwordEncryted !== '') {
         const machineUUID = nodeMachineId.machineIdSync({ original: true });
-        const decryptedPasswordEncryted = decrypt(credentials.passwordEncryted, machineUUID);
+        const decryptedPasswordEncryted = decrypt(credentials.passwordEncryted, `${machineUUID}|${credentials.username}`);
         passwordToUse = decryptedPasswordEncryted.split('|').slice(1).join('|');
     } else {
         passwordToUse = credentials.password;
