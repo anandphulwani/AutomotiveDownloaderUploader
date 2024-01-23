@@ -498,7 +498,7 @@ function validateConfigFile(debug = false) {
             validationStatus = 'error';
         }
 
-        const requiredKeys = ['username', 'password', 'credentialsblockSHA1'];
+        const requiredKeys = ['username', 'password', 'passwordEncryted'];
         // Check for specific keys and their valid values
         for (let i = 0; i < configsCredentials.length; i++) {
             const item = configsCredentials[i];
@@ -524,7 +524,7 @@ function validateConfigFile(debug = false) {
             }
 
             const emptyValueKeys = requiredKeys
-                .filter((key) => key !== 'credentialsblockSHA1')
+                .filter((key) => key !== 'passwordEncryted')
                 .filter((key) => item[key] !== undefined && typeof item[key] === 'string' && item[key] === '');
             for (let k = 0; k < emptyValueKeys.length; k++) {
                 const emptyValueKey = emptyValueKeys[k];

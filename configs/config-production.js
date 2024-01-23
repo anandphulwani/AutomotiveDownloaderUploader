@@ -35,12 +35,12 @@ const configProduction = {
         {
             username: 'cute996@gmail.com',
             password: 'hello*123',
-            credentialsblockSHA1: '',
+            passwordEncryted: '',
         },
         {
             username: 'vambackground',
             password: 'hello*123',
-            credentialsblockSHA1: '',
+            passwordEncryted: '',
         },
     ],
 };

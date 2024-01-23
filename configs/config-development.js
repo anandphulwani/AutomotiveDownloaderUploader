@@ -11,17 +11,17 @@ const configDevelopment = {
         {
             username: 'dinesharora80@gmail.com',
             password: 'kunsh123',
-            credentialsblockSHA1: '',
+            passwordEncryted: '',
         },
         {
             username: 'cute996@gmail.com',
             password: 'hello*123',
-            credentialsblockSHA1: '',
+            passwordEncryted: '',
         },
         {
             username: 'vambackground',
             password: 'hello*123',
-            credentialsblockSHA1: '',
+            passwordEncryted: '',
         },
     ],
 };
