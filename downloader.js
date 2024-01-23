@@ -25,7 +25,7 @@ import {
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
-import { validateConfigFile } from './functions/configvalidation.js';
+import { checkCredentialsBlock, validateConfigFile } from './functions/configvalidation.js';
 import { getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { autoCleanUpDatastoreZones } from './functions/datastoresupportive.js';
 import { getProjectLogsDirPath } from './functions/projectpaths.js';
@@ -79,6 +79,7 @@ if (
         process.exit(1);
     }
 }
+await checkCredentialsBlock();
 
 if (config.environment === 'production' && !checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
     const subprocess = spawn('FolderTransferer.exe', [], {
