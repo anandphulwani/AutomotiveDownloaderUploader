@@ -873,10 +873,20 @@ async function checkCredentialsBlock(debug = false) {
         const item = configsCredentials[i];
         if (item.passwordEncryted !== '') {
             let decryptedPasswordEncryted = decrypt(item.passwordEncryted, `${machineUUID}|${item.username}`);
-            decryptedPasswordEncryted = decryptedPasswordEncryted.split('|');
-            if (machineUUID === decryptedPasswordEncryted[0] && item.password === '**************************************************************') {
-                // eslint-disable-next-line no-continue
-                continue;
+            if (decryptedPasswordEncryted !== false) {
+                decryptedPasswordEncryted = decryptedPasswordEncryted.split('|');
+                if (
+                    machineUUID === decryptedPasswordEncryted[0] &&
+                    item.password === '**************************************************************'
+                ) {
+                    // eslint-disable-next-line no-continue
+                    continue;
+                }
+            } else {
+                setCredentialsKeysValue(item.username, 'password', '');
+                setCredentialsKeysValue(item.username, 'passwordEncryted', '');
+                lge(`Corrupted password/passwordEncryted found for '${item.username}', resetting the values to blank.`);
+                process.exit(1);
             }
         }
 
