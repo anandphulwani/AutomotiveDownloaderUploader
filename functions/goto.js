@@ -9,6 +9,7 @@ import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import { config } from '../configs/config.js';
 import checkBrowserClosed from './browserclosed.js';
+import { checkInternetConnectivity } from './networksupportive.js';
 /* eslint-enable import/extensions */
 
 async function handleErrorWhileURLNavigation(err, URLToCrawlOrFilename, gotoCnt, timeout) {
@@ -75,6 +76,7 @@ async function gotoURL(page, URLToCrawl, debug = false) {
             }
         } catch (err) {
             checkBrowserClosed(err, true);
+            await checkInternetConnectivity(page, true);
             await handleErrorWhileURLNavigation(err, URLToCrawl, gotoCnt, 60);
         }
     }
