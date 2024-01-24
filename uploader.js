@@ -50,6 +50,7 @@ import { levels, loggerConsoleLevel } from './functions/logger.js';
 import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
+import { checkInternetConnectivity } from './functions/networksupportive.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
@@ -270,6 +271,7 @@ try {
                                     }', \nbookmark URL: '${vehicleBookmark.url}'.\n`;
                                     lgw(errorMesg);
                                     checkBrowserClosed(err, true);
+                                    await checkInternetConnectivity(page, true);
                                     lgcf(errorMesg, err);
                                     lgwc('Waiting for 5 mins before continuing further.');
                                     await waitForSeconds(300);
