@@ -1,13 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import xlsx from 'xlsx-js-style';
-import readline from 'readline';
 import { addDays, startOfMonth, endOfMonth, format as formatDateDateFNS, parse as parseDateDateFNS } from 'date-fns';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
 import { readDealerConfigurationFormatted } from './functions/excel.js';
-import { formatDate, getCurrentDate, getLastMonthDate } from './functions/datetime.js';
+import { formatDate } from './functions/datetime.js';
 import {
     addAdditionalImagesColumnAlternatively,
     styleOfDateHeading,
@@ -35,11 +34,11 @@ import {
     styleOfVerticalListDataTotal,
     styleOfVerticalListDealerQty,
     styleOfVerticalListDealerNumber,
+    getPeriod,
 } from './functions/reportsupportive.js';
 import { copyDirOrFile, createDirAndCopyFile, makeDir } from './functions/filesystem.js';
-import { attainLock, releaseLock, lge, lgi, lgw, lgd } from './functions/loggerandlocksupportive.js';
+import { attainLock, releaseLock, lgi, lgw, lgd } from './functions/loggerandlocksupportive.js';
 import { printSectionSeperator } from './functions/others.js';
-import { zeroPad } from './functions/stringformatting.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 import { getUsernameTrimmed } from './functions/excelsupportive.js';
 import commonInit from './functions/commonInit.js';
@@ -48,55 +47,7 @@ import commonInit from './functions/commonInit.js';
 const debug = false;
 await commonInit('generateReport.js');
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-});
-
-let year;
-let month;
-
-async function getPeriod() {
-    return new Promise((resolve) => {
-        rl.question('Do you want to generate a report for the "Current (C)" or "Older (O)" period? (C/O): ', (answer) => {
-            if (answer.toUpperCase() === 'C') {
-                ({ year, month } = getCurrentDate());
-                month = zeroPad(month, 2);
-                rl.close();
-                resolve();
-            } else if (answer.toUpperCase() === 'O') {
-                const defaultDate = getLastMonthDate();
-                rl.question(`Enter the year [${defaultDate.year}]: `, (yearInput) => {
-                    const yearRegexString = `^\\d{4}$`;
-                    const yearRegexExpression = new RegExp(yearRegexString);
-                    if (yearInput === '' || yearRegexExpression.test(yearInput)) {
-                        year = yearInput || defaultDate.year;
-                        rl.question(`Enter the month [${defaultDate.month}]: `, (monthInput) => {
-                            const monthRegexString = `^(0?[1-9]|1[0-2])$`;
-                            const monthRegexExpression = new RegExp(monthRegexString);
-                            if (monthInput === '' || monthRegexExpression.test(monthInput)) {
-                                month = monthInput || defaultDate.month;
-                                month = zeroPad(month, 2);
-                                rl.close();
-                                resolve();
-                            } else {
-                                lge('Invalid month. Please enter a valid month (1-12).');
-                                process.exit(1);
-                            }
-                        });
-                    } else {
-                        lge('Invalid year. Please enter a valid 4-digit year.');
-                        process.exit(1);
-                    }
-                });
-            } else {
-                lge('Invalid input. Please enter either "C" or "O" for current or older period respectively.');
-                process.exit(1);
-            }
-        });
-    });
-}
-await getPeriod();
+const { year, month } = await getPeriod();
 lgi(`Generating report for the period: Year ${year}, Month ${month}`);
 
 const startDate = startOfMonth(new Date(year, month - 1));

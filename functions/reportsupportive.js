@@ -1,14 +1,64 @@
 import fs from 'fs';
 import path from 'path';
+import readline from 'readline';
 
 /* eslint-disable import/extensions */
 import { attainLock, releaseLock, lgc, lge } from './loggerandlocksupportive.js';
 import { config } from '../configs/config.js';
-import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
+import { getCurrentDate, getLastMonthDate, instanceRunDateFormatted, instanceRunDateWODayFormatted } from './datetime.js';
 import { makeDir } from './filesystem.js';
 import { setCurrentDealerConfiguration, getDealerNameFromDC } from './excelsupportive.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
+import { zeroPad } from './stringformatting.js';
 /* eslint-enable import/extensions */
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+});
+
+async function getPeriod() {
+    let year;
+    let month;
+    return new Promise((resolve) => {
+        rl.question('Do you want to generate a report for the "Current (C)" or "Older (O)" period? (C/O): ', (answer) => {
+            if (answer.toUpperCase() === 'C') {
+                ({ year, month } = getCurrentDate());
+                month = zeroPad(month, 2);
+                rl.close();
+                resolve({ year, month });
+            } else if (answer.toUpperCase() === 'O') {
+                const defaultDate = getLastMonthDate();
+                rl.question(`Enter the year [${defaultDate.year}]: `, (yearInput) => {
+                    const yearRegexString = `^\\d{4}$`;
+                    const yearRegexExpression = new RegExp(yearRegexString);
+                    if (yearInput === '' || yearRegexExpression.test(yearInput)) {
+                        year = yearInput || defaultDate.year;
+                        rl.question(`Enter the month [${defaultDate.month}]: `, (monthInput) => {
+                            const monthRegexString = `^(0?[1-9]|1[0-2])$`;
+                            const monthRegexExpression = new RegExp(monthRegexString);
+                            if (monthInput === '' || monthRegexExpression.test(monthInput)) {
+                                month = monthInput || defaultDate.month;
+                                month = zeroPad(month, 2);
+                                rl.close();
+                                resolve({ year, month });
+                            } else {
+                                lge('Invalid month. Please enter a valid month (1-12).');
+                                process.exit(1);
+                            }
+                        });
+                    } else {
+                        lge('Invalid year. Please enter a valid 4-digit year.');
+                        process.exit(1);
+                    }
+                });
+            } else {
+                lge('Invalid input. Please enter either "C" or "O" for current or older period respectively.');
+                process.exit(1);
+            }
+        });
+    });
+}
 
 function readAndUpdateReportJSONObj(reportJSONFilePath) {
     let reportJSONObj;
@@ -404,6 +454,7 @@ const contractorExcelStyleOfBottomTotalRow = {
 };
 
 export {
+    getPeriod,
     readAndUpdateReportJSONObj,
     addAllotmentToReport,
     addUploadingToReport,
