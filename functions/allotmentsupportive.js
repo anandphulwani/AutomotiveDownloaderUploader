@@ -5,12 +5,14 @@ import { spawn } from 'child_process';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
-import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
+import { getListOfSubfoldersStartingWith, removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
 import { lgd, lgu } from './loggerandlocksupportive.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 import { getUsernameTrimmed } from './excelsupportive.js';
 import { instanceRunDateFormatted } from './datetime.js';
 import { zeroPad } from './stringformatting.js';
+import { getLastLotDate, getLastLotNumber } from './configsupportive.js';
+import { sleep } from './sleep.js';
 /* eslint-enable import/extensions */
 
 /* #region : Supporting functions */
@@ -235,6 +237,43 @@ function launchLotWindow(lotIndexToAllot, debug = false) {
 }
 /* #endregion */
 
+/**
+ * 007
+ * Get lot last index
+ */
+/* #region : getLotLastIndex(debug = false) {...} */
+function getLotLastIndex(debug = false) {
+    const lotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${instanceRunDateFormatted}`, 'Lot_');
+    let lotLastIndex = lotIndexArray.length > 0 ? parseInt(lotIndexArray[lotIndexArray.length - 1].substring(4), 10) : null;
+    if (lotLastIndex === null) {
+        if (getLastLotDate() === instanceRunDateFormatted) {
+            lotLastIndex = parseInt(getLastLotNumber().substring(4), 10) + 1;
+        } else {
+            lotLastIndex = 1;
+        }
+    }
+    return lotLastIndex;
+}
+/* #endregion */
+
+/**
+ * 008
+ * Launch all pending lots window
+ */
+/* #region : launchAllPendingLotsWindow(debug = false) {...} */
+function launchAllPendingLotsWindow(debug = false) {
+    const lotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${instanceRunDateFormatted}`, 'Lot_');
+    lotIndexArray.pop();
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const lotIndexEle of lotIndexArray) {
+        const lotIndexToAllot = parseInt(lotIndexEle.substring(4), 10);
+        launchLotWindow(lotIndexToAllot);
+        sleep(3);
+    }
+}
+/* #endregion */
+
 /* #endregion */
 
 // eslint-disable-next-line import/prefer-default-export
@@ -245,4 +284,6 @@ export {
     validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs,
     returnImageCountFromDealerDir,
     launchLotWindow,
+    getLotLastIndex,
+    launchAllPendingLotsWindow,
 };
