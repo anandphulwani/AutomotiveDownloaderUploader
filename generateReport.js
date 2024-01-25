@@ -3,7 +3,6 @@ import path from 'path';
 import xlsx from 'xlsx-js-style';
 import readline from 'readline';
 import { addDays, startOfMonth, endOfMonth, format as formatDateDateFNS, parse as parseDateDateFNS } from 'date-fns';
-import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
@@ -38,7 +37,7 @@ import {
     styleOfVerticalListDealerNumber,
 } from './functions/reportsupportive.js';
 import { copyDirOrFile, createDirAndCopyFile, makeDir } from './functions/filesystem.js';
-import { attainLock, releaseLock, lge, lgi, lgw, lgd, lgwc, lgu } from './functions/loggerandlocksupportive.js';
+import { attainLock, releaseLock, lge, lgi, lgw, lgd } from './functions/loggerandlocksupportive.js';
 import { printSectionSeperator } from './functions/others.js';
 import { zeroPad } from './functions/stringformatting.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';

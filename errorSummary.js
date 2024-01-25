@@ -12,7 +12,6 @@ import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import { levelToChalkColor } from './functions/loggerlogformats.js';
 import { getRowPosOnTerminal } from './functions/terminal.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
-import { config } from './configs/config.js';
 import commonInit from './functions/commonInit.js';
 
 /* eslint-enable import/extensions */

@@ -1,18 +1,15 @@
-import { checkSync, lockSync } from 'proper-lockfile';
+import { checkSync } from 'proper-lockfile';
 import cfonts from 'cfonts';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lge, lgi, lgu, lgwc } from './functions/loggerandlocksupportive.js';
+import { lge, lgi } from './functions/loggerandlocksupportive.js';
 import { createProcessingAndRecordKeepingFolders } from './functions/configsupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import checkIfWorkDoneAndCreateDoneFile from './functions/contractors_workdonefile.js';
 import { moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving } from './functions/contractors_folderTransferersupportive.js';
 import Color from './class/Colors.js';
-import { validateConfigFile } from './functions/configvalidation.js';
-import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
-import { validateBookmarksAndCheckCredentialsPresent } from './functions/bookmarkvalidation.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 import commonInit from './functions/commonInit.js';
 /* eslint-enable import/extensions */

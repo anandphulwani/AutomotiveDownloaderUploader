@@ -1,35 +1,29 @@
 import fs from 'fs';
 import path from 'path';
 import { URL } from 'url';
-import { spawn } from 'child_process';
-import { checkSync, lockSync } from 'proper-lockfile';
 
 /* eslint-disable import/extensions */
 import { instanceRunDateFormatted, instanceRunDateWODayFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { lge, lgi, lgu, lgd, lgif, lgwc, lgw, lgcf } from './functions/loggerandlocksupportive.js';
+import { lge, lgi, lgd, lgwc, lgw, lgcf } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
-import { printSectionSeperator } from './functions/others.js';
 import {
     getAllUsernamesBookmarks,
     getRemainingBookmarksNotDownloadedLength,
     getUniqueIDsOfBookmarkFoldersAllotted,
 } from './functions/bookmarksupportive.js';
 import { gotoURL } from './functions/goto.js';
-import { checkTimezone, checkTimeWithNTP } from './functions/time.js';
 import { getUniqueIdPairsFromDealerBookmarkName } from './functions/bookmark.js';
 import { getCredentialsForUsername } from './functions/configsupportive.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
-import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
-import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
+import { validateBookmarkNameText } from './functions/bookmarkvalidation.js';
 import { getUnderProcessingAcToReport, readAndUpdateReportJSONObj } from './functions/reportsupportive.js';
-import { checkCredentialsBlock, validateConfigFile } from './functions/configvalidation.js';
 import {
     getFileCountNonRecursively,
     getFileCountRecursively,
     createDirAndMoveFileAndDeleteSourceParentFolderIfEmpty,
 } from './functions/filesystem.js';
-import { autoCleanUpDatastoreZones, getUploadRemainingSummary } from './functions/datastoresupportive.js';
+import { getUploadRemainingSummary } from './functions/datastoresupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import {
     getFoldersInUploadingZone,
@@ -46,9 +40,6 @@ import {
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
-import keyInYNWithTimeout from './functions/keyInYNWithTimeout.js';
-import { levels, loggerConsoleLevel } from './functions/logger.js';
-import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 import { checkInternetConnectivity } from './functions/networksupportive.js';
