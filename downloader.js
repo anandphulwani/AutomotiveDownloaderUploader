@@ -31,6 +31,7 @@ import commonInit from './functions/commonInit.js';
 
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
 
+try {
 await commonInit('downloader.js');
 
 const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${instanceRunDateFormatted}`, 'Lot_');
@@ -51,7 +52,6 @@ for (const LotIndexEle of LotIndexArray) {
     sleep(3);
 }
 
-try {
     let lastRunTime = Date.now();
     let lotIndex = LotLastIndex;
     // eslint-disable-next-line no-constant-condition

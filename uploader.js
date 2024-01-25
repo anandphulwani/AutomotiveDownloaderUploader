@@ -47,6 +47,7 @@ import commonInit from './functions/commonInit.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
+try {
 await commonInit('uploader.js');
 
 const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
@@ -57,7 +58,6 @@ if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
     isDumbUploader = true;
 }
 
-try {
     let foundNewFoldersInMiddle;
     let lastRunTime = Date.now();
     // eslint-disable-next-line no-constant-condition
