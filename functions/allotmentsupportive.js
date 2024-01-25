@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import beautify from 'json-beautify';
+import { spawn } from 'child_process';
 
 /* eslint-disable import/extensions */
 import { config } from '../configs/config.js';
@@ -8,6 +9,8 @@ import { removeDirAndRemoveParentDirIfEmpty } from './filesystem.js';
 import { lgd, lgu } from './loggerandlocksupportive.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 import { getUsernameTrimmed } from './excelsupportive.js';
+import { instanceRunDateFormatted } from './datetime.js';
+import { zeroPad } from './stringformatting.js';
 /* eslint-enable import/extensions */
 
 /* #region : Supporting functions */
@@ -206,6 +209,32 @@ function returnImageCountFromDealerDir(dealerDir, debug = false) {
 }
 /* #endregion */
 
+/**
+ * 006
+ * Launch lot window
+ */
+/* #region : returnImageCountFromDealerDir (lotFldrPath, debug = false) {...} */
+function launchLotWindow(lotIndexToAllot, debug = false) {
+    if (syncOperationWithErrorHandling(fs.existsSync, `${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndexToAllot, 2)}`)) {
+        const subprocess = spawn(
+            'cmd.exe',
+            [
+                '/c',
+                'start',
+                'cmd.exe',
+                '/K',
+                `@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndexToAllot} ${instanceRunDateFormatted} && pause && pause && exit`,
+            ],
+            {
+                detached: true,
+                stdio: 'ignore',
+            }
+        );
+        subprocess.unref();
+    }
+}
+/* #endregion */
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     recalculateRatioOfThreshHoldWithOtherContractors,
@@ -213,4 +242,5 @@ export {
     recalculateAllotmentPriority,
     validateLotFolderAndRemoveVINFolderIfEmptyAndReturnListOfDealerDirs,
     returnImageCountFromDealerDir,
+    launchLotWindow,
 };

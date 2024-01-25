@@ -39,6 +39,7 @@ import checkBrowserClosed from './functions/browserclosed.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 import { getRowPosOnTerminal } from './functions/terminal.js';
 import { getCurrentLotDetails } from './functions/download.js';
+import { launchLotWindow } from './functions/allotmentsupportive.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -106,23 +107,7 @@ LotIndexArray.pop();
 // eslint-disable-next-line no-restricted-syntax
 for (const LotIndexEle of LotIndexArray) {
     const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
-    if (syncOperationWithErrorHandling(fs.existsSync, `${config.downloadPath}\\${instanceRunDateFormatted}\\${LotIndexEle}`)) {
-        const subprocess = spawn(
-            'cmd.exe',
-            [
-                '/c',
-                'start',
-                'cmd.exe',
-                '/K',
-                `@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndexToAllot} ${instanceRunDateFormatted} && pause && pause && exit`,
-            ],
-            {
-                detached: true,
-                stdio: 'ignore',
-            }
-        );
-        subprocess.unref();
-    }
+    launchLotWindow(lotIndexToAllot);
     sleep(3);
 }
 
@@ -186,28 +171,7 @@ try {
                         (lotCfgMinDealerFolders === undefined || dealerFolderCntInLot >= lotCfgMinDealerFolders) &&
                         (lotCfgImagesQty === undefined || imagesQtyInLot >= lotCfgImagesQty)
                     ) {
-                        if (
-                            syncOperationWithErrorHandling(
-                                fs.existsSync,
-                                `${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`
-                            )
-                        ) {
-                            const subprocess = spawn(
-                                'cmd.exe',
-                                [
-                                    '/c',
-                                    'start',
-                                    'cmd.exe',
-                                    '/K',
-                                    `@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit`,
-                                ],
-                                {
-                                    detached: true,
-                                    stdio: 'ignore',
-                                }
-                            );
-                            subprocess.unref();
-                        }
+                        launchLotWindow(lotIndex);
                         dealerFolderCntInLot = 0;
                         imagesQtyInLot = 0;
                         lotIndex++;
@@ -340,24 +304,7 @@ try {
             break;
         }
     }
-
-    if (syncOperationWithErrorHandling(fs.existsSync, `${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndex, 2)}`)) {
-        const subprocess = spawn(
-            'cmd.exe',
-            [
-                '/c',
-                'start',
-                'cmd.exe',
-                '/K',
-                `@echo off && cd /D ${process.cwd()} && cls && node contractors_allotment.js ${lotIndex} ${instanceRunDateFormatted} && pause && pause && exit`,
-            ],
-            {
-                detached: true,
-                stdio: 'ignore',
-            }
-        );
-        subprocess.unref();
-    }
+    launchLotWindow(lotIndex);
 } catch (err) {
     checkBrowserClosed(err, false);
 }
