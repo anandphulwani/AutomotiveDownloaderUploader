@@ -213,7 +213,7 @@ function returnImageCountFromDealerDir(dealerDir, debug = false) {
  * 006
  * Launch lot window
  */
-/* #region : returnImageCountFromDealerDir (lotFldrPath, debug = false) {...} */
+/* #region : launchLotWindow(lotIndexToAllot, debug = false) {...} */
 function launchLotWindow(lotIndexToAllot, debug = false) {
     if (syncOperationWithErrorHandling(fs.existsSync, `${config.downloadPath}\\${instanceRunDateFormatted}\\Lot_${zeroPad(lotIndexToAllot, 2)}`)) {
         const subprocess = spawn(
