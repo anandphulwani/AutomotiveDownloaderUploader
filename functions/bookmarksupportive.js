@@ -1,3 +1,4 @@
+import { URL as URLparser } from 'url';
 import { getChromeBookmark } from 'chrome-bookmark-reader';
 
 /* eslint-disable import/extensions */
@@ -84,8 +85,32 @@ function getUniqueIDsOfBookmarkFoldersAllotted() {
     return extractedNames;
 }
 
+// Create a set of all completed bookmarks to compare for duplicates
+function getUrlsDownloaded() {
+    const allUsernamesBookmarks = getAllUsernamesBookmarks();
+    const urlsDownloaded = {};
+    // eslint-disable-next-line no-restricted-syntax
+    for (const usernameBookmark of allUsernamesBookmarks) {
+        const dealerLevelBookmarks = usernameBookmark.children;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const dealerLevelBookmark of dealerLevelBookmarks) {
+            const vehicleBookmarks = dealerLevelBookmark.children;
+            // eslint-disable-next-line no-restricted-syntax
+            for (const vehicleBookmark of vehicleBookmarks) {
+                if (vehicleBookmark.name.includes('|#|')) {
+                    let vehicleBookmarkUrlWOQueryParams = new URLparser(vehicleBookmark.url);
+                    vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
+                    urlsDownloaded[vehicleBookmarkUrlWOQueryParams] = dealerLevelBookmark.name;
+                }
+            }
+        }
+    }
+    return urlsDownloaded;
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
+    getUrlsDownloaded,
     getAllUsernamesBookmarks,
     getRemainingBookmarksNotDownloaded,
     getRemainingBookmarksNotDownloadedLength,

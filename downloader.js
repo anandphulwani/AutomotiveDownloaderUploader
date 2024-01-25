@@ -4,7 +4,7 @@ import { URL as URLparser } from 'url';
 import { config } from './configs/config.js';
 import { getCredentialsForUsername, getLotConfigPropertiesValues } from './functions/configsupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
-import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength } from './functions/bookmarksupportive.js';
+import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength, getUrlsDownloaded } from './functions/bookmarksupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { gotoURL } from './functions/goto.js';
 import {
@@ -43,25 +43,7 @@ try {
              * Read chrome bookmarks from chrome browser
              */
             const allUsernamesBookmarks = getAllUsernamesBookmarks();
-
-            // Create a set of all completed bookmarks to compare for duplicates
-            let urlsDownloaded = {};
-            // eslint-disable-next-line no-restricted-syntax
-            for (const usernameBookmark of allUsernamesBookmarks) {
-                const dealerLevelBookmarks = usernameBookmark.children;
-                // eslint-disable-next-line no-restricted-syntax
-                for (const dealerLevelBookmark of dealerLevelBookmarks) {
-                    const vehicleBookmarks = dealerLevelBookmark.children;
-                    // eslint-disable-next-line no-restricted-syntax
-                    for (const vehicleBookmark of vehicleBookmarks) {
-                        if (vehicleBookmark.name.includes('|#|')) {
-                            let vehicleBookmarkUrlWOQueryParams = new URLparser(vehicleBookmark.url);
-                            vehicleBookmarkUrlWOQueryParams = vehicleBookmarkUrlWOQueryParams.host + vehicleBookmarkUrlWOQueryParams.pathname;
-                            urlsDownloaded[vehicleBookmarkUrlWOQueryParams] = dealerLevelBookmark.name;
-                        }
-                    }
-                }
-            }
+            let urlsDownloaded = getUrlsDownloaded();
 
             /**
              * Get dealerFolderCntInLot and imagesQtyInLot, before downloading any URL
