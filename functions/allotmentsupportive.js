@@ -235,6 +235,8 @@ function launchLotWindow(lotIndexToAllot, debug = false) {
 }
 /* #endregion */
 
+/* #endregion */
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     recalculateRatioOfThreshHoldWithOtherContractors,
