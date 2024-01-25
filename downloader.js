@@ -1,5 +1,3 @@
-import { URL as URLparser } from 'url';
-
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
 import { getCredentialsForUsername, getLotConfigPropertiesValues } from './functions/configsupportive.js';
@@ -7,24 +5,18 @@ import { waitForSeconds } from './functions/sleep.js';
 import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength, getUrlsDownloaded } from './functions/bookmarksupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { gotoURL } from './functions/goto.js';
-import {
-    downloadBookmarksFromSourceToProcessing,
-    handleBookmarkURL,
-    replaceBookmarksElementByGUIDAndWriteToBookmarksFile,
-} from './functions/bookmark.js';
+import { handleBookmarkURL, replaceBookmarksElementByGUIDAndWriteToBookmarksFile } from './functions/bookmark.js';
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
-import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
-import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
-import { lge, lgi } from './functions/loggerandlocksupportive.js';
+import { validateBookmarkNameText } from './functions/bookmarkvalidation.js';
+import { lgi } from './functions/loggerandlocksupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
 import LoggingPrefix from './class/LoggingPrefix.js';
-import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
-import { getRowPosOnTerminal } from './functions/terminal.js';
 import { addMoreBookmarksOrAllotmentRemainingImagesPrompt, bookmarkNotAppended, getCurrentLotDetails } from './functions/download.js';
 import { getLotLastIndex, launchAllPendingLotsWindow, launchLotWindow } from './functions/allotmentsupportive.js';
 import commonInit from './functions/commonInit.js';
+import { waitForValidationErrorsToResolve } from './functions/validationsupportive.js';
 /* eslint-enable import/extensions */
 
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
@@ -141,22 +133,7 @@ try {
         if (!resultOfKeyInYNToAddMoreBookmarksAnswer) {
             break;
         }
-        const inLoopRowBeforeValidation = await getRowPosOnTerminal();
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-            if (
-                (await downloadBookmarksFromSourceToProcessing()) ||
-                [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i)
-            ) {
-                lge(`Please correct the above errors, in order to continue.`);
-                await waitForSeconds(30);
-                const inLoopRowAfterValidation = await getRowPosOnTerminal();
-                clearLastLinesOnConsole(inLoopRowAfterValidation - inLoopRowBeforeValidation);
-                // eslint-disable-next-line no-continue
-                continue;
-            }
-            break;
-        }
+        await waitForValidationErrorsToResolve('downloader.js', false);
     }
     launchLotWindow(lotIndex);
 } catch (err) {

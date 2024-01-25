@@ -8,10 +8,8 @@ import { checkTimeWithNTP, checkTimezone } from './time.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 import { printSectionSeperator } from './others.js';
 import { autoCleanUpDatastoreZones } from './datastoresupportive.js';
-import { checkCredentialsBlock, validateConfigFile } from './configvalidation.js';
-import { validateBookmarksAndCheckCredentialsPresent } from './bookmarkvalidation.js';
-import { validateDealerConfigurationExcelFile } from './excelvalidation.js';
-import { downloadBookmarksFromSourceToProcessing } from './bookmark.js';
+import { checkCredentialsBlock } from './configvalidation.js';
+import { waitForValidationErrorsToResolve } from './validationsupportive.js';
 /* eslint-enable import/extensions */
 
 export default async function commonInit(scriptFilename) {
@@ -43,24 +41,7 @@ export default async function commonInit(scriptFilename) {
     /* #endregion */
 
     /* #region Various validation checks  */
-    let isValidationFailed = false;
-    if (scriptFilename === 'downloader.js') {
-        isValidationFailed =
-            validateConfigFile() === 'error' ||
-            (await downloadBookmarksFromSourceToProcessing()) || // Check whether config is valid, then only update bookmarks first and then run `validateBookmarksAndCheckCredentialsPresent`
-            [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i);
-    } else if (scriptFilename === 'uploader.js' || scriptFilename === 'contractors_folderTransferer.js') {
-        isValidationFailed =
-            validateConfigFile() === 'error' ||
-            [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i);
-    }
-
-    if (isValidationFailed) {
-        lge(`Please correct the above errors, in order to continue.`);
-        if (config.environment === 'production') {
-            process.exit(1);
-        }
-    }
+    await waitForValidationErrorsToResolve(scriptFilename, true);
     /* #endregion */
 
     /* #region Run credentails check and first time encryption in `downloader.js` or `uploader.js` */
