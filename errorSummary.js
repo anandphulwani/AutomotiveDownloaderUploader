@@ -21,21 +21,8 @@ import {
 } from './functions/errorSummarysupportive.js';
 /* eslint-enable import/extensions */
 
-const headingOptions = {
-    font: 'block', // font to use for the output
-    align: 'center', // alignment of the output
-    colors: ['#D3D3D3', '#FFFFFF'], // colors of the output (gradient)
-    background: 'black', // background color of the output
-    letterSpacing: 1, // letter spacing of the output
-    lineHeight: 1, // line height of the output
-    space: true, // add space between letters
-    maxLength: '0', // maximum length of the output (0 = unlimited)
-};
-
 await commonInit('errorSummary.js');
-
 let beforeQuestionPos = await getRowPosOnTerminal();
-
 const validDate = askDate('Enter a date (YYYY-MM-DD) or press Enter for today: ');
 
 const dirPath = path.join(getProjectLogsDirPath(), validDate);
@@ -75,6 +62,16 @@ afterQuestionPos = await getRowPosOnTerminal();
 clearLastLinesOnConsole(afterQuestionPos - beforeQuestionPos);
 
 const individualLogs = [];
+const headingOptions = {
+    font: 'block', // font to use for the output
+    align: 'center', // alignment of the output
+    colors: ['#D3D3D3', '#FFFFFF'], // colors of the output (gradient)
+    background: 'black', // background color of the output
+    letterSpacing: 1, // letter spacing of the output
+    lineHeight: 1, // line height of the output
+    space: true, // add space between letters
+    maxLength: '0', // maximum length of the output (0 = unlimited)
+};
 cfonts.say(formatDate(validDate, 'YYYY-MM-DD__DD MMM YYYY'), headingOptions);
 
 // eslint-disable-next-line no-restricted-syntax
