@@ -38,7 +38,7 @@ import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 import { getRowPosOnTerminal } from './functions/terminal.js';
-import { getCurrentLotDetails } from './functions/download.js';
+import { addMoreBookmarksOrAllotmentRemainingImagesPrompt, bookmarkNotAppended, getCurrentLotDetails } from './functions/download.js';
 import { launchLotWindow } from './functions/allotmentsupportive.js';
 /* eslint-enable import/extensions */
 
@@ -217,37 +217,7 @@ try {
                             if (config.isUpdateBookmarksOnceDone && returnObj.bookmarkAppendMesg !== '') {
                                 replaceBookmarksElementByGUIDAndWriteToBookmarksFile('name', vehicleBookmark.guid, returnObj.bookmarkAppendMesg);
                             } else {
-                                lgu('Bookmark not appended!');
-                                if (config.isUpdateBookmarksOnceDone) {
-                                    try {
-                                        const bookmarksNotAppendFile = path.join(getProjectLogsDirPath(), 'bookmarksNotAppend.txt');
-                                        syncOperationWithErrorHandling(fs.appendFileSync, bookmarksNotAppendFile, `${'-'.repeat(120)}\n`);
-                                        syncOperationWithErrorHandling(
-                                            fs.appendFileSync,
-                                            bookmarksNotAppendFile,
-                                            `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, \nvehicleBookmark.name: ${vehicleBookmark.name}, \nvehicleBookmark.url: ${vehicleBookmark.url}\n`
-                                        );
-
-                                        syncOperationWithErrorHandling(
-                                            fs.appendFileSync,
-                                            bookmarksNotAppendFile,
-                                            `vehicleBookmark.guid: ${vehicleBookmark.guid}\n`
-                                        );
-                                        syncOperationWithErrorHandling(
-                                            fs.appendFileSync,
-                                            bookmarksNotAppendFile,
-                                            `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}\n`
-                                        );
-                                        syncOperationWithErrorHandling(
-                                            fs.appendFileSync,
-                                            bookmarksNotAppendFile,
-                                            `returnObj: ${beautify(returnObj, null, 3, 120)}\n`
-                                        );
-                                        syncOperationWithErrorHandling(fs.appendFileSync, bookmarksNotAppendFile, `${'+'.repeat(120)}\n`);
-                                    } catch (err) {
-                                        lgc(err);
-                                    }
-                                }
+                                bookmarkNotAppended(returnObj, lotIndex, usernameBookmark, dealerLevelBookmarkName, vehicleBookmark);
                             }
                             await waitForSeconds(0);
                         }
@@ -264,28 +234,9 @@ try {
         } else if (Date.now() - lastRunTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {
             break;
         }
-        if (remainingBookmarksNotDownloadedLength === 0) {
-            const inLoopRowBeforeQuestion = await getRowPosOnTerminal();
-            const questionOfKeyInYNToAddMoreBookmarks =
-                'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
-            const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
-            if (!resultOfKeyInYNToAddMoreBookmarks.answer) {
-                break;
-            }
-            if (resultOfKeyInYNToAddMoreBookmarks.isDefaultOption) {
-                printSectionSeperator(undefined, true);
-                const inLoopRowAFterQuestion = await getRowPosOnTerminal();
-                await waitForSeconds(5);
-
-                const noOfLines =
-                    levels[loggerConsoleLevel] >= levels.trace
-                        ? inLoopRowAFterQuestion - inLoopRowBeforeQuestion + 2
-                        : inLoopRowAFterQuestion - inLoopRowBeforeQuestion;
-                clearLastLinesOnConsole(noOfLines);
-                await waitForSeconds(5);
-            } else {
-                lgif(`${questionOfKeyInYNToAddMoreBookmarks}: ${resultOfKeyInYNToAddMoreBookmarks.answer}`);
-            }
+        const resultOfKeyInYNToAddMoreBookmarksAnswer = await addMoreBookmarksOrAllotmentRemainingImagesPrompt(remainingBookmarksNotDownloadedLength);
+        if (!resultOfKeyInYNToAddMoreBookmarksAnswer) {
+            break;
         }
         const inLoopRowBeforeValidation = await getRowPosOnTerminal();
         // eslint-disable-next-line no-constant-condition

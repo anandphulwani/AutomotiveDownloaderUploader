@@ -3,10 +3,11 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import logSymbols from 'log-symbols';
+import beautify from 'json-beautify';
 
 /* eslint-disable import/extensions */
 import { moveDirOrFile, createDirAndMoveFileFromTempDirToDestination, getFileCountRecursively } from './filesystem.js';
-import { lgd, lgi, lgu } from './loggerandlocksupportive.js';
+import { lgc, lgd, lgi, lgif, lgu } from './loggerandlocksupportive.js';
 import Color from '../class/Colors.js';
 import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
@@ -15,6 +16,13 @@ import { getUsernameTrimmed } from './excelsupportive.js';
 import { config } from '../configs/config.js';
 import { instanceRunDateFormatted } from './datetime.js';
 import { zeroPad } from './stringformatting.js';
+import { getProjectLogsDirPath } from './projectpaths.js';
+import { getRowPosOnTerminal } from './terminal.js';
+import keyInYNWithTimeout from './keyInYNWithTimeout.js';
+import { printSectionSeperator } from './others.js';
+import { waitForSeconds } from './sleep.js';
+import { levels, loggerConsoleLevel } from './logger.js';
+import { clearLastLinesOnConsole } from './consolesupportive.js';
 /* eslint-enable import/extensions */
 
 async function getChecksumFromURL(url, hashAlgo, debug = false) {
@@ -135,4 +143,62 @@ function getCurrentLotDetails(lotIndex) {
     return { dealerFolderCntInLot, imagesQtyInLot };
 }
 
-export { getChecksumFromURL, downloadFileAndCompareWithChecksum, getCurrentLotDetails };
+function bookmarkNotAppended(returnObj, lotIndex, usernameBookmark, dealerLevelBookmarkName, vehicleBookmark) {
+    lgu('Bookmark not appended!');
+    if (config.isUpdateBookmarksOnceDone) {
+        try {
+            const bookmarksNotAppendFile = path.join(getProjectLogsDirPath(), 'bookmarksNotAppend.txt');
+            syncOperationWithErrorHandling(fs.appendFileSync, bookmarksNotAppendFile, `${'-'.repeat(120)}\n`);
+            syncOperationWithErrorHandling(
+                fs.appendFileSync,
+                bookmarksNotAppendFile,
+                `lotIndex: ${lotIndex}, usernameBookmark.name: ${usernameBookmark.name}, dealerLevelBookmarkName: ${dealerLevelBookmarkName}, \nvehicleBookmark.name: ${vehicleBookmark.name}, \nvehicleBookmark.url: ${vehicleBookmark.url}\n`
+            );
+
+            syncOperationWithErrorHandling(fs.appendFileSync, bookmarksNotAppendFile, `vehicleBookmark.guid: ${vehicleBookmark.guid}\n`);
+            syncOperationWithErrorHandling(
+                fs.appendFileSync,
+                bookmarksNotAppendFile,
+                `returnObj.bookmarkAppendMesg: ${returnObj.bookmarkAppendMesg}\n`
+            );
+            syncOperationWithErrorHandling(fs.appendFileSync, bookmarksNotAppendFile, `returnObj: ${beautify(returnObj, null, 3, 120)}\n`);
+            syncOperationWithErrorHandling(fs.appendFileSync, bookmarksNotAppendFile, `${'+'.repeat(120)}\n`);
+        } catch (err) {
+            lgc(err);
+        }
+    }
+}
+
+async function addMoreBookmarksOrAllotmentRemainingImagesPrompt(remainingBookmarksNotDownloadedLength) {
+    if (remainingBookmarksNotDownloadedLength === 0) {
+        const inLoopRowBeforeQuestion = await getRowPosOnTerminal();
+        const questionOfKeyInYNToAddMoreBookmarks = 'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
+        const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
+        if (!resultOfKeyInYNToAddMoreBookmarks.answer) {
+            return false;
+        }
+        if (resultOfKeyInYNToAddMoreBookmarks.isDefaultOption) {
+            printSectionSeperator(undefined, true);
+            const inLoopRowAFterQuestion = await getRowPosOnTerminal();
+            await waitForSeconds(5);
+
+            const noOfLines =
+                levels[loggerConsoleLevel] >= levels.trace
+                    ? inLoopRowAFterQuestion - inLoopRowBeforeQuestion + 2
+                    : inLoopRowAFterQuestion - inLoopRowBeforeQuestion;
+            clearLastLinesOnConsole(noOfLines);
+            await waitForSeconds(5);
+        } else {
+            lgif(`${questionOfKeyInYNToAddMoreBookmarks}: ${resultOfKeyInYNToAddMoreBookmarks.answer}`);
+        }
+    }
+    return true;
+}
+
+export {
+    getChecksumFromURL,
+    downloadFileAndCompareWithChecksum,
+    getCurrentLotDetails,
+    bookmarkNotAppended,
+    addMoreBookmarksOrAllotmentRemainingImagesPrompt,
+};
