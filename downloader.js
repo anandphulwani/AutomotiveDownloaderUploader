@@ -32,25 +32,25 @@ import commonInit from './functions/commonInit.js';
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
 
 try {
-await commonInit('downloader.js');
+    await commonInit('downloader.js');
 
-const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${instanceRunDateFormatted}`, 'Lot_');
-let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
-if (LotLastIndex === null) {
-    if (getLastLotDate() === instanceRunDateFormatted) {
-        LotLastIndex = parseInt(getLastLotNumber().substring(4), 10) + 1;
-    } else {
-        LotLastIndex = 1;
+    const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${instanceRunDateFormatted}`, 'Lot_');
+    let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
+    if (LotLastIndex === null) {
+        if (getLastLotDate() === instanceRunDateFormatted) {
+            LotLastIndex = parseInt(getLastLotNumber().substring(4), 10) + 1;
+        } else {
+            LotLastIndex = 1;
+        }
     }
-}
-LotIndexArray.pop();
+    LotIndexArray.pop();
 
-// eslint-disable-next-line no-restricted-syntax
-for (const LotIndexEle of LotIndexArray) {
-    const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
-    launchLotWindow(lotIndexToAllot);
-    sleep(3);
-}
+    // eslint-disable-next-line no-restricted-syntax
+    for (const LotIndexEle of LotIndexArray) {
+        const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
+        launchLotWindow(lotIndexToAllot);
+        sleep(3);
+    }
 
     let lastRunTime = Date.now();
     let lotIndex = LotLastIndex;

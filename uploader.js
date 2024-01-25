@@ -48,15 +48,15 @@ import commonInit from './functions/commonInit.js';
 
 const debug = false;
 try {
-await commonInit('uploader.js');
+    await commonInit('uploader.js');
 
-const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
-let reportJSONObj;
-let isDumbUploader = false;
-if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
-    lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Shifting to DUMB uploader mode.`);
-    isDumbUploader = true;
-}
+    const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
+    let reportJSONObj;
+    let isDumbUploader = false;
+    if (!syncOperationWithErrorHandling(fs.existsSync, reportJSONFilePath)) {
+        lge(`Todays report json file '${instanceRunDateFormatted}_report.json' was not created while allotment, Shifting to DUMB uploader mode.`);
+        isDumbUploader = true;
+    }
 
     let foundNewFoldersInMiddle;
     let lastRunTime = Date.now();
