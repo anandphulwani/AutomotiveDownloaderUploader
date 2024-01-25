@@ -1,10 +1,9 @@
 import { URL as URLparser } from 'url';
 
 /* eslint-disable import/extensions */
-import { instanceRunDateFormatted } from './functions/datetime.js';
 import { config } from './configs/config.js';
-import { getCredentialsForUsername, getLastLotDate, getLastLotNumber, getLotConfigPropertiesValues } from './functions/configsupportive.js';
-import { sleep, waitForSeconds } from './functions/sleep.js';
+import { getCredentialsForUsername, getLotConfigPropertiesValues } from './functions/configsupportive.js';
+import { waitForSeconds } from './functions/sleep.js';
 import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength } from './functions/bookmarksupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { gotoURL } from './functions/goto.js';
@@ -16,7 +15,6 @@ import {
 import { setCurrentDealerConfiguration } from './functions/excelsupportive.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText } from './functions/bookmarkvalidation.js';
-import { getListOfSubfoldersStartingWith } from './functions/filesystem.js';
 import { lge, lgi } from './functions/loggerandlocksupportive.js';
 import Color from './class/Colors.js';
 import LineSeparator from './class/LineSeparator.js';
