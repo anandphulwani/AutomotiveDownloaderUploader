@@ -49,11 +49,7 @@ export default async function commonInit(scriptFilename) {
             validateConfigFile() === 'error' ||
             (await downloadBookmarksFromSourceToProcessing()) || // Check whether config is valid, then only update bookmarks first and then run `validateBookmarksAndCheckCredentialsPresent`
             [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i);
-    } else if (scriptFilename === 'uploader.js') {
-        isValidationFailed =
-            validateConfigFile() === 'error' ||
-            [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i);
-    } else if (scriptFilename === 'contractors_folderTransferer.js') {
+    } else if (scriptFilename === 'uploader.js' || scriptFilename === 'contractors_folderTransferer.js') {
         isValidationFailed =
             validateConfigFile() === 'error' ||
             [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i);
