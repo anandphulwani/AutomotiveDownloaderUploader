@@ -35,6 +35,10 @@ import LineSeparator from '../class/LineSeparator.js';
 import LoggingPrefix from '../class/LoggingPrefix.js';
 import checkBrowserClosed from './browserclosed.js';
 import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
+import { printSectionSeperator } from './others.js';
+import keyInYNWithTimeout from './keyInYNWithTimeout.js';
+import { levels, loggerConsoleLevel } from './logger.js';
+import { clearLastLinesOnConsole } from './consolesupportive.js';
 /* eslint-enable import/extensions */
 
 function getFoldersInUploadingZone(debug = false) {
@@ -945,5 +949,33 @@ async function showUploadFilesAndPercentages(page, startingRow, totalUploadFiles
     debug ? lgtf('showUploadFilesAndPercentages: Out of the loop') : null;
 }
 
+async function uploadMoreBookmarksOrExitPrompt(uniqueIdOfFoldersInBothShiftedAndBookmarks, isDumbUploader) {
+    if (uniqueIdOfFoldersInBothShiftedAndBookmarks.length === 0) {
+        lgi(`No data present in the uploading zone.`, Color.green);
+        printSectionSeperator();
+        const questionOfKeyInYNToUploadMoreBookmarks = 'Do you want to upload more bookmarks(Y), or exit(N)?';
+        const resultOfKeyInYNToUploadMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToUploadMoreBookmarks, 25000, true);
+        if (!resultOfKeyInYNToUploadMoreBookmarks.answer) {
+            return false;
+        }
+        if (resultOfKeyInYNToUploadMoreBookmarks.isDefaultOption) {
+            printSectionSeperator(undefined, true);
+            await waitForSeconds(5);
+            const noOfLines = (levels[loggerConsoleLevel] >= levels.trace ? 4 : 2) + (isDumbUploader ? 5 : 0);
+            clearLastLinesOnConsole(noOfLines);
+            await waitForSeconds(5);
+        } else {
+            lgif(`${questionOfKeyInYNToUploadMoreBookmarks}: ${resultOfKeyInYNToUploadMoreBookmarks.answer}`);
+        }
+    }
+    return true;
+}
+
 // eslint-disable-next-line import/prefer-default-export
-export { typeOfVINPathAndOtherVars, getFoldersInUploadingZone, getFoldersInUploadingZoneWithUniqueIDs, uploadBookmarkURL };
+export {
+    typeOfVINPathAndOtherVars,
+    getFoldersInUploadingZone,
+    getFoldersInUploadingZoneWithUniqueIDs,
+    uploadBookmarkURL,
+    uploadMoreBookmarksOrExitPrompt,
+};
