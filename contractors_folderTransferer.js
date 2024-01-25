@@ -14,6 +14,7 @@ import { validateConfigFile } from './functions/configvalidation.js';
 import { validateDealerConfigurationExcelFile } from './functions/excelvalidation.js';
 import { validateBookmarksAndCheckCredentialsPresent } from './functions/bookmarkvalidation.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
+import commonInit from './functions/commonInit.js';
 /* eslint-enable import/extensions */
 
 /**
@@ -56,31 +57,7 @@ import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHa
  */
 
 const debug = false;
-/**
- *
- * Only make a single instance run of the script.
- *
- */
-try {
-    if (checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
-        lgwc('Lock already held, another instace is already running.');
-        process.exit(1);
-    }
-    syncOperationWithErrorHandling(lockSync, 'contractors_folderTransferer.js', { stale: 15000 });
-} catch (error) {
-    lgu('Unable to checkSync or lockSync.', error);
-    process.exit(1);
-}
-
-if (
-    validateConfigFile() === 'error' ||
-    [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i)
-) {
-    lge(`Please correct the above errors, in order to continue.`);
-    if (config.environment === 'production') {
-        process.exit(1);
-    }
-}
+await commonInit('contractors_folderTransferer.js');
 
 const headingOptions = {
     font: 'block', // font to use for the output

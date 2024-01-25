@@ -52,60 +52,11 @@ import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 import { checkInternetConnectivity } from './functions/networksupportive.js';
+import commonInit from './functions/commonInit.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
-/**
- *
- * Only make a single instance run of the script.
- *
- */
-try {
-    if (checkSync('uploader.js', { stale: 15000 })) {
-        lgwc('Lock already held, another instace is already running.');
-        process.exit(1);
-    }
-    syncOperationWithErrorHandling(lockSync, 'uploader.js', { stale: 15000 });
-} catch (error) {
-    lgu('Unable to checkSync or lockSync.', error);
-    process.exit(1);
-}
-
-if (config.environment === 'production') {
-    checkTimezone();
-    printSectionSeperator();
-
-    await checkTimeWithNTP();
-    printSectionSeperator();
-}
-autoCleanUpDatastoreZones();
-printSectionSeperator();
-
-if (
-    validateConfigFile() === 'error' ||
-    [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i)
-) {
-    lge(`Please correct the above errors, in order to continue.`);
-    if (config.environment === 'production') {
-        process.exit(1);
-    }
-}
-await checkCredentialsBlock();
-if (config.environment !== 'production') {
-    lge('Application currently not running in production mode, please switch to production mode immediately.');
-}
-
-if (config.environment === 'production' && !checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
-    const subprocess = spawn('FolderTransferer.exe', [], {
-        detached: true,
-        stdio: 'ignore',
-    });
-    subprocess.unref();
-}
-
-// await killChrome({
-//     includingMainProcess: true,
-// });
+await commonInit('uploader.js');
 
 const reportJSONFilePath = path.join(config.reportsJSONPath, instanceRunDateWODayFormatted, `${instanceRunDateFormatted}_report.json`);
 let reportJSONObj;

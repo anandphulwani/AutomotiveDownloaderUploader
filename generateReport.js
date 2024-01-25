@@ -43,28 +43,11 @@ import { printSectionSeperator } from './functions/others.js';
 import { zeroPad } from './functions/stringformatting.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 import { getUsernameTrimmed } from './functions/excelsupportive.js';
+import commonInit from './functions/commonInit.js';
 /* eslint-enable import/extensions */
 
 const debug = false;
-/**
- *
- * Only make a single instance run of the script.
- *
- */
-try {
-    if (checkSync('generateReport.js', { stale: 15000 })) {
-        lgwc('Lock already held, another instace is already running.');
-        process.exit(1);
-    }
-    syncOperationWithErrorHandling(lockSync, 'generateReport.js', { stale: 15000 });
-} catch (error) {
-    lgu('Unable to checkSync or lockSync.', error);
-    process.exit(1);
-}
-
-if (config.environment !== 'production') {
-    lge('Application currently not running in production mode, please switch to production mode immediately.');
-}
+await commonInit('generateReport.js');
 
 const rl = readline.createInterface({
     input: process.stdin,

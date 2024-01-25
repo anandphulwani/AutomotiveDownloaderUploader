@@ -13,6 +13,7 @@ import { levelToChalkColor } from './functions/loggerlogformats.js';
 import { getRowPosOnTerminal } from './functions/terminal.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
 import { config } from './configs/config.js';
+import commonInit from './functions/commonInit.js';
 
 /* eslint-enable import/extensions */
 
@@ -132,9 +133,7 @@ function askQuestionForHideByLogType() {
     return filterByLogType;
 }
 
-if (config.environment !== 'production') {
-    lge('Application currently not running in production mode, please switch to production mode immediately.');
-}
+await commonInit('errorSummary.js');
 
 let beforeQuestionPos = await getRowPosOnTerminal();
 

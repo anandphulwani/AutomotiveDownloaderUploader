@@ -33,58 +33,12 @@ import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHa
 import { getRowPosOnTerminal } from './functions/terminal.js';
 import { addMoreBookmarksOrAllotmentRemainingImagesPrompt, bookmarkNotAppended, getCurrentLotDetails } from './functions/download.js';
 import { launchLotWindow } from './functions/allotmentsupportive.js';
+import commonInit from './functions/commonInit.js';
 /* eslint-enable import/extensions */
-
-/**
- *
- * Only make a single instance run of the script.
- *
- */
-try {
-    if (checkSync('downloader.js', { stale: 15000 })) {
-        lgwc('Lock already held, another instace is already running.');
-        process.exit(1);
-    }
-    syncOperationWithErrorHandling(lockSync, 'downloader.js', { stale: 15000 });
-} catch (error) {
-    lgu('Unable to checkSync or lockSync.', error);
-    process.exit(1);
-}
-
-if (config.environment === 'production') {
-    checkTimezone();
-    printSectionSeperator();
-
-    await checkTimeWithNTP();
-    printSectionSeperator();
-}
-autoCleanUpDatastoreZones();
-printSectionSeperator();
 
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
 
-if (
-    validateConfigFile() === 'error' ||
-    (await downloadBookmarksFromSourceToProcessing()) || // Check whether config is valid, then only update bookmarks first and then run `validateBookmarksAndCheckCredentialsPresent`
-    [validateDealerConfigurationExcelFile() === 'error', validateBookmarksAndCheckCredentialsPresent() === 'error'].some((i) => i)
-) {
-    lge(`Please correct the above errors, in order to continue.`);
-    if (config.environment === 'production') {
-        process.exit(1);
-    }
-}
-await checkCredentialsBlock();
-if (config.environment !== 'production') {
-    lge('Application currently not running in production mode, please switch to production mode immediately.');
-}
-
-if (config.environment === 'production' && !checkSync('contractors_folderTransferer.js', { stale: 15000 })) {
-    const subprocess = spawn('FolderTransferer.exe', [], {
-        detached: true,
-        stdio: 'ignore',
-    });
-    subprocess.unref();
-}
+await commonInit('downloader.js');
 
 const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${instanceRunDateFormatted}`, 'Lot_');
 let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
