@@ -25,7 +25,7 @@ import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 import checkBrowserClosed from './functions/browserclosed.js';
 import { getRowPosOnTerminal } from './functions/terminal.js';
 import { addMoreBookmarksOrAllotmentRemainingImagesPrompt, bookmarkNotAppended, getCurrentLotDetails } from './functions/download.js';
-import { launchLotWindow } from './functions/allotmentsupportive.js';
+import { getLotLastIndex, launchAllPendingLotsWindow, launchLotWindow } from './functions/allotmentsupportive.js';
 import commonInit from './functions/commonInit.js';
 /* eslint-enable import/extensions */
 
@@ -33,27 +33,10 @@ import commonInit from './functions/commonInit.js';
 
 try {
     await commonInit('downloader.js');
-
-    const LotIndexArray = getListOfSubfoldersStartingWith(`${config.downloadPath}\\${instanceRunDateFormatted}`, 'Lot_');
-    let LotLastIndex = LotIndexArray.length > 0 ? parseInt(LotIndexArray[LotIndexArray.length - 1].substring(4), 10) : null;
-    if (LotLastIndex === null) {
-        if (getLastLotDate() === instanceRunDateFormatted) {
-            LotLastIndex = parseInt(getLastLotNumber().substring(4), 10) + 1;
-        } else {
-            LotLastIndex = 1;
-        }
-    }
-    LotIndexArray.pop();
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const LotIndexEle of LotIndexArray) {
-        const lotIndexToAllot = parseInt(LotIndexEle.substring(4), 10);
-        launchLotWindow(lotIndexToAllot);
-        sleep(3);
-    }
+    launchAllPendingLotsWindow();
 
     let lastRunTime = Date.now();
-    let lotIndex = LotLastIndex;
+    let lotIndex = getLotLastIndex();
     // eslint-disable-next-line no-constant-condition
     while (true) {
         const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength();
