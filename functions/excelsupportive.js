@@ -26,7 +26,11 @@ function getUsernameTrimmed(username) {
 
 function getSettingValueFromDC(filterBySettingName, filterBySettingValue, settingToExtract) {
     if (Array.isArray(dealerConfiguration) && dealerConfiguration.length === 0) {
-        return false;
+        return undefined;
+    }
+    const indexOfObject = dealerConfiguration.findIndex((object) => object[filterBySettingName] === filterBySettingValue);
+    if (indexOfObject === -1) {
+        return undefined;
     }
     const singleelement = dealerConfiguration.filter((a) => a[filterBySettingName] === filterBySettingValue)[0];
     const settingValues = singleelement[settingToExtract] !== undefined ? singleelement[settingToExtract].trim() : undefined;
@@ -65,16 +69,18 @@ function getDealerNameFromDC(dealerNumber) {
 
 function getDealerNameFromDCAsIs(dealerNumber) {
     const dealerNameAsIs = getSettingValueFromDCAsIs('Dealer Number', dealerNumber, 'Dealer Name');
-    if (dealerNameAsIs === false) {
-        return '';
+    if (dealerNameAsIs === undefined) {
+        lgu(`getDealerNameFromDCAsIs(dealerNumber): Empty value for dealerNumber: '${dealerNumber}' or dealerNumber doesn't exit.`);
+        process.exit(1);
     }
     return dealerNameAsIs;
 }
 
 function getAddTextToFolderNameFromDC(dealerNumber) {
     const addTextToFolderName = getSettingValueFromDC('Dealer Number', dealerNumber, 'Add text to folder name');
-    if (addTextToFolderName === undefined || addTextToFolderName === false) {
-        return '';
+    if (addTextToFolderName === undefined) {
+        lgu(`getAddTextToFolderNameFromDC(dealerNumber): Empty value for dealerNumber: '${dealerNumber}' or dealerNumber doesn't exit.`);
+        process.exit(1);
     }
     return addTextToFolderName;
 }
