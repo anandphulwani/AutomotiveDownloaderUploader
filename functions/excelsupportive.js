@@ -1,19 +1,37 @@
+import fs from 'fs';
+
 /* eslint-disable import/extensions */
+import { config } from '../configs/config.js';
+import ForceReadExcel from '../class/ForceReadExcel.js';
 import { readDealerConfigurationExcel, readDealerConfigurationFormatted } from './excel.js';
-import { lgu } from './loggerandlocksupportive.js';
+import { lge, lgu } from './loggerandlocksupportive.js';
+import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js';
 /* eslint-enable import/extensions */
 
 let dealerConfiguration = [];
 let dealerConfigurationAsIs = [];
 let currentActiveDealerConfigurationsUsername = '';
+const lastDealerExcelModifiedTime = {};
 
-function setCurrentDealerConfiguration(username) {
+function setCurrentDealerConfiguration(username, forceRead = ForceReadExcel.false) {
     const usernameTrimmed = getUsernameTrimmed(username);
-    if (getCurrentActiveDealerConfigurationsUsername() !== usernameTrimmed) {
-        dealerConfiguration = readDealerConfigurationFormatted(usernameTrimmed);
-        dealerConfigurationAsIs = readDealerConfigurationExcel(usernameTrimmed);
-        currentActiveDealerConfigurationsUsername = usernameTrimmed;
+    const excelFilename = `${config.dealerConfigurationPath}\\${usernameTrimmed}.xlsx`;
+    if (!syncOperationWithErrorHandling(fs.existsSync, excelFilename)) {
+        lge(`Dealer configuration excel file: ${excelFilename} does not exist, Please check.`);
+        process.exit(1);
     }
+    const excelFilenameStats = syncOperationWithErrorHandling(fs.statSync, excelFilename);
+
+    if (
+        (forceRead === ForceReadExcel.onlyIfModificationTimeChanges && lastDealerExcelModifiedTime[username] === String(excelFilenameStats.mtime)) ||
+        (forceRead === ForceReadExcel.false && getCurrentActiveDealerConfigurationsUsername() === usernameTrimmed)
+    ) {
+        return;
+    }
+    dealerConfiguration = readDealerConfigurationFormatted(usernameTrimmed);
+    dealerConfigurationAsIs = readDealerConfigurationExcel(usernameTrimmed);
+    currentActiveDealerConfigurationsUsername = usernameTrimmed;
+    lastDealerExcelModifiedTime[username] = String(excelFilenameStats.mtime);
 }
 
 function getCurrentActiveDealerConfigurationsUsername() {
