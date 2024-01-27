@@ -145,6 +145,10 @@ function getBooleanValueFromDC(dealerNumber, columnName) {
     return undefined;
 }
 
+function getDealerObjByDealerNumber(dealerNumber) {
+    return dealerConfiguration.filter((a) => a['Dealer Number'] === dealerNumber)[0];
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     getCurrentActiveDealerConfigurationsUsername,
@@ -160,4 +164,5 @@ export {
     getShiftOriginalFirstPositionToLastPositionFromDC,
     getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC,
     getLockTheImagesCheckMarkFromDC,
+    getDealerObjByDealerNumber,
 };
