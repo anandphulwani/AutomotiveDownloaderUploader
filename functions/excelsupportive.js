@@ -88,11 +88,7 @@ function getAddTextToFolderNameByUsernameFromDC(dealerNumber, username) {
 }
 
 function getAllDealerNumbers() {
-    const allDealerNumbers = dealerConfiguration.map((item) => item['Dealer Number']);
-    if (allDealerNumbers === false) {
-        return '';
-    }
-    return allDealerNumbers;
+    return dealerConfiguration.map((item) => item['Dealer Number']);
 }
 
 function getDeleteOriginalFromDC(dealerNumber) {
