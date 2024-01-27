@@ -3,9 +3,59 @@ import { config } from '../configs/config.js';
 import { readDealerConfigurationExcel } from './excel.js';
 import { allTrimStringArray, trimMultipleSpacesInMiddleIntoOneArray, trimSingleSpaceInMiddleArray, removeDuplicates } from './stringformatting.js';
 import { lgd, lge, lgw } from './loggerandlocksupportive.js';
-import { getUsernameTrimmed } from './excelsupportive.js';
+import { getDealerObjByDealerNumber, getUsernameTrimmed } from './excelsupportive.js';
 import ValidationResult from '../class/ValidationResult.js';
 /* eslint-enable import/extensions */
+
+function validateDealerConfigurationExcelFileForDealerNumber(dealerNumber, username) {
+    const usernameTrimmed = username;
+    const dealerObj = getDealerObjByDealerNumber(dealerNumber);
+    if (dealerObj === undefined) {
+        return false;
+    }
+
+    if (
+        validateDealerConfigurationExcelFileColumnDealerNumber(usernameTrimmed, [dealerObj['Dealer Number']], 'Dealer Number', false) !==
+            ValidationResult.SUCCESS ||
+        validateDealerConfigurationExcelFileColumnDealerName(usernameTrimmed, [dealerObj['Dealer Name']], 'Dealer Name', false) !==
+            ValidationResult.SUCCESS ||
+        validateDealerConfigurationExcelFileColumnImageNumbersToDownload(
+            usernameTrimmed,
+            [dealerObj['Image numbers to download']],
+            'Image numbers to download',
+            false
+        ) !== ValidationResult.SUCCESS ||
+        validateDealerConfigurationExcelFileColumnAddTextToFolderName(
+            usernameTrimmed,
+            [dealerObj['Add text to folder name']],
+            'Add text to folder name',
+            false
+        ) !== ValidationResult.SUCCESS ||
+        validateDealerConfigurationExcelFileColumnBooleanOnly(usernameTrimmed, [dealerObj['Delete original']], 'Delete original', false) !==
+            ValidationResult.SUCCESS ||
+        validateDealerConfigurationExcelFileColumnBooleanOnly(
+            usernameTrimmed,
+            [dealerObj['Shift original 1st position to last position']],
+            'Shift original 1st position to last position',
+            false
+        ) !== ValidationResult.SUCCESS ||
+        validateDealerConfigurationExcelFileColumnBooleanOnly(
+            usernameTrimmed,
+            [dealerObj['Put 1st edited images in the last position also']],
+            'Put 1st edited images in the last position also',
+            false
+        ) !== ValidationResult.SUCCESS ||
+        validateDealerConfigurationExcelFileColumnBooleanOrBlankOnly(
+            usernameTrimmed,
+            dealerObj['Lock the image (check mark)'] === undefined ? [] : [dealerObj['Lock the image (check mark)']],
+            'Lock the image (check mark)',
+            false
+        ) !== ValidationResult.SUCCESS
+    ) {
+        return false;
+    }
+    return true;
+}
 
 function validateDealerConfigurationExcelFile(debug = false) {
     debug ? lgd(`Validating excel file: Executing.`) : null;
@@ -350,4 +400,8 @@ function checkForNumbersAndCommaOnlyInArray(usernameTrimmed, data, columnName, i
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { validateDealerConfigurationExcelFileColumnDealerNumber, validateDealerConfigurationExcelFile };
+export {
+    validateDealerConfigurationExcelFileForDealerNumber,
+    validateDealerConfigurationExcelFileColumnDealerNumber,
+    validateDealerConfigurationExcelFile,
+};
