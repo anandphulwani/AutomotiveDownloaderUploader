@@ -39,11 +39,11 @@ function getSettingValueFromDC(filterBySettingName, filterBySettingValue, settin
 
 function getSettingValueFromDCAsIs(filterBySettingName, filterBySettingValue, settingToExtract) {
     if (Array.isArray(dealerConfigurationAsIs) && dealerConfigurationAsIs.length === 0) {
-        return false;
+        return undefined;
     }
     const indexOfObject = dealerConfigurationAsIs.findIndex((object) => object[filterBySettingName] === filterBySettingValue);
     if (indexOfObject === -1) {
-        return false;
+        return undefined;
     }
     const singleelement = dealerConfigurationAsIs[indexOfObject];
     const settingValues = singleelement[settingToExtract];
@@ -51,18 +51,19 @@ function getSettingValueFromDCAsIs(filterBySettingName, filterBySettingValue, se
 }
 
 function getImageNumbersToDownloadFromDC(dealerNumber) {
-    let imageNumbersToDownload = getSettingValueFromDC('Dealer Number', dealerNumber, 'Image numbers to download');
-    if (imageNumbersToDownload === false) {
-        return '';
+    const imageNumbersToDownload = getSettingValueFromDC('Dealer Number', dealerNumber, 'Image numbers to download');
+    if (imageNumbersToDownload === undefined) {
+        lgu(`getImageNumbersToDownloadFromDC(dealerNumber): Empty value for dealerNumber: '${dealerNumber}' or dealerNumber doesn't exit.`);
+        process.exit(1);
     }
-    imageNumbersToDownload = imageNumbersToDownload.split(',');
-    return imageNumbersToDownload;
+    return imageNumbersToDownload.split(',');
 }
 
 function getDealerNameFromDC(dealerNumber) {
     const dealerName = getSettingValueFromDC('Dealer Number', dealerNumber, 'Dealer Name');
-    if (dealerName === false) {
-        return '';
+    if (dealerName === undefined) {
+        lgu(`getDealerNameFromDC(dealerNumber): Empty value for dealerNumber: '${dealerNumber}' or dealerNumber doesn't exit.`);
+        process.exit(1);
     }
     return dealerName;
 }
