@@ -153,6 +153,19 @@ function getLockTheImagesCheckMarkFromDC(dealerNumber) {
     process.exit(1);
 }
 
+function getBooleanValueFromDC(dealerNumber, columnName) {
+    const booleanValue = getSettingValueFromDC('Dealer Number', dealerNumber, columnName);
+    if (booleanValue !== undefined && typeof booleanValue === 'string') {
+        if (booleanValue.toLowerCase().trim() === 'yes') {
+            return true;
+        }
+        if (booleanValue.toLowerCase().trim() === 'no') {
+            return false;
+        }
+    }
+    return undefined;
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     getCurrentActiveDealerConfigurationsUsername,
