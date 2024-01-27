@@ -492,7 +492,7 @@ async function uploadImagesFromFolder(page, uniqueIdElement, uniqueIdFolderPath,
     );
     debug ? lgtf(`Current ImagesAreLockedFromWeb: ${imagesAreLockedFromWeb}`) : null;
 
-    if (lockTheImagesCheckMarkFromDC !== null && lockTheImagesCheckMarkFromDC !== imagesAreLockedFromWeb) {
+    if (lockTheImagesCheckMarkFromDC !== undefined && lockTheImagesCheckMarkFromDC !== imagesAreLockedFromWeb) {
         debug
             ? lgtf(`clickOnButton: lockTheImagesCheckMarkFromDC: ${lockTheImagesCheckMarkFromDC}, imagesAreLockedFromWeb : ${imagesAreLockedFromWeb}`)
             : null;
