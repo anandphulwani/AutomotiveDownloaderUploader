@@ -107,7 +107,7 @@ function getAddTextToFolderNameFromDC(dealerNumber) {
 function getAddTextToFolderNameByUsernameFromDC(dealerNumber, username) {
     const usernameTrimmed = getUsernameTrimmed(username);
     if (getCurrentActiveDealerConfigurationsUsername() !== usernameTrimmed) {
-        setCurrentDealerConfiguration(usernameTrimmed);
+        setCurrentDealerConfiguration(usernameTrimmed, ForceReadExcel.onlyIfModificationTimeChanges);
     }
     return getAddTextToFolderNameFromDC(dealerNumber);
 }
