@@ -318,27 +318,6 @@ function checkForNumbersAndCommaOnlyInArray(usernameTrimmed, data, columnName) {
     });
     return returnVal;
 }
-/**
- *
- * Status can be set to success, warn, error
- * Default status is success,
- * Once set to warn, it cannot be set back to success
- * Once set to error, it cannot be set back to warn or success
- *
- */
-function setResultStatus(statusToSet) {
-    if (statusToSet === 'success') {
-        // No point in setting status to success, since it is default value,
-        // and once the value is change to warn or error, there is no reverting back
-        return;
-    }
-    if (statusToSet === 'warn' && resultStatus === 'error') {
-        // If statusToSet is being set to warn, but resultStatus is already error
-        // then no reverting back to warn.
-        return;
-    }
-    resultStatus = statusToSet;
-}
 
 // eslint-disable-next-line import/prefer-default-export
 export { validateDealerConfigurationExcelFileColumnDealerNumber, validateDealerConfigurationExcelFile };
