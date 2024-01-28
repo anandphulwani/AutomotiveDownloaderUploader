@@ -107,7 +107,7 @@ try {
             /**
              * Read chrome bookmarks from chrome browser
              */
-            const allUsernamesBookmarks = getAllUsernamesBookmarks();
+            const allUsernamesBookmarks = validateAllBookmarksAndReturnValidatedBookmarks(false);
 
             let page = false;
             let browser = false;

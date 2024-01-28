@@ -38,7 +38,7 @@ try {
             /**
              * Read chrome bookmarks from chrome browser
              */
-            const allUsernamesBookmarks = getAllUsernamesBookmarks();
+            const allUsernamesBookmarks = validateAllBookmarksAndReturnValidatedBookmarks(false);
             let urlsDownloaded = getUrlsDownloaded();
 
             /**
