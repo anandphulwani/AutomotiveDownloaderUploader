@@ -7,6 +7,7 @@ import { lge } from './loggerandlocksupportive.js';
 import { clearLastLinesOnConsole } from './consolesupportive.js';
 import { getRowPosOnTerminal } from './terminal.js';
 import { validateConfigFile } from './configvalidation.js';
+import ValidationResult from '../class/ValidationResult.js';
 /* eslint-enable import/extensions */
 
 async function waitForValidationErrorsToResolve(scriptFilename, isInitialRun) {
@@ -23,9 +24,11 @@ async function waitForValidationErrorsToResolve(scriptFilename, isInitialRun) {
                 await downloadBookmarksFromSourceToProcessing();
             }
             if (scriptFilename === 'downloader.js' || scriptFilename === 'uploader.js' || scriptFilename === 'contractors_folderTransferer.js') {
+                const isValidateBookmarksAndCheckCredentialsPresent = validateBookmarksAndCheckCredentialsPresent(true);
                 isValidationFailed = [
                     validateDealerConfigurationExcelFile() === 'error',
-                    validateBookmarksAndCheckCredentialsPresent(true) === 'error',
+                    isValidateBookmarksAndCheckCredentialsPresent[0] !== undefined &&
+                        isValidateBookmarksAndCheckCredentialsPresent[0] === ValidationResult.ERROR,
                 ].some((i) => i);
             }
         }
