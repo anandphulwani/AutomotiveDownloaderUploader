@@ -7,7 +7,7 @@ import { getDealerObjByDealerNumber, getUsernameTrimmed } from './excelsupportiv
 import ValidationResult from '../class/ValidationResult.js';
 /* eslint-enable import/extensions */
 
-function validateDealerConfigurationExcelFileForDealerNumber(dealerNumber, username) {
+function validateExcelValuesForDealerNumber(dealerNumber, username) {
     const usernameTrimmed = username;
     const dealerObj = getDealerObjByDealerNumber(dealerNumber);
     if (dealerObj === undefined) {
@@ -400,8 +400,4 @@ function checkForNumbersAndCommaOnlyInArray(usernameTrimmed, data, columnName, i
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export {
-    validateDealerConfigurationExcelFileForDealerNumber,
-    validateDealerConfigurationExcelFileColumnDealerNumber,
-    validateDealerConfigurationExcelFile,
-};
+export { validateExcelValuesForDealerNumber, validateDealerConfigurationExcelFileColumnDealerNumber, validateDealerConfigurationExcelFile };
