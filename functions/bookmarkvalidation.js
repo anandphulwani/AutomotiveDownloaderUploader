@@ -6,7 +6,7 @@ import { lgd, lge, lgw } from './loggerandlocksupportive.js';
 import ValidationResult from '../class/ValidationResult.js';
 /* eslint-enable import/extensions */
 
-function validateBookmarksAndCheckCredentialsPresent(isPrintErrorOrWarn, debug = false) {
+function validateAllBookmarksAndReturnValidatedBookmarks(isPrintErrorOrWarn, debug = false) {
     let validationStatus = ValidationResult.SUCCESS;
     debug ? lgd(`Validating bookmarks and checking if credentials are present: Executing.`) : null;
     const allUsernamesBookmarks = getAllUsernamesBookmarks();
@@ -120,4 +120,4 @@ function checkForMultipleSpacesInMiddleOfBookmarkName(dealerLevelBookmarkName, u
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { validateBookmarksAndCheckCredentialsPresent, validateBookmarkNameText };
+export { validateAllBookmarksAndReturnValidatedBookmarks, validateBookmarkNameText };

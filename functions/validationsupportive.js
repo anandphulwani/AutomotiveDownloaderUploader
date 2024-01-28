@@ -2,7 +2,7 @@
 import { waitForSeconds } from './sleep.js';
 import { downloadBookmarksFromSourceToProcessing } from './bookmark.js';
 import { validateDealerConfigurationExcelFile } from './excelvalidation.js';
-import { validateBookmarksAndCheckCredentialsPresent } from './bookmarkvalidation.js';
+import { validateAllBookmarksAndReturnValidatedBookmarks } from './bookmarkvalidation.js';
 import { lge } from './loggerandlocksupportive.js';
 import { clearLastLinesOnConsole } from './consolesupportive.js';
 import { getRowPosOnTerminal } from './terminal.js';
@@ -24,11 +24,11 @@ async function waitForValidationErrorsToResolve(scriptFilename, isInitialRun) {
                 await downloadBookmarksFromSourceToProcessing();
             }
             if (scriptFilename === 'downloader.js' || scriptFilename === 'uploader.js' || scriptFilename === 'contractors_folderTransferer.js') {
-                const isValidateBookmarksAndCheckCredentialsPresent = validateBookmarksAndCheckCredentialsPresent(true);
+                const isValidateAllBookmarksAndReturnValidatedBookmarks = validateAllBookmarksAndReturnValidatedBookmarks(true);
                 isValidationFailed = [
                     validateDealerConfigurationExcelFile() === 'error',
-                    isValidateBookmarksAndCheckCredentialsPresent[0] !== undefined &&
-                        isValidateBookmarksAndCheckCredentialsPresent[0] === ValidationResult.ERROR,
+                    isValidateAllBookmarksAndReturnValidatedBookmarks[0] !== undefined &&
+                        isValidateAllBookmarksAndReturnValidatedBookmarks[0] === ValidationResult.ERROR,
                 ].some((i) => i);
             }
         }
