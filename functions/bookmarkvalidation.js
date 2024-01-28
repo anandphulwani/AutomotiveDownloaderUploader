@@ -46,7 +46,9 @@ function validateBookmarksAndCheckCredentialsPresent(isPrintErrorOrWarn, debug =
         let dealerLevelBookmarkIndex = 0;
         // eslint-disable-next-line no-restricted-syntax
         for (const dealerLevelBookmark of dealerLevelBookmarks) {
-            const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name, isPrintErrorOrWarn)[1];
+            const validateBookmarkNameTextResult = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name, isPrintErrorOrWarn);
+            validationStatus = Math.max(validationStatus, validateBookmarkNameTextResult[0]);
+            const dealerLevelBookmarkName = validateBookmarkNameTextResult[1];
             if (!allDealerNumbers.includes(dealerLevelBookmarkName)) {
                 validationStatus = ValidationResult.ERROR;
                 isPrintErrorOrWarn
