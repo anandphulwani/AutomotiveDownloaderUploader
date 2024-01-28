@@ -127,7 +127,7 @@ try {
                     foundNewFoldersInMiddle = !isDumbUploader && checkIfFoldersPresentInFinishersUploadingZoneDir() ? true : foundNewFoldersInMiddle;
                     if (foundNewFoldersInMiddle) break;
                     debug ? lgd(`dealerLevelBookmark.name :${dealerLevelBookmark.name}`) : null;
-                    const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
+                    const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name, true)[1];
                     const uniqueIdArr = getUniqueIdPairsFromDealerBookmarkName(dealerLevelBookmark.name);
 
                     const uniqueIdArrCommonInUploadDiretoryAndBookmarksName = uniqueIdArr.filter((value) =>

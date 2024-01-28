@@ -30,7 +30,7 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
         const dealerLevelBookmarkNames = [];
         // eslint-disable-next-line no-restricted-syntax
         for (const dealerLevelBookmark of dealerLevelBookmarks) {
-            const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name);
+            const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name, isPrintErrorOrWarn)[1];
             if (!allDealerNumbers.includes(dealerLevelBookmarkName)) {
                 validationStatus = 'error';
                 lge(
@@ -49,29 +49,43 @@ function validateBookmarksAndCheckCredentialsPresent(debug = false) {
     return validationStatus;
 }
 
-function validateBookmarkNameText(dealerLevelBookmarkName, username) {
+function validateBookmarkNameText(dealerLevelBookmarkName, username, isPrintErrorOrWarn) {
+    let validationStatus = ValidationResult.SUCCESS;
     dealerLevelBookmarkName = dealerLevelBookmarkName.includes(' |#| ') ? dealerLevelBookmarkName.split(' |#| ')[0] : dealerLevelBookmarkName;
-    checkForSpaceInBeginOrEndOfBookmarkName(dealerLevelBookmarkName, username);
+    validationStatus = Math.max(validationStatus, checkForSpaceInBeginOrEndOfBookmarkName(dealerLevelBookmarkName, username, isPrintErrorOrWarn));
     dealerLevelBookmarkName = allTrimString(dealerLevelBookmarkName);
-    checkForMultipleSpacesInMiddleOfBookmarkName(dealerLevelBookmarkName, username);
+    validationStatus = Math.max(
+        validationStatus,
+        checkForMultipleSpacesInMiddleOfBookmarkName(dealerLevelBookmarkName, username, isPrintErrorOrWarn)
+    );
     dealerLevelBookmarkName = trimMultipleSpacesInMiddleIntoOne(dealerLevelBookmarkName);
-    return dealerLevelBookmarkName;
+    return [validationStatus, dealerLevelBookmarkName];
 }
 
-function checkForSpaceInBeginOrEndOfBookmarkName(dealerLevelBookmarkName, username) {
+function checkForSpaceInBeginOrEndOfBookmarkName(dealerLevelBookmarkName, username, isPrintErrorOrWarn) {
+    let validationStatus = ValidationResult.SUCCESS;
     if (checkForSpaceInBeginOrEnd(dealerLevelBookmarkName)) {
-        lgw(
-            `Under bookmark for user '${username}' in dealer folder '${dealerLevelBookmarkName}', found space(s) in beginning and/or the end of bookmark name.`
-        );
+        if (isPrintErrorOrWarn) {
+            lgw(
+                `Under bookmark for user '${username}' in dealer folder '${dealerLevelBookmarkName}', found space(s) in beginning and/or the end of bookmark name.`
+            );
+        }
+        validationStatus = ValidationResult.WARN;
     }
+    return validationStatus;
 }
 
-function checkForMultipleSpacesInMiddleOfBookmarkName(dealerLevelBookmarkName, username) {
+function checkForMultipleSpacesInMiddleOfBookmarkName(dealerLevelBookmarkName, username, isPrintErrorOrWarn) {
+    let validationStatus = ValidationResult.SUCCESS;
     if (checkForMultipleSpacesInMiddle(dealerLevelBookmarkName)) {
-        lgw(
-            `Under bookmark for user '${username}' in dealer folder '${dealerLevelBookmarkName}', found multiple consecutive space in middle of bookmark name.`
-        );
+        if (isPrintErrorOrWarn) {
+            lgw(
+                `Under bookmark for user '${username}' in dealer folder '${dealerLevelBookmarkName}', found multiple consecutive space in middle of bookmark name.`
+            );
+        }
+        validationStatus = ValidationResult.WARN;
     }
+    return validationStatus;
 }
 
 // eslint-disable-next-line import/prefer-default-export
