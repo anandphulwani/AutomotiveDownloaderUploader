@@ -2,7 +2,11 @@
 import { config } from './configs/config.js';
 import { getCredentialsForUsername, getLotConfigPropertiesValues } from './functions/configsupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
-import { getAllUsernamesBookmarks, getRemainingBookmarksNotDownloadedLength, getUrlsDownloaded } from './functions/bookmarksupportive.js';
+import {
+    getRemainingBookmarksNotDownloadedLength,
+    getUrlsDownloaded,
+    validateAllBookmarksAndReturnValidatedBookmarks,
+} from './functions/bookmarksupportive.js';
 import { initBrowserAndGetPage, loginCredentials, getCurrentUser } from './functions/browsersupportive.js';
 import { gotoURL } from './functions/goto.js';
 import { handleBookmarkURL, replaceBookmarksElementByGUIDAndWriteToBookmarksFile } from './functions/bookmark.js';

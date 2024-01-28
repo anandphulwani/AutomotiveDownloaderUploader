@@ -8,9 +8,9 @@ import { config } from './configs/config.js';
 import { lge, lgi, lgd, lgwc, lgw, lgcf } from './functions/loggerandlocksupportive.js';
 import { waitForSeconds } from './functions/sleep.js';
 import {
-    getAllUsernamesBookmarks,
     getRemainingBookmarksNotDownloadedLength,
     getUniqueIDsOfBookmarkFoldersAllotted,
+    validateAllBookmarksAndReturnValidatedBookmarks,
 } from './functions/bookmarksupportive.js';
 import { gotoURL } from './functions/goto.js';
 import { getUniqueIdPairsFromDealerBookmarkName } from './functions/bookmark.js';

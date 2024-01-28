@@ -2,12 +2,12 @@
 import { waitForSeconds } from './sleep.js';
 import { downloadBookmarksFromSourceToProcessing } from './bookmark.js';
 import { validateDealerConfigurationExcelFile } from './excelvalidation.js';
-import { validateAllBookmarksAndReturnValidatedBookmarks } from './bookmarkvalidation.js';
 import { lge } from './loggerandlocksupportive.js';
 import { clearLastLinesOnConsole } from './consolesupportive.js';
 import { getRowPosOnTerminal } from './terminal.js';
 import { validateConfigFile } from './configvalidation.js';
 import ValidationResult from '../class/ValidationResult.js';
+import { validateAllBookmarksAndReturnValidatedBookmarks } from './bookmarksupportive.js';
 /* eslint-enable import/extensions */
 
 async function waitForValidationErrorsToResolve(scriptFilename, isInitialRun) {
