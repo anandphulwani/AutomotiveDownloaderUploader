@@ -14,6 +14,7 @@ import { decrypt, encrypt } from './encryptdecrypt.js';
 import { initBrowserAndGetPage, loginCredentials } from './browsersupportive.js';
 import { getCredentialsForUsername, setCredentialsKeysValue } from './configsupportive.js';
 import Color from '../class/Colors.js';
+import ValidationResult from '../class/ValidationResult.js';
 /* eslint-enable import/extensions */
 
 const currentConfigParams = [
@@ -74,7 +75,7 @@ function splitObjIntoTwoByCondition(configObj, conditionFunction) {
 
 function validateConfigFile(debug = false) {
     debug ? lgd(`Validating config file: Executing.`) : null;
-    let validationStatus = 'success';
+    let validationStatus = ValidationResult.SUCCESS;
 
     /**
      * Check normal, type validations
@@ -87,11 +88,11 @@ function validateConfigFile(debug = false) {
 
     if (missingConfigKeys.length > 0) {
         lge(`Config's missing parameters: '${missingConfigKeys.join(', ')}', please define them.`);
-        validationStatus = 'error';
+        validationStatus = ValidationResult.ERROR;
     }
     if (additionalConfigKeys.length > 0) {
         lge(`Config's additional parameters: '${additionalConfigKeys.join(', ')}', please remove them.`);
-        validationStatus = 'error';
+        validationStatus = ValidationResult.ERROR;
     }
     /* #endregion */
 
@@ -111,10 +112,10 @@ function validateConfigFile(debug = false) {
         // Check if its string
         if (typeof configsValue !== 'string') {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (configsValue !== '' && Number.isNaN(Number(configsValue))) {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) is not a number, inside string literal i.e. ' and '.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
     }
     /* #endregion */
@@ -132,7 +133,7 @@ function validateConfigFile(debug = false) {
         // Check if its string
         if (typeof configsValue !== 'string') {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (configsKey === 'lotLastRunNumber' && configsValue !== '') {
             if (
                 configsValue.length !== 6 ||
@@ -142,14 +143,14 @@ function validateConfigFile(debug = false) {
                 lge(
                     `Config's '${configsKey}': Invalid value (${configsValue}) which is not a valid value which should start with 'Lot_' and end with two digit number.`
                 );
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
         } else if (configsKey === 'lotLastRunDate' && configsValue !== '') {
             if (configsValue.length !== 10 || !isValid(parse(configsValue, 'yyyy-MM-dd', new Date()))) {
                 lge(
                     `Config's '${configsKey}': Invalid value (${configsValue}) which is not a valid value which should be date in 'YYYY-MM-DD' format.`
                 );
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
         }
     }
@@ -165,12 +166,12 @@ function validateConfigFile(debug = false) {
         // Check if its string
         if (typeof configsValue !== 'string') {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (configsValue !== 'production' && configsValue !== 'development') {
             lge(
                 `Config's '${configsKey}': Invalid value (${configsValue}) which is not a valid value, valid value can be either 'production' or 'development'.`
             );
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
     }
     /* #endregion */
@@ -185,10 +186,10 @@ function validateConfigFile(debug = false) {
         // Check if its string
         if (typeof configsValue !== 'string') {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (moment.tz.zone(configsValue) === null) {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not a valid value for timezone.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
     }
     /* #endregion */
@@ -208,10 +209,10 @@ function validateConfigFile(debug = false) {
             lge(
                 `Config's '${configsKey}': Invalid value (${configsValue}) which should be number and should not be enclosed in string literal i.e ' and '.`
             );
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (!configsValue > 0) {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which should be valid numeric value greater than 0.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
     }
     /* #endregion */
@@ -226,20 +227,20 @@ function validateConfigFile(debug = false) {
         // Check if its string
         if (typeof configsValue !== 'string') {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (!configsValue.startsWith('https://') && !configsValue.startsWith('http://')) {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which should be a domain starting with 'https://' or 'http://'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (configsValue.endsWith('/')) {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which should be a domain and not ending with '/'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else {
             try {
                 // eslint-disable-next-line no-new
                 new URL(configsValue);
             } catch (error) {
                 lge(`Config's '${configsKey}': Invalid value (${configsValue}) which should be a proper domain name.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
         }
     }
@@ -254,7 +255,7 @@ function validateConfigFile(debug = false) {
     for (const [configsKey, configsValue] of Object.entries(filteredConfigByKeysTypeObj)) {
         if (!(typeof configsValue === 'object' && configsValue !== null && !Array.isArray(configsValue))) {
             lge(`Config's '${configsKey}': It should be only an object, i.e. values should be inside '{' and '}'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
         const keys = Object.keys(configsValue);
         const requiredKeys = ['headless', 'defaultViewport', 'protocolTimeout', 'executablePath', 'args'];
@@ -263,11 +264,11 @@ function validateConfigFile(debug = false) {
 
         if (missingKeys.length > 0) {
             lge(`Config's '${configsKey}': Missing parameters '${missingKeys.join(', ')}', Please define them.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
         if (additionalKeys.length > 0) {
             lge(`Config's '${configsKey}': Additional parameters '${additionalKeys.join(', ')}', Please remove them.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
 
         // eslint-disable-next-line no-restricted-syntax
@@ -275,45 +276,45 @@ function validateConfigFile(debug = false) {
             if (configsSubKey === 'headless' && typeof configsSubValue !== 'boolean') {
                 // For 'headless' validation
                 lge(`Config's '${configsKey}': '${configsSubKey}': Invalid value (${configsSubValue}) which should be either true or false.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             } else if (configsSubKey === 'defaultViewport' && configsSubValue !== null) {
                 // For 'defaultViewport' validation
                 lge(`Config's '${configsKey}': '${configsSubKey}': Invalid value (${configsSubValue}) which should be null.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             } else if (configsSubKey === 'protocolTimeout' && typeof configsSubValue !== 'number') {
                 // For 'protocolTimeout' validation
                 lge(
                     `Config's '${configsKey}': '${configsSubKey}': Invalid value (${configsSubValue}) which should be number and should not be enclosed in string literal i.e ' and '.`
                 );
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             } else if (configsSubKey === 'protocolTimeout' && !(configsSubValue >= 0)) {
                 // For 'protocolTimeout' validation
                 lge(
                     `Config's '${configsKey}': '${configsSubKey}': Invalid value (${configsSubValue}) which should be valid numeric value equal or greater than 0.`
                 );
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             } else if (configsSubKey === 'executablePath' && typeof configsSubValue !== 'string') {
                 // For 'executablePath' validation
                 lge(
                     `Config's '${configsKey}': '${configsSubKey}': Invalid value (${configsSubValue}) which is not enclosed in string literal i.e ' and '.`
                 );
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             } else if (configsSubKey === 'executablePath' && !syncOperationWithErrorHandling(fs.existsSync, configsSubValue)) {
                 // For 'executablePath' validation
                 lge(`Config's '${configsKey}': '${configsSubKey}': File '${configsSubValue}' does not exist.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             } else if (configsSubKey === 'args') {
                 // For 'args' validation
                 if (!Array.isArray(configsSubValue)) {
                     lge(`Config's '${configsKey}': '${configsSubKey}': Value is not an array, the value should be inside '[' and ']'.`);
-                    validationStatus = 'error';
+                    validationStatus = ValidationResult.ERROR;
                 } else {
                     // Check if the array is an array of string
                     const nonStringItems = configsSubValue.filter((item) => typeof item !== 'string');
                     if (nonStringItems.length > 0) {
                         const nonStringItemsStr = nonStringItems.join(', ');
                         lge(`Config's '${configsKey}': '${configsSubKey}': Invalid value (${nonStringItemsStr}) which is not string.`);
-                        validationStatus = 'error';
+                        validationStatus = ValidationResult.ERROR;
                     } else {
                         // Check if the array is an array of string starting with '--'
                         const nonDoubleDashItems = configsSubValue.filter((item) => !item.startsWith('--'));
@@ -322,21 +323,21 @@ function validateConfigFile(debug = false) {
                             lge(
                                 `Config's '${configsKey}': '${configsSubKey}': Invalid value (${nonDoubleDashItemsStr}) which doesnt start with '--'.`
                             );
-                            validationStatus = 'error';
+                            validationStatus = ValidationResult.ERROR;
                         } else {
                             // Check for --user-data-dir and its validity
                             const userDataDirArg = configsSubValue.find((arg) => arg.startsWith('--user-data-dir='));
                             if (!userDataDirArg) {
                                 lge(`Config's '${configsKey}': '${configsSubKey}': Value starting with '--user-data-dir=' is not found.`);
-                                validationStatus = 'error';
+                                validationStatus = ValidationResult.ERROR;
                             } else {
                                 const userDataDir = userDataDirArg.split('=')[1];
                                 if (!syncOperationWithErrorHandling(fs.existsSync, userDataDir)) {
                                     lge(`Config's '${configsKey}': '${configsSubKey}': '--user-data-dir=' Path does not exist.`);
-                                    validationStatus = 'error';
+                                    validationStatus = ValidationResult.ERROR;
                                 } else if (!syncOperationWithErrorHandling(fs.statSync, userDataDir).isDirectory()) {
                                     lge(`Config's '${configsKey}': '${configsSubKey}': '--user-data-dir=' Path exists, but is not a directory.`);
-                                    validationStatus = 'error';
+                                    validationStatus = ValidationResult.ERROR;
                                 }
                             }
                             // Validate --window-size if present
@@ -347,7 +348,7 @@ function validateConfigFile(debug = false) {
                                     lge(
                                         `Config's '${configsKey}': '${configsSubKey}': '--window-size=' values should be in format '--window-size=X,Y' where X and Y both are number and greater than 0.`
                                     );
-                                    validationStatus = 'error';
+                                    validationStatus = ValidationResult.ERROR;
                                 }
                             }
                         }
@@ -357,7 +358,7 @@ function validateConfigFile(debug = false) {
                             lge(
                                 `Config's '${configsKey}': '${configsSubKey}': Additional parameters '${invalidArgs.join(', ')}', Please remove them.`
                             );
-                            validationStatus = 'error';
+                            validationStatus = ValidationResult.ERROR;
                         }
                     }
                 }
@@ -378,7 +379,7 @@ function validateConfigFile(debug = false) {
     for (const [configsKey, configsValue] of Object.entries(filteredConfigByKeysTypeObj)) {
         if (!(typeof configsValue === 'object' && configsValue !== null && !Array.isArray(configsValue))) {
             lge(`Config's '${configsKey}': It should be only an object, i.e. values should be inside '{' and '}'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
         const keys = Object.keys(configsValue);
         const requiredKeys = ['shouldIncludeFolders'];
@@ -387,11 +388,11 @@ function validateConfigFile(debug = false) {
 
         if (missingKeys.length > 0) {
             lge(`Config's '${configsKey}': Missing parameters '${missingKeys.join(', ')}', Please define them.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
         if (additionalKeys.length > 0) {
             lge(`Config's '${configsKey}': Additional parameters '${additionalKeys.join(', ')}', Please remove them.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
 
         // eslint-disable-next-line no-restricted-syntax
@@ -399,7 +400,7 @@ function validateConfigFile(debug = false) {
             if (configsSubKey === 'shouldIncludeFolders' && typeof configsSubValue !== 'boolean') {
                 // For 'shouldIncludeFolders' validation
                 lge(`Config's '${configsKey}': '${configsSubKey}': Invalid value (${configsSubValue}) which should be either true or false.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
         }
     }
@@ -415,10 +416,10 @@ function validateConfigFile(debug = false) {
         // Check if its string
         if (typeof configsValue !== 'string') {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (configsValue.length !== 10 || !isValid(parse(configsValue, 'yyyy-MM-dd', new Date()))) {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not a valid value which should be date in 'YYYY-MM-DD' format.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
     }
     /* #endregion */
@@ -433,7 +434,7 @@ function validateConfigFile(debug = false) {
         // Check if its string
         if (typeof configsValue !== 'boolean') {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which should be either true or false.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
     }
     /* #endregion */
@@ -451,10 +452,10 @@ function validateConfigFile(debug = false) {
         // Check if its string
         if (typeof configsValue !== 'string') {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (!Object.keys(levels).includes(configsValue)) {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not one of the logging levels defined in the system.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
     }
     /* #endregion */
@@ -469,14 +470,14 @@ function validateConfigFile(debug = false) {
         // Check if its string
         if (typeof configsValue !== 'string') {
             lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not enclosed in string literal i.e ' and '.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else {
             try {
                 // eslint-disable-next-line no-new
                 new RegExp(configsValue);
             } catch (error) {
                 lge(`Config's '${configsKey}': Invalid value (${configsValue}) which is not a valid regex.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
         }
     }
@@ -492,7 +493,7 @@ function validateConfigFile(debug = false) {
         // Check if credentials is an array
         if (!Array.isArray(configsCredentials)) {
             lge(`Config's 'credentials': Value is not an array, the value should be inside '[' and ']'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
 
         // Check if the array is an array of objects
@@ -500,7 +501,7 @@ function validateConfigFile(debug = false) {
             lge(
                 `Config's 'credentials': Single credentials value inside the 'credentials' array should contain only objects, i.e. values should be inside '{' and '}'.`
             );
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
 
         const requiredKeys = ['username', 'password', 'passwordEncryted'];
@@ -514,18 +515,18 @@ function validateConfigFile(debug = false) {
 
             if (missingKeys.length > 0) {
                 lge(`Config's 'credentials': ${i + 1} block: Missing parameters '${missingKeys.join(', ')}', Please define them.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
             if (additionalKeys.length > 0) {
                 lge(`Config's 'credentials': ${i + 1} block: Additional parameters '${additionalKeys.join(', ')}', Please remove them.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
 
             const invalidValueKeys = requiredKeys.filter((key) => item[key] !== undefined && typeof item[key] !== 'string');
             for (let k = 0; k < invalidValueKeys.length; k++) {
                 const invalidValueKey = invalidValueKeys[k];
                 lge(`Config's 'credentials': ${i + 1} block: '${invalidValueKey}': Invalid value (${item[invalidValueKey]}) which is not string.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
 
             const emptyValueKeys = requiredKeys
@@ -534,7 +535,7 @@ function validateConfigFile(debug = false) {
             for (let k = 0; k < emptyValueKeys.length; k++) {
                 const emptyValueKey = emptyValueKeys[k];
                 lge(`Config's 'credentials': ${i + 1} block: '${emptyValueKey}': Empty value found.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
         }
     }
@@ -553,7 +554,7 @@ function validateConfigFile(debug = false) {
         // Check if ignoreBookmarkURLS is an array
         if (!Array.isArray(configsIgnoreBookmarkURLS)) {
             lge(`Config's 'ignoreBookmarkURLS': Value is not an array, the value should be inside '[' and ']'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
 
         // Check if the array is an array of objects
@@ -561,7 +562,7 @@ function validateConfigFile(debug = false) {
             lge(
                 `Config's 'ignoreBookmarkURLS': Single ignoreBookmarkURLS value inside the 'ignoreBookmarkURLS' array should contain only objects, i.e. values should be inside '{' and '}'.`
             );
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
 
         const requiredKeys = ['URLStartsWith', 'ignoreMesgInConsole', 'ignoreMesgInBookmark'];
@@ -575,11 +576,11 @@ function validateConfigFile(debug = false) {
 
             if (missingKeys.length > 0) {
                 lge(`Config's 'ignoreBookmarkURLS': ${i + 1} block: Missing parameters '${missingKeys.join(', ')}', Please define them.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
             if (additionalKeys.length > 0) {
                 lge(`Config's 'ignoreBookmarkURLS': ${i + 1} block: Additional parameters '${additionalKeys.join(', ')}', Please remove them.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
 
             const invalidValueKeys = requiredKeys.filter((key) => item[key] !== undefined && typeof item[key] !== 'string');
@@ -590,7 +591,7 @@ function validateConfigFile(debug = false) {
                         item[invalidValueKey]
                     }) which is not string.`
                 );
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
         }
     }
@@ -609,14 +610,14 @@ function validateConfigFile(debug = false) {
         // Check if urlCrawlingErrorsEligibleForRetrying, browserClosingErrors is an array
         if (!Array.isArray(configsValue)) {
             lge(`Config's '${configsKey}': Value is not an array, the value should be inside '[' and ']'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else {
             // Check if the array is an array of string or regex
             const nonStringOrRegexItems = configsValue.filter((item) => typeof item !== 'string' && !(item instanceof RegExp));
             if (nonStringOrRegexItems.length > 0) {
                 const nonStringOrRegexItemsStr = nonStringOrRegexItems.join(', ');
                 lge(`Config's '${configsKey}': Invalid value (${nonStringOrRegexItemsStr}) which is not string or a regex.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
         }
     }
@@ -633,10 +634,10 @@ function validateConfigFile(debug = false) {
     for (const [filePathKey, filePathValue] of Object.entries(filteredConfigByKeysTypeObj)) {
         if (typeof filePathValue !== 'string') {
             lge(`Config's '${filePathKey}': Invalid value (${filePathValue}) which is not string.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (!syncOperationWithErrorHandling(fs.existsSync, filePathValue)) {
             lge(`Config's '${filePathKey}': File '${filePathValue}' does not exist.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
     }
     /* #endregion */
@@ -650,7 +651,7 @@ function validateConfigFile(debug = false) {
     for (const [pathKey, pathValue] of Object.entries(filteredConfigByKeysTypeObj)) {
         if (typeof pathValue !== 'string') {
             lge(`Config's '${pathKey}': Invalid value (${pathValue}) which is not string.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else if (!syncOperationWithErrorHandling(fs.existsSync, pathValue)) {
             try {
                 makeDir(pathValue, true);
@@ -661,7 +662,7 @@ function validateConfigFile(debug = false) {
             }
             if (!syncOperationWithErrorHandling(fs.existsSync, pathValue)) {
                 lge(`Config's '${pathKey}': Folder '${pathValue}' does not exist, Unable to create it programmatically.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
         }
     }
@@ -679,12 +680,12 @@ function validateConfigFile(debug = false) {
         // Check if values is an array
         if (!Array.isArray(folderValue)) {
             lge(`Config's '${folderKey}': Value is not an array, the value should be inside '[' and ']'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else {
             const nonStringItems = folderValue.filter((item) => typeof item !== 'string');
             if (nonStringItems.length > 0) {
                 lge(`Config's '${folderKey}': Invalid value (${nonStringItems.join(', ')}) which is not string.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
         }
     }
@@ -700,13 +701,13 @@ function validateConfigFile(debug = false) {
         // Check if lot is an array
         if (!Array.isArray(configsLot)) {
             lge(`Config's 'lot': Value is not an array, the value should be inside '[' and ']'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
 
         // Check if the array is an array of objects
         if (!configsLot.every((item) => typeof item === 'object' && item !== null && !Array.isArray(item))) {
             lge(`Config's 'lot': Single lot value inside the 'lot' array should contain only objects, i.e. values should be inside '{' and '}'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         }
 
         // Check for specific keys and their valid values
@@ -715,21 +716,21 @@ function validateConfigFile(debug = false) {
             const keys = Object.keys(item);
             if (keys.length === 0) {
                 lge(`Config's 'lot' (${i + 1}): Empty block found.`);
-                validationStatus = 'error';
+                validationStatus = ValidationResult.ERROR;
             }
             for (let j = 0; j < keys.length; j++) {
                 const key = keys[j];
 
                 if (key !== 'minimumDealerFoldersForEachContractors' && key !== 'imagesQty') {
                     lge(`Config's 'lot' (${i + 1}): Invalid key '${key}' found.`);
-                    validationStatus = 'error';
+                    validationStatus = ValidationResult.ERROR;
                 }
 
                 if (key === 'minimumDealerFoldersForEachContractors') {
                     const value = item[key];
                     if (value !== false && (typeof value !== 'number' || value < 1)) {
                         lge(`Config's 'lot' (${i + 1}): Invalid value (${value}) for 'minimumDealerFoldersForEachContractors'.`);
-                        validationStatus = 'error';
+                        validationStatus = ValidationResult.ERROR;
                     }
                 }
 
@@ -737,7 +738,7 @@ function validateConfigFile(debug = false) {
                     const value = item[key];
                     if (typeof value !== 'number' || value < 0) {
                         lge(`Config's 'lot' (${i + 1}): Invalid value (${value}) for 'imagesQty'.`);
-                        validationStatus = 'error';
+                        validationStatus = ValidationResult.ERROR;
                     }
                 }
             }
@@ -755,7 +756,7 @@ function validateConfigFile(debug = false) {
         // Check if contractors is an object
         if (typeof configsContractors !== 'object' || configsContractors === null || Array.isArray(configsContractors)) {
             lge(`Config's 'contractors': Value is not an object, the value should be inside '{' and '}'.`);
-            validationStatus = 'error';
+            validationStatus = ValidationResult.ERROR;
         } else {
             const contractorNames = Object.keys(configsContractors);
 
@@ -763,7 +764,7 @@ function validateConfigFile(debug = false) {
             for (const [name, details] of Object.entries(configsContractors)) {
                 if (typeof name !== 'string') {
                     lge(`Config's 'contractors' name: '${name}' is not a string.`);
-                    validationStatus = 'error';
+                    validationStatus = ValidationResult.ERROR;
                 }
 
                 const requiredKeys = ['currentAllotted', 'normalThreshold', 'finisher'];
@@ -778,31 +779,31 @@ function validateConfigFile(debug = false) {
                 const invalidKeys = Object.keys(details).filter((key) => !allowedKeys.includes(key));
                 if (invalidKeys.length > 0) {
                     lge(`Config's 'contractors' name '${name}': Unexpected keys found in contractor block: ${invalidKeys.join(', ')}`);
-                    validationStatus = 'error';
+                    validationStatus = ValidationResult.ERROR;
                 }
 
                 // Check currentAllotted
                 if (typeof details.currentAllotted !== 'number' || details.currentAllotted < 0) {
                     lge(`Config's 'contractors' name '${name}': Invalid 'currentAllotted' (${details.currentAllotted}) value.`);
-                    validationStatus = 'error';
+                    validationStatus = ValidationResult.ERROR;
                 }
 
                 // Check normalThreshold
                 if (typeof details.normalThreshold !== 'number' || details.normalThreshold < -1) {
                     lge(`Config's 'contractors' name '${name}': Invalid 'normalThreshold' (${details.normalThreshold}) value.`);
-                    validationStatus = 'error';
+                    validationStatus = ValidationResult.ERROR;
                 }
 
                 // Check extraProcessingFolders
                 if ('extraProcessingFolders' in details) {
                     if (!Array.isArray(details.extraProcessingFolders)) {
                         lge(`Config's 'contractors' name '${name}': Value of 'extraProcessingFolders' is not an array.`);
-                        validationStatus = 'error';
+                        validationStatus = ValidationResult.ERROR;
                     } else {
                         const nonStringItems = details.extraProcessingFolders.filter((item) => typeof item !== 'string');
                         if (nonStringItems.length > 0) {
                             lge(`Config's 'contractors' name '${name}': Invalid 'extraProcessingFolders' (${nonStringItems.join(', ')}) value.`);
-                            validationStatus = 'error';
+                            validationStatus = ValidationResult.ERROR;
                         }
                     }
                 }
@@ -812,7 +813,7 @@ function validateConfigFile(debug = false) {
                     lge(
                         `Config's 'contractors' name '${name}': Invalid 'finisher' (${details.finisher}) value, probably invalid type of value or finisher does not exist.`
                     );
-                    validationStatus = 'error';
+                    validationStatus = ValidationResult.ERROR;
                 }
             }
         }
@@ -828,7 +829,7 @@ function validateConfigFile(debug = false) {
         : null;
     const { sourceBookmarksFilePath, processingBookmarksWithoutSyncFilePath } = config;
     if (path.resolve(sourceBookmarksFilePath) === path.resolve(processingBookmarksWithoutSyncFilePath)) {
-        validationStatus = 'error';
+        validationStatus = ValidationResult.ERROR;
         lge(`Config's 'sourceBookmarksFilePath' and Config's 'processingBookmarksWithoutSyncFilePath' are reflecting the same file.`);
         return validationStatus;
     }
