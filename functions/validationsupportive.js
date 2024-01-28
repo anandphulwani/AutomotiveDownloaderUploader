@@ -25,7 +25,7 @@ async function waitForValidationErrorsToResolve(scriptFilename, isInitialRun) {
             if (scriptFilename === 'downloader.js' || scriptFilename === 'uploader.js' || scriptFilename === 'contractors_folderTransferer.js') {
                 isValidationFailed = [
                     validateDealerConfigurationExcelFile() === 'error',
-                    validateBookmarksAndCheckCredentialsPresent() === 'error',
+                    validateBookmarksAndCheckCredentialsPresent(true) === 'error',
                 ].some((i) => i);
             }
         }

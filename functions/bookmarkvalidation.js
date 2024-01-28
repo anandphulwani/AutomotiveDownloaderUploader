@@ -3,50 +3,79 @@ import { getAllUsernamesBookmarks } from './bookmarksupportive.js';
 import { setCurrentDealerConfiguration, getAllDealerNumbers } from './excelsupportive.js';
 import { checkForSpaceInBeginOrEnd, checkForMultipleSpacesInMiddle, allTrimString, trimMultipleSpacesInMiddleIntoOne } from './stringformatting.js';
 import { lgd, lge, lgw } from './loggerandlocksupportive.js';
+import ValidationResult from '../class/ValidationResult.js';
 /* eslint-enable import/extensions */
 
-function validateBookmarksAndCheckCredentialsPresent(debug = false) {
-    let validationStatus = 'success';
+function validateBookmarksAndCheckCredentialsPresent(isPrintErrorOrWarn, debug = false) {
+    let validationStatus = ValidationResult.SUCCESS;
     debug ? lgd(`Validating bookmarks and checking if credentials are present: Executing.`) : null;
     const allUsernamesBookmarks = getAllUsernamesBookmarks();
-    const uniqueUsernamesBookmarks = [];
 
+    /* #region Filter non duplicate username level bookmarks. */
+    const uniqueUsernamesBookmarks = [];
+    const usernameBookmarkToRemove = [];
+    let usernameBookmarkIndex = 0;
     // eslint-disable-next-line no-restricted-syntax
     for (const usernameBookmark of allUsernamesBookmarks) {
         const uniqueUsernamesArr = uniqueUsernamesBookmarks.map((uniqueUsernameBookmark) => uniqueUsernameBookmark.name);
         if (uniqueUsernamesArr.includes(usernameBookmark.name)) {
-            validationStatus = 'error';
-            lge(`Duplicate Username level bookmark name found, a folder '${usernameBookmark.name}' is already present.`);
+            validationStatus = ValidationResult.ERROR;
+            isPrintErrorOrWarn ? lge(`Duplicate Username level bookmark name found, a folder '${usernameBookmark.name}' is already present.`) : null;
+            usernameBookmarkToRemove.push(usernameBookmarkIndex);
         } else {
             uniqueUsernamesBookmarks.push(usernameBookmark);
         }
+        usernameBookmarkIndex++;
     }
+    // Remove elements in reverse order to avoid index shifting
+    for (let i = usernameBookmarkToRemove.length - 1; i >= 0; i--) {
+        allUsernamesBookmarks.splice(usernameBookmarkToRemove[i], 1);
+    }
+    /* #endregion */
 
+    /* #region Filter non duplicate dealerLevel bookmarks */
     // eslint-disable-next-line no-restricted-syntax
-    for (const usernameBookmark of uniqueUsernamesBookmarks) {
+    for (const usernameBookmark of allUsernamesBookmarks) {
         setCurrentDealerConfiguration(usernameBookmark.name);
         const allDealerNumbers = getAllDealerNumbers();
+
         const dealerLevelBookmarks = usernameBookmark.children;
         const dealerLevelBookmarkNames = [];
+
+        const dealerLevelBookmarkToRemove = [];
+        let dealerLevelBookmarkIndex = 0;
         // eslint-disable-next-line no-restricted-syntax
         for (const dealerLevelBookmark of dealerLevelBookmarks) {
             const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name, isPrintErrorOrWarn)[1];
             if (!allDealerNumbers.includes(dealerLevelBookmarkName)) {
-                validationStatus = 'error';
-                lge(
-                    `Unable to find dealer folder: '${dealerLevelBookmarkName}' for the Username: '${usernameBookmark.name}', it is not present in the excel.`
-                );
+                validationStatus = ValidationResult.ERROR;
+                isPrintErrorOrWarn
+                    ? lge(
+                          `Unable to find dealer folder: '${dealerLevelBookmarkName}' for the Username: '${usernameBookmark.name}', it is not present in the excel.`
+                      )
+                    : null;
+                dealerLevelBookmarkToRemove.push(dealerLevelBookmarkIndex);
             }
             if (dealerLevelBookmarkNames.includes(dealerLevelBookmarkName)) {
-                validationStatus = 'error';
-                lge(`Duplicate Dealer level bookmark name found, a folder '${dealerLevelBookmarkName}' is already present.`);
+                validationStatus = ValidationResult.ERROR;
+                isPrintErrorOrWarn
+                    ? lge(`Duplicate Dealer level bookmark name found, a folder '${dealerLevelBookmarkName}' is already present.`)
+                    : null;
+                dealerLevelBookmarkToRemove.push(dealerLevelBookmarkIndex);
             } else {
                 dealerLevelBookmarkNames.push(dealerLevelBookmarkName);
             }
+            dealerLevelBookmarkIndex++;
+        }
+        // Remove elements in reverse order to avoid index shifting
+        for (let i = dealerLevelBookmarkToRemove.length - 1; i >= 0; i--) {
+            dealerLevelBookmarks.splice(dealerLevelBookmarkToRemove[i], 1);
         }
     }
+    /* #endregion */
+
     debug ? lgd(`Validating bookmarks and checking if credentials are present: Done.`) : null;
-    return validationStatus;
+    return [validationStatus, allUsernamesBookmarks];
 }
 
 function validateBookmarkNameText(dealerLevelBookmarkName, username, isPrintErrorOrWarn) {
