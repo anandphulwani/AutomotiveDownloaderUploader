@@ -21,6 +21,7 @@ import { addMoreBookmarksOrAllotmentRemainingImagesPrompt, bookmarkNotAppended, 
 import { getLotLastIndex, launchAllPendingLotsWindow, launchLotWindow } from './functions/allotmentsupportive.js';
 import commonInit from './functions/commonInit.js';
 import { runValidationConfigBookmarksExcel } from './functions/validationsupportive.js';
+import ForceReadExcel from './class/ForceReadExcel.js';
 import { hasBookmarkSourceFileOrExcelFileChanged } from './functions/bookmarkandexcelsupportive.js';
 /* eslint-enable import/extensions */
 
@@ -62,10 +63,10 @@ try {
                 lgi(usernameBookmark.name, Color.cyan, LoggingPrefix.false);
                 const credentials = getCredentialsForUsername(usernameBookmark.name);
 
-                setCurrentDealerConfiguration(usernameBookmark.name);
                 const dealerLevelBookmarks = usernameBookmark.children;
                 // eslint-disable-next-line no-restricted-syntax
                 for (const dealerLevelBookmark of dealerLevelBookmarks) {
+                    setCurrentDealerConfiguration(usernameBookmark.name, ForceReadExcel.onlyIfModificationTimeChanges);
                     const dealerLevelBookmarkName = validateBookmarkNameText(dealerLevelBookmark.name, usernameBookmark.name, true)[1];
                     const { lotCfgMinDealerFolders, lotCfgImagesQty } = getLotConfigPropertiesValues(lotIndex);
                     if (
