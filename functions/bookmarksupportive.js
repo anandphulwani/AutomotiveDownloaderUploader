@@ -112,8 +112,8 @@ function validateAllBookmarksAndReturnValidatedBookmarks(isPrintErrorOrWarn, deb
     return [validationStatus, allUsernamesBookmarks];
 }
 
-function getRemainingBookmarksNotDownloaded() {
-    const allUsernamesBookmarks = getAllUsernamesBookmarks();
+function getRemainingBookmarksNotDownloaded(isValidBookmarksOnly) {
+    const allUsernamesBookmarks = isValidBookmarksOnly ? validateAllBookmarksAndReturnValidatedBookmarks() : getAllUsernamesBookmarks();
     // Filter out bookmarks based on vehicleBookmark condition
     const filteredBookmarks = allUsernamesBookmarks
         .map((usernameBookmark) => ({
@@ -126,11 +126,22 @@ function getRemainingBookmarksNotDownloaded() {
                 .filter((dealerLevelBookmark) => dealerLevelBookmark.children.length > 0),
         }))
         .filter((usernameBookmark) => usernameBookmark.children.length > 0);
-    return filteredBookmarks;
+    if (!isValidBookmarksOnly) {
+        return filteredBookmarks;
+    }
+    // Filter out bookmarks based on excel validation
+    return filteredBookmarks
+        .map((usernameBookmark) => ({
+            ...usernameBookmark,
+            children: usernameBookmark.children.filter((dealerLevelBookmark) =>
+                validateExcelValuesForDealerNumber(dealerLevelBookmark, usernameBookmark)
+            ),
+        }))
+        .filter((usernameBookmark) => usernameBookmark.children.length > 0);
 }
 
-function getRemainingBookmarksNotDownloadedLength() {
-    return getRemainingBookmarksNotDownloaded().reduce(
+function getRemainingBookmarksNotDownloadedLength(isValidBookmarksOnly) {
+    return getRemainingBookmarksNotDownloaded(isValidBookmarksOnly).reduce(
         (total, usernameBookmark) =>
             // Sum up all the lengths of the vehicleBookmark arrays in each dealerLevelBookmark
             total + usernameBookmark.children.reduce((subtotal, dealerLevelBookmark) => subtotal + dealerLevelBookmark.children.length, 0),
