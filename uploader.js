@@ -252,7 +252,7 @@ try {
             // eslint-disable-next-line no-continue
             if (foundNewFoldersInMiddle) continue;
         } else if (Date.now() - lastRunTime <= 15 * 60 * 1000 /* 15 mins in milliseconds */) {
-            const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength();
+            const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength(false);
             if (remainingBookmarksNotDownloadedLength > 0) {
                 lastRunTime = Date.now();
             } else {

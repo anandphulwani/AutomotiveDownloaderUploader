@@ -34,7 +34,7 @@ function checkIfWorkDoneAndCreateDoneFile(mode) {
     /**
      * Ignore if Bookmarks file contains some URLs which are not downloaded yet.
      */
-    const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength();
+    const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength(false);
     if (remainingBookmarksNotDownloadedLength !== 0) {
         cutterConditionNotMetLastTime = Date.now();
         return;

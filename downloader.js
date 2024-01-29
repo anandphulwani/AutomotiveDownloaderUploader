@@ -33,8 +33,9 @@ try {
     let lotIndex = getLotLastIndex();
     // eslint-disable-next-line no-constant-condition
     while (true) {
-        const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength();
-        if (remainingBookmarksNotDownloadedLength > 0) {
+        const remainingBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength(false);
+        const remainingValidatedBookmarksNotDownloadedLength = getRemainingBookmarksNotDownloadedLength(true);
+        if (remainingValidatedBookmarksNotDownloadedLength > 0) {
             /**
              * Read chrome bookmarks from chrome browser
              */
@@ -130,7 +131,7 @@ try {
                 lgi('..........Done', LoggingPrefix.false);
             }
             lastRunTime = Date.now();
-        } else if (Date.now() - lastRunTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {
+        } else if (remainingBookmarksNotDownloadedLength === 0 && Date.now() - lastRunTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {
             break;
         }
         const resultOfKeyInYNToAddMoreBookmarksAnswer = await addMoreBookmarksOrAllotmentRemainingImagesPrompt(remainingBookmarksNotDownloadedLength);
