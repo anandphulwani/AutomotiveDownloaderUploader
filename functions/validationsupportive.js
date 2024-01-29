@@ -10,41 +10,32 @@ import ValidationResult from '../class/ValidationResult.js';
 import { validateAllBookmarksAndReturnValidatedBookmarks } from './bookmarksupportive.js';
 /* eslint-enable import/extensions */
 
-async function waitForValidationErrorsToResolve(scriptFilename, isInitialRun) {
-    const inLoopRowBeforeValidation = await getRowPosOnTerminal();
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-        let isValidationFailed = false;
+async function runValidationConfigBookmarksExcel(scriptFilename, isInitialRun) {
+    // const inLoopRowBeforeValidation = await getRowPosOnTerminal();
+    let validationResult = ValidationResult.SUCCESS;
+    if (isInitialRun) {
+        validationResult = Math.max(validationResult, validateConfigFile());
+    }
+
+    if (validationResult === ValidationResult.SUCCESS) {
+        if (scriptFilename === 'downloader.js') {
+            await downloadBookmarksFromSourceToProcessing();
+        }
+        if (scriptFilename === 'downloader.js' || scriptFilename === 'uploader.js' || scriptFilename === 'contractors_folderTransferer.js') {
+            const isValidateDealerConfigurationExcelFile = validateDealerConfigurationExcelFile();
+            const isValidateAllBookmarksAndReturnValidatedBookmarks = validateAllBookmarksAndReturnValidatedBookmarks(true)[0];
+            validationResult = Math.max(validationResult, isValidateAllBookmarksAndReturnValidatedBookmarks, isValidateDealerConfigurationExcelFile);
+        }
+    }
+
+    if (validationResult === ValidationResult.ERROR) {
         if (isInitialRun) {
-            isValidationFailed = validateConfigFile() === 'error';
-        }
-
-        if (!isValidationFailed) {
-            if (scriptFilename === 'downloader.js') {
-                await downloadBookmarksFromSourceToProcessing();
-            }
-            if (scriptFilename === 'downloader.js' || scriptFilename === 'uploader.js' || scriptFilename === 'contractors_folderTransferer.js') {
-                const isValidateAllBookmarksAndReturnValidatedBookmarks = validateAllBookmarksAndReturnValidatedBookmarks(true);
-                isValidationFailed = [
-                    validateDealerConfigurationExcelFile() === 'error',
-                    isValidateAllBookmarksAndReturnValidatedBookmarks[0] !== undefined &&
-                        isValidateAllBookmarksAndReturnValidatedBookmarks[0] === ValidationResult.ERROR,
-                ].some((i) => i);
-            }
-        }
-
-        if (isValidationFailed) {
             lge(`Please correct the above errors, in order to continue.`);
-            await waitForSeconds(30);
-
-            clearLastLinesOnConsole((await getRowPosOnTerminal()) - inLoopRowBeforeValidation);
-
-            // eslint-disable-next-line no-continue
-            continue;
+            process.exit(1);
         }
-        break;
+        // clearLastLinesOnConsole((await getRowPosOnTerminal()) - inLoopRowBeforeValidation);
     }
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export { waitForValidationErrorsToResolve };
+export { runValidationConfigBookmarksExcel };
