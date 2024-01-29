@@ -10,6 +10,7 @@ import { printSectionSeperator } from './others.js';
 import { autoCleanUpDatastoreZones } from './datastoresupportive.js';
 import { checkCredentialsBlock } from './configvalidation.js';
 import { runValidationConfigBookmarksExcel } from './validationsupportive.js';
+import { hasBookmarkSourceFileOrExcelFileChanged } from './bookmarkandexcelsupportive.js';
 /* eslint-enable import/extensions */
 
 export default async function commonInit(scriptFilename) {
@@ -41,7 +42,9 @@ export default async function commonInit(scriptFilename) {
     /* #endregion */
 
     /* #region Various validation checks  */
+    if (hasBookmarkSourceFileOrExcelFileChanged) {
     await runValidationConfigBookmarksExcel(scriptFilename, true);
+    }
     /* #endregion */
 
     /* #region Run credentails check and first time encryption in `downloader.js` or `uploader.js` */

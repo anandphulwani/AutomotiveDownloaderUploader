@@ -21,6 +21,7 @@ import { addMoreBookmarksOrAllotmentRemainingImagesPrompt, bookmarkNotAppended, 
 import { getLotLastIndex, launchAllPendingLotsWindow, launchLotWindow } from './functions/allotmentsupportive.js';
 import commonInit from './functions/commonInit.js';
 import { runValidationConfigBookmarksExcel } from './functions/validationsupportive.js';
+import { hasBookmarkSourceFileOrExcelFileChanged } from './functions/bookmarkandexcelsupportive.js';
 /* eslint-enable import/extensions */
 
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
@@ -134,11 +135,20 @@ try {
         } else if (remainingBookmarksNotDownloadedLength === 0 && Date.now() - lastRunTime > 2 * 60 * 60 * 1000 /* 2 hours in milliseconds */) {
             break;
         }
-        const resultOfKeyInYNToAddMoreBookmarksAnswer = await addMoreBookmarksOrAllotmentRemainingImagesPrompt(remainingBookmarksNotDownloadedLength);
+
+        let resultOfKeyInYNToAddMoreBookmarksAnswer;
+        let isBookmarkSourceFileOrExcelFileChanged;
+        do {
+            isBookmarkSourceFileOrExcelFileChanged = hasBookmarkSourceFileOrExcelFileChanged();
+            isBookmarkSourceFileOrExcelFileChanged ? await runValidationConfigBookmarksExcel('downloader.js', false) : null;
+            resultOfKeyInYNToAddMoreBookmarksAnswer = await addMoreBookmarksOrAllotmentRemainingImagesPrompt(
+                remainingValidatedBookmarksNotDownloadedLength
+            );
+        } while (!isBookmarkSourceFileOrExcelFileChanged && resultOfKeyInYNToAddMoreBookmarksAnswer);
+
         if (!resultOfKeyInYNToAddMoreBookmarksAnswer) {
             break;
         }
-        await runValidationConfigBookmarksExcel('downloader.js', false);
     }
     launchLotWindow(lotIndex);
 } catch (err) {
