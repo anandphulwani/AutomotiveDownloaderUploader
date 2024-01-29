@@ -9,7 +9,7 @@ import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js'
 import { printSectionSeperator } from './others.js';
 import { autoCleanUpDatastoreZones } from './datastoresupportive.js';
 import { checkCredentialsBlock } from './configvalidation.js';
-import { waitForValidationErrorsToResolve } from './validationsupportive.js';
+import { runValidationConfigBookmarksExcel } from './validationsupportive.js';
 /* eslint-enable import/extensions */
 
 export default async function commonInit(scriptFilename) {
@@ -41,7 +41,7 @@ export default async function commonInit(scriptFilename) {
     /* #endregion */
 
     /* #region Various validation checks  */
-    await waitForValidationErrorsToResolve(scriptFilename, true);
+    await runValidationConfigBookmarksExcel(scriptFilename, true);
     /* #endregion */
 
     /* #region Run credentails check and first time encryption in `downloader.js` or `uploader.js` */

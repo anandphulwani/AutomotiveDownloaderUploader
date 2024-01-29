@@ -20,7 +20,7 @@ import checkBrowserClosed from './functions/browserclosed.js';
 import { addMoreBookmarksOrAllotmentRemainingImagesPrompt, bookmarkNotAppended, getCurrentLotDetails } from './functions/download.js';
 import { getLotLastIndex, launchAllPendingLotsWindow, launchLotWindow } from './functions/allotmentsupportive.js';
 import commonInit from './functions/commonInit.js';
-import { waitForValidationErrorsToResolve } from './functions/validationsupportive.js';
+import { runValidationConfigBookmarksExcel } from './functions/validationsupportive.js';
 /* eslint-enable import/extensions */
 
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
@@ -137,7 +137,7 @@ try {
         if (!resultOfKeyInYNToAddMoreBookmarksAnswer) {
             break;
         }
-        await waitForValidationErrorsToResolve('downloader.js', false);
+        await runValidationConfigBookmarksExcel('downloader.js', false);
     }
     launchLotWindow(lotIndex);
 } catch (err) {
