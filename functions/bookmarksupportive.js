@@ -202,7 +202,6 @@ export {
     getUrlsDownloaded,
     getAllUsernamesBookmarks,
     validateAllBookmarksAndReturnValidatedBookmarks,
-    getRemainingBookmarksNotDownloaded,
     getRemainingBookmarksNotDownloadedLength,
     getUniqueIDsOfBookmarkFoldersAllotted,
 };
