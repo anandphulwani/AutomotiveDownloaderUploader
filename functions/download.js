@@ -169,8 +169,8 @@ function bookmarkNotAppended(returnObj, lotIndex, usernameBookmark, dealerLevelB
     }
 }
 
-async function addMoreBookmarksOrAllotmentRemainingImagesPrompt(remainingBookmarksNotDownloadedLength) {
-    if (remainingBookmarksNotDownloadedLength === 0) {
+async function addMoreBookmarksOrAllotmentRemainingImagesPrompt(remainingValidatedBookmarksNotDownloadedLength) {
+    if (remainingValidatedBookmarksNotDownloadedLength === 0) {
         const inLoopRowBeforeQuestion = await getRowPosOnTerminal();
         const questionOfKeyInYNToAddMoreBookmarks = 'Do you want to add more bookmarks for today(Y), or do allotment of all the remaining images(N)?';
         const resultOfKeyInYNToAddMoreBookmarks = await keyInYNWithTimeout(questionOfKeyInYNToAddMoreBookmarks, 25000, true);
