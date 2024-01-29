@@ -43,7 +43,7 @@ export default async function commonInit(scriptFilename) {
 
     /* #region Various validation checks  */
     if (hasBookmarkSourceFileOrExcelFileChanged) {
-    await runValidationConfigBookmarksExcel(scriptFilename, true);
+        await runValidationConfigBookmarksExcel(scriptFilename, true);
     }
     /* #endregion */
 
