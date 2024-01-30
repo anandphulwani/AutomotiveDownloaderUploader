@@ -42,7 +42,7 @@ try {
             /**
              * Read chrome bookmarks from chrome browser
              */
-            const allUsernamesBookmarks = validateAllBookmarksAndReturnValidatedBookmarks(false);
+            const allUsernamesBookmarks = validateAllBookmarksAndReturnValidatedBookmarks(false)[1];
             let urlsDownloaded = getUrlsDownloaded();
 
             /**
