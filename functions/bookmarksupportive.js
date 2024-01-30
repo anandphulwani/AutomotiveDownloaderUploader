@@ -113,7 +113,7 @@ function validateAllBookmarksAndReturnValidatedBookmarks(isPrintErrorOrWarn, deb
 }
 
 function getRemainingBookmarksNotDownloaded(isValidBookmarksOnly) {
-    const allUsernamesBookmarks = isValidBookmarksOnly ? validateAllBookmarksAndReturnValidatedBookmarks() : getAllUsernamesBookmarks();
+    const allUsernamesBookmarks = isValidBookmarksOnly ? validateAllBookmarksAndReturnValidatedBookmarks()[1] : getAllUsernamesBookmarks();
     // Filter out bookmarks based on vehicleBookmark condition
     const filteredBookmarks = allUsernamesBookmarks
         .map((usernameBookmark) => ({
