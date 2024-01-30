@@ -138,7 +138,9 @@ function getRemainingBookmarksNotDownloaded(isValidBookmarksOnly) {
         .map((usernameBookmark) => ({
             ...usernameBookmark,
             children: Array.isArray(usernameBookmark.children)
-                ? usernameBookmark.children.filter((dealerLevelBookmark) => validateExcelValuesForDealerNumber(dealerLevelBookmark, usernameBookmark))
+                ? usernameBookmark.children.filter((dealerLevelBookmark) =>
+                      validateExcelValuesForDealerNumber(dealerLevelBookmark.name, usernameBookmark)
+                  )
                 : [],
         }))
         .filter((usernameBookmark) => usernameBookmark.children && usernameBookmark.children.length > 0);
