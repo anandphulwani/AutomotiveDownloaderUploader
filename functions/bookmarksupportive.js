@@ -118,14 +118,18 @@ function getRemainingBookmarksNotDownloaded(isValidBookmarksOnly) {
     const filteredBookmarks = allUsernamesBookmarks
         .map((usernameBookmark) => ({
             ...usernameBookmark,
-            children: usernameBookmark.children
-                .map((dealerLevelBookmark) => ({
-                    ...dealerLevelBookmark,
-                    children: dealerLevelBookmark.children.filter((vehicleBookmark) => !vehicleBookmark.name.includes('|#|')),
-                }))
-                .filter((dealerLevelBookmark) => dealerLevelBookmark.children.length > 0),
+            children: Array.isArray(usernameBookmark.children)
+                ? usernameBookmark.children
+                      .map((dealerLevelBookmark) => ({
+                          ...dealerLevelBookmark,
+                          children: Array.isArray(dealerLevelBookmark.children)
+                              ? dealerLevelBookmark.children.filter((vehicleBookmark) => !vehicleBookmark.name.includes('|#|'))
+                              : [],
+                      }))
+                      .filter((dealerLevelBookmark) => dealerLevelBookmark.children && dealerLevelBookmark.children.length > 0)
+                : [],
         }))
-        .filter((usernameBookmark) => usernameBookmark.children.length > 0);
+        .filter((usernameBookmark) => usernameBookmark.children && usernameBookmark.children.length > 0);
     if (!isValidBookmarksOnly) {
         return filteredBookmarks;
     }
@@ -133,11 +137,11 @@ function getRemainingBookmarksNotDownloaded(isValidBookmarksOnly) {
     return filteredBookmarks
         .map((usernameBookmark) => ({
             ...usernameBookmark,
-            children: usernameBookmark.children.filter((dealerLevelBookmark) =>
-                validateExcelValuesForDealerNumber(dealerLevelBookmark, usernameBookmark)
-            ),
+            children: Array.isArray(usernameBookmark.children)
+                ? usernameBookmark.children.filter((dealerLevelBookmark) => validateExcelValuesForDealerNumber(dealerLevelBookmark, usernameBookmark))
+                : [],
         }))
-        .filter((usernameBookmark) => usernameBookmark.children.length > 0);
+        .filter((usernameBookmark) => usernameBookmark.children && usernameBookmark.children.length > 0);
 }
 
 function getRemainingBookmarksNotDownloadedLength(isValidBookmarksOnly) {
