@@ -2,6 +2,7 @@ import readline from 'readline';
 
 /* eslint-disable import/extensions */
 import { clearLastLinesOnConsole } from './consolesupportive.js';
+import { printSectionSeperator } from './others.js';
 /* eslint-enable import/extensions */
 
 export default function keyInYNWithTimeout(question, timeout = 5000, defaultOption = false) {
@@ -35,7 +36,9 @@ export default function keyInYNWithTimeout(question, timeout = 5000, defaultOpti
                 const noOfRows = Math.ceil(totalLengthOfString / 120);
                 console.log('\r');
                 clearLastLinesOnConsole(noOfRows);
+                printSectionSeperator(undefined, true);
                 console.log('Timed out.');
+                printSectionSeperator(undefined, true);
                 rl.close();
                 resolve({ answer: defaultOption, isDefaultOption: true }); // Resolve with the default option
             }, timeout);
