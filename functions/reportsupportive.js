@@ -12,12 +12,11 @@ import syncOperationWithErrorHandling from './syncOperationWithErrorHandling.js'
 import { zeroPad } from './stringformatting.js';
 /* eslint-enable import/extensions */
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-});
-
 async function getPeriod() {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
     let year;
     let month;
     return new Promise((resolve) => {
