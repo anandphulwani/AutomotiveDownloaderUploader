@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable import/extensions */
 import { config } from './configs/config.js';
 import { getCredentialsForUsername, getLotConfigPropertiesValues } from './functions/configsupportive.js';
@@ -24,6 +25,8 @@ import { runValidationConfigBookmarksExcel } from './functions/validationsupport
 import { validateExcelValuesForDealerNumber } from './functions/excelvalidation.js';
 import ForceReadExcel from './class/ForceReadExcel.js';
 import { hasBookmarkSourceFileOrExcelFileChanged } from './functions/bookmarkandexcelsupportive.js';
+import { getRowPosOnTerminal } from './functions/terminal.js';
+import { clearLastLinesOnConsole } from './functions/consolesupportive.js';
 /* eslint-enable import/extensions */
 
 // ONPROJECTFINISH: Check 'await page.waitForFunction' as it might create problems, removed from everywhere, just search it once again to verify.
@@ -142,11 +145,16 @@ try {
             break;
         }
 
+        const beforeValidationAndQuestionPos = await getRowPosOnTerminal();
+        let afterValidationAndBeforeQuestionPos;
         let resultOfKeyInYNToAddMoreBookmarksAnswer;
         let isBookmarkSourceFileOrExcelFileChanged;
         do {
             isBookmarkSourceFileOrExcelFileChanged = hasBookmarkSourceFileOrExcelFileChanged();
             isBookmarkSourceFileOrExcelFileChanged ? await runValidationConfigBookmarksExcel('downloader.js', false) : null;
+            afterValidationAndBeforeQuestionPos =
+                afterValidationAndBeforeQuestionPos === undefined ? await getRowPosOnTerminal() : afterValidationAndBeforeQuestionPos;
+            clearLastLinesOnConsole((await getRowPosOnTerminal()) - afterValidationAndBeforeQuestionPos);
             resultOfKeyInYNToAddMoreBookmarksAnswer = await addMoreBookmarksOrAllotmentRemainingImagesPrompt(
                 remainingValidatedBookmarksNotDownloadedLength
             );
@@ -155,6 +163,7 @@ try {
         if (!resultOfKeyInYNToAddMoreBookmarksAnswer) {
             break;
         }
+        clearLastLinesOnConsole((await getRowPosOnTerminal()) - beforeValidationAndQuestionPos);
     }
     launchLotWindow(lotIndex);
 } catch (err) {
