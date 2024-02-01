@@ -149,6 +149,10 @@ function getDealerObjByDealerNumber(dealerNumber) {
     return dealerConfiguration.filter((a) => a['Dealer Number'] === dealerNumber)[0];
 }
 
+function getDealerNumberWithDealerName() {
+    return dealerConfiguration.map((item) => [item['Dealer Number'], item['Dealer Name']]);
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export {
     getCurrentActiveDealerConfigurationsUsername,
@@ -165,4 +169,5 @@ export {
     getPutFirstPositionEditedImageInTheLastPositionAlsoFromDC,
     getLockTheImagesCheckMarkFromDC,
     getDealerObjByDealerNumber,
+    getDealerNumberWithDealerName,
 };
