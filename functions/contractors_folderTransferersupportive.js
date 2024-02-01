@@ -22,6 +22,7 @@ const finishingAccountingFolderName = config.finisherRecordKeepingFolders[0];
 
 const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set()]; // Array of sets for the last five iterations
 
+let uploadingZoneWarnReturnArr = [];
 let currentSetOfWarnings;
 function warnNowOrLater(mesg, forceWarnNow, sourceDestinationAccountingType, addToAllHistoryOfWarnings) {
     if (forceWarnNow || sourceDestinationAccountingType === 'uploadingZone') {
@@ -93,6 +94,7 @@ function checkIfFoldersPresentInFinishersUploadingZoneDir() {
 }
 
 function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, debug = false) {
+    uploadingZoneWarnReturnArr = [];
     if (!Object.prototype.hasOwnProperty.call(sourceDestinationAccountingTypes, sourceDestinationAccountingType)) {
         lgu(`Unknown parameter sourceDestinationAccountingType(${sourceDestinationAccountingType}) sent to 'validationBeforeMoving' fn.`);
         process.exit(1);
@@ -108,12 +110,8 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
         const filteredContractorDestinationDir = `${config.contractorsZonePath}\\${filteredContractor}\\${instanceRunDateFormatted}\\${sourceFolderName}`;
         // Check CuttingDone/ReadyToUpload folder exists.
         if (!syncOperationWithErrorHandling(fs.existsSync, filteredContractorDestinationDir)) {
-            warnNowOrLater(
-                `${typeOfContractor}'s ${typeOfSourceFolder} folder doesn't exist: ${filteredContractorDestinationDir}, Ignoring.`,
-                true,
-                undefined,
-                undefined
-            );
+            const mesg = `${typeOfContractor}'s ${typeOfSourceFolder} folder doesn't exist: ${filteredContractorDestinationDir}, Ignoring.`;
+            warnNowOrLater(mesg, sourceDestinationAccountingType, true);
             // eslint-disable-next-line no-continue
             continue;
         }
@@ -147,23 +145,15 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                     const resourceBusyOrLockedOrNotPermittedRegexString = '^(EBUSY: resource busy or locked|EPERM: operation not permitted)';
                     const resourceBusyOrLockedOrNotPermittedRegexExpression = new RegExp(resourceBusyOrLockedOrNotPermittedRegexString);
                     if (resourceBusyOrLockedOrNotPermittedRegexExpression.test(err.message)) {
-                        warnNowOrLater(
-                            `Folder in ${typeOfContractor}'s ${typeOfSourceFolder} locked, maybe a contractor working/moving it, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
-                            false,
-                            sourceDestinationAccountingType,
-                            false
-                        );
+                        const mesg = `Folder in ${typeOfContractor}'s ${typeOfSourceFolder} locked, maybe a contractor working/moving it, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`;
+                        warnNowOrLater(mesg, sourceDestinationAccountingType, false);
                     } else {
                         lgc('Unknown error while checking for contractor locked:', err);
                     }
                 }
             } else {
-                warnNowOrLater(
-                    `Found a file in ${typeOfContractor}'s ${typeOfSourceFolder} directory, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
-                    false,
-                    sourceDestinationAccountingType,
-                    true
-                );
+                const mesg = `Found a file in ${typeOfContractor}'s ${typeOfSourceFolder} directory, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`;
+                warnNowOrLater(mesg, sourceDestinationAccountingType, true);
             }
         }
 
@@ -209,12 +199,8 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             // Check CuttingDone/ReadyToUpload folder matches the format
             const regexallottedFolderRegexExpression = new RegExp(config.allottedFolderRegex);
             if (!regexallottedFolderRegexExpression.test(filteredContractorDestinationSubFolderAndFiles)) {
-                warnNowOrLater(
-                    `Folder in ${typeOfSourceFolder} but is not in a proper format, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
-                    false,
-                    sourceDestinationAccountingType,
-                    true
-                );
+                const mesg = `Folder in ${typeOfSourceFolder} but is not in a proper format, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`;
+                warnNowOrLater(mesg, sourceDestinationAccountingType, true);
                 // eslint-disable-next-line no-continue
                 continue;
             }
@@ -225,12 +211,8 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             const numberOfImagesAcToFileCount = getFileCountRecursively(filteredContractorDestinationSubFolderPath);
             // Check CuttingDone/ReadyToUpload folder filecount matches as mentioned in the folder
             if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
-                warnNowOrLater(
-                    `Folder in ${typeOfSourceFolder} but images quantity does not match, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`,
-                    false,
-                    sourceDestinationAccountingType,
-                    false
-                );
+                const mesg = `Folder in ${typeOfSourceFolder} but images quantity does not match, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`;
+                warnNowOrLater(mesg, sourceDestinationAccountingType, false);
                 // eslint-disable-next-line no-continue
                 continue;
             }
@@ -248,36 +230,24 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                     }
                 }
                 if (cutter == null) {
-                    warnNowOrLater(
-                        `Folder present in 'ReadyToUpload' but not present in 'CuttingAccounting' folder for reporting, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
-                        true,
-                        undefined,
-                        undefined
-                    );
+                    const mesg = `Folder present in 'ReadyToUpload' but not present in 'CuttingAccounting' folder for reporting, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`;
+                    warnNowOrLater(mesg, sourceDestinationAccountingType, true);
                     // eslint-disable-next-line no-continue
                     continue;
                 }
                 if (!reportJSONObj[uniqueCode]) {
-                    warnNowOrLater(
-                        `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${uniqueCode}', which should have been created while allotment, Exiting.`,
-                        true,
-                        undefined,
-                        undefined
-                    );
+                    const mesg = `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${uniqueCode}', which should have been created while allotment, Exiting.`;
+                    warnNowOrLater(mesg, sourceDestinationAccountingType, true);
                     // eslint-disable-next-line no-continue
                     continue;
                 }
                 if (path.basename(filteredContractorDestinationSubFolderAndFiles) !== reportJSONObj[uniqueCode].allotmentFolderName) {
-                    warnNowOrLater(
-                        `The allotment folder name '${
-                            reportJSONObj[uniqueCode].allotmentFolderName
-                        }' does not match folder name coming back for uploading '${path.basename(
-                            filteredContractorDestinationSubFolderPath
-                        )}', probably some contractor has modified the folder name, Exiting.`,
-                        true,
-                        undefined,
-                        undefined
-                    );
+                    const mesg = `The allotment folder name '${
+                        reportJSONObj[uniqueCode].allotmentFolderName
+                    }' does not match folder name coming back for uploading '${path.basename(
+                        filteredContractorDestinationSubFolderPath
+                    )}', probably some contractor has modified the folder name, Exiting.`;
+                    warnNowOrLater(mesg, sourceDestinationAccountingType, true);
                     // eslint-disable-next-line no-continue
                     continue;
                 }
@@ -327,7 +297,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             }
         }
     }
-    return foldersToShift;
+    return { uploadingZoneWarnReturnArr, foldersToShift };
 }
 
 function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccountingType, foldersToShift, isDryRun = true) {

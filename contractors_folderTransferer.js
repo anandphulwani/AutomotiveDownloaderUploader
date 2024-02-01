@@ -79,7 +79,7 @@ let lastLockTime = Date.now();
 while (true) {
     createProcessingAndRecordKeepingFolders(instanceRunDateFormatted);
 
-    let foldersToShift = validationBeforeMoving('finishingBuffer', undefined, debug);
+    let { foldersToShift } = validationBeforeMoving('finishingBuffer', undefined, debug);
 
     foldersToShift = moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, true);
     moveFilesFromSourceToDestinationAndAccounting('finishingBuffer', foldersToShift, false);
