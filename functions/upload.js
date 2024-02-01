@@ -47,7 +47,6 @@ function printDumbUploader() {
     lgi(`${'*'.repeat(50)} DUMB UPLOADER MODE ${'*'.repeat(50)}`);
     lgi('*'.repeat(120));
     lgi('*'.repeat(120));
-    s;
 }
 
 function getFoldersInUploadingZone(debug = false) {
