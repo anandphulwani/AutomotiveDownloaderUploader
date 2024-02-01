@@ -41,6 +41,15 @@ import { levels, loggerConsoleLevel } from './logger.js';
 import { clearLastLinesOnConsole } from './consolesupportive.js';
 /* eslint-enable import/extensions */
 
+function printDumbUploader() {
+    lgi('*'.repeat(120));
+    lgi('*'.repeat(120));
+    lgi(`${'*'.repeat(50)} DUMB UPLOADER MODE ${'*'.repeat(50)}`);
+    lgi('*'.repeat(120));
+    lgi('*'.repeat(120));
+    s;
+}
+
 function getFoldersInUploadingZone(debug = false) {
     const foldersToUpload = {};
     const uploadingZoneWithTodaysDate = path.join(config.uploadingZonePath, instanceRunDateFormatted);
@@ -973,6 +982,7 @@ async function uploadMoreBookmarksOrExitPrompt(uniqueIdOfFoldersInBothShiftedAnd
 
 // eslint-disable-next-line import/prefer-default-export
 export {
+    printDumbUploader,
     typeOfVINPathAndOtherVars,
     getFoldersInUploadingZone,
     getFoldersInUploadingZoneWithUniqueIDs,
