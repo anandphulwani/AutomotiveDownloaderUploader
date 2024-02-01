@@ -287,15 +287,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
     debug ? lgd(`foldersToShift :${foldersToShift}`) : null;
 
     if (sourceDestinationAccountingType === 'finishingBuffer') {
-        historyOfWarnings.shift();
-        historyOfWarnings.push(currentSetOfWarnings);
-        // eslint-disable-next-line no-restricted-syntax
-        for (const warning of currentSetOfWarnings) {
-            if (historyOfWarnings.every((set) => set.has(warning))) {
-                lgw(warning);
-                historyOfWarnings.forEach((set) => set.delete(warning));
-            }
-        }
+        printValidationBeforeMovingWarnings('finishingBuffer', undefined);
     }
     return { uploadingZoneWarnReturnArr, foldersToShift };
 }
