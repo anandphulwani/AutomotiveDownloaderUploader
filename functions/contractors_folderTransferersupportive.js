@@ -24,9 +24,9 @@ const historyOfWarnings = [new Set(), new Set(), new Set(), new Set(), new Set()
 
 let uploadingZoneWarnReturnArr = [];
 let currentSetOfWarnings;
-function warnNowOrLater(mesg, forceWarnNow, sourceDestinationAccountingType, addToAllHistoryOfWarnings) {
-    if (forceWarnNow || sourceDestinationAccountingType === 'uploadingZone') {
-        lgw(mesg);
+function warnNowOrLater(mesg, sourceDestinationAccountingType, addToAllHistoryOfWarnings) {
+    if (sourceDestinationAccountingType === 'uploadingZone') {
+        uploadingZoneWarnReturnArr.push(mesg);
     } else if (sourceDestinationAccountingType === 'finishingBuffer') {
         currentSetOfWarnings.add(mesg);
         if (addToAllHistoryOfWarnings && !historyOfWarnings.some((set) => set.has(mesg))) {
