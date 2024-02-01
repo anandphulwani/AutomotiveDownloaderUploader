@@ -108,7 +108,12 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
         const filteredContractorDestinationDir = `${config.contractorsZonePath}\\${filteredContractor}\\${instanceRunDateFormatted}\\${sourceFolderName}`;
         // Check CuttingDone/ReadyToUpload folder exists.
         if (!syncOperationWithErrorHandling(fs.existsSync, filteredContractorDestinationDir)) {
-            lgw(`${typeOfContractor}'s ${typeOfSourceFolder} folder doesn't exist: ${filteredContractorDestinationDir}, Ignoring.`);
+            warnNowOrLater(
+                `${typeOfContractor}'s ${typeOfSourceFolder} folder doesn't exist: ${filteredContractorDestinationDir}, Ignoring.`,
+                true,
+                undefined,
+                undefined
+            );
             // eslint-disable-next-line no-continue
             continue;
         }
@@ -144,6 +149,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                     if (resourceBusyOrLockedOrNotPermittedRegexExpression.test(err.message)) {
                         warnNowOrLater(
                             `Folder in ${typeOfContractor}'s ${typeOfSourceFolder} locked, maybe a contractor working/moving it, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
+                            false,
                             sourceDestinationAccountingType,
                             false
                         );
@@ -154,6 +160,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             } else {
                 warnNowOrLater(
                     `Found a file in ${typeOfContractor}'s ${typeOfSourceFolder} directory, Filename: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
+                    false,
                     sourceDestinationAccountingType,
                     true
                 );
@@ -204,6 +211,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             if (!regexallottedFolderRegexExpression.test(filteredContractorDestinationSubFolderAndFiles)) {
                 warnNowOrLater(
                     `Folder in ${typeOfSourceFolder} but is not in a proper format, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
+                    false,
                     sourceDestinationAccountingType,
                     true
                 );
@@ -219,6 +227,7 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
             if (numberOfImagesAcToFolderName !== numberOfImagesAcToFileCount) {
                 warnNowOrLater(
                     `Folder in ${typeOfSourceFolder} but images quantity does not match, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Images Qty ac to folder name: ${numberOfImagesAcToFolderName} and  Images Qty present in the folder: ${numberOfImagesAcToFileCount}, Ignoring.`,
+                    false,
                     sourceDestinationAccountingType,
                     false
                 );
@@ -239,26 +248,35 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
                     }
                 }
                 if (cutter == null) {
-                    lgw(
-                        `Folder present in 'ReadyToUpload' but not present in 'CuttingAccounting' folder for reporting, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`
+                    warnNowOrLater(
+                        `Folder present in 'ReadyToUpload' but not present in 'CuttingAccounting' folder for reporting, Folder: ${filteredContractor}\\${sourceFolderName}\\${filteredContractorDestinationSubFolderAndFiles}, Ignoring.`,
+                        true,
+                        undefined,
+                        undefined
                     );
                     // eslint-disable-next-line no-continue
                     continue;
                 }
                 if (!reportJSONObj[uniqueCode]) {
-                    lgw(
-                        `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${uniqueCode}', which should have been created while allotment, Exiting.`
+                    warnNowOrLater(
+                        `Todays report json file '${instanceRunDateFormatted}_report.json' does not contain a key '${uniqueCode}', which should have been created while allotment, Exiting.`,
+                        true,
+                        undefined,
+                        undefined
                     );
                     // eslint-disable-next-line no-continue
                     continue;
                 }
                 if (path.basename(filteredContractorDestinationSubFolderAndFiles) !== reportJSONObj[uniqueCode].allotmentFolderName) {
-                    lgw(
+                    warnNowOrLater(
                         `The allotment folder name '${
                             reportJSONObj[uniqueCode].allotmentFolderName
                         }' does not match folder name coming back for uploading '${path.basename(
                             filteredContractorDestinationSubFolderPath
-                        )}', probably some contractor has modified the folder name, Exiting.`
+                        )}', probably some contractor has modified the folder name, Exiting.`,
+                        true,
+                        undefined,
+                        undefined
                     );
                     // eslint-disable-next-line no-continue
                     continue;
