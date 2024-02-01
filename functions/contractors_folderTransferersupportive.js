@@ -300,6 +300,25 @@ function validationBeforeMoving(sourceDestinationAccountingType, reportJSONObj, 
     return { uploadingZoneWarnReturnArr, foldersToShift };
 }
 
+function printValidationBeforeMovingWarnings(sourceDestinationAccountingType, warnArr) {
+    if (sourceDestinationAccountingType === 'uploadingZone') {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const warnMesg of warnArr) {
+            lgw(warnMesg);
+        }
+    } else if (sourceDestinationAccountingType === 'finishingBuffer') {
+        historyOfWarnings.shift();
+        historyOfWarnings.push(currentSetOfWarnings);
+        // eslint-disable-next-line no-restricted-syntax
+        for (const warning of currentSetOfWarnings) {
+            if (historyOfWarnings.every((set) => set.has(warning))) {
+                lgw(warning);
+                historyOfWarnings.forEach((set) => set.delete(warning));
+            }
+        }
+    }
+}
+
 function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccountingType, foldersToShift, isDryRun = true) {
     // eslint-disable-next-line prefer-const
     let { accountingFolder, movingMesg } = sourceDestinationAccountingTypes[sourceDestinationAccountingType];
@@ -409,4 +428,9 @@ function moveFilesFromSourceToDestinationAndAccounting(sourceDestinationAccounti
     return foldersToShift;
 }
 
-export { checkIfFoldersPresentInFinishersUploadingZoneDir, moveFilesFromSourceToDestinationAndAccounting, validationBeforeMoving };
+export {
+    checkIfFoldersPresentInFinishersUploadingZoneDir,
+    moveFilesFromSourceToDestinationAndAccounting,
+    validationBeforeMoving,
+    printValidationBeforeMovingWarnings,
+};
