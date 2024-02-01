@@ -40,7 +40,12 @@ import { copyDirOrFile, createDirAndCopyFile, makeDir } from './functions/filesy
 import { attainLock, releaseLock, lgi, lgw, lgd } from './functions/loggerandlocksupportive.js';
 import { printSectionSeperator } from './functions/others.js';
 import syncOperationWithErrorHandling from './functions/syncOperationWithErrorHandling.js';
-import { getUsernameTrimmed } from './functions/excelsupportive.js';
+import {
+    getAllDealerNumbers,
+    getDealerNumberWithDealerName,
+    getUsernameTrimmed,
+    setCurrentDealerConfiguration,
+} from './functions/excelsupportive.js';
 import commonInit from './functions/commonInit.js';
 /* eslint-enable import/extensions */
 
@@ -99,8 +104,8 @@ for (const typeOfExcel of typesOfExcel) {
         if (!syncOperationWithErrorHandling(fs.existsSync, reportGenerationPath)) {
             makeDir(reportGenerationPath);
         }
-        const dealerConfiguration = readDealerConfigurationFormatted(username);
-        const dealerNumbers = dealerConfiguration.map((item) => [item['Dealer Number'], item['Dealer Name']]);
+        setCurrentDealerConfiguration('cute996');
+        const dealerNumbers = getDealerNumberWithDealerName();
         let dealersLength = dealerNumbers.length;
         const dealerConfigurationWithDates = [['', 'Date', ...dates], ...dealerNumbers];
 
