@@ -151,13 +151,15 @@ try {
         let isBookmarkSourceFileOrExcelFileChanged;
         do {
             isBookmarkSourceFileOrExcelFileChanged = hasBookmarkSourceFileOrExcelFileChanged();
-            isBookmarkSourceFileOrExcelFileChanged ? await runValidationConfigBookmarksExcel('downloader.js', false) : null;
-            afterValidationAndBeforeQuestionPos =
-                afterValidationAndBeforeQuestionPos === undefined ? await getRowPosOnTerminal() : afterValidationAndBeforeQuestionPos;
-            clearLastLinesOnConsole((await getRowPosOnTerminal()) - afterValidationAndBeforeQuestionPos);
+            if (isBookmarkSourceFileOrExcelFileChanged) {
+                clearLastLinesOnConsole((await getRowPosOnTerminal()) - beforeValidationAndQuestionPos);
+                await runValidationConfigBookmarksExcel('downloader.js', false);
+                afterValidationAndBeforeQuestionPos = await getRowPosOnTerminal();
+            }
             resultOfKeyInYNToAddMoreBookmarksAnswer = await addMoreBookmarksOrAllotmentRemainingImagesPrompt(
                 remainingValidatedBookmarksNotDownloadedLength
             );
+            clearLastLinesOnConsole((await getRowPosOnTerminal()) - afterValidationAndBeforeQuestionPos);
         } while (!isBookmarkSourceFileOrExcelFileChanged && resultOfKeyInYNToAddMoreBookmarksAnswer);
 
         if (!resultOfKeyInYNToAddMoreBookmarksAnswer) {
